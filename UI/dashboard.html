@@ -1133,39 +1133,193 @@
         function closeModal() {
             document.getElementById('stockModal').style.display = 'none';
         }
+		
+		// API Configuration
+		const API_URL = 'http://localhost:5000/api';
 
         // Regime Detection Functions
-        function detectRegime() {
-            const progressBar = document.querySelector('#regime .progress-fill');
-            progressBar.style.width = '0%';
-            
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += 10;
-                progressBar.style.width = progress + '%';
-                
-                if (progress >= 100) {
-                    clearInterval(interval);
-                    showNotification('Regime detection completed successfully', 'success');
-                    document.getElementById('current-regime').textContent = 'Steady Growth';
-                }
-            }, 200);
-        }
+		async function detectRegime() {
+			const progressBar = document.querySelector('#regime .progress-fill');
+			progressBar.style.width = '0%';
+			
+			try {
+				// Show progress
+				progressBar.style.width = '20%';
+				
+				// Call your backend API
+				const response = await fetch(`${API_URL}/regime/detect`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({
+						data_source: document.querySelector('#regime select').value
+					})
+				});
+				
+				progressBar.style.width = '60%';
+				
+				const result = await response.json();
+				
+				if (result.status === 'success') {
+					progressBar.style.width = '100%';
+					
+					// Update UI with results
+					if (result.data.current) {
+						document.getElementById('current-regime').textContent = 
+							result.data.current.current_regime || 'Unknown';
+						
+						// Update probabilities if available
+						updateRegimeProbabilities(result.data.current.regime_probabilities);
+					}
+					
+					showNotification('Regime detection completed successfully', 'success');
+				} else {
+					throw new Error(result.message || 'Detection failed');
+				}
+			} catch (error) {
+				console.error('Error detecting regime:', error);
+				showNotification(`Error: ${error.message}`, 'error');
+				progressBar.style.width = '0%';
+			}
+		}
 
-        function loadHistoricalRegimes() {
-            showNotification('Loading historical regime data...', 'info');
-            setTimeout(() => {
-                showNotification('Historical regimes loaded', 'success');
-            }, 1500);
-        }
+		async function loadHistoricalRegimes() {
+			try {
+				showNotification('Loading historical regime data...', 'info');
+				
+				const period = document.querySelector('#regime select[name="period"]')?.value || '30';
+				const response = await fetch(`${API_URL}/regime/historical?period=${period}`);
+				const result = await response.json();
+				
+				if (result.status === 'success') {
+					// Update the regime badges with actual data
+					if (result.statistics) {
+						updateRegimeBadges(result.statistics);
+					}
+					
+					// You could also update a chart here if you have one
+					// updateRegimeChart(result.periods);
+					
+					showNotification('Historical regimes loaded', 'success');
+				} else {
+					throw new Error(result.message || 'Failed to load historical data');
+				}
+			} catch (error) {
+				console.error('Error loading historical regimes:', error);
+				showNotification(`Error: ${error.message}`, 'error');
+			}
+		}
+		
+		function updateRegimeProbabilities(probabilities) {
+			if (!probabilities) return;
+			
+			// Update the probability table in the UI
+			const table = document.querySelector('#regime table');
+			if (table) {
+				// Clear existing rows
+				const tbody = table.querySelector('tbody') || table;
+				tbody.innerHTML = '';
+				
+				// Add new rows with actual probabilities
+				for (const [regime, probability] of Object.entries(probabilities)) {
+					const row = tbody.insertRow();
+					row.innerHTML = `
+						<td>${regime}</td>
+						<td><strong>${(probability * 100).toFixed(1)}%</strong></td>
+					`;
+				}
+			}
+		}
+		
+		function updateRegimeBadges(statistics) {
+			const badgeContainer = document.querySelector('#regime .regime-badge').parentElement;
+			if (badgeContainer) {
+				badgeContainer.innerHTML = '';
+				
+				const regimeClasses = {
+					'Steady Growth': 'regime-growth',
+					'Strong Bull': 'regime-bull',
+					'Crisis/Bear': 'regime-bear'
+				};
+				
+				for (const [regime, percentage of Object.entries(statistics)) {
+					const badge = document.createElement('span');
+					badge.className = `regime-badge ${regimeClasses[regime] || 'regime-growth'}`;
+					badge.textContent = `${regime}: ${(percentage * 100).toFixed(1)}%`;
+					badgeContainer.appendChild(badge);
+					badgeContainer.appendChild(document.createTextNode(' '));
+				}
+			}
+		}
 
         // Weight Optimization Functions
-        function optimizeWeights() {
-            showNotification('Starting weight optimization...', 'info');
-            setTimeout(() => {
-                showNotification('Weight optimization completed', 'success');
-            }, 2000);
-        }
+		async function optimizeWeights() {
+			try {
+				showNotification('Starting weight optimization...', 'info');
+				
+				const regime = document.getElementById('regime-select').value;
+				const backtestPeriod = document.querySelector('#weights input[type="number"]').value;
+				const sampleCompanies = document.querySelectorAll('#weights input[type="number"]')[1].value;
+				
+				const response = await fetch(`${API_URL}/weights/optimize`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({
+						regime: regime,
+						backtest_period: parseInt(backtestPeriod),
+						sample_companies: parseInt(sampleCompanies)
+					})
+				});
+				
+				const result = await response.json();
+				
+				if (result.status === 'success') {
+					// Update the weights table
+					await loadCurrentWeights();
+					showNotification(`Optimization completed for ${regime}`, 'success');
+				} else {
+					throw new Error(result.message || 'Optimization failed');
+				}
+			} catch (error) {
+				console.error('Error optimizing weights:', error);
+				showNotification(`Error: ${error.message}`, 'error');
+			}
+		}
+		
+		async function loadCurrentWeights() {
+			try {
+				const response = await fetch(`${API_URL}/weights/current`);
+				const result = await response.json();
+				
+				if (result.status === 'success' && result.weights) {
+					updateWeightsTable(result.weights);
+				}
+			} catch (error) {
+				console.error('Error loading weights:', error);
+			}
+		}
+
+		function updateWeightsTable(weights) {
+			const table = document.querySelector('#weights table tbody');
+			if (!table) return;
+			
+			// Get factor names from the first regime
+			const factors = Object.keys(weights[Object.keys(weights)[0]]);
+			
+			table.innerHTML = '';
+			factors.forEach(factor => {
+				const row = table.insertRow();
+				row.innerHTML = `
+					<td>${factor}</td>
+					<td>${weights['Steady Growth'][factor]?.toFixed(2) || '0.00'}</td>
+					<td>${weights['Strong Bull'][factor]?.toFixed(2) || '0.00'}</td>
+					<td>${weights['Crisis/Bear'][factor]?.toFixed(2) || '0.00'}</td>
+				`;
+			});
+		}
 
         // Stock Scoring Functions
         function runScoring() {
@@ -1280,22 +1434,43 @@
         }
 
         // Initialize on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            // Set current date/time
-            const now = new Date();
-            document.getElementById('last-update').textContent = now.toLocaleString();
-            
-            // Simulate real-time updates
-            setInterval(() => {
-                const indicators = document.querySelectorAll('.status-indicator');
-                indicators.forEach(indicator => {
-                    if (Math.random() > 0.95) {
-                        indicator.classList.toggle('warning');
-                        indicator.classList.toggle('active');
-                    }
-                });
-            }, 5000);
-        });
+		document.addEventListener('DOMContentLoaded', async () => {
+			// Set current date/time
+			const now = new Date();
+			document.getElementById('last-update').textContent = now.toLocaleString();
+			
+			// Check if backend is running
+			try {
+				const response = await fetch(`${API_URL}/health`);
+				const health = await response.json();
+				
+				if (health.status === 'healthy') {
+					console.log('Backend API is running');
+					
+					// Load initial data
+					await loadCurrentRegime();
+					await loadCurrentWeights();
+				}
+			} catch (error) {
+				console.error('Backend API is not running. Please start the Flask server.');
+				showNotification('Backend server is not running. Please run: python src/backend/app.py', 'error');
+			}
+		});
+		
+		// Load current regime on startup
+		async function loadCurrentRegime() {
+			try {
+				const response = await fetch(`${API_URL}/regime/current`);
+				const result = await response.json();
+				
+				if (result.status === 'success') {
+					document.getElementById('current-regime').textContent = result.current_regime;
+					updateRegimeProbabilities(result.probabilities);
+				}
+			} catch (error) {
+				console.error('Error loading current regime:', error);
+			}
+		}		
 
         // Close modal when clicking outside
         window.onclick = function(event) {
