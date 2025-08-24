@@ -1,0 +1,16 @@
+Claude
+
+WEIGHTS = {
+    "momentum": 65.0,
+    "size": 10.0,
+    "financial_health": 15.0,
+    "credit": 0.0,
+    "insider": 0.0,
+    "growth": 0.0,
+    "quality": 10.0,  # Quality-adjusted value (EV/FCF, EV/EBITDA)
+    "liquidity": 0.0,
+    "value": 10.0,    # Quality-adjusted value component
+    "technical": 0.0,
+    "carry": 0.0,
+    "stability": -10.0,
+}

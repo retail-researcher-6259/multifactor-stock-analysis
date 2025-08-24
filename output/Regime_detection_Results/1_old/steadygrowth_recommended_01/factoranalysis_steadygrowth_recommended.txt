@@ -1,0 +1,176 @@
+
+============================================================
+📊 FACTOR CORRELATION ANALYSIS RESULTS - Steady Growth REGIME
+📅 Using 67 historical Steady Growth periods
+📅 Total days analyzed: 1111
+============================================================
+
+Factor Correlations with Returns:
+          Factor   Pearson      p-value  Spearman Significant Error
+          credit  0.412536 1.556223e-07  0.518401         Yes      
+         quality  0.244885 2.525672e-03  0.315145         Yes      
+financial_health  0.312376 9.956424e-05  0.280435         Yes      
+        momentum  0.371506 2.860865e-06  0.251388         Yes      
+          growth  0.135796 9.753446e-02  0.202119         Yes      
+       liquidity  0.288009 3.517004e-04  0.024870         Yes      
+       technical -0.011966 8.844460e-01 -0.017405          No      
+         insider -0.172588 3.469021e-02 -0.175918         Yes      
+       stability -0.217927 7.384299e-03 -0.211794         Yes      
+            size -0.261288 1.239460e-03 -0.242276         Yes      
+           carry -0.281668 4.797232e-04 -0.269804         Yes      
+           value -0.350018 1.129994e-05 -0.376527         Yes      
+
+Weight Set Performance Analysis:
+Mean Correlation: 0.5337
+95% Confidence Interval: [0.4337, 0.6337]
+✅ Saved correlation results to ./Results\factor_correlations.csv
+
+Factors Ranked by Correlation with Returns:
+1. credit               0.518*
+2. quality              0.315*
+3. financial_health     0.280*
+4. momentum             0.251*
+5. growth               0.202*
+6. liquidity            0.025*
+7. technical            -0.017
+8. insider              -0.176*
+9. stability            -0.212*
+10. size                 -0.242*
+11. carry                -0.270*
+12. value                -0.377*
+
+Weight Effectiveness Analysis:
+Factor               Weight  Correlation  Effectiveness
+-------------------------------------------------------
+credit                 40.0  0.518         20.736
+quality                25.0  0.315         7.879
+financial_health       20.0  0.280         5.609
+momentum               15.0  0.251         3.771
+value                 -10.0  -0.377        3.765
+growth                 15.0  0.202         3.032
+carry                  -5.0  -0.270        1.349
+stability              -5.0  -0.212        1.059
+size                   -3.0  -0.242        0.727
+insider                -2.0  -0.176        0.352
+liquidity               5.0  0.025         0.124
+technical               5.0  -0.017        -0.087
+
+Suggested Weight Adjustments:
+value                Current: -10.0  Correlation: -0.377  Suggestion: Reduce substantially
+quality              Current:  25.0  Correlation: 0.315  Suggestion: Increase substantially
+financial_health     Current:  20.0  Correlation: 0.280  Suggestion: Increase moderately
+technical            Current:   5.0  Correlation: -0.017  Suggestion: Maintain current weight
+insider              Current:  -2.0  Correlation: -0.176  Suggestion: Reduce moderately
+momentum             Current:  15.0  Correlation: 0.251  Suggestion: Increase moderately
+stability            Current:  -5.0  Correlation: -0.212  Suggestion: Reduce substantially
+size                 Current:  -3.0  Correlation: -0.242  Suggestion: Reduce substantially
+credit               Current:  40.0  Correlation: 0.518  Suggestion: Near maximum weight
+liquidity            Current:   5.0  Correlation: 0.025  Suggestion: Maintain current weight
+carry                Current:  -5.0  Correlation: -0.270  Suggestion: Reduce substantially
+growth               Current:  15.0  Correlation: 0.202  Suggestion: Increase moderately
+
+============================================================
+📊 COMPREHENSIVE PERFORMANCE ANALYSIS WITH CONTINUOUS SCORING
+============================================================
+
+🎯 TOP DECILE PERFORMANCE
+----------------------------------------
+Avg Return: 5.6220%
+Std: 0.0261
+Sharpe: 2.154
+Hit Rate: 100.00%
+Best Month: 11.2700%
+Worst Month: 2.1051%
+
+📊 DECILE PERFORMANCE BREAKDOWN
+----------------------------------------
+       Mean Return Std Dev  Count  Sharpe
+Decile                                   
+0         -5.3300%  0.0415     15  -1.284
+1         -2.5100%  0.0342     15  -0.734
+2         -5.0900%  0.0395     15  -1.289
+3         -2.7800%  0.0431     15  -0.645
+4         -1.3200%  0.0609     15  -0.217
+5         -1.0900%  0.0466     15  -0.234
+6          0.3800%  0.0798     15   0.048
+7          0.3900%  0.0488     15   0.080
+8          2.4800%  0.0494     15   0.502
+9          5.6200%  0.0261     15   2.153
+
+🧪 STATISTICAL SIGNIFICANCE TESTS
+----------------------------------------
+Top Decile vs Others t-test:
+  t-statistic: 8.825
+  p-value: 0.0000
+  Significant at 5%: Yes
+
+📈 MONOTONICITY CHECK
+----------------------------------------
+Decile-Return Spearman Correlation: 0.964 (p-value: 0.0000)
+Returns Monotonically Increasing with Decile: No
+Return Spread (D10-D1): 10.9471%
+
+============================================================
+📋 CONTINUOUS SCORING MODEL SCORECARD
+============================================================
+Overall Correlation: 0.5337
+Top Decile Mean Return: 5.6220%
+Top Decile Sharpe Ratio: 2.154
+Hit Rate: 100.00%
+Monotonicity (Spearman): 0.964
+Statistical Significance: Yes
+Total Observations: 150
+
+📉 PORTFOLIO BACKTEST SIMULATION
+----------------------------------------
+Top 20 Portfolio Mean Monthly Return: 5.1905%
+Portfolio Standard Deviation: 7.7077%
+Portfolio Sharpe Ratio: 0.673
+Win Rate: 74.42%
+Number of Periods: 43
+
+🔍 FACTOR CONTRIBUTION ANALYSIS
+----------------------------------------
+
+Single-Factor Portfolio Performance:
+  momentum             Mean: 5.8768%  Sharpe: 0.861  Weight: 15.0
+  credit               Mean: 5.8637%  Sharpe: 0.989  Weight: 40.0
+  technical            Mean: 0.6012%  Sharpe: 0.098  Weight: 5.0
+  stability            Mean: -1.7342%  Sharpe: -0.460  Weight: -5.0
+
+Weight Alignment Analysis:
+Total Raw Weight: 116.7, Normalized to Sum=100
+
+Factor                Current  Suggested  Normalized
+--------------------------------------------------
+credit                   40.0       51.7       44.4
+quality                  25.0       25.0       21.4
+financial_health         20.0       20.0       17.1
+momentum                 15.0       19.4       16.6
+growth                   15.0       15.0       12.9
+value                   -10.0      -10.0       -8.6
+technical                 5.0        5.2        4.4
+liquidity                 5.0        5.0        4.3
+carry                    -5.0       -5.0       -4.3
+stability                -5.0       -4.6       -3.9
+size                     -3.0       -3.0       -2.6
+insider                  -2.0       -2.0       -1.7
+
+New Normalized Weights Python Dict:
+WEIGHTS = {
+    "credit": 44.4,
+    "quality": 21.4,
+    "financial_health": 17.1,
+    "momentum": 16.6,
+    "growth": 12.9,
+    "value": -8.6,
+    "technical": 4.4,
+    "liquidity": 4.3,
+    "carry": -4.3,
+    "stability": -3.9,
+    "size": -2.6,
+    "insider": -1.7,
+}
+
+✅ Enhanced correlation analysis completed in 563.6 seconds
+📊 Analysis used 67 Steady Growth regime periods

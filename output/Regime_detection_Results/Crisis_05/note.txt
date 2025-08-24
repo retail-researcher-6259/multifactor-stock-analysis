@@ -1,0 +1,16 @@
+Perplexity
+
+WEIGHTS = {
+    "momentum": 50.0,
+    "size": 25.0,
+    "financial_health": 15.0,
+    "credit": 5.0,
+    "insider": 3.0,
+    "growth": 2.0,
+    "quality": 0.0,
+    "liquidity": 0.0,
+    "value": 0.0,
+    "technical": 0.0,
+    "carry": 0.0,
+    "stability": 0.0,
+}

@@ -1,0 +1,21 @@
+WEIGHTS = {
+    # Strong Positive Factors (70% total)
+    "credit": 40.0,  # Highest correlation - financial strength crucial
+    "quality": 25.0,  # Profitability and efficiency
+    "financial_health": 20.0,  # Balance sheet strength
+    "momentum": 15.0,  # Still matters but less dominant
+
+    # Moderate Positive (15% total)
+    "growth": 15.0,  # Growth prospects valued
+    "liquidity": 5.0,  # Some liquidity premium
+
+    # Neutral (5% total)
+    "technical": 5.0,  # Minimal but positive allocation
+
+    # Negative Factors (-25% total)
+    "value": -10.0,  # Strong negative - avoid value traps
+    "stability": -5.0,  # Some volatility is good
+    "carry": -5.0,  # Dividend stocks underperform
+    "size": -3.0,  # Slight small-cap bias
+    "insider": -2.0,  # Insider activity less relevant
+}

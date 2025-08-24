@@ -1,0 +1,59 @@
+Ticker,CompanyName,Country,Rank_in_Ranked,Score,Rank_in_Stability,Stability_Adjusted_Score,Avg_Score,Linear_R2,Linear_Slope,Recommendation,Combined_Rank,Sector,Industry
+DASH,"DoorDash, Inc.",United States,15,92.4,1,70.62,92.24,0.873,0.0262,BUY - Stable quality,16,Consumer Cyclical,Internet Retail
+META,"Meta Platforms, Inc.",United States,7,95.14,12,46.76,94.5,0.633,0.0439,BUY - Stable quality,19,Communication Services,Internet Content & Information
+NXT,Nextracker Inc.,United States,10,93.06,16,41.85,92.9,0.671,0.0829,BUY - Stable quality,26,Technology,Solar
+PINS,"Pinterest, Inc.",United States,24,89.88,2,62.63,89.1,0.9,0.0551,BUY - Stable quality,26,Communication Services,Internet Content & Information
+MNST,Monster Beverage Corporation,United States,8,93.38,27,39.0,94.29,0.638,-0.055,BUY - High score acceptable risk,35,Consumer Defensive,Beverages - Non-Alcoholic
+CPRT,"Copart, Inc.",United States,31,88.55,4,54.92,89.19,0.92,-0.0583,BUY - Stable quality,35,Industrials,Specialty Business Services
+UTHR,United Therapeutics Corporation,United States,22,90.4,14,43.78,90.52,0.61,-0.027,BUY - Stable quality,36,Healthcare,Drug Manufacturers - Specialty & Generic
+DUOL,"Duolingo, Inc.",United States,16,92.19,22,40.35,93.07,0.82,-0.0957,BUY - Stable quality,38,Technology,Software - Application
+AXON,"Axon Enterprise, Inc.",United States,18,91.62,25,39.07,92.17,0.524,-0.0229,BUY - High score acceptable risk,43,Industrials,Aerospace & Defense
+EXEL,"Exelixis, Inc.",United States,2,100.93,47,33.09,100.52,0.431,0.0384,HOLD - Modest potential,49,Healthcare,Biotechnology
+VEEV,Veeva Systems Inc.,United States,5,96.16,59,31.41,96.52,0.392,-0.0176,WATCH - Monitor for opportunity,64,Healthcare,Health Information Services
+GRMN,Garmin Ltd.,Switzerland,30,88.63,34,36.17,88.46,0.665,0.108,BUY - High score acceptable risk,64,Technology,Scientific & Technical Instruments
+DECK,Deckers Outdoor Corporation,United States,63,84.65,3,56.47,84.94,0.857,-0.0342,BUY - Stable quality,66,Consumer Cyclical,Footwear & Accessories
+SPOT,Spotify Technology S.A.,Luxembourg,28,88.89,56,31.96,89.15,0.412,-0.0133,WATCH - Monitor for opportunity,84,Communication Services,Internet Content & Information
+DDOG,"Datadog, Inc.",United States,42,86.47,44,33.66,85.85,0.622,0.096,HOLD - Modest potential,86,Technology,Software - Application
+CELH,"Celsius Holdings, Inc.",United States,40,86.62,48,33.07,86.3,0.612,0.0969,HOLD - Modest potential,88,Consumer Defensive,Beverages - Non-Alcoholic
+WDAY,"Workday, Inc.",United States,75,83.42,17,41.51,84.54,0.862,-0.084,BUY - Stable quality,92,Technology,Software - Application
+NVDA,NVIDIA Corporation,United States,3,99.79,89,28.04,99.99,0.506,0.1194,WATCH - Monitor for opportunity,92,Technology,Semiconductors
+PAYC,"Paycom Software, Inc.",United States,23,90.01,73,29.62,91.33,0.57,-0.0715,WATCH - Monitor for opportunity,96,Technology,Software - Application
+APP,AppLovin Corporation,United States,90,82.27,8,49.44,82.34,0.67,-0.0127,BUY - Stable quality,98,Communication Services,Advertising Agencies
+GWRE,"Guidewire Software, Inc.",United States,81,82.97,18,41.5,83.95,0.93,-0.0992,BUY - Stable quality,99,Technology,Software - Application
+RDDT,"Reddit, Inc.",United States,20,91.05,81,29.19,91.01,0.406,0.0319,WATCH - Monitor for opportunity,101,Communication Services,Internet Content & Information
+MMYT,MakeMyTrip Limited,India,65,84.42,39,35.92,85.57,0.798,-0.0954,BUY - High score acceptable risk,104,Consumer Cyclical,Travel Services
+ONON,On Holding AG,Switzerland,17,92.07,88,28.26,91.77,0.392,0.0321,WATCH - Monitor for opportunity,105,Consumer Cyclical,Footwear & Accessories
+TAL,TAL Education Group,China,73,83.44,35,36.12,83.82,0.74,-0.0755,BUY - High score acceptable risk,108,Consumer Defensive,Education & Training Services
+ALGN,"Align Technology, Inc.",United States,102,81.16,7,50.11,80.31,0.838,0.065,BUY - Stable quality,109,Healthcare,Medical Instruments & Supplies
+ANSS,"ANSYS, Inc.",United States,92,82.22,20,40.58,81.35,0.649,0.0481,BUY - Stable quality,112,Technology,Software - Application
+YELP,Yelp Inc.,United States,80,83.08,37,36.04,83.32,0.582,-0.0345,BUY - High score acceptable risk,117,Communication Services,Internet Content & Information
+LRCX,Lam Research Corporation,United States,35,88.1,86,28.53,87.76,0.588,0.1325,WATCH - Monitor for opportunity,121,Technology,Semiconductor Equipment & Materials
+NOW,"ServiceNow, Inc.",United States,27,89.07,94,27.8,89.73,0.41,-0.0281,WATCH - Monitor for opportunity,121,Technology,Software - Application
+DOCU,"DocuSign, Inc.",United States,99,81.45,23,40.11,82.42,0.681,-0.0423,BUY - Stable quality,122,Technology,Software - Application
+TME,Tencent Music Entertainment Group,China,98,81.64,24,39.94,81.39,0.619,0.0402,BUY - High score acceptable risk,122,Communication Services,Internet Content & Information
+INMD,InMode Ltd.,Israel,96,81.86,26,39.04,81.76,0.607,0.0412,BUY - High score acceptable risk,122,Healthcare,Medical Devices
+PANW,"Palo Alto Networks, Inc.",United States,53,85.23,70,29.89,85.91,0.485,-0.0363,WATCH - Monitor for opportunity,123,Technology,Software - Infrastructure
+CDNS,"Cadence Design Systems, Inc.",United States,9,93.32,137,24.25,92.95,0.31,0.0192,AVOID - Poor risk-adjusted score,146,Technology,Software - Application
+COIN,"Coinbase Global, Inc.",United States,37,87.37,115,26.34,84.64,0.801,0.3503,WATCH - Monitor for opportunity,152,Financial Services,Financial Data & Stock Exchanges
+IDXX,"IDEXX Laboratories, Inc.",United States,148,77.14,6,52.08,77.03,0.772,0.0246,BUY - Stable quality,154,Healthcare,Diagnostics & Research
+TYL,"Tyler Technologies, Inc.",United States,147,77.14,13,45.07,78.04,0.879,-0.0603,BUY - Stable quality,160,Technology,Software - Application
+ROKU,"Roku, Inc.",United States,52,85.33,114,26.37,84.69,0.422,0.0439,WATCH - Monitor for opportunity,166,Communication Services,Entertainment
+AMAT,"Applied Materials, Inc.",United States,89,82.3,78,29.25,80.49,0.809,0.2653,WATCH - Monitor for opportunity,167,Technology,Semiconductor Equipment & Materials
+PSTG,"Pure Storage, Inc.",United States,113,80.37,57,31.64,80.28,0.481,0.029,HOLD - Modest potential,170,Technology,Computer Hardware
+CRM,"Salesforce, Inc.",United States,126,79.26,45,33.59,79.75,0.563,-0.0332,WATCH - Monitor for opportunity,171,Technology,Software - Application
+ZM,Zoom Communications Inc.,United States,64,84.61,109,26.8,85.2,0.403,-0.0243,WATCH - Monitor for opportunity,173,Technology,Software - Application
+NICE,NICE Ltd.,Israel,111,80.54,65,30.25,81.53,0.52,-0.0382,WATCH - Monitor for opportunity,176,Technology,Software - Application
+SNPS,"Synopsys, Inc.",United States,122,79.53,79,29.25,78.07,0.609,0.1018,WATCH - Monitor for opportunity,201,Technology,Software - Infrastructure
+NBIX,"Neurocrine Biosciences, Inc.",United States,112,80.42,91,27.9,80.07,0.406,0.0195,WATCH - Monitor for opportunity,203,Healthcare,Drug Manufacturers - Specialty & Generic
+FHI,"Federated Hermes, Inc.",United States,84,82.81,119,25.87,82.91,0.52,0.0988,WATCH - Monitor for opportunity,203,Financial Services,Asset Management
+BLK,"BlackRock, Inc.",United States,103,81.1,102,27.06,80.95,0.581,0.1189,WATCH - Monitor for opportunity,205,Financial Services,Asset Management
+OKTA,"Okta, Inc.",United States,110,80.72,95,27.72,82.11,0.566,-0.0644,WATCH - Monitor for opportunity,205,Technology,Software - Infrastructure
+TSM,Taiwan Semiconductor Manufacturing Company Limited,Taiwan,61,84.68,147,23.35,84.71,0.409,0.06,AVOID - Poor risk-adjusted score,208,Technology,Semiconductors
+GRAB,Grab Holdings Limited,Singapore,70,83.69,139,24.03,83.1,0.382,0.0372,AVOID - Poor risk-adjusted score,209,Technology,Software - Application
+MU,"Micron Technology, Inc.",United States,135,77.86,75,29.58,76.22,0.871,0.2839,WATCH - Monitor for opportunity,210,Technology,Semiconductors
+PODD,Insulet Corporation,United States,105,81.01,106,26.95,82.02,0.499,-0.0477,WATCH - Monitor for opportunity,211,Healthcare,Medical Devices
+LOGI,Logitech International S.A.,Switzerland,119,79.78,103,27.04,79.57,0.586,0.1173,WATCH - Monitor for opportunity,222,Technology,Computer Hardware
+TS,Tenaris S.A.,Luxembourg,115,80.07,113,26.46,80.13,0.564,0.1112,WATCH - Monitor for opportunity,228,Energy,Oil & Gas Equipment & Services
+CBOE,"Cboe Global Markets, Inc.",United States,86,82.42,148,23.33,82.37,0.452,0.0797,AVOID - Poor risk-adjusted score,234,Financial Services,Financial Data & Stock Exchanges
+UPWK,Upwork Inc.,United States,146,77.2,122,25.51,78.46,0.736,-0.1248,WATCH - Monitor for opportunity,268,Communication Services,Internet Content & Information
+VRT,Vertiv Holdings Co,United States,149,77.09,128,24.97,76.96,0.586,0.1321,AVOID - Poor risk-adjusted score,277,Industrials,Electrical Equipment & Parts

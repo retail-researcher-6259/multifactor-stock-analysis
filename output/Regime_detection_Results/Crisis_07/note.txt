@@ -1,0 +1,16 @@
+Grok
+
+WEIGHTS = {
+    "momentum": 75.9,
+    "size": 15.4,
+    "financial_health": 11.6,
+    "credit": 4.8,
+    "insider": 3.9,
+    "growth": 7.7,
+    "quality": 0,
+    "liquidity": 0,
+    "value": 0,
+    "technical": -4.9,
+    "carry": -3.9,
+    "stability": -10.5,
+}

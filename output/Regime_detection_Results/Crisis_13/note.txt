@@ -1,0 +1,14 @@
+WEIGHTS = {
+    "momentum": 74.85,      # Slight increase from 70.7
+    "size": 18.7,          # Rounded up from 17.6
+    "financial_health": 12.15,  # Reduced to minimize drag
+    "credit": 0.0,         # Eliminated (negative correlation)
+    "insider": 4.7,        # Rounded up from 4.4
+    "growth": 4.7,         # Reduced from 8.8 (negative correlation)
+    "quality": 0.0,        # Keep at zero
+    "liquidity": 4.7,      # Add for positive correlation
+    "value": 0.0,          # Keep at zero
+    "technical": -5.0,     # Unchanged
+    "carry": -4.7,         # Rounded from -4.4
+    "stability": -10.1,    # Rounded from -10.3
+}

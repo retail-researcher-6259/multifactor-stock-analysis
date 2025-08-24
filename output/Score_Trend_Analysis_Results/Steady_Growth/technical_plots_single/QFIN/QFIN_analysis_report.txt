@@ -1,0 +1,48 @@
+TECHNICAL ANALYSIS REPORT FOR QFIN
+============================================================
+Generated: 2025-08-22 22:58:33
+Date Range: 0611 to 0822
+
+DATA SUMMARY:
+----------------------------------------
+Data Points: 50
+Average Score: 72.97
+Score Std Dev: 2.44
+Min Score: 68.33
+Max Score: 75.94
+Score Range: 7.61
+
+REGRESSION ANALYSIS:
+----------------------------------------
+Linear R²: 0.720
+Linear Slope: -0.143
+Polynomial R²: 0.796
+Polynomial Degree: 2
+
+MOVING AVERAGES:
+----------------------------------------
+Recent Bullish Crossovers (last 5): 0
+Recent Bearish Crossovers (last 5): 0
+Last Crossover: bearish at index 24
+
+MOMENTUM INDICATORS:
+----------------------------------------
+Current RSI: 52.07
+  Status: NEUTRAL
+Current ROC: 0.56%
+  Momentum: POSITIVE
+
+TREND STRENGTH:
+----------------------------------------
+Current ADX: 27.12
+Trend Strength: Strong
+
+FORECASTING (5-day ahead):
+----------------------------------------
+ARIMA Forecast: 70.94, 71.25, 71.57, 71.92, 72.27
+ARIMA Parameters: (2, 0, 2)
+Exp Smoothing: 70.91, 70.91, 70.91, 70.91, 70.91
+
+ANALYSIS SUMMARY:
+----------------------------------------
+Recommendation: SELL - Multiple bearish signals

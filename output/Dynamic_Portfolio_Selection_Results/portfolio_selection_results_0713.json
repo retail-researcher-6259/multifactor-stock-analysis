@@ -1,0 +1,2721 @@
+{
+  "timestamp": "2025-07-13T22:46:26.238214",
+  "real_estate_excluded": true,
+  "summary": {
+    "total_portfolios_tested": 22,
+    "best_portfolio_by_sharpe": "SectorBal3_S15_P60",
+    "best_portfolio_by_return": "PosMomentum_S5_P60",
+    "best_portfolio_by_drawdown": "Recommended_S5_P60"
+  },
+  "portfolios": {
+    "TopRank_S5_P60": {
+      "tickers": [
+        "DASH",
+        "META",
+        "NXT",
+        "PINS",
+        "MNST"
+      ],
+      "composition": [
+        {
+          "ticker": "DASH",
+          "company": "DoorDash, Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Internet Retail",
+          "rank": 1,
+          "score": 92.4
+        },
+        {
+          "ticker": "META",
+          "company": "Meta Platforms, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 2,
+          "score": 95.14
+        },
+        {
+          "ticker": "NXT",
+          "company": "Nextracker Inc.",
+          "sector": "Technology",
+          "industry": "Solar",
+          "rank": 3,
+          "score": 93.06
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 4,
+          "score": 89.88
+        },
+        {
+          "ticker": "MNST",
+          "company": "Monster Beverage Corporation",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 5,
+          "score": 93.38
+        }
+      ]
+    },
+    "SectorBal2_S5_P60": {
+      "tickers": [
+        "DASH",
+        "META",
+        "NXT",
+        "PINS",
+        "MNST"
+      ],
+      "composition": [
+        {
+          "ticker": "DASH",
+          "company": "DoorDash, Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Internet Retail",
+          "rank": 1,
+          "score": 92.4
+        },
+        {
+          "ticker": "META",
+          "company": "Meta Platforms, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 2,
+          "score": 95.14
+        },
+        {
+          "ticker": "NXT",
+          "company": "Nextracker Inc.",
+          "sector": "Technology",
+          "industry": "Solar",
+          "rank": 3,
+          "score": 93.06
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 4,
+          "score": 89.88
+        },
+        {
+          "ticker": "MNST",
+          "company": "Monster Beverage Corporation",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 5,
+          "score": 93.38
+        }
+      ]
+    },
+    "SectorBal3_S5_P60": {
+      "tickers": [
+        "DASH",
+        "META",
+        "NXT",
+        "PINS",
+        "MNST"
+      ],
+      "composition": [
+        {
+          "ticker": "DASH",
+          "company": "DoorDash, Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Internet Retail",
+          "rank": 1,
+          "score": 92.4
+        },
+        {
+          "ticker": "META",
+          "company": "Meta Platforms, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 2,
+          "score": 95.14
+        },
+        {
+          "ticker": "NXT",
+          "company": "Nextracker Inc.",
+          "sector": "Technology",
+          "industry": "Solar",
+          "rank": 3,
+          "score": 93.06
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 4,
+          "score": 89.88
+        },
+        {
+          "ticker": "MNST",
+          "company": "Monster Beverage Corporation",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 5,
+          "score": 93.38
+        }
+      ]
+    },
+    "IndustryBal_S5_P60": {
+      "tickers": [
+        "DASH",
+        "META",
+        "NXT",
+        "PINS",
+        "MNST"
+      ],
+      "composition": [
+        {
+          "ticker": "DASH",
+          "company": "DoorDash, Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Internet Retail",
+          "rank": 1,
+          "score": 92.4
+        },
+        {
+          "ticker": "META",
+          "company": "Meta Platforms, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 2,
+          "score": 95.14
+        },
+        {
+          "ticker": "NXT",
+          "company": "Nextracker Inc.",
+          "sector": "Technology",
+          "industry": "Solar",
+          "rank": 3,
+          "score": 93.06
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 4,
+          "score": 89.88
+        },
+        {
+          "ticker": "MNST",
+          "company": "Monster Beverage Corporation",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 5,
+          "score": 93.38
+        }
+      ]
+    },
+    "Stability_S5_P60": {
+      "tickers": [
+        "DASH",
+        "META",
+        "NXT",
+        "PINS",
+        "MNST"
+      ],
+      "composition": [
+        {
+          "ticker": "DASH",
+          "company": "DoorDash, Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Internet Retail",
+          "rank": 1,
+          "score": 92.4
+        },
+        {
+          "ticker": "META",
+          "company": "Meta Platforms, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 2,
+          "score": 95.14
+        },
+        {
+          "ticker": "NXT",
+          "company": "Nextracker Inc.",
+          "sector": "Technology",
+          "industry": "Solar",
+          "rank": 3,
+          "score": 93.06
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 4,
+          "score": 89.88
+        },
+        {
+          "ticker": "MNST",
+          "company": "Monster Beverage Corporation",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 5,
+          "score": 93.38
+        }
+      ]
+    },
+    "PosMomentum_S5_P60": {
+      "tickers": [
+        "DASH",
+        "META",
+        "NXT",
+        "PINS",
+        "EXEL"
+      ],
+      "composition": [
+        {
+          "ticker": "DASH",
+          "company": "DoorDash, Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Internet Retail",
+          "rank": 1,
+          "score": 92.4
+        },
+        {
+          "ticker": "META",
+          "company": "Meta Platforms, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 2,
+          "score": 95.14
+        },
+        {
+          "ticker": "NXT",
+          "company": "Nextracker Inc.",
+          "sector": "Technology",
+          "industry": "Solar",
+          "rank": 3,
+          "score": 93.06
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 4,
+          "score": 89.88
+        },
+        {
+          "ticker": "EXEL",
+          "company": "Exelixis, Inc.",
+          "sector": "Healthcare",
+          "industry": "Biotechnology",
+          "rank": 10,
+          "score": 100.93
+        }
+      ]
+    },
+    "Recommended_S5_P60": {
+      "tickers": [
+        "MNST",
+        "AXON",
+        "GRMN",
+        "MMYT",
+        "TAL"
+      ],
+      "composition": [
+        {
+          "ticker": "MNST",
+          "company": "Monster Beverage Corporation",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 5,
+          "score": 93.38
+        },
+        {
+          "ticker": "AXON",
+          "company": "Axon Enterprise, Inc.",
+          "sector": "Industrials",
+          "industry": "Aerospace & Defense",
+          "rank": 9,
+          "score": 91.62
+        },
+        {
+          "ticker": "GRMN",
+          "company": "Garmin Ltd.",
+          "sector": "Technology",
+          "industry": "Scientific & Technical Instruments",
+          "rank": 12,
+          "score": 88.63
+        },
+        {
+          "ticker": "MMYT",
+          "company": "MakeMyTrip Limited",
+          "sector": "Consumer Cyclical",
+          "industry": "Travel Services",
+          "rank": 23,
+          "score": 84.42
+        },
+        {
+          "ticker": "TAL",
+          "company": "TAL Education Group",
+          "sector": "Consumer Defensive",
+          "industry": "Education & Training Services",
+          "rank": 25,
+          "score": 83.44
+        }
+      ]
+    },
+    "TopRank_S10_P60": {
+      "tickers": [
+        "DASH",
+        "META",
+        "NXT",
+        "PINS",
+        "MNST",
+        "CPRT",
+        "UTHR",
+        "DUOL",
+        "AXON",
+        "EXEL"
+      ],
+      "composition": [
+        {
+          "ticker": "DASH",
+          "company": "DoorDash, Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Internet Retail",
+          "rank": 1,
+          "score": 92.4
+        },
+        {
+          "ticker": "META",
+          "company": "Meta Platforms, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 2,
+          "score": 95.14
+        },
+        {
+          "ticker": "NXT",
+          "company": "Nextracker Inc.",
+          "sector": "Technology",
+          "industry": "Solar",
+          "rank": 3,
+          "score": 93.06
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 4,
+          "score": 89.88
+        },
+        {
+          "ticker": "MNST",
+          "company": "Monster Beverage Corporation",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 5,
+          "score": 93.38
+        },
+        {
+          "ticker": "CPRT",
+          "company": "Copart, Inc.",
+          "sector": "Industrials",
+          "industry": "Specialty Business Services",
+          "rank": 6,
+          "score": 88.55
+        },
+        {
+          "ticker": "UTHR",
+          "company": "United Therapeutics Corporation",
+          "sector": "Healthcare",
+          "industry": "Drug Manufacturers - Specialty & Generic",
+          "rank": 7,
+          "score": 90.4
+        },
+        {
+          "ticker": "DUOL",
+          "company": "Duolingo, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 8,
+          "score": 92.19
+        },
+        {
+          "ticker": "AXON",
+          "company": "Axon Enterprise, Inc.",
+          "sector": "Industrials",
+          "industry": "Aerospace & Defense",
+          "rank": 9,
+          "score": 91.62
+        },
+        {
+          "ticker": "EXEL",
+          "company": "Exelixis, Inc.",
+          "sector": "Healthcare",
+          "industry": "Biotechnology",
+          "rank": 10,
+          "score": 100.93
+        }
+      ]
+    },
+    "SectorBal2_S10_P60": {
+      "tickers": [
+        "DASH",
+        "META",
+        "NXT",
+        "PINS",
+        "MNST",
+        "CPRT",
+        "UTHR",
+        "DUOL",
+        "AXON",
+        "EXEL"
+      ],
+      "composition": [
+        {
+          "ticker": "DASH",
+          "company": "DoorDash, Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Internet Retail",
+          "rank": 1,
+          "score": 92.4
+        },
+        {
+          "ticker": "META",
+          "company": "Meta Platforms, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 2,
+          "score": 95.14
+        },
+        {
+          "ticker": "NXT",
+          "company": "Nextracker Inc.",
+          "sector": "Technology",
+          "industry": "Solar",
+          "rank": 3,
+          "score": 93.06
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 4,
+          "score": 89.88
+        },
+        {
+          "ticker": "MNST",
+          "company": "Monster Beverage Corporation",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 5,
+          "score": 93.38
+        },
+        {
+          "ticker": "CPRT",
+          "company": "Copart, Inc.",
+          "sector": "Industrials",
+          "industry": "Specialty Business Services",
+          "rank": 6,
+          "score": 88.55
+        },
+        {
+          "ticker": "UTHR",
+          "company": "United Therapeutics Corporation",
+          "sector": "Healthcare",
+          "industry": "Drug Manufacturers - Specialty & Generic",
+          "rank": 7,
+          "score": 90.4
+        },
+        {
+          "ticker": "DUOL",
+          "company": "Duolingo, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 8,
+          "score": 92.19
+        },
+        {
+          "ticker": "AXON",
+          "company": "Axon Enterprise, Inc.",
+          "sector": "Industrials",
+          "industry": "Aerospace & Defense",
+          "rank": 9,
+          "score": 91.62
+        },
+        {
+          "ticker": "EXEL",
+          "company": "Exelixis, Inc.",
+          "sector": "Healthcare",
+          "industry": "Biotechnology",
+          "rank": 10,
+          "score": 100.93
+        }
+      ]
+    },
+    "SectorBal3_S10_P60": {
+      "tickers": [
+        "DASH",
+        "META",
+        "NXT",
+        "PINS",
+        "MNST",
+        "CPRT",
+        "UTHR",
+        "DUOL",
+        "AXON",
+        "EXEL"
+      ],
+      "composition": [
+        {
+          "ticker": "DASH",
+          "company": "DoorDash, Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Internet Retail",
+          "rank": 1,
+          "score": 92.4
+        },
+        {
+          "ticker": "META",
+          "company": "Meta Platforms, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 2,
+          "score": 95.14
+        },
+        {
+          "ticker": "NXT",
+          "company": "Nextracker Inc.",
+          "sector": "Technology",
+          "industry": "Solar",
+          "rank": 3,
+          "score": 93.06
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 4,
+          "score": 89.88
+        },
+        {
+          "ticker": "MNST",
+          "company": "Monster Beverage Corporation",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 5,
+          "score": 93.38
+        },
+        {
+          "ticker": "CPRT",
+          "company": "Copart, Inc.",
+          "sector": "Industrials",
+          "industry": "Specialty Business Services",
+          "rank": 6,
+          "score": 88.55
+        },
+        {
+          "ticker": "UTHR",
+          "company": "United Therapeutics Corporation",
+          "sector": "Healthcare",
+          "industry": "Drug Manufacturers - Specialty & Generic",
+          "rank": 7,
+          "score": 90.4
+        },
+        {
+          "ticker": "DUOL",
+          "company": "Duolingo, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 8,
+          "score": 92.19
+        },
+        {
+          "ticker": "AXON",
+          "company": "Axon Enterprise, Inc.",
+          "sector": "Industrials",
+          "industry": "Aerospace & Defense",
+          "rank": 9,
+          "score": 91.62
+        },
+        {
+          "ticker": "EXEL",
+          "company": "Exelixis, Inc.",
+          "sector": "Healthcare",
+          "industry": "Biotechnology",
+          "rank": 10,
+          "score": 100.93
+        }
+      ]
+    },
+    "IndustryBal_S10_P60": {
+      "tickers": [
+        "DASH",
+        "META",
+        "NXT",
+        "PINS",
+        "MNST",
+        "CPRT",
+        "UTHR",
+        "DUOL",
+        "AXON",
+        "EXEL"
+      ],
+      "composition": [
+        {
+          "ticker": "DASH",
+          "company": "DoorDash, Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Internet Retail",
+          "rank": 1,
+          "score": 92.4
+        },
+        {
+          "ticker": "META",
+          "company": "Meta Platforms, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 2,
+          "score": 95.14
+        },
+        {
+          "ticker": "NXT",
+          "company": "Nextracker Inc.",
+          "sector": "Technology",
+          "industry": "Solar",
+          "rank": 3,
+          "score": 93.06
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 4,
+          "score": 89.88
+        },
+        {
+          "ticker": "MNST",
+          "company": "Monster Beverage Corporation",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 5,
+          "score": 93.38
+        },
+        {
+          "ticker": "CPRT",
+          "company": "Copart, Inc.",
+          "sector": "Industrials",
+          "industry": "Specialty Business Services",
+          "rank": 6,
+          "score": 88.55
+        },
+        {
+          "ticker": "UTHR",
+          "company": "United Therapeutics Corporation",
+          "sector": "Healthcare",
+          "industry": "Drug Manufacturers - Specialty & Generic",
+          "rank": 7,
+          "score": 90.4
+        },
+        {
+          "ticker": "DUOL",
+          "company": "Duolingo, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 8,
+          "score": 92.19
+        },
+        {
+          "ticker": "AXON",
+          "company": "Axon Enterprise, Inc.",
+          "sector": "Industrials",
+          "industry": "Aerospace & Defense",
+          "rank": 9,
+          "score": 91.62
+        },
+        {
+          "ticker": "EXEL",
+          "company": "Exelixis, Inc.",
+          "sector": "Healthcare",
+          "industry": "Biotechnology",
+          "rank": 10,
+          "score": 100.93
+        }
+      ]
+    },
+    "Stability_S10_P60": {
+      "tickers": [
+        "DASH",
+        "META",
+        "NXT",
+        "PINS",
+        "MNST",
+        "CPRT",
+        "UTHR",
+        "DUOL",
+        "AXON",
+        "GRMN"
+      ],
+      "composition": [
+        {
+          "ticker": "DASH",
+          "company": "DoorDash, Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Internet Retail",
+          "rank": 1,
+          "score": 92.4
+        },
+        {
+          "ticker": "META",
+          "company": "Meta Platforms, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 2,
+          "score": 95.14
+        },
+        {
+          "ticker": "NXT",
+          "company": "Nextracker Inc.",
+          "sector": "Technology",
+          "industry": "Solar",
+          "rank": 3,
+          "score": 93.06
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 4,
+          "score": 89.88
+        },
+        {
+          "ticker": "MNST",
+          "company": "Monster Beverage Corporation",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 5,
+          "score": 93.38
+        },
+        {
+          "ticker": "CPRT",
+          "company": "Copart, Inc.",
+          "sector": "Industrials",
+          "industry": "Specialty Business Services",
+          "rank": 6,
+          "score": 88.55
+        },
+        {
+          "ticker": "UTHR",
+          "company": "United Therapeutics Corporation",
+          "sector": "Healthcare",
+          "industry": "Drug Manufacturers - Specialty & Generic",
+          "rank": 7,
+          "score": 90.4
+        },
+        {
+          "ticker": "DUOL",
+          "company": "Duolingo, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 8,
+          "score": 92.19
+        },
+        {
+          "ticker": "AXON",
+          "company": "Axon Enterprise, Inc.",
+          "sector": "Industrials",
+          "industry": "Aerospace & Defense",
+          "rank": 9,
+          "score": 91.62
+        },
+        {
+          "ticker": "GRMN",
+          "company": "Garmin Ltd.",
+          "sector": "Technology",
+          "industry": "Scientific & Technical Instruments",
+          "rank": 12,
+          "score": 88.63
+        }
+      ]
+    },
+    "PosMomentum_S10_P60": {
+      "tickers": [
+        "DASH",
+        "META",
+        "NXT",
+        "PINS",
+        "EXEL",
+        "GRMN",
+        "DDOG",
+        "CELH",
+        "NVDA",
+        "RDDT"
+      ],
+      "composition": [
+        {
+          "ticker": "DASH",
+          "company": "DoorDash, Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Internet Retail",
+          "rank": 1,
+          "score": 92.4
+        },
+        {
+          "ticker": "META",
+          "company": "Meta Platforms, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 2,
+          "score": 95.14
+        },
+        {
+          "ticker": "NXT",
+          "company": "Nextracker Inc.",
+          "sector": "Technology",
+          "industry": "Solar",
+          "rank": 3,
+          "score": 93.06
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 4,
+          "score": 89.88
+        },
+        {
+          "ticker": "EXEL",
+          "company": "Exelixis, Inc.",
+          "sector": "Healthcare",
+          "industry": "Biotechnology",
+          "rank": 10,
+          "score": 100.93
+        },
+        {
+          "ticker": "GRMN",
+          "company": "Garmin Ltd.",
+          "sector": "Technology",
+          "industry": "Scientific & Technical Instruments",
+          "rank": 12,
+          "score": 88.63
+        },
+        {
+          "ticker": "DDOG",
+          "company": "Datadog, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 15,
+          "score": 86.47
+        },
+        {
+          "ticker": "CELH",
+          "company": "Celsius Holdings, Inc.",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 16,
+          "score": 86.62
+        },
+        {
+          "ticker": "NVDA",
+          "company": "NVIDIA Corporation",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 18,
+          "score": 99.79
+        },
+        {
+          "ticker": "RDDT",
+          "company": "Reddit, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 22,
+          "score": 91.05
+        }
+      ]
+    },
+    "Recommended_S10_P60": {
+      "tickers": [
+        "DASH",
+        "META",
+        "NXT",
+        "PINS",
+        "MNST",
+        "CPRT",
+        "UTHR",
+        "DUOL",
+        "AXON",
+        "EXEL"
+      ],
+      "composition": [
+        {
+          "ticker": "DASH",
+          "company": "DoorDash, Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Internet Retail",
+          "rank": 1,
+          "score": 92.4
+        },
+        {
+          "ticker": "META",
+          "company": "Meta Platforms, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 2,
+          "score": 95.14
+        },
+        {
+          "ticker": "NXT",
+          "company": "Nextracker Inc.",
+          "sector": "Technology",
+          "industry": "Solar",
+          "rank": 3,
+          "score": 93.06
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 4,
+          "score": 89.88
+        },
+        {
+          "ticker": "MNST",
+          "company": "Monster Beverage Corporation",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 5,
+          "score": 93.38
+        },
+        {
+          "ticker": "CPRT",
+          "company": "Copart, Inc.",
+          "sector": "Industrials",
+          "industry": "Specialty Business Services",
+          "rank": 6,
+          "score": 88.55
+        },
+        {
+          "ticker": "UTHR",
+          "company": "United Therapeutics Corporation",
+          "sector": "Healthcare",
+          "industry": "Drug Manufacturers - Specialty & Generic",
+          "rank": 7,
+          "score": 90.4
+        },
+        {
+          "ticker": "DUOL",
+          "company": "Duolingo, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 8,
+          "score": 92.19
+        },
+        {
+          "ticker": "AXON",
+          "company": "Axon Enterprise, Inc.",
+          "sector": "Industrials",
+          "industry": "Aerospace & Defense",
+          "rank": 9,
+          "score": 91.62
+        },
+        {
+          "ticker": "EXEL",
+          "company": "Exelixis, Inc.",
+          "sector": "Healthcare",
+          "industry": "Biotechnology",
+          "rank": 10,
+          "score": 100.93
+        }
+      ]
+    },
+    "TopRank_S15_P60": {
+      "tickers": [
+        "DASH",
+        "META",
+        "NXT",
+        "PINS",
+        "MNST",
+        "CPRT",
+        "UTHR",
+        "DUOL",
+        "AXON",
+        "EXEL",
+        "VEEV",
+        "GRMN",
+        "DECK",
+        "SPOT",
+        "DDOG"
+      ],
+      "composition": [
+        {
+          "ticker": "DASH",
+          "company": "DoorDash, Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Internet Retail",
+          "rank": 1,
+          "score": 92.4
+        },
+        {
+          "ticker": "META",
+          "company": "Meta Platforms, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 2,
+          "score": 95.14
+        },
+        {
+          "ticker": "NXT",
+          "company": "Nextracker Inc.",
+          "sector": "Technology",
+          "industry": "Solar",
+          "rank": 3,
+          "score": 93.06
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 4,
+          "score": 89.88
+        },
+        {
+          "ticker": "MNST",
+          "company": "Monster Beverage Corporation",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 5,
+          "score": 93.38
+        },
+        {
+          "ticker": "CPRT",
+          "company": "Copart, Inc.",
+          "sector": "Industrials",
+          "industry": "Specialty Business Services",
+          "rank": 6,
+          "score": 88.55
+        },
+        {
+          "ticker": "UTHR",
+          "company": "United Therapeutics Corporation",
+          "sector": "Healthcare",
+          "industry": "Drug Manufacturers - Specialty & Generic",
+          "rank": 7,
+          "score": 90.4
+        },
+        {
+          "ticker": "DUOL",
+          "company": "Duolingo, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 8,
+          "score": 92.19
+        },
+        {
+          "ticker": "AXON",
+          "company": "Axon Enterprise, Inc.",
+          "sector": "Industrials",
+          "industry": "Aerospace & Defense",
+          "rank": 9,
+          "score": 91.62
+        },
+        {
+          "ticker": "EXEL",
+          "company": "Exelixis, Inc.",
+          "sector": "Healthcare",
+          "industry": "Biotechnology",
+          "rank": 10,
+          "score": 100.93
+        },
+        {
+          "ticker": "VEEV",
+          "company": "Veeva Systems Inc.",
+          "sector": "Healthcare",
+          "industry": "Health Information Services",
+          "rank": 11,
+          "score": 96.16
+        },
+        {
+          "ticker": "GRMN",
+          "company": "Garmin Ltd.",
+          "sector": "Technology",
+          "industry": "Scientific & Technical Instruments",
+          "rank": 12,
+          "score": 88.63
+        },
+        {
+          "ticker": "DECK",
+          "company": "Deckers Outdoor Corporation",
+          "sector": "Consumer Cyclical",
+          "industry": "Footwear & Accessories",
+          "rank": 13,
+          "score": 84.65
+        },
+        {
+          "ticker": "SPOT",
+          "company": "Spotify Technology S.A.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 14,
+          "score": 88.89
+        },
+        {
+          "ticker": "DDOG",
+          "company": "Datadog, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 15,
+          "score": 86.47
+        }
+      ]
+    },
+    "SectorBal2_S15_P60": {
+      "tickers": [
+        "DASH",
+        "META",
+        "NXT",
+        "PINS",
+        "MNST",
+        "CPRT",
+        "UTHR",
+        "DUOL",
+        "AXON",
+        "EXEL",
+        "DECK",
+        "CELH",
+        "COIN",
+        "FHI",
+        "TS"
+      ],
+      "composition": [
+        {
+          "ticker": "DASH",
+          "company": "DoorDash, Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Internet Retail",
+          "rank": 1,
+          "score": 92.4
+        },
+        {
+          "ticker": "META",
+          "company": "Meta Platforms, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 2,
+          "score": 95.14
+        },
+        {
+          "ticker": "NXT",
+          "company": "Nextracker Inc.",
+          "sector": "Technology",
+          "industry": "Solar",
+          "rank": 3,
+          "score": 93.06
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 4,
+          "score": 89.88
+        },
+        {
+          "ticker": "MNST",
+          "company": "Monster Beverage Corporation",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 5,
+          "score": 93.38
+        },
+        {
+          "ticker": "CPRT",
+          "company": "Copart, Inc.",
+          "sector": "Industrials",
+          "industry": "Specialty Business Services",
+          "rank": 6,
+          "score": 88.55
+        },
+        {
+          "ticker": "UTHR",
+          "company": "United Therapeutics Corporation",
+          "sector": "Healthcare",
+          "industry": "Drug Manufacturers - Specialty & Generic",
+          "rank": 7,
+          "score": 90.4
+        },
+        {
+          "ticker": "DUOL",
+          "company": "Duolingo, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 8,
+          "score": 92.19
+        },
+        {
+          "ticker": "AXON",
+          "company": "Axon Enterprise, Inc.",
+          "sector": "Industrials",
+          "industry": "Aerospace & Defense",
+          "rank": 9,
+          "score": 91.62
+        },
+        {
+          "ticker": "EXEL",
+          "company": "Exelixis, Inc.",
+          "sector": "Healthcare",
+          "industry": "Biotechnology",
+          "rank": 10,
+          "score": 100.93
+        },
+        {
+          "ticker": "DECK",
+          "company": "Deckers Outdoor Corporation",
+          "sector": "Consumer Cyclical",
+          "industry": "Footwear & Accessories",
+          "rank": 13,
+          "score": 84.65
+        },
+        {
+          "ticker": "CELH",
+          "company": "Celsius Holdings, Inc.",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 16,
+          "score": 86.62
+        },
+        {
+          "ticker": "COIN",
+          "company": "Coinbase Global, Inc.",
+          "sector": "Financial Services",
+          "industry": "Financial Data & Stock Exchanges",
+          "rank": 36,
+          "score": 87.37
+        },
+        {
+          "ticker": "FHI",
+          "company": "Federated Hermes, Inc.",
+          "sector": "Financial Services",
+          "industry": "Asset Management",
+          "rank": 47,
+          "score": 82.81
+        },
+        {
+          "ticker": "TS",
+          "company": "Tenaris S.A.",
+          "sector": "Energy",
+          "industry": "Oil & Gas Equipment & Services",
+          "rank": 55,
+          "score": 80.07
+        }
+      ]
+    },
+    "SectorBal3_S15_P60": {
+      "tickers": [
+        "DASH",
+        "META",
+        "NXT",
+        "PINS",
+        "MNST",
+        "CPRT",
+        "UTHR",
+        "DUOL",
+        "AXON",
+        "EXEL",
+        "VEEV",
+        "GRMN",
+        "DECK",
+        "SPOT",
+        "CELH"
+      ],
+      "composition": [
+        {
+          "ticker": "DASH",
+          "company": "DoorDash, Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Internet Retail",
+          "rank": 1,
+          "score": 92.4
+        },
+        {
+          "ticker": "META",
+          "company": "Meta Platforms, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 2,
+          "score": 95.14
+        },
+        {
+          "ticker": "NXT",
+          "company": "Nextracker Inc.",
+          "sector": "Technology",
+          "industry": "Solar",
+          "rank": 3,
+          "score": 93.06
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 4,
+          "score": 89.88
+        },
+        {
+          "ticker": "MNST",
+          "company": "Monster Beverage Corporation",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 5,
+          "score": 93.38
+        },
+        {
+          "ticker": "CPRT",
+          "company": "Copart, Inc.",
+          "sector": "Industrials",
+          "industry": "Specialty Business Services",
+          "rank": 6,
+          "score": 88.55
+        },
+        {
+          "ticker": "UTHR",
+          "company": "United Therapeutics Corporation",
+          "sector": "Healthcare",
+          "industry": "Drug Manufacturers - Specialty & Generic",
+          "rank": 7,
+          "score": 90.4
+        },
+        {
+          "ticker": "DUOL",
+          "company": "Duolingo, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 8,
+          "score": 92.19
+        },
+        {
+          "ticker": "AXON",
+          "company": "Axon Enterprise, Inc.",
+          "sector": "Industrials",
+          "industry": "Aerospace & Defense",
+          "rank": 9,
+          "score": 91.62
+        },
+        {
+          "ticker": "EXEL",
+          "company": "Exelixis, Inc.",
+          "sector": "Healthcare",
+          "industry": "Biotechnology",
+          "rank": 10,
+          "score": 100.93
+        },
+        {
+          "ticker": "VEEV",
+          "company": "Veeva Systems Inc.",
+          "sector": "Healthcare",
+          "industry": "Health Information Services",
+          "rank": 11,
+          "score": 96.16
+        },
+        {
+          "ticker": "GRMN",
+          "company": "Garmin Ltd.",
+          "sector": "Technology",
+          "industry": "Scientific & Technical Instruments",
+          "rank": 12,
+          "score": 88.63
+        },
+        {
+          "ticker": "DECK",
+          "company": "Deckers Outdoor Corporation",
+          "sector": "Consumer Cyclical",
+          "industry": "Footwear & Accessories",
+          "rank": 13,
+          "score": 84.65
+        },
+        {
+          "ticker": "SPOT",
+          "company": "Spotify Technology S.A.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 14,
+          "score": 88.89
+        },
+        {
+          "ticker": "CELH",
+          "company": "Celsius Holdings, Inc.",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 16,
+          "score": 86.62
+        }
+      ]
+    },
+    "IndustryBal_S15_P60": {
+      "tickers": [
+        "DASH",
+        "META",
+        "NXT",
+        "PINS",
+        "MNST",
+        "CPRT",
+        "UTHR",
+        "DUOL",
+        "AXON",
+        "EXEL",
+        "VEEV",
+        "GRMN",
+        "DECK",
+        "DDOG",
+        "CELH"
+      ],
+      "composition": [
+        {
+          "ticker": "DASH",
+          "company": "DoorDash, Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Internet Retail",
+          "rank": 1,
+          "score": 92.4
+        },
+        {
+          "ticker": "META",
+          "company": "Meta Platforms, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 2,
+          "score": 95.14
+        },
+        {
+          "ticker": "NXT",
+          "company": "Nextracker Inc.",
+          "sector": "Technology",
+          "industry": "Solar",
+          "rank": 3,
+          "score": 93.06
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 4,
+          "score": 89.88
+        },
+        {
+          "ticker": "MNST",
+          "company": "Monster Beverage Corporation",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 5,
+          "score": 93.38
+        },
+        {
+          "ticker": "CPRT",
+          "company": "Copart, Inc.",
+          "sector": "Industrials",
+          "industry": "Specialty Business Services",
+          "rank": 6,
+          "score": 88.55
+        },
+        {
+          "ticker": "UTHR",
+          "company": "United Therapeutics Corporation",
+          "sector": "Healthcare",
+          "industry": "Drug Manufacturers - Specialty & Generic",
+          "rank": 7,
+          "score": 90.4
+        },
+        {
+          "ticker": "DUOL",
+          "company": "Duolingo, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 8,
+          "score": 92.19
+        },
+        {
+          "ticker": "AXON",
+          "company": "Axon Enterprise, Inc.",
+          "sector": "Industrials",
+          "industry": "Aerospace & Defense",
+          "rank": 9,
+          "score": 91.62
+        },
+        {
+          "ticker": "EXEL",
+          "company": "Exelixis, Inc.",
+          "sector": "Healthcare",
+          "industry": "Biotechnology",
+          "rank": 10,
+          "score": 100.93
+        },
+        {
+          "ticker": "VEEV",
+          "company": "Veeva Systems Inc.",
+          "sector": "Healthcare",
+          "industry": "Health Information Services",
+          "rank": 11,
+          "score": 96.16
+        },
+        {
+          "ticker": "GRMN",
+          "company": "Garmin Ltd.",
+          "sector": "Technology",
+          "industry": "Scientific & Technical Instruments",
+          "rank": 12,
+          "score": 88.63
+        },
+        {
+          "ticker": "DECK",
+          "company": "Deckers Outdoor Corporation",
+          "sector": "Consumer Cyclical",
+          "industry": "Footwear & Accessories",
+          "rank": 13,
+          "score": 84.65
+        },
+        {
+          "ticker": "DDOG",
+          "company": "Datadog, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 15,
+          "score": 86.47
+        },
+        {
+          "ticker": "CELH",
+          "company": "Celsius Holdings, Inc.",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 16,
+          "score": 86.62
+        }
+      ]
+    },
+    "Stability_S15_P60": {
+      "tickers": [
+        "DASH",
+        "META",
+        "NXT",
+        "PINS",
+        "MNST",
+        "CPRT",
+        "UTHR",
+        "DUOL",
+        "AXON",
+        "GRMN",
+        "DECK",
+        "DDOG",
+        "CELH",
+        "WDAY",
+        "NVDA"
+      ],
+      "composition": [
+        {
+          "ticker": "DASH",
+          "company": "DoorDash, Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Internet Retail",
+          "rank": 1,
+          "score": 92.4
+        },
+        {
+          "ticker": "META",
+          "company": "Meta Platforms, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 2,
+          "score": 95.14
+        },
+        {
+          "ticker": "NXT",
+          "company": "Nextracker Inc.",
+          "sector": "Technology",
+          "industry": "Solar",
+          "rank": 3,
+          "score": 93.06
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 4,
+          "score": 89.88
+        },
+        {
+          "ticker": "MNST",
+          "company": "Monster Beverage Corporation",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 5,
+          "score": 93.38
+        },
+        {
+          "ticker": "CPRT",
+          "company": "Copart, Inc.",
+          "sector": "Industrials",
+          "industry": "Specialty Business Services",
+          "rank": 6,
+          "score": 88.55
+        },
+        {
+          "ticker": "UTHR",
+          "company": "United Therapeutics Corporation",
+          "sector": "Healthcare",
+          "industry": "Drug Manufacturers - Specialty & Generic",
+          "rank": 7,
+          "score": 90.4
+        },
+        {
+          "ticker": "DUOL",
+          "company": "Duolingo, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 8,
+          "score": 92.19
+        },
+        {
+          "ticker": "AXON",
+          "company": "Axon Enterprise, Inc.",
+          "sector": "Industrials",
+          "industry": "Aerospace & Defense",
+          "rank": 9,
+          "score": 91.62
+        },
+        {
+          "ticker": "GRMN",
+          "company": "Garmin Ltd.",
+          "sector": "Technology",
+          "industry": "Scientific & Technical Instruments",
+          "rank": 12,
+          "score": 88.63
+        },
+        {
+          "ticker": "DECK",
+          "company": "Deckers Outdoor Corporation",
+          "sector": "Consumer Cyclical",
+          "industry": "Footwear & Accessories",
+          "rank": 13,
+          "score": 84.65
+        },
+        {
+          "ticker": "DDOG",
+          "company": "Datadog, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 15,
+          "score": 86.47
+        },
+        {
+          "ticker": "CELH",
+          "company": "Celsius Holdings, Inc.",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 16,
+          "score": 86.62
+        },
+        {
+          "ticker": "WDAY",
+          "company": "Workday, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 17,
+          "score": 83.42
+        },
+        {
+          "ticker": "NVDA",
+          "company": "NVIDIA Corporation",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 18,
+          "score": 99.79
+        }
+      ]
+    },
+    "PosMomentum_S15_P60": {
+      "tickers": [
+        "DASH",
+        "META",
+        "NXT",
+        "PINS",
+        "EXEL",
+        "GRMN",
+        "DDOG",
+        "CELH",
+        "NVDA",
+        "RDDT",
+        "ONON",
+        "ALGN",
+        "ANSS",
+        "LRCX",
+        "TME"
+      ],
+      "composition": [
+        {
+          "ticker": "DASH",
+          "company": "DoorDash, Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Internet Retail",
+          "rank": 1,
+          "score": 92.4
+        },
+        {
+          "ticker": "META",
+          "company": "Meta Platforms, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 2,
+          "score": 95.14
+        },
+        {
+          "ticker": "NXT",
+          "company": "Nextracker Inc.",
+          "sector": "Technology",
+          "industry": "Solar",
+          "rank": 3,
+          "score": 93.06
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 4,
+          "score": 89.88
+        },
+        {
+          "ticker": "EXEL",
+          "company": "Exelixis, Inc.",
+          "sector": "Healthcare",
+          "industry": "Biotechnology",
+          "rank": 10,
+          "score": 100.93
+        },
+        {
+          "ticker": "GRMN",
+          "company": "Garmin Ltd.",
+          "sector": "Technology",
+          "industry": "Scientific & Technical Instruments",
+          "rank": 12,
+          "score": 88.63
+        },
+        {
+          "ticker": "DDOG",
+          "company": "Datadog, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 15,
+          "score": 86.47
+        },
+        {
+          "ticker": "CELH",
+          "company": "Celsius Holdings, Inc.",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 16,
+          "score": 86.62
+        },
+        {
+          "ticker": "NVDA",
+          "company": "NVIDIA Corporation",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 18,
+          "score": 99.79
+        },
+        {
+          "ticker": "RDDT",
+          "company": "Reddit, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 22,
+          "score": 91.05
+        },
+        {
+          "ticker": "ONON",
+          "company": "On Holding AG",
+          "sector": "Consumer Cyclical",
+          "industry": "Footwear & Accessories",
+          "rank": 24,
+          "score": 92.07
+        },
+        {
+          "ticker": "ALGN",
+          "company": "Align Technology, Inc.",
+          "sector": "Healthcare",
+          "industry": "Medical Instruments & Supplies",
+          "rank": 26,
+          "score": 81.16
+        },
+        {
+          "ticker": "ANSS",
+          "company": "ANSYS, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 27,
+          "score": 82.22
+        },
+        {
+          "ticker": "LRCX",
+          "company": "Lam Research Corporation",
+          "sector": "Technology",
+          "industry": "Semiconductor Equipment & Materials",
+          "rank": 29,
+          "score": 88.1
+        },
+        {
+          "ticker": "TME",
+          "company": "Tencent Music Entertainment Group",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 32,
+          "score": 81.64
+        }
+      ]
+    },
+    "Recommended_S15_P60": {
+      "tickers": [
+        "DASH",
+        "META",
+        "NXT",
+        "PINS",
+        "MNST",
+        "CPRT",
+        "UTHR",
+        "DUOL",
+        "AXON",
+        "EXEL",
+        "VEEV",
+        "GRMN",
+        "DECK",
+        "SPOT",
+        "DDOG"
+      ],
+      "composition": [
+        {
+          "ticker": "DASH",
+          "company": "DoorDash, Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Internet Retail",
+          "rank": 1,
+          "score": 92.4
+        },
+        {
+          "ticker": "META",
+          "company": "Meta Platforms, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 2,
+          "score": 95.14
+        },
+        {
+          "ticker": "NXT",
+          "company": "Nextracker Inc.",
+          "sector": "Technology",
+          "industry": "Solar",
+          "rank": 3,
+          "score": 93.06
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 4,
+          "score": 89.88
+        },
+        {
+          "ticker": "MNST",
+          "company": "Monster Beverage Corporation",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 5,
+          "score": 93.38
+        },
+        {
+          "ticker": "CPRT",
+          "company": "Copart, Inc.",
+          "sector": "Industrials",
+          "industry": "Specialty Business Services",
+          "rank": 6,
+          "score": 88.55
+        },
+        {
+          "ticker": "UTHR",
+          "company": "United Therapeutics Corporation",
+          "sector": "Healthcare",
+          "industry": "Drug Manufacturers - Specialty & Generic",
+          "rank": 7,
+          "score": 90.4
+        },
+        {
+          "ticker": "DUOL",
+          "company": "Duolingo, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 8,
+          "score": 92.19
+        },
+        {
+          "ticker": "AXON",
+          "company": "Axon Enterprise, Inc.",
+          "sector": "Industrials",
+          "industry": "Aerospace & Defense",
+          "rank": 9,
+          "score": 91.62
+        },
+        {
+          "ticker": "EXEL",
+          "company": "Exelixis, Inc.",
+          "sector": "Healthcare",
+          "industry": "Biotechnology",
+          "rank": 10,
+          "score": 100.93
+        },
+        {
+          "ticker": "VEEV",
+          "company": "Veeva Systems Inc.",
+          "sector": "Healthcare",
+          "industry": "Health Information Services",
+          "rank": 11,
+          "score": 96.16
+        },
+        {
+          "ticker": "GRMN",
+          "company": "Garmin Ltd.",
+          "sector": "Technology",
+          "industry": "Scientific & Technical Instruments",
+          "rank": 12,
+          "score": 88.63
+        },
+        {
+          "ticker": "DECK",
+          "company": "Deckers Outdoor Corporation",
+          "sector": "Consumer Cyclical",
+          "industry": "Footwear & Accessories",
+          "rank": 13,
+          "score": 84.65
+        },
+        {
+          "ticker": "SPOT",
+          "company": "Spotify Technology S.A.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 14,
+          "score": 88.89
+        },
+        {
+          "ticker": "DDOG",
+          "company": "Datadog, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 15,
+          "score": 86.47
+        }
+      ]
+    },
+    "HybridStability_S15_P60": {
+      "tickers": [
+        "CPRT",
+        "PINS",
+        "DASH",
+        "GWRE",
+        "DUOL",
+        "DECK",
+        "WDAY",
+        "ALGN",
+        "MMYT",
+        "META",
+        "MNST",
+        "TAL",
+        "COIN",
+        "UTHR",
+        "IDXX"
+      ],
+      "composition": [
+        {
+          "ticker": "DASH",
+          "company": "DoorDash, Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Internet Retail",
+          "rank": 1,
+          "score": 92.4
+        },
+        {
+          "ticker": "META",
+          "company": "Meta Platforms, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 2,
+          "score": 95.14
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 4,
+          "score": 89.88
+        },
+        {
+          "ticker": "MNST",
+          "company": "Monster Beverage Corporation",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 5,
+          "score": 93.38
+        },
+        {
+          "ticker": "CPRT",
+          "company": "Copart, Inc.",
+          "sector": "Industrials",
+          "industry": "Specialty Business Services",
+          "rank": 6,
+          "score": 88.55
+        },
+        {
+          "ticker": "UTHR",
+          "company": "United Therapeutics Corporation",
+          "sector": "Healthcare",
+          "industry": "Drug Manufacturers - Specialty & Generic",
+          "rank": 7,
+          "score": 90.4
+        },
+        {
+          "ticker": "DUOL",
+          "company": "Duolingo, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 8,
+          "score": 92.19
+        },
+        {
+          "ticker": "DECK",
+          "company": "Deckers Outdoor Corporation",
+          "sector": "Consumer Cyclical",
+          "industry": "Footwear & Accessories",
+          "rank": 13,
+          "score": 84.65
+        },
+        {
+          "ticker": "WDAY",
+          "company": "Workday, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 17,
+          "score": 83.42
+        },
+        {
+          "ticker": "GWRE",
+          "company": "Guidewire Software, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 21,
+          "score": 82.97
+        },
+        {
+          "ticker": "MMYT",
+          "company": "MakeMyTrip Limited",
+          "sector": "Consumer Cyclical",
+          "industry": "Travel Services",
+          "rank": 23,
+          "score": 84.42
+        },
+        {
+          "ticker": "TAL",
+          "company": "TAL Education Group",
+          "sector": "Consumer Defensive",
+          "industry": "Education & Training Services",
+          "rank": 25,
+          "score": 83.44
+        },
+        {
+          "ticker": "ALGN",
+          "company": "Align Technology, Inc.",
+          "sector": "Healthcare",
+          "industry": "Medical Instruments & Supplies",
+          "rank": 26,
+          "score": 81.16
+        },
+        {
+          "ticker": "COIN",
+          "company": "Coinbase Global, Inc.",
+          "sector": "Financial Services",
+          "industry": "Financial Data & Stock Exchanges",
+          "rank": 36,
+          "score": 87.37
+        },
+        {
+          "ticker": "IDXX",
+          "company": "IDEXX Laboratories, Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 37,
+          "score": 77.14
+        }
+      ]
+    }
+  },
+  "performance_metrics": {
+    "TopRank_S5_P60": {
+      "portfolio_name": "TopRank_S5_P60",
+      "total_return": 1.357593301516899,
+      "annual_return": 0.2773183813045421,
+      "volatility": 0.24630647374891299,
+      "sharpe_ratio": 1.571161822327044,
+      "max_drawdown": -0.20688698065444366,
+      "calmar_ratio": 1.340434185018813,
+      "sortino_ratio": 2.4821712033788583,
+      "rebalance_count": 3.0,
+      "final_value": 556934.4567299992,
+      "num_stocks": 5.0,
+      "num_sectors": 4.0,
+      "num_industries": 4.0,
+      "sector_diversity": 0.9609640474436812,
+      "industry_diversity": 0.9609640474436812,
+      "avg_rank": 3.0,
+      "avg_score": 92.772,
+      "score_std": 1.9080146749959774,
+      "max_sector_concentration": 0.4,
+      "max_industry_concentration": 0.4,
+      "avg_linear_r2": 0.743,
+      "avg_linear_slope": 0.03062,
+      "avg_stability_score": 52.172000000000004
+    },
+    "SectorBal2_S5_P60": {
+      "portfolio_name": "SectorBal2_S5_P60",
+      "total_return": 1.357593301516899,
+      "annual_return": 0.2773183813045421,
+      "volatility": 0.24630647374891299,
+      "sharpe_ratio": 1.571161822327044,
+      "max_drawdown": -0.20688698065444366,
+      "calmar_ratio": 1.340434185018813,
+      "sortino_ratio": 2.4821712033788583,
+      "rebalance_count": 3.0,
+      "final_value": 556934.4567299992,
+      "num_stocks": 5.0,
+      "num_sectors": 4.0,
+      "num_industries": 4.0,
+      "sector_diversity": 0.9609640474436812,
+      "industry_diversity": 0.9609640474436812,
+      "avg_rank": 3.0,
+      "avg_score": 92.772,
+      "score_std": 1.9080146749959774,
+      "max_sector_concentration": 0.4,
+      "max_industry_concentration": 0.4,
+      "avg_linear_r2": 0.743,
+      "avg_linear_slope": 0.03062,
+      "avg_stability_score": 52.172000000000004
+    },
+    "SectorBal3_S5_P60": {
+      "portfolio_name": "SectorBal3_S5_P60",
+      "total_return": 1.357593301516899,
+      "annual_return": 0.2773183813045421,
+      "volatility": 0.24630647374891299,
+      "sharpe_ratio": 1.571161822327044,
+      "max_drawdown": -0.20688698065444366,
+      "calmar_ratio": 1.340434185018813,
+      "sortino_ratio": 2.4821712033788583,
+      "rebalance_count": 3.0,
+      "final_value": 556934.4567299992,
+      "num_stocks": 5.0,
+      "num_sectors": 4.0,
+      "num_industries": 4.0,
+      "sector_diversity": 0.9609640474436812,
+      "industry_diversity": 0.9609640474436812,
+      "avg_rank": 3.0,
+      "avg_score": 92.772,
+      "score_std": 1.9080146749959774,
+      "max_sector_concentration": 0.4,
+      "max_industry_concentration": 0.4,
+      "avg_linear_r2": 0.743,
+      "avg_linear_slope": 0.03062,
+      "avg_stability_score": 52.172000000000004
+    },
+    "IndustryBal_S5_P60": {
+      "portfolio_name": "IndustryBal_S5_P60",
+      "total_return": 1.357593301516899,
+      "annual_return": 0.2773183813045421,
+      "volatility": 0.24630647374891299,
+      "sharpe_ratio": 1.571161822327044,
+      "max_drawdown": -0.20688698065444366,
+      "calmar_ratio": 1.340434185018813,
+      "sortino_ratio": 2.4821712033788583,
+      "rebalance_count": 3.0,
+      "final_value": 556934.4567299992,
+      "num_stocks": 5.0,
+      "num_sectors": 4.0,
+      "num_industries": 4.0,
+      "sector_diversity": 0.9609640474436812,
+      "industry_diversity": 0.9609640474436812,
+      "avg_rank": 3.0,
+      "avg_score": 92.772,
+      "score_std": 1.9080146749959774,
+      "max_sector_concentration": 0.4,
+      "max_industry_concentration": 0.4,
+      "avg_linear_r2": 0.743,
+      "avg_linear_slope": 0.03062,
+      "avg_stability_score": 52.172000000000004
+    },
+    "Stability_S5_P60": {
+      "portfolio_name": "Stability_S5_P60",
+      "total_return": 1.357593301516899,
+      "annual_return": 0.2773183813045421,
+      "volatility": 0.24630647374891299,
+      "sharpe_ratio": 1.571161822327044,
+      "max_drawdown": -0.20688698065444366,
+      "calmar_ratio": 1.340434185018813,
+      "sortino_ratio": 2.4821712033788583,
+      "rebalance_count": 3.0,
+      "final_value": 556934.4567299992,
+      "num_stocks": 5.0,
+      "num_sectors": 4.0,
+      "num_industries": 4.0,
+      "sector_diversity": 0.9609640474436812,
+      "industry_diversity": 0.9609640474436812,
+      "avg_rank": 3.0,
+      "avg_score": 92.772,
+      "score_std": 1.9080146749959774,
+      "max_sector_concentration": 0.4,
+      "max_industry_concentration": 0.4,
+      "avg_linear_r2": 0.743,
+      "avg_linear_slope": 0.03062,
+      "avg_stability_score": 52.172000000000004
+    },
+    "PosMomentum_S5_P60": {
+      "portfolio_name": "PosMomentum_S5_P60",
+      "total_return": 1.9870071655194743,
+      "annual_return": 0.36655783529640273,
+      "volatility": 0.25555950215894824,
+      "sharpe_ratio": 1.9089936442237065,
+      "max_drawdown": -0.23374448350937904,
+      "calmar_ratio": 1.5681988716610484,
+      "sortino_ratio": 3.062347647422865,
+      "rebalance_count": 3.0,
+      "final_value": 893982.4874022958,
+      "num_stocks": 5.0,
+      "num_sectors": 4.0,
+      "num_industries": 4.0,
+      "sector_diversity": 0.9609640474436812,
+      "industry_diversity": 0.9609640474436812,
+      "avg_rank": 4.0,
+      "avg_score": 94.28200000000001,
+      "score_std": 4.163678661952676,
+      "max_sector_concentration": 0.4,
+      "max_industry_concentration": 0.4,
+      "avg_linear_r2": 0.7016,
+      "avg_linear_slope": 0.0493,
+      "avg_stability_score": 50.989999999999995
+    },
+    "Recommended_S5_P60": {
+      "portfolio_name": "Recommended_S5_P60",
+      "total_return": 1.2661423750499061,
+      "annual_return": 0.1331696909634692,
+      "volatility": 0.24110786353695496,
+      "sharpe_ratio": 0.8737300171373623,
+      "max_drawdown": -0.44300096869548566,
+      "calmar_ratio": 0.30060812588201963,
+      "sortino_ratio": 1.3209724718990836,
+      "rebalance_count": 14.0,
+      "final_value": 520252.45560236333,
+      "num_stocks": 5.0,
+      "num_sectors": 4.0,
+      "num_industries": 5.0,
+      "sector_diversity": 0.9609640474436812,
+      "industry_diversity": 1.0000000000000002,
+      "avg_rank": 14.8,
+      "avg_score": 88.298,
+      "score_std": 4.347748842792095,
+      "max_sector_concentration": 0.4,
+      "max_industry_concentration": 0.2,
+      "avg_linear_r2": 0.673,
+      "avg_linear_slope": -0.028159999999999998,
+      "avg_stability_score": 37.256
+    },
+    "TopRank_S10_P60": {
+      "portfolio_name": "TopRank_S10_P60",
+      "total_return": 1.3538370113826046,
+      "annual_return": 0.27673724684091394,
+      "volatility": 0.1890130236909802,
+      "sharpe_ratio": 1.97869066129436,
+      "max_drawdown": -0.1827768292013875,
+      "calmar_ratio": 1.514071822178285,
+      "sortino_ratio": 3.1016554177547766,
+      "rebalance_count": 4.0,
+      "final_value": 555714.0022915787,
+      "num_stocks": 10.0,
+      "num_sectors": 6.0,
+      "num_industries": 9.0,
+      "sector_diversity": 0.9756149631508355,
+      "industry_diversity": 0.9848586617875466,
+      "avg_rank": 5.5,
+      "avg_score": 92.755,
+      "score_std": 3.4355922989267014,
+      "max_sector_concentration": 0.2,
+      "max_industry_concentration": 0.2,
+      "avg_linear_r2": 0.702,
+      "avg_linear_slope": -0.0012399999999999987,
+      "avg_stability_score": 47.20700000000001
+    },
+    "SectorBal2_S10_P60": {
+      "portfolio_name": "SectorBal2_S10_P60",
+      "total_return": 1.3538370113826046,
+      "annual_return": 0.27673724684091394,
+      "volatility": 0.1890130236909802,
+      "sharpe_ratio": 1.97869066129436,
+      "max_drawdown": -0.1827768292013875,
+      "calmar_ratio": 1.514071822178285,
+      "sortino_ratio": 3.1016554177547766,
+      "rebalance_count": 4.0,
+      "final_value": 555714.0022915787,
+      "num_stocks": 10.0,
+      "num_sectors": 6.0,
+      "num_industries": 9.0,
+      "sector_diversity": 0.9756149631508355,
+      "industry_diversity": 0.9848586617875466,
+      "avg_rank": 5.5,
+      "avg_score": 92.755,
+      "score_std": 3.4355922989267014,
+      "max_sector_concentration": 0.2,
+      "max_industry_concentration": 0.2,
+      "avg_linear_r2": 0.702,
+      "avg_linear_slope": -0.0012399999999999987,
+      "avg_stability_score": 47.20700000000001
+    },
+    "SectorBal3_S10_P60": {
+      "portfolio_name": "SectorBal3_S10_P60",
+      "total_return": 1.3538370113826046,
+      "annual_return": 0.27673724684091394,
+      "volatility": 0.1890130236909802,
+      "sharpe_ratio": 1.97869066129436,
+      "max_drawdown": -0.1827768292013875,
+      "calmar_ratio": 1.514071822178285,
+      "sortino_ratio": 3.1016554177547766,
+      "rebalance_count": 4.0,
+      "final_value": 555714.0022915787,
+      "num_stocks": 10.0,
+      "num_sectors": 6.0,
+      "num_industries": 9.0,
+      "sector_diversity": 0.9756149631508355,
+      "industry_diversity": 0.9848586617875466,
+      "avg_rank": 5.5,
+      "avg_score": 92.755,
+      "score_std": 3.4355922989267014,
+      "max_sector_concentration": 0.2,
+      "max_industry_concentration": 0.2,
+      "avg_linear_r2": 0.702,
+      "avg_linear_slope": -0.0012399999999999987,
+      "avg_stability_score": 47.20700000000001
+    },
+    "IndustryBal_S10_P60": {
+      "portfolio_name": "IndustryBal_S10_P60",
+      "total_return": 1.3538370113826046,
+      "annual_return": 0.27673724684091394,
+      "volatility": 0.1890130236909802,
+      "sharpe_ratio": 1.97869066129436,
+      "max_drawdown": -0.1827768292013875,
+      "calmar_ratio": 1.514071822178285,
+      "sortino_ratio": 3.1016554177547766,
+      "rebalance_count": 4.0,
+      "final_value": 555714.0022915787,
+      "num_stocks": 10.0,
+      "num_sectors": 6.0,
+      "num_industries": 9.0,
+      "sector_diversity": 0.9756149631508355,
+      "industry_diversity": 0.9848586617875466,
+      "avg_rank": 5.5,
+      "avg_score": 92.755,
+      "score_std": 3.4355922989267014,
+      "max_sector_concentration": 0.2,
+      "max_industry_concentration": 0.2,
+      "avg_linear_r2": 0.702,
+      "avg_linear_slope": -0.0012399999999999987,
+      "avg_stability_score": 47.20700000000001
+    },
+    "Stability_S10_P60": {
+      "portfolio_name": "Stability_S10_P60",
+      "total_return": 1.1867763477516977,
+      "annual_return": 0.25019285059042184,
+      "volatility": 0.19357944380245956,
+      "sharpe_ratio": 1.7780541409812447,
+      "max_drawdown": -0.1916732604457667,
+      "calmar_ratio": 1.305309097411702,
+      "sortino_ratio": 2.7785000490707894,
+      "rebalance_count": 5.0,
+      "final_value": 480101.4289613315,
+      "num_stocks": 10.0,
+      "num_sectors": 6.0,
+      "num_industries": 9.0,
+      "sector_diversity": 0.9464119282150146,
+      "industry_diversity": 0.9848586617875466,
+      "avg_rank": 5.7,
+      "avg_score": 91.525,
+      "score_std": 2.141797012894651,
+      "max_sector_concentration": 0.3,
+      "max_industry_concentration": 0.2,
+      "avg_linear_r2": 0.7253999999999999,
+      "avg_linear_slope": 0.005720000000000001,
+      "avg_stability_score": 47.515
+    },
+    "PosMomentum_S10_P60": {
+      "portfolio_name": "PosMomentum_S10_P60",
+      "total_return": 0.5009863585189438,
+      "annual_return": 0.23931060857144093,
+      "volatility": 0.2644531091895301,
+      "sharpe_ratio": 1.3151892251221702,
+      "max_drawdown": -0.22491379696450242,
+      "calmar_ratio": 1.0640103533053187,
+      "sortino_ratio": 2.0193499746952597,
+      "rebalance_count": 1.0,
+      "final_value": 225296.0048459965,
+      "num_stocks": 10.0,
+      "num_sectors": 5.0,
+      "num_industries": 8.0,
+      "sector_diversity": 0.881353453268883,
+      "industry_diversity": 0.9488131148903386,
+      "avg_rank": 10.3,
+      "avg_score": 92.39699999999999,
+      "score_std": 5.014148980634703,
+      "max_sector_concentration": 0.4,
+      "max_industry_concentration": 0.3,
+      "avg_linear_r2": 0.6319,
+      "avg_linear_slope": 0.06987000000000002,
+      "avg_stability_score": 41.508
+    },
+    "Recommended_S10_P60": {
+      "portfolio_name": "Recommended_S10_P60",
+      "total_return": 1.3538370113826046,
+      "annual_return": 0.27673724684091394,
+      "volatility": 0.1890130236909802,
+      "sharpe_ratio": 1.97869066129436,
+      "max_drawdown": -0.1827768292013875,
+      "calmar_ratio": 1.514071822178285,
+      "sortino_ratio": 3.1016554177547766,
+      "rebalance_count": 4.0,
+      "final_value": 555714.0022915787,
+      "num_stocks": 10.0,
+      "num_sectors": 6.0,
+      "num_industries": 9.0,
+      "sector_diversity": 0.9756149631508355,
+      "industry_diversity": 0.9848586617875466,
+      "avg_rank": 5.5,
+      "avg_score": 92.755,
+      "score_std": 3.4355922989267014,
+      "max_sector_concentration": 0.2,
+      "max_industry_concentration": 0.2,
+      "avg_linear_r2": 0.702,
+      "avg_linear_slope": -0.0012399999999999987,
+      "avg_stability_score": 47.20700000000001
+    },
+    "TopRank_S15_P60": {
+      "portfolio_name": "TopRank_S15_P60",
+      "total_return": 1.3134063861073972,
+      "annual_return": 0.27043988033069355,
+      "volatility": 0.18753470013075454,
+      "sharpe_ratio": 1.9544080452448607,
+      "max_drawdown": -0.1852961612443943,
+      "calmar_ratio": 1.4595007177401798,
+      "sortino_ratio": 2.9991394514534617,
+      "rebalance_count": 1.0,
+      "final_value": 535184.9107282499,
+      "num_stocks": 15.0,
+      "num_sectors": 6.0,
+      "num_industries": 12.0,
+      "sector_diversity": 0.9566504715755692,
+      "industry_diversity": 0.9641843565827053,
+      "avg_rank": 8.0,
+      "avg_score": 91.49000000000001,
+      "score_std": 4.061723771996319,
+      "max_sector_concentration": 0.26666666666666666,
+      "max_industry_concentration": 0.2,
+      "avg_linear_r2": 0.6645333333333333,
+      "avg_linear_slope": 0.008433333333333333,
+      "avg_stability_score": 44.11600000000001
+    },
+    "SectorBal2_S15_P60": {
+      "portfolio_name": "SectorBal2_S15_P60",
+      "total_return": 1.1058609100616827,
+      "annual_return": 0.2368123922655634,
+      "volatility": 0.1780708656978849,
+      "sharpe_ratio": 1.8287843043905172,
+      "max_drawdown": -0.14795846315794003,
+      "calmar_ratio": 1.6005329280338305,
+      "sortino_ratio": 2.8513966297246585,
+      "rebalance_count": 3.0,
+      "final_value": 444347.0903846597,
+      "num_stocks": 15.0,
+      "num_sectors": 8.0,
+      "num_industries": 13.0,
+      "sector_diversity": 0.9911857540917284,
+      "industry_diversity": 0.9837273962594129,
+      "avg_rank": 14.8,
+      "avg_score": 89.938,
+      "score_std": 5.2053340773809005,
+      "max_sector_concentration": 0.13333333333333333,
+      "max_industry_concentration": 0.13333333333333333,
+      "avg_linear_r2": 0.6915999999999999,
+      "avg_linear_slope": 0.04070666666666667,
+      "avg_stability_score": 42.68533333333335
+    },
+    "SectorBal3_S15_P60": {
+      "portfolio_name": "SectorBal3_S15_P60",
+      "total_return": 1.4208146955263343,
+      "annual_return": 0.2870015201221243,
+      "volatility": 0.18895344979976175,
+      "sharpe_ratio": 2.0410884556656916,
+      "max_drawdown": -0.16275070629191812,
+      "calmar_ratio": 1.763442547569308,
+      "sortino_ratio": 3.1840547349859087,
+      "rebalance_count": 3.0,
+      "final_value": 587193.0703819667,
+      "num_stocks": 15.0,
+      "num_sectors": 6.0,
+      "num_industries": 12.0,
+      "sector_diversity": 0.988762155916294,
+      "industry_diversity": 0.9641843565827053,
+      "avg_rank": 8.066666666666666,
+      "avg_score": 91.5,
+      "score_std": 4.048645276068103,
+      "max_sector_concentration": 0.2,
+      "max_industry_concentration": 0.2,
+      "avg_linear_r2": 0.6638666666666667,
+      "avg_linear_slope": 0.008493333333333334,
+      "avg_stability_score": 44.07666666666668
+    },
+    "IndustryBal_S15_P60": {
+      "portfolio_name": "IndustryBal_S15_P60",
+      "total_return": 1.213911631341662,
+      "annual_return": 0.2546007393322869,
+      "volatility": 0.1908852785157273,
+      "sharpe_ratio": 1.8274458244041114,
+      "max_drawdown": -0.1728941597133301,
+      "calmar_ratio": 1.4725814900539824,
+      "sortino_ratio": 2.820832085680362,
+      "rebalance_count": 3.0,
+      "final_value": 491111.4671997468,
+      "num_stocks": 15.0,
+      "num_sectors": 6.0,
+      "num_industries": 12.0,
+      "sector_diversity": 0.9761191615327831,
+      "industry_diversity": 0.9782223928152853,
+      "avg_rank": 8.133333333333333,
+      "avg_score": 91.33866666666667,
+      "score_std": 4.2052668790232,
+      "max_sector_concentration": 0.26666666666666666,
+      "max_industry_concentration": 0.13333333333333333,
+      "avg_linear_r2": 0.6778666666666666,
+      "avg_linear_slope": 0.015780000000000002,
+      "avg_stability_score": 44.19000000000001
+    },
+    "Stability_S15_P60": {
+      "portfolio_name": "Stability_S15_P60",
+      "total_return": 1.2201720487634984,
+      "annual_return": 0.25561220250107475,
+      "volatility": 0.20418511899799024,
+      "sharpe_ratio": 1.7269002045652395,
+      "max_drawdown": -0.19672059914159734,
+      "calmar_ratio": 1.299366734426667,
+      "sortino_ratio": 2.6391942747353787,
+      "rebalance_count": 3.0,
+      "final_value": 493897.5811880769,
+      "num_stocks": 15.0,
+      "num_sectors": 6.0,
+      "num_industries": 11.0,
+      "sector_diversity": 0.9050700972776302,
+      "industry_diversity": 0.9606293157795305,
+      "avg_rank": 9.066666666666666,
+      "avg_score": 90.41333333333333,
+      "score_std": 4.256319111738732,
+      "max_sector_concentration": 0.4,
+      "max_industry_concentration": 0.2,
+      "avg_linear_r2": 0.7142,
+      "avg_linear_slope": 0.016753333333333335,
+      "avg_stability_score": 44.526666666666664
+    },
+    "PosMomentum_S15_P60": {
+      "portfolio_name": "PosMomentum_S15_P60",
+      "total_return": 0.3598822222820135,
+      "annual_return": 0.17632949545761867,
+      "volatility": 0.2504329411574292,
+      "sharpe_ratio": 1.0703789729465145,
+      "max_drawdown": -0.2109681165069286,
+      "calmar_ratio": 0.8358111091721657,
+      "sortino_ratio": 1.6155991933820188,
+      "rebalance_count": 1.0,
+      "final_value": 184927.9658478668,
+      "num_stocks": 15.0,
+      "num_sectors": 5.0,
+      "num_industries": 11.0,
+      "sector_diversity": 0.8927518470035196,
+      "industry_diversity": 0.9366347672506407,
+      "avg_rank": 16.066666666666666,
+      "avg_score": 89.944,
+      "score_std": 5.97699613996386,
+      "max_sector_concentration": 0.4,
+      "max_industry_concentration": 0.26666666666666666,
+      "avg_linear_r2": 0.627,
+      "avg_linear_slope": 0.06777333333333334,
+      "avg_stability_score": 40.166666666666664
+    },
+    "Recommended_S15_P60": {
+      "portfolio_name": "Recommended_S15_P60",
+      "total_return": 1.3134063861073972,
+      "annual_return": 0.27043988033069355,
+      "volatility": 0.18753470013075454,
+      "sharpe_ratio": 1.9544080452448607,
+      "max_drawdown": -0.1852961612443943,
+      "calmar_ratio": 1.4595007177401798,
+      "sortino_ratio": 2.9991394514534617,
+      "rebalance_count": 1.0,
+      "final_value": 535184.9107282499,
+      "num_stocks": 15.0,
+      "num_sectors": 6.0,
+      "num_industries": 12.0,
+      "sector_diversity": 0.9566504715755692,
+      "industry_diversity": 0.9641843565827053,
+      "avg_rank": 8.0,
+      "avg_score": 91.49000000000001,
+      "score_std": 4.061723771996319,
+      "max_sector_concentration": 0.26666666666666666,
+      "max_industry_concentration": 0.2,
+      "avg_linear_r2": 0.6645333333333333,
+      "avg_linear_slope": 0.008433333333333333,
+      "avg_stability_score": 44.11600000000001
+    },
+    "HybridStability_S15_P60": {
+      "portfolio_name": "HybridStability_S15_P60",
+      "total_return": 0.7543501156908898,
+      "annual_return": 0.10306729497371969,
+      "volatility": 0.2533087924516255,
+      "sharpe_ratio": 0.6893644124309787,
+      "max_drawdown": -0.39924562363708627,
+      "calmar_ratio": 0.2581551027029108,
+      "sortino_ratio": 1.0251511941925648,
+      "rebalance_count": 9.0,
+      "final_value": 310235.9203415701,
+      "num_stocks": 15.0,
+      "num_sectors": 7.0,
+      "num_industries": 12.0,
+      "sector_diversity": 0.9579289057395421,
+      "industry_diversity": 0.9641843565827053,
+      "avg_rank": 15.4,
+      "avg_score": 87.10066666666667,
+      "score_std": 5.144601146092955,
+      "max_sector_concentration": 0.2,
+      "max_industry_concentration": 0.2,
+      "avg_linear_r2": 0.7994666666666667,
+      "avg_linear_slope": -0.0039466666666666695,
+      "avg_stability_score": 46.54066666666667
+    }
+  }
+}

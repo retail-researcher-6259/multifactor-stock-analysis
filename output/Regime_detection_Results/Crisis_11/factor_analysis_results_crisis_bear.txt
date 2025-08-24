@@ -1,0 +1,176 @@
+
+============================================================
+📊 FACTOR CORRELATION ANALYSIS RESULTS - Crisis/Bear REGIME
+📅 Using 17 historical Crisis/Bear periods
+📅 Total days analyzed: 720
+============================================================
+
+Factor Correlations with Returns:
+          Factor   Pearson  p-value  Spearman Significant Error
+        momentum  0.236831 0.003523  0.214992         Yes      
+            size  0.082083 0.317999  0.092158          No      
+       liquidity  0.127395 0.120293  0.033781          No      
+         insider  0.049493 0.547534  0.028994          No      
+           carry  0.035337 0.667701  0.019483          No      
+           value  0.049358 0.548628 -0.004648          No      
+          credit -0.002695 0.973890 -0.008492          No      
+          growth  0.103099 0.209303 -0.013055          No      
+financial_health -0.007649 0.925981 -0.024688          No      
+         quality -0.088025 0.284107 -0.065487          No      
+       technical -0.117261 0.152986 -0.104197          No      
+       stability -0.128847 0.116089 -0.156113          No      
+
+Weight Set Performance Analysis:
+Mean Correlation: 0.2316
+95% Confidence Interval: [0.1316, 0.3316]
+✅ Saved correlation results to ./Results\factor_correlations.csv
+
+Factors Ranked by Correlation with Returns:
+1. momentum             0.215*
+2. size                 0.092
+3. liquidity            0.034
+4. insider              0.029
+5. carry                0.019
+6. value                -0.005
+7. credit               -0.008
+8. growth               -0.013
+9. financial_health     -0.025
+10. quality              -0.065
+11. technical            -0.104
+12. stability            -0.156
+
+Weight Effectiveness Analysis:
+Factor               Weight  Correlation  Effectiveness
+-------------------------------------------------------
+momentum               72.0  0.215         15.479
+size                   20.0  0.092         1.843
+stability             -10.0  -0.156        1.561
+technical              -5.0  -0.104        0.521
+liquidity               5.0  0.034         0.169
+insider                 5.0  0.029         0.145
+value                   0.0  -0.005        -0.000
+quality                 0.0  -0.065        -0.000
+credit                  0.0  -0.008        -0.000
+growth                  5.0  -0.013        -0.065
+carry                  -5.0  0.019         -0.097
+financial_health       13.0  -0.025        -0.321
+
+Suggested Weight Adjustments:
+value                Current:   0.0  Correlation: -0.005  Suggestion: Keep at zero
+quality              Current:   0.0  Correlation: -0.065  Suggestion: Keep at zero
+financial_health     Current:  13.0  Correlation: -0.025  Suggestion: Maintain current weight
+technical            Current:  -5.0  Correlation: -0.104  Suggestion: Reduce moderately
+insider              Current:   5.0  Correlation: 0.029  Suggestion: Maintain current weight
+momentum             Current:  72.0  Correlation: 0.215  Suggestion: Near maximum weight
+stability            Current: -10.0  Correlation: -0.156  Suggestion: Reduce moderately
+size                 Current:  20.0  Correlation: 0.092  Suggestion: Maintain current weight
+credit               Current:   0.0  Correlation: -0.008  Suggestion: Keep at zero
+liquidity            Current:   5.0  Correlation: 0.034  Suggestion: Maintain current weight
+carry                Current:  -5.0  Correlation: 0.019  Suggestion: Maintain current weight
+growth               Current:   5.0  Correlation: -0.013  Suggestion: Maintain current weight
+
+============================================================
+📊 COMPREHENSIVE PERFORMANCE ANALYSIS WITH CONTINUOUS SCORING
+============================================================
+
+🎯 TOP DECILE PERFORMANCE
+----------------------------------------
+Avg Return: 6.8963%
+Std: 0.0408
+Sharpe: 1.692
+Hit Rate: 93.33%
+Best Month: 12.5548%
+Worst Month: -0.4337%
+
+📊 DECILE PERFORMANCE BREAKDOWN
+----------------------------------------
+       Mean Return Std Dev  Count  Sharpe
+Decile                                   
+0          3.0700%  0.0211     15   1.455
+1          2.3600%  0.0266     15   0.887
+2          3.6800%  0.0408     15   0.902
+3          2.6500%  0.0211     15   1.256
+4          3.4400%  0.0194     15   1.773
+5          3.0200%  0.0220     15   1.373
+6          3.1800%  0.0519     15   0.613
+7          2.9300%  0.0679     15   0.432
+8          4.7100%  0.0640     15   0.736
+9          6.9000%  0.0408     15   1.691
+
+🧪 STATISTICAL SIGNIFICANCE TESTS
+----------------------------------------
+Top Decile vs Others t-test:
+  t-statistic: 3.307
+  p-value: 0.0041
+  Significant at 5%: Yes
+
+📈 MONOTONICITY CHECK
+----------------------------------------
+Decile-Return Spearman Correlation: 0.515 (p-value: 0.1276)
+Returns Monotonically Increasing with Decile: No
+Return Spread (D10-D1): 3.8227%
+
+============================================================
+📋 CONTINUOUS SCORING MODEL SCORECARD
+============================================================
+Overall Correlation: 0.2316
+Top Decile Mean Return: 6.8963%
+Top Decile Sharpe Ratio: 1.692
+Hit Rate: 93.33%
+Monotonicity (Spearman): 0.515
+Statistical Significance: Yes
+Total Observations: 150
+
+📉 PORTFOLIO BACKTEST SIMULATION
+----------------------------------------
+Top 20 Portfolio Mean Monthly Return: 6.4427%
+Portfolio Standard Deviation: 8.2468%
+Portfolio Sharpe Ratio: 0.781
+Win Rate: 90.00%
+Number of Periods: 20
+
+🔍 FACTOR CONTRIBUTION ANALYSIS
+----------------------------------------
+
+Single-Factor Portfolio Performance:
+  momentum             Mean: 4.8044%  Sharpe: 1.127  Weight: 72.0
+  stability            Mean: 3.3487%  Sharpe: 1.808  Weight: -10.0
+  technical            Mean: 2.8769%  Sharpe: 0.530  Weight: -5.0
+  credit               Mean: 2.2433%  Sharpe: 0.385  Weight: 0.0
+
+Weight Alignment Analysis:
+Total Raw Weight: 114.9, Normalized to Sum=100
+
+Factor                Current  Suggested  Normalized
+--------------------------------------------------
+momentum                 72.0       89.3       77.7
+size                     20.0       20.0       17.4
+financial_health         13.0       13.0       11.3
+stability               -10.0      -11.7      -10.2
+technical                -5.0       -5.7       -5.0
+insider                   5.0        5.0        4.4
+growth                    5.0        5.0        4.4
+liquidity                 5.0        5.0        4.4
+carry                    -5.0       -5.0       -4.4
+credit                    0.0        0.0        0.0
+quality                   0.0        0.0        0.0
+value                     0.0        0.0        0.0
+
+New Normalized Weights Python Dict:
+WEIGHTS = {
+    "momentum": 77.7,
+    "size": 17.4,
+    "financial_health": 11.3,
+    "stability": -10.2,
+    "technical": -5.0,
+    "insider": 4.4,
+    "liquidity": 4.4,
+    "carry": -4.4,
+    "growth": 4.4,
+    "value": 0.0,
+    "quality": 0.0,
+    "credit": 0.0,
+}
+
+✅ Enhanced correlation analysis completed in 691.4 seconds
+📊 Analysis used 17 Crisis/Bear regime periods

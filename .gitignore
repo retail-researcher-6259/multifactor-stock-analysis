@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.env
+
+# Data files (too large or sensitive)
+data/historical/*.csv
+data/scores/*.csv
+*.xlsx
+*.db
+
+# Config files with sensitive info
+config/api_keys.json
+config/credentials.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Output files
+output/reports/*.pdf
+output/visualizations/*.png
+
+# Temporary files
+*.tmp
+temp/

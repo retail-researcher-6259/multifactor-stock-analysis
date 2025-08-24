@@ -1,0 +1,62 @@
+Ticker,CompanyName,Country,Rank_in_Ranked,Score,Rank_in_Stability,Stability_Adjusted_Score,Avg_Score,Linear_R2,Linear_Slope,Recommendation,Combined_Rank,Sector,Industry
+VEEV,Veeva Systems Inc.,United States,8,95.34,1,50.2,96.15,0.81,-0.033,BUY - Stable quality,9,Healthcare,Health Information Services
+RMBS,Rambus Inc.,United States,5,98.12,12,35.34,96.59,0.703,0.069,BUY - High score acceptable risk,17,Technology,Semiconductors
+PINS,"Pinterest, Inc.",United States,18,92.2,9,36.38,90.54,0.9,0.11,BUY - High score acceptable risk,27,Communication Services,Internet Content & Information
+SHOP,Shopify Inc.,Canada,19,91.81,24,32.29,89.3,0.822,0.107,HOLD - Modest potential,43,Technology,Software - Application
+QLYS,"Qualys, Inc.",United States,33,88.22,11,35.6,89.2,0.645,-0.033,BUY - High score acceptable risk,44,Technology,Software - Infrastructure
+GRMN,Garmin Ltd.,Switzerland,17,92.52,32,28.1,89.84,0.787,0.127,WATCH - Monitor for opportunity,49,Technology,Scientific & Technical Instruments
+NVDA,NVIDIA Corporation,United States,2,100.79,48,24.11,100.63,0.479,0.06,AVOID - Poor risk-adjusted score,50,Technology,Semiconductors
+DDOG,"Datadog, Inc.",United States,36,87.83,15,34.84,86.69,0.755,0.068,HOLD - Modest potential,51,Technology,Software - Application
+CPRT,"Copart, Inc.",United States,34,88.16,22,32.36,88.71,0.605,-0.034,WATCH - Monitor for opportunity,56,Industrials,Specialty Business Services
+PAYC,"Paycom Software, Inc.",United States,29,88.89,29,30.23,90.35,0.797,-0.078,WATCH - Monitor for opportunity,58,Technology,Software - Application
+LRCX,Lam Research Corporation,United States,28,88.95,33,28.09,88.74,0.664,0.08,WATCH - Monitor for opportunity,61,Technology,Semiconductor Equipment & Materials
+ZM,Zoom Communications Inc.,United States,73,83.55,5,38.34,84.48,0.894,-0.059,BUY - High score acceptable risk,78,Technology,Software - Application
+PANW,"Palo Alto Networks, Inc.",United States,66,84.42,21,32.51,85.48,0.683,-0.043,WATCH - Monitor for opportunity,87,Technology,Software - Infrastructure
+BMRN,BioMarin Pharmaceutical Inc.,United States,61,84.62,27,31.41,84.12,0.628,0.046,HOLD - Modest potential,88,Healthcare,Biotechnology
+WDAY,"Workday, Inc.",United States,82,83.12,8,36.39,84.07,0.769,-0.045,BUY - High score acceptable risk,90,Technology,Software - Application
+MANH,"Manhattan Associates, Inc.",United States,70,83.74,20,32.91,82.53,0.72,0.06,HOLD - Modest potential,90,Technology,Software - Application
+BKNG,Booking Holdings Inc.,United States,46,86.57,44,24.55,84.44,0.634,0.084,AVOID - Poor risk-adjusted score,90,Consumer Cyclical,Travel Services
+PDD,PDD Holdings Inc.,Ireland,75,83.44,17,34.22,83.14,0.598,0.03,HOLD - Modest potential,92,Consumer Cyclical,Internet Retail
+PCTY,Paylocity Holding Corporation,United States,79,83.21,14,34.94,84.75,0.773,-0.05,WATCH - Monitor for opportunity,93,Technology,Software - Application
+LSCC,Lattice Semiconductor Corporation,United States,90,82.58,4,38.64,80.88,0.753,0.043,BUY - High score acceptable risk,94,Technology,Semiconductors
+MSFT,Microsoft Corporation,United States,39,87.41,62,22.45,86.46,0.482,0.051,AVOID - Poor risk-adjusted score,101,Technology,Software - Infrastructure
+AMD,"Advanced Micro Devices, Inc.",United States,43,87.07,67,22.17,86.22,0.626,0.104,AVOID - Poor risk-adjusted score,110,Technology,Semiconductors
+AMZN,"Amazon.com, Inc.",United States,109,80.8,2,48.2,80.08,0.833,0.03,BUY - Stable quality,111,Consumer Cyclical,Internet Retail
+ANSS,"ANSYS, Inc.",United States,95,82.11,16,34.35,81.89,0.641,0.036,HOLD - Modest potential,111,Technology,Software - Application
+ONON,On Holding AG,Switzerland,42,87.09,77,21.17,90.9,0.603,-0.078,AVOID - Poor risk-adjusted score,119,Consumer Cyclical,Footwear & Accessories
+CSGP,"CoStar Group, Inc.",United States,89,82.65,30,29.99,81.39,0.716,0.071,WATCH - Monitor for opportunity,119,Real Estate,Real Estate Services
+GWRE,"Guidewire Software, Inc.",United States,104,81.24,19,33.21,82.93,0.965,-0.086,WATCH - Monitor for opportunity,123,Technology,Software - Application
+TSM,Taiwan Semiconductor Manufacturing Company Limited,Taiwan,56,85.35,73,21.33,85.66,0.501,0.062,AVOID - Poor risk-adjusted score,129,Technology,Semiconductors
+PSTG,"Pure Storage, Inc.",United States,111,80.67,18,33.7,80.63,0.585,0.026,HOLD - Modest potential,129,Technology,Computer Hardware
+DOCU,"DocuSign, Inc.",United States,117,80.28,13,34.98,81.85,0.819,-0.054,WATCH - Monitor for opportunity,130,Technology,Software - Application
+SNPS,"Synopsys, Inc.",United States,93,82.24,39,25.71,80.21,0.873,0.157,WATCH - Monitor for opportunity,132,Technology,Software - Infrastructure
+DT,"Dynatrace, Inc.",United States,63,84.56,72,21.38,85.36,0.4,-0.026,AVOID - Poor risk-adjusted score,135,Technology,Software - Application
+CRM,"Salesforce, Inc.",United States,135,78.37,3,39.89,79.36,0.813,-0.037,BUY - High score acceptable risk,138,Technology,Software - Application
+ABNB,"Airbnb, Inc.",United States,32,88.28,108,18.21,85.25,0.459,0.068,AVOID - Poor risk-adjusted score,140,Consumer Cyclical,Travel Services
+NICE,NICE Ltd.,Israel,116,80.28,25,31.98,80.89,0.744,-0.05,WATCH - Monitor for opportunity,141,Technology,Software - Application
+FFIV,"F5, Inc.",United States,12,93.21,130,17.13,91.38,0.374,0.052,AVOID - Poor risk-adjusted score,142,Technology,Software - Infrastructure
+IDXX,"IDEXX Laboratories, Inc.",United States,136,78.35,10,36.12,77.38,0.691,0.034,BUY - High score acceptable risk,146,Healthcare,Diagnostics & Research
+ELF,"e.l.f. Beauty, Inc.",United States,120,79.86,28,31.35,77.65,0.8,0.079,HOLD - Modest potential,148,Consumer Defensive,Household & Personal Products
+FIX,"Comfort Systems USA, Inc.",United States,97,82.06,51,23.56,79.73,0.757,0.128,AVOID - Poor risk-adjusted score,148,Industrials,Engineering & Construction
+DXCM,"DexCom, Inc.",United States,87,82.76,65,22.23,79.05,0.802,0.162,AVOID - Poor risk-adjusted score,152,Healthcare,Medical Devices
+CDNS,"Cadence Design Systems, Inc.",United States,13,92.97,139,16.56,93.28,0.257,0.018,AVOID - Poor risk-adjusted score,152,Technology,Software - Application
+RDDT,"Reddit, Inc.",United States,4,99.06,149,16.21,92.68,0.582,0.172,AVOID - Poor risk-adjusted score,153,Communication Services,Internet Content & Information
+NEM,Newmont Corporation,United States,55,85.43,113,18.01,83.02,0.536,0.097,AVOID - Poor risk-adjusted score,168,Basic Materials,Gold
+CIEN,Ciena Corporation,United States,142,77.56,26,31.43,76.55,0.857,0.092,HOLD - Modest potential,168,Technology,Communication Equipment
+AXON,"Axon Enterprise, Inc.",United States,45,86.69,129,17.15,91.05,0.618,-0.109,AVOID - Poor risk-adjusted score,174,Industrials,Aerospace & Defense
+VRT,Vertiv Holdings Co,United States,118,80.07,58,22.63,78.61,0.764,0.138,AVOID - Poor risk-adjusted score,176,Industrials,Electrical Equipment & Parts
+GE,GE Aerospace,United States,119,79.96,59,22.59,78.59,0.666,0.098,AVOID - Poor risk-adjusted score,178,Industrials,Aerospace & Defense
+B,Barrick Mining Corporation,Canada,144,77.44,34,27.54,75.8,0.661,0.155,WATCH - Monitor for opportunity,178,Basic Materials,Gold
+CCJ,Cameco Corporation,Canada,86,82.8,96,18.83,78.07,0.771,0.192,AVOID - Poor risk-adjusted score,182,Energy,Uranium
+INFY,Infosys Limited,India,101,81.44,81,20.08,83.59,0.669,-0.091,AVOID - Poor risk-adjusted score,182,Technology,Information Technology Services
+SAP,SAP SE,Germany,114,80.39,71,21.6,82.94,0.69,-0.086,AVOID - Poor risk-adjusted score,185,Technology,Software - Application
+APH,Amphenol Corporation,United States,100,81.67,86,19.39,79.92,0.617,0.112,AVOID - Poor risk-adjusted score,186,Technology,Electronic Components
+WSM,"Williams-Sonoma, Inc.",United States,123,79.39,66,22.21,77.67,0.6,0.076,AVOID - Poor risk-adjusted score,189,Consumer Cyclical,Specialty Retail
+ADBE,Adobe Inc.,United States,131,78.83,61,22.57,79.94,0.536,-0.044,AVOID - Poor risk-adjusted score,192,Technology,Software - Application
+JOYY,JOYY Inc.,Singapore,133,78.66,60,22.57,80.14,0.596,-0.056,AVOID - Poor risk-adjusted score,193,Communication Services,Internet Content & Information
+AMAT,"Applied Materials, Inc.",United States,106,81.22,100,18.59,82.0,0.598,0.117,AVOID - Poor risk-adjusted score,206,Technology,Semiconductor Equipment & Materials
+RL,Ralph Lauren Corporation,United States,145,77.34,68,22.12,75.46,0.6,0.072,AVOID - Poor risk-adjusted score,213,Consumer Cyclical,Apparel Manufacturing
+SNA,Snap-on Incorporated,United States,110,80.69,105,18.32,82.13,0.54,-0.067,AVOID - Poor risk-adjusted score,215,Industrials,Tools & Accessories
+MU,"Micron Technology, Inc.",United States,134,78.49,82,19.96,77.23,0.636,0.107,AVOID - Poor risk-adjusted score,216,Technology,Semiconductors
+OKTA,"Okta, Inc.",United States,115,80.32,127,17.32,81.7,0.399,-0.038,AVOID - Poor risk-adjusted score,242,Technology,Software - Infrastructure
+REGN,"Regeneron Pharmaceuticals, Inc.",United States,141,77.65,102,18.45,77.69,0.276,0.007,AVOID - Poor risk-adjusted score,243,Healthcare,Biotechnology

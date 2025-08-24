@@ -1,0 +1,47 @@
+TECHNICAL ANALYSIS REPORT FOR VNOM
+============================================================
+Generated: 2025-08-22 22:58:46
+Date Range: 0611 to 0822
+
+DATA SUMMARY:
+----------------------------------------
+Data Points: 50
+Average Score: 69.85
+Score Std Dev: 4.94
+Min Score: 60.82
+Max Score: 74.47
+Score Range: 13.65
+
+REGRESSION ANALYSIS:
+----------------------------------------
+Linear R²: 0.658
+Linear Slope: -0.277
+Polynomial R²: 0.817
+Polynomial Degree: 2
+
+MOVING AVERAGES:
+----------------------------------------
+Recent Bullish Crossovers (last 5): 0
+Recent Bearish Crossovers (last 5): 0
+
+MOMENTUM INDICATORS:
+----------------------------------------
+Current RSI: 32.79
+  Status: NEUTRAL
+Current ROC: -0.41%
+  Momentum: NEGATIVE
+
+TREND STRENGTH:
+----------------------------------------
+Current ADX: 48.70
+Trend Strength: Strong
+
+FORECASTING (5-day ahead):
+----------------------------------------
+ARIMA Forecast: 62.49, 62.49, 62.49, 62.49, 62.49
+ARIMA Parameters: (0, 1, 0)
+Exp Smoothing: 62.39, 62.39, 62.39, 62.39, 62.39
+
+ANALYSIS SUMMARY:
+----------------------------------------
+Recommendation: SELL - Multiple bearish signals

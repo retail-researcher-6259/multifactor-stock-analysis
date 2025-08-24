@@ -1,0 +1,14 @@
+WEIGHTS = {
+    "momentum": 65.0,      # Strongest positive correlation (0.210)
+    "size": 20.0,          # Second best correlation (0.123)
+    "financial_health": 15.0,  # Modest positive (0.061)
+    "credit": 5.0,         # Barely positive (0.035)
+    "insider": 5.0,        # Small positive (0.022)
+    "growth": 10.0,        # Small positive (0.012)
+    "quality": 0.0,        # Neutral to negative
+    "liquidity": 0.0,      # Negative correlation
+    "value": 0.0,          # Negative correlation
+    "technical": -5.0,     # Negative correlation (-0.105)
+    "carry": -5.0,         # Negative correlation (-0.125)
+    "stability": -10.0,    # Worst performer (-0.189)
+}

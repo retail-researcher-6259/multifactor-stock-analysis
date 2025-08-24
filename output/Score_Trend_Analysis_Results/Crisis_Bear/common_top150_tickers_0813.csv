@@ -1,0 +1,54 @@
+Ticker,CompanyName,Country,Rank_in_Ranked,Score,Rank_in_Stability,Stability_Adjusted_Score,Avg_Score,Linear_R2,Linear_Slope,Recommendation,Combined_Rank,Sector,Industry
+MP,MP Materials Corp.,United States,3,72.22,1,39.62,72.69,0.831,-0.069,BUY - High score acceptable risk,4,Basic Materials,Other Industrial Metals & Mining
+CLS,Celestica Inc.,Canada,11,66.5,2,36.31,66.95,0.693,-0.036,HOLD - Stable but flat,13,Technology,Electronic Components
+RKLB,Rocket Lab Corporation,United States,6,69.6,13,24.05,66.75,0.69,0.224,AVOID - Poor risk-adjusted score,19,Industrials,Aerospace & Defense
+SSRM,SSR Mining Inc.,United States,1,75.09,25,21.75,75.55,0.411,-0.043,AVOID - Poor risk-adjusted score,26,Basic Materials,Gold
+AMBA,"Ambarella, Inc.",United States,27,62.74,12,24.43,61.31,0.837,0.316,AVOID - Poor risk-adjusted score,39,Technology,Semiconductor Equipment & Materials
+LITE,Lumentum Holdings Inc.,United States,22,63.48,19,22.57,62.93,0.634,0.173,AVOID - Poor risk-adjusted score,41,Technology,Communication Equipment
+PTON,"Peloton Interactive, Inc.",United States,8,68.04,39,19.06,64.64,0.765,0.445,AVOID - Poor risk-adjusted score,47,Consumer Cyclical,Leisure
+URBN,"Urban Outfitters, Inc.",United States,36,60.81,14,24.01,59.82,0.701,0.18,AVOID - Poor risk-adjusted score,50,Consumer Cyclical,Apparel Retail
+GNW,"Genworth Financial, Inc.",United States,39,60.29,17,22.88,59.46,0.629,0.139,AVOID - Poor risk-adjusted score,56,Financial Services,Insurance - Life
+PLTR,Palantir Technologies Inc.,United States,55,58.75,3,32.1,58.23,0.708,0.062,HOLD - Modest potential,58,Technology,Software - Infrastructure
+AEIS,"Advanced Energy Industries, Inc.",United States,41,60.07,21,22.22,57.7,0.704,0.203,AVOID - Poor risk-adjusted score,62,Industrials,Electrical Equipment & Parts
+CCJ,Cameco Corporation,Canada,16,64.77,53,18.23,62.27,0.731,0.404,AVOID - Poor risk-adjusted score,69,Energy,Uranium
+KGC,Kinross Gold Corporation,Canada,12,66.43,60,17.35,65.41,0.488,0.16,AVOID - Poor risk-adjusted score,72,Basic Materials,Gold
+COHR,Coherent Corp.,United States,43,59.94,31,20.93,57.9,0.848,0.396,AVOID - Poor risk-adjusted score,74,Technology,Scientific & Technical Instruments
+AFRM,"Affirm Holdings, Inc.",United States,53,58.88,29,21.17,60.17,0.795,-0.148,AVOID - Poor risk-adjusted score,82,Technology,Software - Infrastructure
+ONON,On Holding AG,Switzerland,50,59.33,36,19.86,60.4,0.751,-0.147,AVOID - Poor risk-adjusted score,86,Consumer Cyclical,Footwear & Accessories
+SNV,Synovus Financial Corp.,United States,30,62.44,63,17.05,60.14,0.668,0.343,AVOID - Poor risk-adjusted score,93,Financial Services,Banks - Regional
+HIMS,"Hims & Hers Health, Inc.",United States,7,68.63,96,14.72,69.11,0.622,-0.193,AVOID - Poor risk-adjusted score,103,Consumer Defensive,Household & Personal Products
+INMD,InMode Ltd.,Israel,103,54.66,4,30.89,53.65,0.83,0.112,HOLD - Modest potential,107,Healthcare,Medical Devices
+MHO,"M/I Homes, Inc.",United States,84,55.83,27,21.56,54.34,0.647,0.14,AVOID - Poor risk-adjusted score,111,Consumer Cyclical,Residential Construction
+TAL,TAL Education Group,China,34,61.93,83,15.48,60.92,0.521,0.217,AVOID - Poor risk-adjusted score,117,Consumer Defensive,Education & Training Services
+SIMO,Silicon Motion Technology Corporation,Hong Kong,73,56.89,48,18.52,55.39,0.802,0.398,AVOID - Poor risk-adjusted score,121,Technology,Semiconductors
+FLG,"Flagstar Financial, Inc.",United States,69,57.57,62,17.21,56.58,0.761,0.416,AVOID - Poor risk-adjusted score,131,Financial Services,Banks - Regional
+LSCC,Lattice Semiconductor Corporation,United States,85,55.83,47,18.58,52.97,0.833,0.401,AVOID - Poor risk-adjusted score,132,Technology,Semiconductors
+ULTA,"Ulta Beauty, Inc.",United States,125,53.44,10,25.47,52.41,0.847,0.205,WATCH - Monitor for opportunity,135,Consumer Cyclical,Specialty Retail
+CELH,"Celsius Holdings, Inc.",United States,66,57.68,72,16.53,52.32,0.842,0.494,AVOID - Poor risk-adjusted score,138,Consumer Defensive,Beverages - Non-Alcoholic
+GWRE,"Guidewire Software, Inc.",United States,105,54.56,33,20.42,56.34,0.924,-0.185,AVOID - Poor risk-adjusted score,138,Technology,Software - Application
+RDDT,"Reddit, Inc.",United States,14,65.94,125,13.07,67.17,0.841,-0.329,REDUCE - Weakening position,139,Communication Services,Internet Content & Information
+ALGM,"Allegro MicroSystems, Inc.",United States,68,57.67,73,16.38,56.82,0.636,0.29,AVOID - Poor risk-adjusted score,141,Technology,Semiconductors
+BNTX,BioNTech SE,Germany,49,59.35,97,14.67,57.49,0.518,0.211,AVOID - Poor risk-adjusted score,146,Healthcare,Biotechnology
+DUOL,"Duolingo, Inc.",United States,23,63.21,126,13.06,67.68,0.636,-0.224,AVOID - Poor risk-adjusted score,149,Technology,Software - Application
+MTZ,"MasTec, Inc.",United States,136,53.07,22,22.13,51.87,0.732,0.177,AVOID - Poor risk-adjusted score,158,Industrials,Engineering & Construction
+WB,Weibo Corporation,China,93,55.37,70,16.69,56.71,0.847,-0.21,AVOID - Poor risk-adjusted score,163,Communication Services,Internet Content & Information
+RMBS,Rambus Inc.,United States,17,64.62,146,12.35,61.25,0.701,0.661,AVOID - Poor risk-adjusted score,163,Technology,Semiconductors
+MOMO,Hello Group Inc.,China,79,56.47,86,15.1,58.32,0.833,-0.239,AVOID - Poor risk-adjusted score,165,Communication Services,Internet Content & Information
+INCY,Incyte Corporation,United States,122,53.65,45,18.64,52.05,0.678,0.216,AVOID - Poor risk-adjusted score,167,Healthcare,Biotechnology
+ATHM,Autohome Inc.,China,95,55.25,77,16.18,53.5,0.554,0.173,AVOID - Poor risk-adjusted score,172,Communication Services,Internet Content & Information
+ZD,"Ziff Davis, Inc.",United States,129,53.29,54,17.93,50.56,0.811,0.368,AVOID - Poor risk-adjusted score,183,Communication Services,Advertising Agencies
+LYFT,"Lyft, Inc.",United States,76,56.55,107,14.04,52.5,0.835,0.625,AVOID - Poor risk-adjusted score,183,Technology,Software - Application
+MNSO,MINISO Group Holding Limited,China,74,56.71,112,13.78,55.88,0.519,0.229,AVOID - Poor risk-adjusted score,186,Consumer Cyclical,Specialty Retail
+NVST,Envista Holdings Corporation,United States,45,59.56,145,12.35,58.81,0.401,0.154,AVOID - Poor risk-adjusted score,190,Healthcare,Medical Instruments & Supplies
+JOYY,JOYY Inc.,Singapore,70,57.37,123,13.13,59.54,0.745,-0.243,AVOID - Poor risk-adjusted score,193,Communication Services,Internet Content & Information
+CRS,Carpenter Technology Corporation,United States,63,57.97,137,12.7,58.98,0.647,-0.202,AVOID - Poor risk-adjusted score,200,Industrials,Metal Fabrication
+ETSY,"Etsy, Inc.",United States,144,52.67,58,17.48,48.6,0.812,0.358,AVOID - Poor risk-adjusted score,202,Consumer Cyclical,Internet Retail
+FSS,Federal Signal Corporation,United States,98,55.09,108,13.88,52.91,0.596,0.296,AVOID - Poor risk-adjusted score,206,Industrials,Pollution & Treatment Controls
+AAL,American Airlines Group Inc.,United States,143,52.7,79,15.89,49.76,0.583,0.177,AVOID - Poor risk-adjusted score,222,Industrials,Airlines
+GEV,GE Vernova Inc.,United States,107,54.41,115,13.72,52.69,0.68,0.417,AVOID - Poor risk-adjusted score,222,Industrials,Specialty Industrial Machinery
+NCLH,Norwegian Cruise Line Holdings Ltd.,United States,145,52.59,78,16.0,50.43,0.8,0.435,AVOID - Poor risk-adjusted score,223,Consumer Cyclical,Travel Services
+SKX,"Skechers U.S.A., Inc.",United States,97,55.16,133,12.79,54.6,0.336,0.061,AVOID - Poor risk-adjusted score,230,Consumer Cyclical,Footwear & Accessories
+LI,Li Auto Inc.,China,108,54.4,150,12.2,56.48,0.905,-0.327,REDUCE - Weakening position,258,Consumer Cyclical,Auto Manufacturers
+EXTR,"Extreme Networks, Inc.",United States,141,52.74,130,12.84,52.4,0.365,0.073,AVOID - Poor risk-adjusted score,271,Technology,Communication Equipment
+SQM,Sociedad Química y Minera de Chile S.A.,Chile,133,53.15,138,12.63,49.94,0.479,0.17,AVOID - Poor risk-adjusted score,271,Basic Materials,Specialty Chemicals
+CGNX,Cognex Corporation,United States,140,52.82,132,12.79,51.14,0.597,0.325,AVOID - Poor risk-adjusted score,272,Technology,Scientific & Technical Instruments
