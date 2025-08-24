@@ -2831,6 +2831,15 @@ def main():
     }
 
 
+# At the END of your existing file, add:
+
+def optimize_api(regime="Steady Growth"):
+    """API wrapper for optimization"""
+    # Your existing code that reads from Analysis/ and writes to Results/
+    # your_optimization_function(regime)  # Replace with your actual function
+
+    return {"status": "success", "regime": regime}
+
 if __name__ == "__main__":
     import sys
 

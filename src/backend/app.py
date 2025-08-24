@@ -13,6 +13,10 @@ import pandas as pd
 import pickle
 from datetime import datetime
 import traceback
+from ..regime_detection.regime_detector import api_wrapper
+from ..regime_detection.current_regime_detector import get_current_regime_api
+from ..weight_optimization.MultiFactor_optimizer_03 import optimize_api
+
 
 # Add parent directories to path so we can import your scripts
 project_root = Path(__file__).parent.parent.parent
@@ -46,55 +50,20 @@ for dir_path in [ANALYSIS_DIR, RESULTS_DIR, DATA_DIR]:
 
 @app.route('/api/regime/detect', methods=['POST'])
 def detect_regime():
-    """
-    Endpoint to run regime detection
-    Calls your existing regime_detector.py functions
-    """
     try:
-        # Get parameters from request
-        data = request.json or {}
-        data_source = data.get('data_source', 'marketstack')
+        # Call your wrapped function
+        result = run_regime_detection()
 
-        # Call your existing regime detection function
-        # You'll need to modify this based on your actual function names
-        # Example:
-        # result = regime_detector.detect_current_regime(data_source)
-
-        # For now, simulate calling your script
-        import subprocess
-        result = subprocess.run(
-            [sys.executable, str(project_root / 'src' / 'regime_detection' / 'regime_detector.py')],
-            capture_output=True,
-            text=True
-        )
-
-        # Read the generated files
-        regime_data = {}
-
-        # Read regime_periods.csv if it exists
-        regime_file = ANALYSIS_DIR / "regime_periods.csv"
-        if regime_file.exists():
-            df = pd.read_csv(regime_file)
-            regime_data['periods'] = df.to_dict('records')
-
-        # Read current_regime_analysis.json if it exists
-        analysis_file = ANALYSIS_DIR / "current_regime_analysis.json"
-        if analysis_file.exists():
-            with open(analysis_file, 'r') as f:
-                regime_data['current'] = json.load(f)
+        # Read the files your script created
+        with open("Analysis/current_regime_analysis.json", 'r') as f:
+            data = json.load(f)
 
         return jsonify({
             'status': 'success',
-            'data': regime_data,
-            'message': 'Regime detection completed'
+            'data': data
         })
-
     except Exception as e:
-        return jsonify({
-            'status': 'error',
-            'message': str(e),
-            'traceback': traceback.format_exc()
-        }), 500
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 @app.route('/api/regime/current', methods=['GET'])
 def get_current_regime():

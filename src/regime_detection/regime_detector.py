@@ -1029,6 +1029,15 @@ def main():
 
     return detector
 
+
+def api_wrapper():
+    """Wrapper to make your existing code API-friendly"""
+    # Call your existing main function
+    # your_existing_main()  # Replace with your actual function name
+
+    # After your code runs and creates files in Analysis/, return success
+    return {"status": "success", "message": "Regime detection completed"}
+
 if __name__ == "__main__":
     import sys
 
@@ -1042,5 +1051,5 @@ if __name__ == "__main__":
         # Run your existing code normally
         # your_existing_main_function()
         pass
-    
+
     detector = main()

@@ -342,6 +342,17 @@ def main():
         import traceback
         traceback.print_exc()
 
+
+def get_current_regime_api():
+    """API wrapper to get current regime"""
+    # Your existing code already creates current_regime_analysis.json
+    # Just run it and return the path
+    # your_existing_function()  # Replace with your actual function
+
+    import json
+    with open("Analysis/current_regime_analysis.json", 'r') as f:
+        return json.load(f)
+
 if __name__ == "__main__":
     import sys
 
