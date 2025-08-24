@@ -38,6 +38,92 @@ import os
 import re
 
 
+class WeightOptimizerAPI:
+    """
+    API wrapper for your weight optimizer
+    Add this to your MultiFactor_optimizer_03.py
+    """
+
+    def __init__(self, analysis_dir="Analysis", results_dir="Results"):
+        self.analysis_dir = Path(analysis_dir)
+        self.results_dir = Path(results_dir)
+        self.results_dir.mkdir(exist_ok=True)
+
+    def optimize_for_regime(self, regime="Steady Growth", backtest_months=12, n_companies=150):
+        """
+        Run optimization for a specific regime
+        """
+        try:
+            # First, check if regime data exists
+            regime_file = self.analysis_dir / "current_regime_analysis.json"
+            if not regime_file.exists():
+                return {"error": "No regime analysis found. Run regime detection first."}
+
+            # Call your existing optimization logic here
+            # weights = your_optimization_function(regime, backtest_months, n_companies)
+
+            # Example weights (replace with your actual optimization)
+            example_weights = {
+                "Value": 0.12,
+                "Quality": 0.10,
+                "FinancialHealth": 0.08,
+                "Technical": 0.09,
+                "Insider": 0.07,
+                "Momentum": 0.11,
+                "Stability": 0.09,
+                "Size": 0.06,
+                "Credit": 0.07,
+                "Liquidity": 0.08,
+                "Carry": 0.06,
+                "Growth": 0.07
+            }
+
+            # Save results
+            self.save_optimization_results(regime, example_weights)
+
+            return {
+                "success": True,
+                "regime": regime,
+                "weights": example_weights
+            }
+
+        except Exception as e:
+            return {
+                "success": False,
+                "error": str(e)
+            }
+
+    def save_optimization_results(self, regime, weights):
+        """
+        Save optimization results in format expected by other scripts
+        """
+        # Format regime name for filename
+        regime_filename = regime.lower().replace(' ', '_').replace('/', '_')
+
+        # Save as text file (your existing format)
+        results_file = self.results_dir / f"factor_analysis_results_{regime_filename}.txt"
+
+        with open(results_file, 'w') as f:
+            f.write(f"Factor Analysis Results - {regime}\n")
+            f.write("=" * 50 + "\n")
+            f.write(f"Optimization Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+            f.write("\nOptimized Factor Weights:\n")
+            f.write("-" * 30 + "\n")
+
+            for factor, weight in weights.items():
+                f.write(f"{factor}: {weight:.4f} ({weight * 100:.2f}%)\n")
+
+            f.write("\n" + "=" * 50 + "\n")
+
+        # Also save as JSON for easier API access
+        json_file = self.results_dir / f"weights_{regime_filename}.json"
+        with open(json_file, 'w') as f:
+            json.dump({
+                "regime": regime,
+                "weights": weights,
+                "timestamp": datetime.now().isoformat()
+            }, f, indent=2)
+
 # Add this monkey-patching code BEFORE any yahooquery imports
 class CurlCffiSessionWrapper(CurlSession):
     """Wrapper to make curl_cffi compatible with yahooquery's expectations"""
@@ -2746,6 +2832,19 @@ def main():
 
 
 if __name__ == "__main__":
+    import sys
+
+    # Check if script is being called with API flag
+    if "--api" in sys.argv:
+        # Run in API mode (returns JSON-friendly output)
+        detector = RegimeDetectorAPI()
+        result = detector.run_detection()
+        print(json.dumps(result))
+    else:
+        # Run your existing code normally
+        # your_existing_main_function()
+        pass
+
     # Create a config file if it doesn't exist
     if not os.path.exists("./Config/marketstack_config.json"):
         config = {

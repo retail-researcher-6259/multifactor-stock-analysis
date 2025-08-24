@@ -9,6 +9,8 @@ import yfinance as yf
 from datetime import datetime, timedelta
 import json
 from sklearn.decomposition import PCA
+import pickle
+from pathlib import Path
 
 class CurrentRegimeDetector:
     def __init__(self, model_path='regime_model.pkl'):
@@ -226,6 +228,36 @@ class CurrentRegimeDetector:
 
         return REGIME_WEIGHTS.get(current_regime_name, REGIME_WEIGHTS['Steady Growth'])
 
+    def get_current_regime_for_api(self):
+        """
+        Function to get current regime in API-friendly format
+        Add this to your current_regime_detector.py
+        """
+        try:
+            # Run your existing current regime detection
+            # current_regime = your_existing_detection_function()
+
+            # Format for API
+            result = {
+                "current_regime": "Steady Growth",  # Replace with actual
+                "probabilities": {
+                    "Steady Growth": 0.68,
+                    "Strong Bull": 0.22,
+                    "Crisis/Bear": 0.10
+                },
+                "last_updated": datetime.now().isoformat(),
+                "confidence_score": 0.85
+            }
+
+            # Save to JSON for API access
+            with open("Analysis/current_regime_analysis.json", 'w') as f:
+                json.dump(result, f, indent=2)
+
+            return result
+
+        except Exception as e:
+            return {"error": str(e)}
+
 def main():
     try:
         # Initialize detector
@@ -311,4 +343,17 @@ def main():
         traceback.print_exc()
 
 if __name__ == "__main__":
+    import sys
+
+    # Check if script is being called with API flag
+    if "--api" in sys.argv:
+        # Run in API mode (returns JSON-friendly output)
+        detector = RegimeDetectorAPI()
+        result = detector.run_detection()
+        print(json.dumps(result))
+    else:
+        # Run your existing code normally
+        # your_existing_main_function()
+        pass
+
     main()

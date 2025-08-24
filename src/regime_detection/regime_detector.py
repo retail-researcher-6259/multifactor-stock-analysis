@@ -15,8 +15,105 @@ import yfinance as yf
 from pathlib import Path
 import json
 import os
+import pickle
 
 warnings.filterwarnings('ignore')
+
+
+class RegimeDetectorAPI:
+    """
+    Wrapper class to make your existing regime detector work with the API
+    Add this to your regime_detector.py
+    """
+
+    def __init__(self, analysis_dir="Analysis"):
+        self.analysis_dir = Path(analysis_dir)
+        self.analysis_dir.mkdir(exist_ok=True)
+
+    def save_results_for_api(self, regime_model, regime_periods_df, current_regime_info):
+        """
+        Save results in formats that the API can easily read
+        Call this at the end of your regime detection process
+        """
+
+        # Save the model
+        model_path = self.analysis_dir / "regime_model.pkl"
+        with open(model_path, 'wb') as f:
+            pickle.dump(regime_model, f)
+
+        # Save regime periods as CSV
+        periods_path = self.analysis_dir / "regime_periods.csv"
+        regime_periods_df.to_csv(periods_path, index=False)
+
+        # Save current regime analysis as JSON
+        analysis_path = self.analysis_dir / "current_regime_analysis.json"
+
+        # Prepare data for JSON serialization
+        json_data = {
+            "current_regime": current_regime_info.get("regime", "Unknown"),
+            "regime_probabilities": {
+                "Steady Growth": float(current_regime_info.get("prob_growth", 0)),
+                "Strong Bull": float(current_regime_info.get("prob_bull", 0)),
+                "Crisis/Bear": float(current_regime_info.get("prob_bear", 0))
+            },
+            "timestamp": datetime.now().isoformat(),
+            "confidence": float(current_regime_info.get("confidence", 0)),
+            "supporting_indicators": current_regime_info.get("indicators", {})
+        }
+
+        with open(analysis_path, 'w') as f:
+            json.dump(json_data, f, indent=2)
+
+        return {
+            "model_path": str(model_path),
+            "periods_path": str(periods_path),
+            "analysis_path": str(analysis_path)
+        }
+
+    def run_detection(self, data_source="marketstack"):
+        """
+        Main function to run regime detection
+        This should call your existing detection logic
+        """
+        try:
+            # Call your existing detection functions here
+            # Example:
+            # from your_existing_code import detect_regimes
+            # model, periods, current = detect_regimes(data_source)
+
+            # For now, return example data
+            # Replace this with your actual detection logic
+            example_current_regime = {
+                "regime": "Steady Growth",
+                "prob_growth": 0.68,
+                "prob_bull": 0.22,
+                "prob_bear": 0.10,
+                "confidence": 0.85,
+                "indicators": {
+                    "vix": 15.2,
+                    "market_trend": "upward",
+                    "volatility": "low"
+                }
+            }
+
+            # Save results for API
+            paths = self.save_results_for_api(
+                regime_model=None,  # Replace with your actual model
+                regime_periods_df=pd.DataFrame(),  # Replace with your actual dataframe
+                current_regime_info=example_current_regime
+            )
+
+            return {
+                "success": True,
+                "paths": paths,
+                "current_regime": example_current_regime
+            }
+
+        except Exception as e:
+            return {
+                "success": False,
+                "error": str(e)
+            }
 
 class MarketRegimeDetector:
     def __init__(self, n_regimes=4, lookback_years=10):
@@ -933,4 +1030,17 @@ def main():
     return detector
 
 if __name__ == "__main__":
+    import sys
+
+    # Check if script is being called with API flag
+    if "--api" in sys.argv:
+        # Run in API mode (returns JSON-friendly output)
+        detector = RegimeDetectorAPI()
+        result = detector.run_detection()
+        print(json.dumps(result))
+    else:
+        # Run your existing code normally
+        # your_existing_main_function()
+        pass
+    
     detector = main()
