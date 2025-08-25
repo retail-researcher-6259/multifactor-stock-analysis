@@ -14,9 +14,14 @@ from pathlib import Path
 
 class CurrentRegimeDetector:
     def __init__(self, model_path='regime_model.pkl'):
-        # Create Analysis directory if it doesn't exist
-        self.output_dir = "./Analysis"
-        os.makedirs(self.output_dir, exist_ok=True)
+        # Set correct paths
+        self.project_root = Path(__file__).parent.parent.parent
+        self.output_dir = self.project_root / "output" / "Regime_Detection_Analysis"
+        self.results_dir = self.project_root / "output" / "Regime_Detection_Results"
+        self.config_dir = self.project_root / "config"
+
+        # Create directories if needed
+        self.output_dir.mkdir(parents=True, exist_ok=True)
 
         # Update model path to look in Analysis directory
         model_path = os.path.join(self.output_dir, model_path)
@@ -260,6 +265,11 @@ class CurrentRegimeDetector:
 
 def main():
     try:
+        """Main function with corrected paths"""
+        project_root = Path(__file__).parent.parent.parent
+        output_dir = project_root / "output" / "Regime_Detection_Analysis"
+        output_dir.mkdir(parents=True, exist_ok=True)
+
         # Initialize detector
         detector = CurrentRegimeDetector()
 
@@ -323,17 +333,12 @@ def main():
             'recommended_weights': convert_numpy_types(weights)
         }
 
-        # Save results - update the path
-        output_path = os.path.join(detector.output_dir, 'current_regime_analysis.json')
+        # When saving, use absolute path:
+        output_path = output_dir / "current_regime_analysis.json"
         with open(output_path, 'w') as f:
             json.dump(output, f, indent=2)
 
-        print(f"\n✅ Analysis saved to {output_path}")
-
-        # with open('current_regime_analysis.json', 'w') as f:
-        #     json.dump(output, f, indent=2)
-        #
-        # print(f"\n✅ Analysis saved to current_regime_analysis.json")
+        print(f"✅ Analysis saved to {output_path}")
 
         return result, weights
 
@@ -343,15 +348,31 @@ def main():
         traceback.print_exc()
 
 
+def load_config():
+    """Load configuration from the correct path"""
+    project_root = Path(__file__).parent.parent.parent
+    config_file = project_root / "config" / "marketstack_config.json"
+
+    if config_file.exists():
+        with open(config_file, 'r') as f:
+            return json.load(f)
+    else:
+        print(f"Config file not found: {config_file}")
+        return {"api_key": "your_api_key_here"}
+
 def get_current_regime_api():
     """API wrapper to get current regime"""
-    # Your existing code already creates current_regime_analysis.json
-    # Just run it and return the path
-    # your_existing_function()  # Replace with your actual function
+    project_root = Path(__file__).parent.parent.parent
+    analysis_file = project_root / "output" / "Regime_Detection_Analysis" / "current_regime_analysis.json"
 
-    import json
-    with open("Analysis/current_regime_analysis.json", 'r') as f:
-        return json.load(f)
+    if analysis_file.exists():
+        with open(analysis_file, 'r') as f:
+            return json.load(f)
+    else:
+        # Run the analysis
+        main()
+        with open(analysis_file, 'r') as f:
+            return json.load(f)
 
 if __name__ == "__main__":
     import sys

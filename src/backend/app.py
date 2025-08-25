@@ -1,6 +1,5 @@
 """
-backend/app.py - Flask API to bridge Python scripts with HTML dashboard
-Place this in src/backend/app.py
+backend/app.py - Fixed Flask API with correct paths
 """
 
 from flask import Flask, jsonify, request, send_from_directory
@@ -13,36 +12,28 @@ import pandas as pd
 import pickle
 from datetime import datetime
 import traceback
-from ..regime_detection.regime_detector import api_wrapper
-from ..regime_detection.current_regime_detector import get_current_regime_api
-from ..weight_optimization.MultiFactor_optimizer_03 import optimize_api
+import subprocess
 
-
-# Add parent directories to path so we can import your scripts
+# Add parent directories to path
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root / 'src'))
-
-# Import your existing scripts (adjust paths as needed)
-try:
-    from regime_detection import regime_detector
-    from regime_detection import current_regime_detector
-    from weight_optimization import MultiFactor_optimizer_03 as optimizer
-except ImportError as e:
-    print(f"Warning: Could not import some modules: {e}")
-    print("Make sure your scripts are in the correct folders")
+sys.path.insert(0, str(project_root / 'config'))
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for browser requests
 
-# Configure paths (adjust these to match your folder structure)
-ANALYSIS_DIR = project_root / "Analysis"
-RESULTS_DIR = project_root / "Results"
+# Configure paths
+REGIME_ANALYSIS_DIR = project_root / "output" / "Regime_Detection_Analysis"
+REGIME_RESULTS_DIR = project_root / "output" / "Regime_Detection_Results"
+WEIGHT_RESULTS_DIR = project_root / "output" / "Weight_Optimization_Results"
 DATA_DIR = project_root / "data"
-UI_DIR = project_root / "ui"
+UI_DIR = project_root / "UI"
+CONFIG_DIR = project_root / "config"
 
 # Ensure directories exist
-for dir_path in [ANALYSIS_DIR, RESULTS_DIR, DATA_DIR]:
+for dir_path in [REGIME_ANALYSIS_DIR, REGIME_RESULTS_DIR, WEIGHT_RESULTS_DIR]:
     dir_path.mkdir(parents=True, exist_ok=True)
+
 
 # ------------------------------------------------------------
 # REGIME DETECTION ENDPOINTS
@@ -50,49 +41,106 @@ for dir_path in [ANALYSIS_DIR, RESULTS_DIR, DATA_DIR]:
 
 @app.route('/api/regime/detect', methods=['POST'])
 def detect_regime():
-    try:
-        # Call your wrapped function
-        result = run_regime_detection()
-
-        # Read the files your script created
-        with open("Analysis/current_regime_analysis.json", 'r') as f:
-            data = json.load(f)
-
-        return jsonify({
-            'status': 'success',
-            'data': data
-        })
-    except Exception as e:
-        return jsonify({'status': 'error', 'message': str(e)}), 500
-
-@app.route('/api/regime/current', methods=['GET'])
-def get_current_regime():
     """
-    Get the current regime from saved analysis
+    Endpoint to run regime detection
     """
     try:
-        # Read from your current_regime_analysis.json
-        analysis_file = ANALYSIS_DIR / "current_regime_analysis.json"
+        data = request.json or {}
+        data_source = data.get('data_source', 'marketstack')
+
+        print(f"Running regime detection with data source: {data_source}")
+
+        # Call the regime detector script directly
+        script_path = project_root / 'src' / 'regime_detection' / 'regime_detector.py'
+
+        result = subprocess.run(
+            [sys.executable, str(script_path)],
+            capture_output=True,
+            text=True,
+            cwd=str(project_root)
+        )
+
+        print(f"Script return code: {result.returncode}")
+        if result.stdout:
+            print(f"Script output: {result.stdout[:500]}")  # First 500 chars
+        if result.stderr:
+            print(f"Script error: {result.stderr[:500]}")
+
+        # Read the generated files
+        regime_data = {}
+
+        # Read regime_periods.csv
+        regime_file = REGIME_RESULTS_DIR / "regime_periods.csv"
+        if regime_file.exists():
+            df = pd.read_csv(regime_file)
+            regime_data['periods'] = df.to_dict('records')
+            print(f"Loaded {len(df)} regime periods")
+        else:
+            print(f"Warning: {regime_file} not found")
+
+        # Read current_regime_analysis.json
+        analysis_file = REGIME_ANALYSIS_DIR / "current_regime_analysis.json"
+        if not analysis_file.exists():
+            # Try the Results directory as fallback
+            analysis_file = REGIME_RESULTS_DIR / "current_regime_analysis.json"
 
         if analysis_file.exists():
             with open(analysis_file, 'r') as f:
-                data = json.load(f)
-
-            # Extract key information
-            current_regime = data.get('current_regime', 'Unknown')
-            probabilities = data.get('regime_probabilities', {})
-
-            return jsonify({
-                'status': 'success',
-                'current_regime': current_regime,
-                'probabilities': probabilities,
-                'last_updated': data.get('timestamp', 'Unknown')
-            })
+                regime_data['current'] = json.load(f)
+            print("Loaded current regime analysis")
         else:
-            return jsonify({
-                'status': 'warning',
-                'message': 'No regime analysis found. Please run detection first.'
-            })
+            print(f"Warning: current_regime_analysis.json not found")
+
+        return jsonify({
+            'status': 'success',
+            'data': regime_data,
+            'message': 'Regime detection completed'
+        })
+
+    except Exception as e:
+        print(f"Error in detect_regime: {str(e)}")
+        return jsonify({
+            'status': 'error',
+            'message': str(e),
+            'traceback': traceback.format_exc()
+        }), 500
+
+
+@app.route('/api/regime/current', methods=['GET'])
+def get_current_regime():
+    """Get the current regime from saved analysis"""
+    try:
+        # Try multiple locations
+        possible_paths = [
+            REGIME_ANALYSIS_DIR / "current_regime_analysis.json",
+            REGIME_RESULTS_DIR / "current_regime_analysis.json"
+        ]
+
+        for analysis_file in possible_paths:
+            if analysis_file.exists():
+                with open(analysis_file, 'r') as f:
+                    data = json.load(f)
+
+                # Handle different data formats
+                if 'regime_detection' in data:
+                    regime_info = data['regime_detection']
+                    current_regime = regime_info.get('current_regime', 'Unknown')
+                    probabilities = regime_info.get('regime_probabilities', {})
+                else:
+                    current_regime = data.get('current_regime', 'Unknown')
+                    probabilities = data.get('regime_probabilities', {})
+
+                return jsonify({
+                    'status': 'success',
+                    'current_regime': current_regime,
+                    'probabilities': probabilities,
+                    'last_updated': data.get('timestamp', 'Unknown')
+                })
+
+        return jsonify({
+            'status': 'warning',
+            'message': 'No regime analysis found. Please run detection first.'
+        })
 
     except Exception as e:
         return jsonify({
@@ -100,26 +148,22 @@ def get_current_regime():
             'message': str(e)
         }), 500
 
+
 @app.route('/api/regime/historical', methods=['GET'])
 def get_historical_regimes():
-    """
-    Get historical regime periods
-    """
+    """Get historical regime periods"""
     try:
-        # Get time period from query parameters
-        period = request.args.get('period', '30')  # days
+        period = request.args.get('period', '30')
 
-        regime_file = ANALYSIS_DIR / "regime_periods.csv"
+        regime_file = REGIME_RESULTS_DIR / "regime_periods.csv"
         if regime_file.exists():
             df = pd.read_csv(regime_file)
 
-            # Filter by period if needed
-            if period != 'all':
-                # Add date filtering logic here based on your data structure
-                pass
-
-            # Calculate regime statistics
-            stats = df['regime'].value_counts(normalize=True).to_dict()
+            # Calculate statistics
+            if 'regime_name' in df.columns:
+                stats = df['regime_name'].value_counts(normalize=True).to_dict()
+            else:
+                stats = {}
 
             return jsonify({
                 'status': 'success',
@@ -144,26 +188,24 @@ def get_regime_probabilities():
     Get regime probabilities from the model
     """
     try:
-        model_file = ANALYSIS_DIR / "regime_model.pkl"
+        # Check for model in Regime_Detection_Results
+        model_file = REGIME_RESULTS_DIR / "regime_model.pkl"
+
+        # Also check in Analysis directory as fallback
+        if not model_file.exists():
+            model_file = REGIME_ANALYSIS_DIR / "regime_model.pkl"
+
         if model_file.exists():
-            with open(model_file, 'rb') as f:
-                model = pickle.load(f)
-
-            # Get probabilities from your model
-            # This depends on your model structure
-            # Example:
-            # probs = model.predict_proba(latest_data)
-
-            # For now, return from the JSON file
-            analysis_file = ANALYSIS_DIR / "current_regime_analysis.json"
+            # Read probabilities from current analysis
+            analysis_file = REGIME_ANALYSIS_DIR / "current_regime_analysis.json"
             if analysis_file.exists():
                 with open(analysis_file, 'r') as f:
                     data = json.load(f)
-                    probabilities = data.get('regime_probabilities', {
-                        'Steady Growth': 0.68,
-                        'Strong Bull': 0.22,
-                        'Crisis/Bear': 0.10
-                    })
+
+                    if 'regime_detection' in data:
+                        probabilities = data['regime_detection'].get('regime_probabilities', {})
+                    else:
+                        probabilities = data.get('regime_probabilities', {})
             else:
                 probabilities = {
                     'Steady Growth': 0.33,
@@ -178,13 +220,166 @@ def get_regime_probabilities():
         else:
             return jsonify({
                 'status': 'warning',
-                'message': 'Model not found'
+                'message': 'Model not found. Please run regime detection first.'
             })
 
     except Exception as e:
         return jsonify({
             'status': 'error',
             'message': str(e)
+        }), 500
+
+
+@app.route('/api/regime/fetch-historical', methods=['POST'])
+def fetch_historical_regime_data():
+    """
+    Fetch historical data from Marketstack and detect regimes
+    """
+    try:
+        data = request.json or {}
+        data_source = data.get('data_source', 'marketstack')
+        years = data.get('years', 10)
+
+        print(f"Fetching {years} years of historical data from {data_source}")
+
+        # Run the regime detector with historical data fetching
+        script_path = project_root / 'src' / 'regime_detection' / 'regime_detector.py'
+
+        # Run with special flag to fetch historical data
+        result = subprocess.run(
+            [sys.executable, str(script_path), '--fetch-historical', f'--years={years}'],
+            capture_output=True,
+            text=True,
+            cwd=str(project_root)
+        )
+
+        print(f"Script return code: {result.returncode}")
+        if result.stdout:
+            print(f"Script output: {result.stdout[:500]}")
+
+        # Read the saved historical analysis
+        historical_file = REGIME_ANALYSIS_DIR / "historical_regimes.json"
+        data_summary_file = REGIME_ANALYSIS_DIR / "data_summary.json"
+
+        response_data = {
+            'status': 'success',
+            'message': 'Historical data fetched and analyzed'
+        }
+
+        if historical_file.exists():
+            with open(historical_file, 'r') as f:
+                historical_data = json.load(f)
+                response_data['statistics'] = historical_data.get('statistics', {})
+                response_data['regime_periods'] = historical_data.get('regime_periods', [])
+
+        if data_summary_file.exists():
+            with open(data_summary_file, 'r') as f:
+                summary = json.load(f)
+                response_data['data_range'] = summary.get('data_range', {})
+                response_data['symbols'] = summary.get('symbols', [])
+
+        return jsonify(response_data)
+
+    except Exception as e:
+        print(f"Error fetching historical data: {str(e)}")
+        return jsonify({
+            'status': 'error',
+            'message': str(e),
+            'traceback': traceback.format_exc()
+        }), 500
+
+
+@app.route('/api/regime/historical-saved', methods=['GET'])
+def get_saved_historical_regimes():
+    """
+    Get saved historical regime data without re-fetching
+    """
+    try:
+        # Debug: Print the paths being checked
+        print(f"Checking for historical data in: {REGIME_ANALYSIS_DIR}")
+
+        # Read saved historical analysis
+        historical_file = REGIME_ANALYSIS_DIR / "historical_regimes.json"
+        data_summary_file = REGIME_ANALYSIS_DIR / "data_summary.json"
+
+        print(f"Looking for historical_regimes.json at: {historical_file}")
+        print(f"File exists: {historical_file.exists()}")
+
+        if not historical_file.exists():
+            # Also check if the files might be in Results directory
+            alt_historical = REGIME_RESULTS_DIR / "historical_regimes.json"
+            alt_summary = REGIME_RESULTS_DIR / "data_summary.json"
+
+            print(f"Checking alternative location: {alt_historical}")
+            print(f"Alternative exists: {alt_historical.exists()}")
+
+            if alt_historical.exists():
+                historical_file = alt_historical
+                data_summary_file = alt_summary
+            else:
+                return jsonify({
+                    'status': 'warning',
+                    'message': 'No historical data found. Please fetch data first.'
+                })
+
+        # Read the historical data
+        with open(historical_file, 'r') as f:
+            historical_data = json.load(f)
+
+        response_data = {
+            'status': 'success',
+            'statistics': historical_data.get('statistics', {}),
+            'regime_periods': historical_data.get('regime_periods', []),
+            'last_updated': historical_data.get('last_updated', 'Unknown')
+        }
+
+        # Add data range if available
+        if data_summary_file.exists():
+            print(f"Reading data summary from: {data_summary_file}")
+            with open(data_summary_file, 'r') as f:
+                summary = json.load(f)
+                response_data['data_range'] = summary.get('data_range', {})
+                response_data['symbols'] = summary.get('symbols', [])
+
+        print(f"Returning historical data with {len(response_data.get('regime_periods', []))} periods")
+
+        return jsonify(response_data)
+
+    except Exception as e:
+        print(f"Error in get_saved_historical_regimes: {str(e)}")
+        import traceback
+        traceback.print_exc()
+
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
+
+@app.route('/api/debug/files', methods=['GET'])
+def debug_files():
+    """Debug endpoint to check what files exist"""
+    try:
+        files_info = {
+            'regime_analysis_dir': str(REGIME_ANALYSIS_DIR),
+            'regime_results_dir': str(REGIME_RESULTS_DIR),
+            'analysis_files': [],
+            'results_files': []
+        }
+
+        # List files in Analysis directory
+        if REGIME_ANALYSIS_DIR.exists():
+            files_info['analysis_files'] = [f.name for f in REGIME_ANALYSIS_DIR.iterdir() if f.is_file()]
+
+        # List files in Results directory
+        if REGIME_RESULTS_DIR.exists():
+            files_info['results_files'] = [f.name for f in REGIME_RESULTS_DIR.iterdir() if f.is_file()]
+
+        return jsonify(files_info)
+
+    except Exception as e:
+        return jsonify({
+            'error': str(e)
         }), 500
 
 # ------------------------------------------------------------
@@ -202,29 +397,33 @@ def optimize_weights():
         backtest_period = data.get('backtest_period', 12)
         sample_companies = data.get('sample_companies', 150)
 
-        # Call your optimizer script
-        # You'll need to modify based on your actual function
-        # Example:
-        # results = optimizer.optimize_for_regime(regime, backtest_period, sample_companies)
-
-        # For now, simulate the call
+        # Call optimizer with regime parameter
         import subprocess
         result = subprocess.run(
             [sys.executable, str(project_root / 'src' / 'weight_optimization' / 'MultiFactor_optimizer_03.py'),
              '--regime', regime],
             capture_output=True,
-            text=True
+            text=True,
+            cwd=str(project_root)
         )
 
-        # Read the generated results
-        results_file = RESULTS_DIR / f"factor_analysis_results_{regime.lower().replace(' ', '_').replace('/', '_')}.txt"
+        if result.returncode != 0:
+            print(f"Optimizer error: {result.stderr}")
+
+        # Read results - check multiple possible locations
+        regime_filename = regime.lower().replace(' ', '_').replace('/', '_')
+
+        # Try Weight_Optimization_Results first
+        results_file = WEIGHT_RESULTS_DIR / f"factor_analysis_results_{regime_filename}.txt"
+
+        # Fallback to other output directories
+        if not results_file.exists():
+            results_file = project_root / "output" / f"factor_analysis_results_{regime_filename}.txt"
 
         weights = {}
         if results_file.exists():
             with open(results_file, 'r') as f:
                 content = f.read()
-                # Parse your results file to extract weights
-                # This depends on your file format
                 weights = parse_weights_from_results(content)
 
         return jsonify({
@@ -237,7 +436,8 @@ def optimize_weights():
     except Exception as e:
         return jsonify({
             'status': 'error',
-            'message': str(e)
+            'message': str(e),
+            'traceback': traceback.format_exc()
         }), 500
 
 @app.route('/api/weights/current', methods=['GET'])
@@ -246,7 +446,7 @@ def get_current_weights():
     Get current factor weights for all regimes
     """
     try:
-        # Read weights from your saved files or configuration
+        # Default weights
         weights = {
             'Steady Growth': {
                 'Value': 0.12, 'Quality': 0.10, 'FinancialHealth': 0.08,
@@ -271,13 +471,21 @@ def get_current_weights():
         # Try to read from actual results files
         for regime in weights.keys():
             filename = f"factor_analysis_results_{regime.lower().replace(' ', '_').replace('/', '_')}.txt"
-            results_file = RESULTS_DIR / filename
-            if results_file.exists():
-                with open(results_file, 'r') as f:
-                    content = f.read()
-                    parsed_weights = parse_weights_from_results(content)
-                    if parsed_weights:
-                        weights[regime] = parsed_weights
+
+            # Check multiple locations
+            possible_paths = [
+                WEIGHT_RESULTS_DIR / filename,
+                project_root / "output" / filename
+            ]
+
+            for results_file in possible_paths:
+                if results_file.exists():
+                    with open(results_file, 'r') as f:
+                        content = f.read()
+                        parsed_weights = parse_weights_from_results(content)
+                        if parsed_weights:
+                            weights[regime] = parsed_weights
+                    break
 
         return jsonify({
             'status': 'success',
@@ -297,21 +505,39 @@ def get_current_weights():
 def parse_weights_from_results(content):
     """
     Parse weights from your results text file
-    Modify this based on your actual file format
     """
     weights = {}
-    # Example parsing logic - adjust based on your file format
     lines = content.split('\n')
+
+    # Look for lines with factor weights
+    in_weights_section = False
     for line in lines:
-        if ':' in line and any(factor in line for factor in ['Value', 'Quality', 'Momentum']):
+        if 'Optimized Factor Weights' in line or 'Factor Weights' in line:
+            in_weights_section = True
+            continue
+
+        if in_weights_section and ':' in line:
+            # Parse lines like "Value: 0.1200 (12.00%)"
             parts = line.split(':')
             if len(parts) == 2:
                 factor = parts[0].strip()
+                value_part = parts[1].strip()
+
+                # Extract the decimal value
                 try:
-                    weight = float(parts[1].strip().rstrip('%')) / 100
+                    # Remove percentage part if present
+                    if '(' in value_part:
+                        value_part = value_part.split('(')[0].strip()
+                    weight = float(value_part)
+
+                    # Convert to decimal if it's a percentage
+                    if weight > 1:
+                        weight = weight / 100
+
                     weights[factor] = weight
                 except ValueError:
-                    pass
+                    continue
+
     return weights
 
 # ------------------------------------------------------------
@@ -338,14 +564,25 @@ def health_check():
     return jsonify({
         'status': 'healthy',
         'timestamp': datetime.now().isoformat(),
-        'version': '1.0.0'
+        'version': '1.0.0',
+        'paths': {
+            'regime_analysis': str(REGIME_ANALYSIS_DIR),
+            'regime_results': str(REGIME_RESULTS_DIR),
+            'weight_results': str(WEIGHT_RESULTS_DIR)
+        }
     })
 
 if __name__ == '__main__':
     print("=" * 50)
     print("Starting Multifactor Stock Analysis Backend")
+    print(f"Project root: {project_root}")
     print(f"API running at: http://localhost:5000")
     print(f"Dashboard at: http://localhost:5000/")
     print("=" * 50)
+    print("Output directories:")
+    print(f"  Regime Analysis: {REGIME_ANALYSIS_DIR}")
+    print(f"  Regime Results: {REGIME_RESULTS_DIR}")
+    print(f"  Weight Results: {WEIGHT_RESULTS_DIR}")
+    print("=" * 50)
 
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5000, host='0.0.0.0')

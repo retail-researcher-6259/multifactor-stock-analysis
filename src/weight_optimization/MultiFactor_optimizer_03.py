@@ -37,6 +37,15 @@ import json
 import os
 import re
 
+# Set up paths
+project_root = Path(__file__).parent.parent.parent
+TICKER_FILE = project_root / "config" / "test_tickers_stocks.txt"
+output_dir = project_root / "output" / "Weight_Optimization_Results"
+regime_results_dir = project_root / "output" / "Regime_Detection_Results"
+data_dir = project_root / "data"
+
+# Create output directory
+output_dir.mkdir(parents=True, exist_ok=True)
 
 class WeightOptimizerAPI:
     """
@@ -171,8 +180,13 @@ MARKETSTACK_BASE_URL = "https://api.marketstack.com/v2"
 CORRELATION_YEARS = 3  # Changed from 1 year to 3 years
 # EXPONENTIAL_DECAY_HALFLIFE = 126  # Half-life in trading days (about 6 months)
 
-# Add after the existing constants
-REGIME_PERIODS_FILE = r"./Analysis/regime_periods.csv"
+# When reading regime periods:
+regime_periods_file = regime_results_dir / "regime_periods.csv"
+if regime_periods_file.exists():
+    regime_periods = pd.read_csv(regime_periods_file)
+else:
+    print(f"Warning: {regime_periods_file} not found")
+
 SELECTED_REGIME = r"Crisis/Bear"  # "Strong Bull", "Steady Growth", or "Crisis/Bear"
 MIN_CRISIS_DAYS = 14  # Minimum days to consider a real crisis
 
@@ -325,13 +339,17 @@ def load_regime_periods(regime_name):
 
 # Add configuration loading function
 def load_marketstack_config():
-    """Load Marketstack API configuration"""
-    config_file = r"./Config/marketstack_config.json"
-    if os.path.exists(config_file):
+    """Load Marketstack API configuration with correct path"""
+    project_root = Path(__file__).parent.parent.parent
+    config_file = project_root / "config" / "marketstack_config.json"
+
+    if config_file.exists():
         with open(config_file, 'r') as f:
             config = json.load(f)
             return config.get('api_key', MARKETSTACK_API_KEY)
-    return MARKETSTACK_API_KEY
+    else:
+        print(f"Warning: Config file not found at {config_file}")
+        return MARKETSTACK_API_KEY
 
 
 def sanitize_filename(filename):
@@ -1899,7 +1917,7 @@ def weight_optimization_analysis(factor_data, returns, weight_set):
     return result
 
 
-def save_analysis_results(results_text, filename="analysis_results.txt", results_dir="./Results"):
+def save_analysis_results(results_text, filename="analysis_results.txt", results_dir=None):
     """
     Save the analysis results to a text file.
 
@@ -1909,12 +1927,19 @@ def save_analysis_results(results_text, filename="analysis_results.txt", results
         results_dir (str): The output directory
     """
     try:
-        # Create full path
-        filepath = os.path.join(results_dir, filename)
+        """Save analysis results to file"""
+        if results_dir is None:
+            project_root = Path(__file__).parent.parent.parent
+            results_dir = project_root / "output" / "Weight_Optimization_Results"
 
-        with open(filepath, "w", encoding="utf-8") as f:
-            f.write(results_text)
-        print(f"✅ Analysis results saved to {filepath}")
+        results_dir.mkdir(parents=True, exist_ok=True)
+        filepath = results_dir / filename
+
+        with open(filepath, 'w', encoding='utf-8') as f:
+            f.write(content)
+
+        print(f"Results saved to: {filepath}")
+        return filepath
     except Exception as e:
         print(f"❌ Failed to save analysis results: {e}")
 
@@ -2806,18 +2831,6 @@ def main():
                           f"factor_analysis_results_{sanitize_filename(SELECTED_REGIME).lower()}.txt",
                           results_dir=results_dir)
 
-    # return {
-    #     'correlations': correlations,
-    #     'correlation_matrix': correlation_matrix,
-    #     'weight_effectiveness': effectiveness_df,
-    #     'analysis_df': analysis_df,
-    #     'optimization_results': optimization_results,
-    #     'methodology': {
-    #         'correlation_period_years': CORRELATION_YEARS,
-    #         'exponential_halflife_days': EXPONENTIAL_DECAY_HALFLIFE,
-    #         'data_source': 'Marketstack API'
-    #     }
-    # }
     return {
         'correlations': correlations,
         'correlation_matrix': correlation_matrix,
@@ -2831,12 +2844,14 @@ def main():
     }
 
 
-# At the END of your existing file, add:
-
 def optimize_api(regime="Steady Growth"):
     """API wrapper for optimization"""
-    # Your existing code that reads from Analysis/ and writes to Results/
-    # your_optimization_function(regime)  # Replace with your actual function
+    # Set the SELECTED_REGIME variable
+    global SELECTED_REGIME
+    SELECTED_REGIME = regime
+
+    # Run your main optimization code
+    # main()  # or whatever your main function is called
 
     return {"status": "success", "regime": regime}
 

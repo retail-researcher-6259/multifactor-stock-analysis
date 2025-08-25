@@ -16,9 +16,12 @@ from pathlib import Path
 import json
 import os
 import pickle
+import requests
+import time
 
 warnings.filterwarnings('ignore')
 
+MARKETSTACK_BASE_URL = "https://api.marketstack.com/v2"
 
 class RegimeDetectorAPI:
     """
@@ -135,47 +138,375 @@ class MarketRegimeDetector:
         self.features_reduced = None
         self.regime_history = None
 
-        # Create Analysis directory if it doesn't exist
-        self.output_dir = "./Analysis"
-        os.makedirs(self.output_dir, exist_ok=True)
+        # ADD THIS: Set output directories relative to project root
+        self.project_root = Path(__file__).parent.parent.parent
+        self.output_dir = self.project_root / "output" / "Regime_Detection_Results"
+        self.analysis_dir = self.project_root / "output" / "Regime_Detection_Analysis"
 
-    def fetch_market_data(self, symbols=['SPY', '^VIX', '^TNX', 'GLD']):
-        """
-        Fetch comprehensive market data for regime detection
-        """
-        print("📊 Fetching market data...")
-        end_date = datetime.now()
-        start_date = end_date - timedelta(days=365 * self.lookback_years)
+        # Create directories if they don't exist
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+        self.analysis_dir.mkdir(parents=True, exist_ok=True)
 
-        data = {}
-        for symbol in symbols:
-            try:
-                ticker = yf.Ticker(symbol)
-                hist = ticker.history(start=start_date, end=end_date)
+    def load_marketstack_config(self):
+        """Load Marketstack API configuration - FIXED"""
+        config_file = self.project_root / "config" / "marketstack_config.json"
 
-                if not hist.empty:
-                    data[symbol] = hist['Close']
-                    print(f"✓ Downloaded {symbol} ({len(hist)} days)")
+        if config_file.exists():
+            with open(config_file, 'r') as f:
+                config = json.load(f)
+                api_key = config.get('api_key', '')
+                # FIX: Corrected the condition
+                if api_key and 'xxxxx' not in api_key and api_key != '':
+                    return api_key
                 else:
-                    print(f"✗ No data for {symbol}")
+                    print("⚠️ Please update your Marketstack API key in config/marketstack_config.json")
+                    return None
+        else:
+            print(f"⚠️ Config file not found: {config_file}")
+            return None
 
+    def fetch_marketstack_data(self, symbols, date_from, date_to, api_key):
+        """
+        Fetch EOD data from Marketstack API v2 for multiple symbols
+        Updated for v2 API structure
+        """
+        print(f"📊 Fetching data from Marketstack API v2 for {len(symbols)} symbols...")
+        print(f"📅 Date range: {date_from} to {date_to}")
+
+        all_symbol_dfs = []
+
+        for i, symbol in enumerate(symbols):
+            # Clean symbol for Marketstack (remove ^ prefix for indices)
+            clean_symbol = symbol.replace('^', '')
+
+            # Map symbols to Marketstack format
+            # Note: In v2, index symbols might be different
+            symbol_map = {
+                'SPY': 'SPY',
+                'VIX': 'VIX.INDX',
+                'TNX': 'TNX.INDX',
+                'GLD': 'GLD',
+                'DXY': 'DXY.INDX'
+            }
+
+            marketstack_symbol = symbol_map.get(clean_symbol, clean_symbol)
+
+            print(f"  Fetching {symbol} as {marketstack_symbol} ({i + 1}/{len(symbols)})", end='')
+
+            params = {
+                'access_key': api_key,
+                'symbols': marketstack_symbol,
+                'date_from': date_from,
+                'date_to': date_to,
+                'limit': 1000
+            }
+
+            endpoint = f"{MARKETSTACK_BASE_URL}/eod"
+
+            try:
+                response = requests.get(endpoint, params=params, timeout=30)
+                response.raise_for_status()
+
+                data = response.json()
+
+                if 'error' in data:
+                    print(f" ❌ API Error: {data['error'].get('message', 'Unknown error')}")
+                    continue
+
+                if 'data' not in data or not data['data']:
+                    print(f" ✗ (no data)")
+                    continue
+
+                # Process the data
+                symbol_data = data['data']
+
+                if symbol_data:
+                    df = pd.DataFrame(symbol_data)
+                    df['date'] = pd.to_datetime(df['date'])
+
+                    # Remove timezone info if present
+                    if df['date'].dt.tz is not None:
+                        df['date'] = df['date'].dt.tz_localize(None)
+
+                    df = df.set_index('date')
+
+                    # Create DataFrame with original symbol name
+                    # Use 'close' instead of 'adj_close' for v2
+                    price_df = pd.DataFrame({
+                        f'{symbol}_Open': df['open'],
+                        f'{symbol}_High': df['high'],
+                        f'{symbol}_Low': df['low'],
+                        f'{symbol}_Close': df['close'],  # v2 uses 'close'
+                        f'{symbol}_Volume': df['volume']
+                    })
+
+                    price_df = price_df.sort_index()
+                    all_symbol_dfs.append(price_df)
+
+                    print(f" ✓ ({len(df)} records)")
+                else:
+                    print(f" ✗ (empty response)")
+
+            except requests.exceptions.RequestException as e:
+                print(f" ❌ Request Error: {str(e)}")
+                continue
             except Exception as e:
-                print(f"✗ Failed to download {symbol}: {e}")
+                print(f" ❌ Processing Error: {str(e)}")
+                continue
 
-        if not data:
-            raise ValueError("Failed to download any market data!")
+            # Rate limiting
+            time.sleep(0.2)
 
-        # Combine into single DataFrame
-        self.data = pd.DataFrame(data)
+        # Concatenate all dataframes
+        if all_symbol_dfs:
+            all_price_data = pd.concat(all_symbol_dfs, axis=1, join='outer')
+            all_price_data = all_price_data.sort_index()
+            # Forward fill then backward fill for missing data
+            all_price_data = all_price_data.ffill().bfill()
+        else:
+            all_price_data = pd.DataFrame()
 
-        # Forward fill then backward fill to handle missing data
-        self.data = self.data.ffill().bfill()
+        print(f"\n✅ Successfully fetched data for {len(all_symbol_dfs)} symbols")
+        if not all_price_data.empty:
+            print(f"Total date range: {all_price_data.index[0]} to {all_price_data.index[-1]}")
 
-        # Remove any remaining rows with NaN
-        self.data = self.data.dropna()
+        return all_price_data
 
-        print(f"✓ Combined data shape: {self.data.shape}")
+    def fetch_market_data(self, symbols=['SPY', '^VIX', '^TNX', 'GLD'], use_marketstack=True):
+        """
+        Fetch market data for regime detection
+        Updated to properly handle Marketstack v2
+        """
+        print("\n📊 FETCHING MARKET DATA")
+        print("-" * 40)
+
+        if use_marketstack:
+            # Load API key
+            api_key = self.load_marketstack_config()
+            if not api_key:
+                print("⚠️ Falling back to yfinance due to missing API key")
+                use_marketstack = False
+
+        if use_marketstack:
+            # Calculate date range
+            end_date = datetime.now()
+            start_date = end_date - timedelta(days=365 * self.lookback_years)
+
+            # Fetch from Marketstack
+            all_data = self.fetch_marketstack_data(
+                symbols,
+                start_date.strftime('%Y-%m-%d'),
+                end_date.strftime('%Y-%m-%d'),
+                api_key
+            )
+
+            if all_data.empty:
+                print("⚠️ No data from Marketstack, falling back to yfinance")
+                use_marketstack = False
+            else:
+                # Process data for regime detection
+                price_data = pd.DataFrame()
+
+                for symbol in symbols:
+                    close_col = f'{symbol}_Close'
+                    if close_col in all_data.columns:
+                        price_data[symbol] = all_data[close_col]
+
+                if price_data.empty:
+                    print("⚠️ No close price data found, falling back to yfinance")
+                    use_marketstack = False
+                else:
+                    self.data = price_data
+                    print(f"✅ Loaded {len(self.data)} days of data from Marketstack")
+
+        if not use_marketstack:
+            # Original yfinance code
+            import yfinance as yf
+
+            end_date = datetime.now()
+            start_date = end_date - timedelta(days=365 * self.lookback_years)
+
+            data = yf.download(
+                symbols,
+                start=start_date,
+                end=end_date,
+                progress=False
+            )['Adj Close']
+
+            if len(symbols) == 1:
+                data = pd.DataFrame(data)
+                data.columns = symbols
+
+            self.data = data
+            print(f"✅ Loaded {len(self.data)} days of data from yfinance")
+
+        # Save raw data for historical analysis
+        self.save_historical_data()
+
         return self.data
+
+    def save_historical_data(self):
+        """Save fetched historical data for later use"""
+        if self.data is not None and not self.data.empty:
+            print(f"📁 Saving historical data to: {self.analysis_dir}")
+
+            # Save to Regime_Detection_Analysis directory
+            output_file = self.analysis_dir / "historical_market_data.csv"
+            self.data.to_csv(output_file)
+            print(f"💾 Saved historical data to {output_file}")
+
+            # Also save a summary
+            summary = {
+                "data_range": {
+                    "start": str(self.data.index[0]),
+                    "end": str(self.data.index[-1]),
+                    "days": len(self.data)
+                },
+                "symbols": list(self.data.columns),
+                "fetch_date": datetime.now().isoformat()
+            }
+
+            summary_file = self.analysis_dir / "data_summary.json"
+
+            print(f"💾 Saving summary to: {summary_file}")
+
+            with open(summary_file, 'w') as f:
+                json.dump(summary, f, indent=2)
+
+            # Verify files were created
+            if summary_file.exists():
+                print(f"✅ Successfully saved data summary")
+            else:
+                print(f"❌ Failed to save data summary!")
+
+            return summary
+
+    def fetch_and_save_historical_regimes(self):
+        """
+        Fetch historical data and identify regime periods
+        This is called when user clicks 'Fetch Regime Data'
+        """
+        print("\n🔄 FETCHING HISTORICAL REGIME DATA")
+        print("-" * 40)
+
+        # Fetch fresh data from Marketstack
+        self.fetch_market_data(use_marketstack=True)
+
+        if self.data is None or self.data.empty:
+            print("❌ Failed to fetch historical data")
+            return False
+
+        # Run regime detection on historical data
+        print("\n🔍 Detecting historical regimes...")
+
+        # Prepare features for HMM
+        self.prepare_features()
+
+        # Fit the model if not already fitted
+        if self.model is None:
+            self.fit_hmm(use_pca=True, n_components=5)
+
+        # Characterize regimes
+        self.characterize_regimes()
+
+        # Export regime periods
+        self.export_regime_periods()
+
+        # Save detailed historical analysis
+        self.save_historical_analysis()
+
+        print("✅ Historical regime data saved successfully")
+        return True
+
+    def save_historical_analysis(self):
+        """Save detailed historical regime analysis"""
+        if self.regime_history is None:
+            print("⚠️ No regime history to save")
+            return
+
+        print(f"📁 Saving historical analysis to: {self.analysis_dir}")
+
+        # Create detailed regime history with dates
+        regime_details = []
+        current_regime = None
+        start_date = None
+        prev_date = None
+
+        for i, (date, regime) in enumerate(self.regime_history.items()):
+            if regime != current_regime:
+                if current_regime is not None and start_date is not None and prev_date is not None:
+                    # Save the previous regime period
+                    regime_details.append({
+                        'regime': int(current_regime),
+                        'regime_name': self.regime_characteristics[current_regime]['name'],
+                        'start_date': str(start_date),
+                        'end_date': str(prev_date),
+                        'days': (prev_date - start_date).days + 1
+                    })
+                current_regime = regime
+                start_date = date
+            prev_date = date
+
+        # Don't forget the last regime period
+        if current_regime is not None and start_date is not None and prev_date is not None:
+            regime_details.append({
+                'regime': int(current_regime),
+                'regime_name': self.regime_characteristics[current_regime]['name'],
+                'start_date': str(start_date),
+                'end_date': str(prev_date),
+                'days': (prev_date - start_date).days + 1
+            })
+
+        print(f"📊 Found {len(regime_details)} regime periods to save")
+
+        # Get statistics
+        statistics = self.get_regime_statistics()
+
+        # Save to JSON for easy loading
+        historical_file = self.analysis_dir / "historical_regimes.json"
+
+        output_data = {
+            'regime_periods': regime_details,
+            'statistics': statistics,
+            'last_updated': datetime.now().isoformat()
+        }
+
+        print(f"💾 Saving to: {historical_file}")
+        print(f"📊 Statistics: {statistics}")
+
+        with open(historical_file, 'w') as f:
+            json.dump(output_data, f, indent=2)
+
+        # Verify the file was created
+        if historical_file.exists():
+            print(f"✅ Successfully saved historical analysis to {historical_file}")
+            print(f"📁 File size: {historical_file.stat().st_size} bytes")
+        else:
+            print(f"❌ Failed to save historical analysis!")
+
+    def get_regime_statistics(self):
+        """Calculate regime statistics for the historical period"""
+        if self.regime_history is None:
+            return {}
+
+        # Count regime occurrences
+        regime_counts = self.regime_history.value_counts()
+        total_days = len(self.regime_history)
+
+        statistics = {}
+        for regime in range(self.n_regimes):
+            if regime in regime_counts.index:
+                count = regime_counts[regime]
+                regime_name = self.regime_characteristics[regime]['name']
+                statistics[regime_name] = {
+                    'days': int(count),
+                    'percentage': float(count / total_days),
+                    'periods': len([1 for i in range(1, len(self.regime_history))
+                                    if self.regime_history.iloc[i] == regime
+                                    and self.regime_history.iloc[i - 1] != regime])
+                }
+
+        return statistics
 
     def engineer_features(self, use_pca=True, n_components=5):
         """
@@ -691,7 +1022,7 @@ class MarketRegimeDetector:
         Export regime periods for use with optimizer
         """
         # Update the path
-        filepath = os.path.join(self.output_dir, filename)
+        filepath = self.output_dir / filename  # Use output_dir
 
         regime_data = []
 
@@ -735,10 +1066,10 @@ class MarketRegimeDetector:
 
         return current_regime, regime_proba
 
-    def save_model(self, path='regime_model.pkl'):
+    def save_model(self, path='regime_model.pkl', filename='regime_model.pkl'):
         """Save the trained model and scaler"""
         # Update the path
-        filepath = os.path.join(self.output_dir, path)
+        filepath = self.output_dir / filename  # Use output_dir
 
         import pickle
 
@@ -1031,25 +1362,44 @@ def main():
 
 
 def api_wrapper():
-    """Wrapper to make your existing code API-friendly"""
-    # Call your existing main function
-    # your_existing_main()  # Replace with your actual function name
+    """API wrapper for regime detection - NO self parameter"""
+    try:
+        detector = main()  # Call your main function
+        return {"status": "success", "message": "Regime detection completed"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
 
-    # After your code runs and creates files in Analysis/, return success
-    return {"status": "success", "message": "Regime detection completed"}
 
 if __name__ == "__main__":
     import sys
 
-    # Check if script is being called with API flag
-    if "--api" in sys.argv:
-        # Run in API mode (returns JSON-friendly output)
+    # Check for command line arguments
+    if "--fetch-historical" in sys.argv:
+        # Special mode to fetch and save historical data
+        detector = MarketRegimeDetector(n_regimes=3, lookback_years=10)
+
+        # Parse years argument if provided
+        for arg in sys.argv:
+            if arg.startswith("--years="):
+                years = int(arg.split("=")[1])
+                detector.lookback_years = years
+
+        # Fetch and save historical data
+        success = detector.fetch_and_save_historical_regimes()
+
+        if success:
+            print("✅ Historical regime data fetched and saved")
+            sys.exit(0)
+        else:
+            print("❌ Failed to fetch historical regime data")
+            sys.exit(1)
+
+    elif "--api" in sys.argv:
+        # API mode
         detector = RegimeDetectorAPI()
         result = detector.run_detection()
         print(json.dumps(result))
-    else:
-        # Run your existing code normally
-        # your_existing_main_function()
-        pass
 
-    detector = main()
+    else:
+        # Normal execution
+        detector = main()

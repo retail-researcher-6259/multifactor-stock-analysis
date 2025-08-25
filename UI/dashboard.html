@@ -573,15 +573,23 @@
                     
                     <div class="card">
                         <h3>Historical Regimes</h3>
-                        <div class="input-group">
-                            <label>Time Period</label>
-                            <select>
-                                <option>Last 30 Days</option>
-                                <option>Last 90 Days</option>
-                                <option>Last Year</option>
-                                <option>Last 5 Years</option>
-                            </select>
-                        </div>
+						<div class="input-group">
+							<label>Data Source</label>
+							<select id="historical-data-source">
+								<option value="marketstack">Marketstack (10 years)</option>
+								<option value="yfinance">Yahoo Finance (5 years)</option>
+							</select>
+						</div>
+						<button class="btn btn-primary" onclick="fetchRegimeData()">Fetch Regime Data</button>
+						<button class="btn btn-secondary" onclick="loadHistoricalRegimes()" style="margin-left: 10px;">Load Saved Data</button>
+						<div class="progress-bar" id="fetch-progress" style="display: none;">
+							<div class="progress-fill" style="width: 0%"></div>
+						</div>
+						<div style="margin-top: 15px;">
+							<span class="regime-badge regime-growth">Growth: --</span>
+							<span class="regime-badge regime-bull">Bull: --</span>
+							<span class="regime-badge regime-bear">Bear: --</span>
+						</div>
                         <button class="btn btn-secondary" onclick="loadHistoricalRegimes()">Load History</button>
                         <div style="margin-top: 15px;">
                             <span class="regime-badge regime-growth">Growth: 45%</span>
@@ -1071,198 +1079,329 @@
         <span id="notification-text"></span>
     </div>
 
-    <script>
-        // Tab switching functionality
-        function switchTab(tabName) {
-            // Remove active class from all tabs and contents
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            
-            // Add active class to selected tab and content
-            event.target.classList.add('active');
-            document.getElementById(tabName).classList.add('active');
-        }
 
-        // Notification system
-        function showNotification(message, type = 'info') {
-            const notification = document.getElementById('notification');
-            const notificationText = document.getElementById('notification-text');
-            
-            notificationText.textContent = message;
-            notification.style.display = 'block';
-            notification.style.borderLeft = `4px solid ${type === 'success' ? 'var(--success)' : type === 'error' ? 'var(--danger)' : 'var(--primary)'}`;
-            
-            setTimeout(() => {
-                notification.style.display = 'none';
-            }, 3000);
-        }
-
-        // Modal functionality
-        function viewDetails(ticker) {
-            const modal = document.getElementById('stockModal');
-            const modalTitle = document.getElementById('modal-title');
-            const modalBody = document.getElementById('modal-body');
-            
-            modalTitle.textContent = `${ticker} - Detailed Analysis`;
-            modalBody.innerHTML = `
-                <div class="loader"></div>
-                <p style="text-align: center; color: #6b7280;">Loading stock details...</p>
-            `;
-            
-            modal.style.display = 'block';
-            
-            // Simulate loading data
-            setTimeout(() => {
-                modalBody.innerHTML = `
-                    <div class="input-group">
-                        <label>Score Breakdown</label>
-                        <table style="width: 100%;">
-                            <tr><td>Value Score</td><td>8.5</td></tr>
-                            <tr><td>Quality Score</td><td>9.2</td></tr>
-                            <tr><td>Technical Score</td><td>7.8</td></tr>
-                            <tr><td>Momentum Score</td><td>8.9</td></tr>
-                        </table>
-                    </div>
-                    <div class="chart-container" style="height: 200px; margin-top: 20px;">
-                        <span>Price History Chart</span>
-                    </div>
-                `;
-            }, 1000);
-        }
-
-        function closeModal() {
-            document.getElementById('stockModal').style.display = 'none';
-        }
-		
+	<script>
 		// API Configuration
 		const API_URL = 'http://localhost:5000/api';
 
-        // Regime Detection Functions
+		// Tab switching functionality
+		function switchTab(tabName) {
+			// Remove active class from all tabs and contents
+			document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+			document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+			
+			// Add active class to selected tab and content
+			event.target.classList.add('active');
+			document.getElementById(tabName).classList.add('active');
+		}
+
+		// Notification system
+		function showNotification(message, type = 'info') {
+			const notification = document.getElementById('notification');
+			const notificationText = document.getElementById('notification-text');
+			
+			notificationText.textContent = message;
+			notification.style.display = 'block';
+			notification.style.borderLeft = `4px solid ${type === 'success' ? 'var(--success)' : type === 'error' ? 'var(--danger)' : 'var(--primary)'}`;
+			
+			setTimeout(() => {
+				notification.style.display = 'none';
+			}, 3000);
+		}
+
+		// Modal functionality
+		function viewDetails(ticker) {
+			const modal = document.getElementById('stockModal');
+			const modalTitle = document.getElementById('modal-title');
+			const modalBody = document.getElementById('modal-body');
+			
+			modalTitle.textContent = `${ticker} - Detailed Analysis`;
+			modalBody.innerHTML = `
+				<div class="loader"></div>
+				<p style="text-align: center; color: #6b7280;">Loading stock details...</p>
+			`;
+			
+			modal.style.display = 'block';
+			
+			// Simulate loading data
+			setTimeout(() => {
+				modalBody.innerHTML = `
+					<div class="input-group">
+						<label>Score Breakdown</label>
+						<table style="width: 100%;">
+							<tr><td>Value Score</td><td>8.5</td></tr>
+							<tr><td>Quality Score</td><td>9.2</td></tr>
+							<tr><td>Technical Score</td><td>7.8</td></tr>
+							<tr><td>Momentum Score</td><td>8.9</td></tr>
+						</table>
+					</div>
+					<div class="chart-container" style="height: 200px; margin-top: 20px;">
+						<span>Price History Chart</span>
+					</div>
+				`;
+			}, 1000);
+		}
+
+		function closeModal() {
+			document.getElementById('stockModal').style.display = 'none';
+		}
+
+		// Error handling wrapper
+		async function fetchWithErrorHandling(url, options = {}) {
+			try {
+				const response = await fetch(url, options);
+				if (!response.ok) {
+					throw new Error(`HTTP error! status: ${response.status}`);
+				}
+				return await response.json();
+			} catch (error) {
+				console.error('Fetch error:', error);
+				showNotification(`Error: ${error.message}`, 'error');
+				throw error;
+			}
+		}
+
+		// ========================================
+		// REGIME DETECTION FUNCTIONS
+		// ========================================
+		
 		async function detectRegime() {
 			const progressBar = document.querySelector('#regime .progress-fill');
 			progressBar.style.width = '0%';
 			
 			try {
-				// Show progress
 				progressBar.style.width = '20%';
+				showNotification('Starting regime detection...', 'info');
 				
-				// Call your backend API
-				const response = await fetch(`${API_URL}/regime/detect`, {
+				const dataSource = document.querySelector('#regime select').value || 'Marketstack API';
+				
+				const result = await fetchWithErrorHandling(`${API_URL}/regime/detect`, {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
 					},
 					body: JSON.stringify({
-						data_source: document.querySelector('#regime select').value
+						data_source: dataSource
 					})
 				});
 				
-				progressBar.style.width = '60%';
-				
-				const result = await response.json();
+				progressBar.style.width = '100%';
 				
 				if (result.status === 'success') {
-					progressBar.style.width = '100%';
-					
 					// Update UI with results
-					if (result.data.current) {
-						document.getElementById('current-regime').textContent = 
-							result.data.current.current_regime || 'Unknown';
+					if (result.data && result.data.current) {
+						const current = result.data.current;
 						
-						// Update probabilities if available
-						updateRegimeProbabilities(result.data.current.regime_probabilities);
+						// Update current regime text
+						if (current.current_regime) {
+							document.getElementById('current-regime').textContent = current.current_regime;
+						} else if (current.regime_detection && current.regime_detection.current_regime) {
+							document.getElementById('current-regime').textContent = 
+								current.regime_detection.current_regime;
+						}
+						
+						// Update probabilities
+						const probs = current.regime_probabilities || 
+									 (current.regime_detection && current.regime_detection.regime_probabilities);
+						if (probs) {
+							updateRegimeProbabilities(probs);
+						}
 					}
 					
 					showNotification('Regime detection completed successfully', 'success');
+					
+					// Update last update time
+					document.getElementById('last-update').textContent = new Date().toLocaleString();
 				} else {
 					throw new Error(result.message || 'Detection failed');
 				}
 			} catch (error) {
 				console.error('Error detecting regime:', error);
-				showNotification(`Error: ${error.message}`, 'error');
 				progressBar.style.width = '0%';
+				showNotification(`Error: ${error.message}`, 'error');
 			}
 		}
 
 		async function loadHistoricalRegimes() {
 			try {
-				showNotification('Loading historical regime data...', 'info');
+				showNotification('Loading saved historical regime data...', 'info');
 				
-				const period = document.querySelector('#regime select[name="period"]')?.value || '30';
-				const response = await fetch(`${API_URL}/regime/historical?period=${period}`);
-				const result = await response.json();
+				const response = await fetchWithErrorHandling(`${API_URL}/regime/historical-saved`);
 				
-				if (result.status === 'success') {
+				if (response.status === 'success') {
 					// Update the regime badges with actual data
-					if (result.statistics) {
-						updateRegimeBadges(result.statistics);
+					if (response.statistics) {
+						updateRegimeBadges(response.statistics);
 					}
 					
-					// You could also update a chart here if you have one
-					// updateRegimeChart(result.periods);
+					// Display data range info if available
+					let message = 'Historical regimes loaded';
 					
-					showNotification('Historical regimes loaded', 'success');
+					if (response.data_range && response.data_range.start && response.data_range.end) {
+						const days = response.data_range.days || 'unknown';
+						message = `Loaded data from ${response.data_range.start.split('T')[0]} to ${response.data_range.end.split('T')[0]} (${days} days)`;
+					} else if (response.regime_periods && response.regime_periods.length > 0) {
+						message = `Loaded ${response.regime_periods.length} historical regime periods`;
+					}
+					
+					showNotification(message, 'success');
+				} else if (response.status === 'warning') {
+					showNotification(response.message || 'No saved historical data found. Please fetch data first.', 'warning');
 				} else {
-					throw new Error(result.message || 'Failed to load historical data');
+					throw new Error(response.message || 'Failed to load historical data');
 				}
 			} catch (error) {
 				console.error('Error loading historical regimes:', error);
 				showNotification(`Error: ${error.message}`, 'error');
 			}
 		}
-		
+
 		function updateRegimeProbabilities(probabilities) {
 			if (!probabilities) return;
 			
-			// Update the probability table in the UI
 			const table = document.querySelector('#regime table');
-			if (table) {
-				// Clear existing rows
-				const tbody = table.querySelector('tbody') || table;
-				tbody.innerHTML = '';
-				
-				// Add new rows with actual probabilities
-				for (const [regime, probability] of Object.entries(probabilities)) {
-					const row = tbody.insertRow();
-					row.innerHTML = `
-						<td>${regime}</td>
-						<td><strong>${(probability * 100).toFixed(1)}%</strong></td>
-					`;
-				}
+			if (!table) return;
+			
+			// Find or create tbody
+			let tbody = table.querySelector('tbody');
+			if (!tbody) {
+				tbody = document.createElement('tbody');
+				table.appendChild(tbody);
+			}
+			
+			tbody.innerHTML = '';
+			
+			for (const [regime, probability] of Object.entries(probabilities)) {
+				const row = tbody.insertRow();
+				const value = typeof probability === 'number' ? probability : parseFloat(probability) || 0;
+				row.innerHTML = `
+					<td>${regime}</td>
+					<td><strong>${(value * 100).toFixed(1)}%</strong></td>
+				`;
 			}
 		}
-		
+
 		function updateRegimeBadges(statistics) {
-			const badgeContainer = document.querySelector('#regime .regime-badge').parentElement;
-			if (badgeContainer) {
+			const badges = document.querySelectorAll('#regime .regime-badge');
+			if (badges.length > 0) {
+				const badgeContainer = badges[0].parentElement;
 				badgeContainer.innerHTML = '';
 				
 				const regimeClasses = {
 					'Steady Growth': 'regime-growth',
 					'Strong Bull': 'regime-bull',
-					'Crisis/Bear': 'regime-bear'
+					'Crisis/Bear': 'regime-bear',
+					'Bear': 'regime-bear',
+					'Crisis': 'regime-bear'
 				};
 				
-				for (const [regime, percentage of Object.entries(statistics)) {
+				for (const [regime, data] of Object.entries(statistics)) {
 					const badge = document.createElement('span');
-					badge.className = `regime-badge ${regimeClasses[regime] || 'regime-growth'}`;
+					
+					// Find the appropriate class
+					let badgeClass = 'regime-growth';
+					for (const [key, value] of Object.entries(regimeClasses)) {
+						if (regime.includes(key)) {
+							badgeClass = value;
+							break;
+						}
+					}
+					
+					badge.className = `regime-badge ${badgeClass}`;
+					
+					// Handle both percentage values and objects with percentage property
+					let percentage;
+					if (typeof data === 'number') {
+						percentage = data;
+					} else if (data && typeof data === 'object' && 'percentage' in data) {
+						percentage = data.percentage;
+					} else {
+						percentage = 0;
+					}
+					
 					badge.textContent = `${regime}: ${(percentage * 100).toFixed(1)}%`;
 					badgeContainer.appendChild(badge);
 					badgeContainer.appendChild(document.createTextNode(' '));
 				}
 			}
 		}
+		
+		async function fetchRegimeData() {
+			const progressBar = document.querySelector('#fetch-progress');
+			const progressFill = progressBar.querySelector('.progress-fill');
+			
+			progressBar.style.display = 'block';
+			progressFill.style.width = '0%';
+			
+			try {
+				showNotification('Fetching historical market data from Marketstack...', 'info');
+				progressFill.style.width = '30%';
+				
+				const dataSource = document.getElementById('historical-data-source').value;
+				
+				const response = await fetchWithErrorHandling(`${API_URL}/regime/fetch-historical`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({
+						data_source: dataSource,
+						years: dataSource === 'marketstack' ? 10 : 5
+					})
+				});
+				
+				progressFill.style.width = '70%';
+				
+				if (response.status === 'success') {
+					progressFill.style.width = '100%';
+					
+					// Update statistics if available
+					if (response.statistics) {
+						updateRegimeBadges(response.statistics);
+					}
+					
+					// Display success message with data info
+					let message = 'Successfully fetched historical data';
+					
+					// Check if data_range exists and has the days property
+					if (response.data_range && response.data_range.days) {
+						message = `Successfully fetched ${response.data_range.days} days of historical data`;
+					} else if (response.regime_periods && response.regime_periods.length > 0) {
+						message = `Successfully analyzed ${response.regime_periods.length} regime periods`;
+					}
+					
+					showNotification(message, 'success');
+					
+					// Auto-load the historical regimes after a short delay
+					setTimeout(() => {
+						loadHistoricalRegimes();
+						progressBar.style.display = 'none';
+					}, 1000);
+				} else {
+					throw new Error(response.message || 'Failed to fetch historical data');
+				}
+			} catch (error) {
+				console.error('Error fetching regime data:', error);
+				showNotification(`Error: ${error.message}`, 'error');
+				progressBar.style.display = 'none';
+				progressFill.style.width = '0%';
+			}
+		}
 
-        // Weight Optimization Functions
+		// ========================================
+		// WEIGHT OPTIMIZATION FUNCTIONS
+		// ========================================
+		
 		async function optimizeWeights() {
 			try {
 				showNotification('Starting weight optimization...', 'info');
 				
 				const regime = document.getElementById('regime-select').value;
-				const backtestPeriod = document.querySelector('#weights input[type="number"]').value;
-				const sampleCompanies = document.querySelectorAll('#weights input[type="number"]')[1].value;
+				const backtestInputs = document.querySelectorAll('#weights input[type="number"]');
+				const backtestPeriod = backtestInputs[0] ? backtestInputs[0].value : '12';
+				const sampleCompanies = backtestInputs[1] ? backtestInputs[1].value : '150';
 				
-				const response = await fetch(`${API_URL}/weights/optimize`, {
+				const response = await fetchWithErrorHandling(`${API_URL}/weights/optimize`, {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
@@ -1274,28 +1413,24 @@
 					})
 				});
 				
-				const result = await response.json();
-				
-				if (result.status === 'success') {
-					// Update the weights table
+				if (response.status === 'success') {
 					await loadCurrentWeights();
 					showNotification(`Optimization completed for ${regime}`, 'success');
 				} else {
-					throw new Error(result.message || 'Optimization failed');
+					throw new Error(response.message || 'Optimization failed');
 				}
 			} catch (error) {
 				console.error('Error optimizing weights:', error);
 				showNotification(`Error: ${error.message}`, 'error');
 			}
 		}
-		
+
 		async function loadCurrentWeights() {
 			try {
-				const response = await fetch(`${API_URL}/weights/current`);
-				const result = await response.json();
+				const response = await fetchWithErrorHandling(`${API_URL}/weights/current`);
 				
-				if (result.status === 'success' && result.weights) {
-					updateWeightsTable(result.weights);
+				if (response.status === 'success' && response.weights) {
+					updateWeightsTable(response.weights);
 				}
 			} catch (error) {
 				console.error('Error loading weights:', error);
@@ -1307,178 +1442,193 @@
 			if (!table) return;
 			
 			// Get factor names from the first regime
-			const factors = Object.keys(weights[Object.keys(weights)[0]]);
+			const factors = Object.keys(weights[Object.keys(weights)[0]] || {});
 			
 			table.innerHTML = '';
 			factors.forEach(factor => {
 				const row = table.insertRow();
 				row.innerHTML = `
 					<td>${factor}</td>
-					<td>${weights['Steady Growth'][factor]?.toFixed(2) || '0.00'}</td>
-					<td>${weights['Strong Bull'][factor]?.toFixed(2) || '0.00'}</td>
-					<td>${weights['Crisis/Bear'][factor]?.toFixed(2) || '0.00'}</td>
+					<td>${(weights['Steady Growth'] && weights['Steady Growth'][factor]) ? weights['Steady Growth'][factor].toFixed(2) : '0.00'}</td>
+					<td>${(weights['Strong Bull'] && weights['Strong Bull'][factor]) ? weights['Strong Bull'][factor].toFixed(2) : '0.00'}</td>
+					<td>${(weights['Crisis/Bear'] && weights['Crisis/Bear'][factor]) ? weights['Crisis/Bear'][factor].toFixed(2) : '0.00'}</td>
 				`;
 			});
 		}
 
-        // Stock Scoring Functions
-        function runScoring() {
-            showNotification('Running multifactor scoring analysis...', 'info');
-            setTimeout(() => {
-                showNotification('Scoring completed for 957 stocks', 'success');
-                document.getElementById('last-update').textContent = new Date().toLocaleString();
-            }, 2500);
-        }
+		// ========================================
+		// OTHER TAB FUNCTIONS (keeping your original ones)
+		// ========================================
 
-        function scheduleDaily() {
-            showNotification('Daily scoring scheduled for 9:30 AM EST', 'success');
-        }
+		// Stock Scoring Functions
+		function runScoring() {
+			showNotification('Running multifactor scoring analysis...', 'info');
+			setTimeout(() => {
+				showNotification('Scoring completed for 957 stocks', 'success');
+				document.getElementById('last-update').textContent = new Date().toLocaleString();
+			}, 2500);
+		}
 
-        function updateWeightSet(value) {
-            showNotification(`Weight set changed to: ${value}`, 'info');
-        }
+		function scheduleDaily() {
+			showNotification('Daily scoring scheduled for 9:30 AM EST', 'success');
+		}
 
-        function loadFromCSV() {
-            // Simulate file upload dialog
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = '.csv';
-            input.onchange = (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    showNotification(`Loading ${file.name}...`, 'info');
-                    setTimeout(() => {
-                        showNotification('CSV file loaded successfully', 'success');
-                    }, 1500);
-                }
-            };
-            input.click();
-        }
+		function updateWeightSet(value) {
+			showNotification(`Weight set changed to: ${value}`, 'info');
+		}
 
-        // Score Trend Functions
-        function analyzeTrends() {
-            const ticker = document.getElementById('trend-ticker').value;
-            if (!ticker) {
-                showNotification('Please enter a stock ticker', 'error');
-                return;
-            }
-            showNotification(`Analyzing trends for ${ticker}...`, 'info');
-            setTimeout(() => {
-                showNotification('Trend analysis completed', 'success');
-            }, 2000);
-        }
+		function loadFromCSV() {
+			const input = document.createElement('input');
+			input.type = 'file';
+			input.accept = '.csv';
+			input.onchange = (e) => {
+				const file = e.target.files[0];
+				if (file) {
+					showNotification(`Loading ${file.name}...`, 'info');
+					setTimeout(() => {
+						showNotification('CSV file loaded successfully', 'success');
+					}, 1500);
+				}
+			};
+			input.click();
+		}
 
-        function compareStocks() {
-            showNotification('Starting comparative analysis...', 'info');
-            setTimeout(() => {
-                showNotification('Comparison completed', 'success');
-            }, 1500);
-        }
+		// Score Trend Functions
+		function analyzeTrends() {
+			const ticker = document.getElementById('trend-ticker').value;
+			if (!ticker) {
+				showNotification('Please enter a stock ticker', 'error');
+				return;
+			}
+			showNotification(`Analyzing trends for ${ticker}...`, 'info');
+			setTimeout(() => {
+				showNotification('Trend analysis completed', 'success');
+			}, 2000);
+		}
 
-        // Portfolio Selection Functions
-        function createPortfolio() {
-            const size = document.getElementById('portfolio-size').value;
-            showNotification(`Creating portfolio with ${size} stocks...`, 'info');
-            setTimeout(() => {
-                showNotification('Portfolio created successfully', 'success');
-            }, 2000);
-        }
+		function compareStocks() {
+			showNotification('Starting comparative analysis...', 'info');
+			setTimeout(() => {
+				showNotification('Comparison completed', 'success');
+			}, 1500);
+		}
 
-        function backtest() {
-            showNotification('Running backtest simulation...', 'info');
-            setTimeout(() => {
-                showNotification('Backtest completed - Sharpe Ratio: 1.85', 'success');
-            }, 3000);
-        }
+		// Portfolio Selection Functions
+		function createPortfolio() {
+			const size = document.getElementById('portfolio-size').value;
+			showNotification(`Creating portfolio with ${size} stocks...`, 'info');
+			setTimeout(() => {
+				showNotification('Portfolio created successfully', 'success');
+			}, 2000);
+		}
 
-        // Portfolio Optimization Functions
-        function loadHoldings() {
-            showNotification('Loading current holdings...', 'info');
-            setTimeout(() => {
-                showNotification('Holdings loaded successfully', 'success');
-            }, 1000);
-        }
+		function backtest() {
+			showNotification('Running backtest simulation...', 'info');
+			setTimeout(() => {
+				showNotification('Backtest completed - Sharpe Ratio: 1.85', 'success');
+			}, 3000);
+		}
 
-        function importFromBroker() {
-            showNotification('Connecting to broker API...', 'info');
-            setTimeout(() => {
-                showNotification('Holdings imported from broker', 'success');
-            }, 2000);
-        }
+		// Portfolio Optimization Functions
+		function loadHoldings() {
+			showNotification('Loading current holdings...', 'info');
+			setTimeout(() => {
+				showNotification('Holdings loaded successfully', 'success');
+			}, 1000);
+		}
 
-        function executeRebalancing() {
-            if (confirm('Are you sure you want to execute these trades?')) {
-                showNotification('Executing rebalancing trades...', 'info');
-                setTimeout(() => {
-                    showNotification('Rebalancing completed - 4 trades executed', 'success');
-                }, 2500);
-            }
-        }
+		function importFromBroker() {
+			showNotification('Connecting to broker API...', 'info');
+			setTimeout(() => {
+				showNotification('Holdings imported from broker', 'success');
+			}, 2000);
+		}
 
-        function exportOrders() {
-            showNotification('Exporting orders to CSV...', 'info');
-            setTimeout(() => {
-                showNotification('Orders exported successfully', 'success');
-            }, 1000);
-        }
+		function executeRebalancing() {
+			if (confirm('Are you sure you want to execute these trades?')) {
+				showNotification('Executing rebalancing trades...', 'info');
+				setTimeout(() => {
+					showNotification('Rebalancing completed - 4 trades executed', 'success');
+				}, 2500);
+			}
+		}
 
-        function simulateRebalancing() {
-            showNotification('Simulating rebalancing impact...', 'info');
-            setTimeout(() => {
-                showNotification('Simulation complete - Expected improvement: +0.3% Sharpe', 'success');
-            }, 1500);
-        }
+		function exportOrders() {
+			showNotification('Exporting orders to CSV...', 'info');
+			setTimeout(() => {
+				showNotification('Orders exported successfully', 'success');
+			}, 1000);
+		}
 
-        function setupAlerts() {
-            showNotification('Drift alerts configured successfully', 'success');
-        }
+		function simulateRebalancing() {
+			showNotification('Simulating rebalancing impact...', 'info');
+			setTimeout(() => {
+				showNotification('Simulation complete - Expected improvement: +0.3% Sharpe', 'success');
+			}, 1500);
+		}
 
-        // Initialize on page load
+		function setupAlerts() {
+			showNotification('Drift alerts configured successfully', 'success');
+		}
+
+		// ========================================
+		// INITIALIZATION
+		// ========================================
+		
+		// Load current regime on startup
+		async function loadCurrentRegime() {
+			try {
+				const response = await fetchWithErrorHandling(`${API_URL}/regime/current`);
+				
+				if (response.status === 'success') {
+					document.getElementById('current-regime').textContent = response.current_regime;
+					updateRegimeProbabilities(response.probabilities);
+				}
+			} catch (error) {
+				console.error('Error loading current regime:', error);
+			}
+		}
+
+		// Initialize on page load
 		document.addEventListener('DOMContentLoaded', async () => {
-			// Set current date/time
 			const now = new Date();
 			document.getElementById('last-update').textContent = now.toLocaleString();
 			
-			// Check if backend is running
+			// Check backend health
 			try {
-				const response = await fetch(`${API_URL}/health`);
-				const health = await response.json();
-				
+				const health = await fetchWithErrorHandling(`${API_URL}/health`);
 				if (health.status === 'healthy') {
 					console.log('Backend API is running');
+					console.log('Paths:', health.paths);
 					
 					// Load initial data
 					await loadCurrentRegime();
 					await loadCurrentWeights();
 				}
 			} catch (error) {
-				console.error('Backend API is not running. Please start the Flask server.');
-				showNotification('Backend server is not running. Please run: python src/backend/app.py', 'error');
+				console.error('Backend is not responding. Make sure Flask is running.');
+				showNotification('Backend server not responding. Please start the Flask server.', 'error');
 			}
+			
+			// Simulate real-time updates
+			setInterval(() => {
+				const indicators = document.querySelectorAll('.status-indicator');
+				indicators.forEach(indicator => {
+					if (Math.random() > 0.95) {
+						indicator.classList.toggle('warning');
+						indicator.classList.toggle('active');
+					}
+				});
+			}, 5000);
 		});
-		
-		// Load current regime on startup
-		async function loadCurrentRegime() {
-			try {
-				const response = await fetch(`${API_URL}/regime/current`);
-				const result = await response.json();
-				
-				if (result.status === 'success') {
-					document.getElementById('current-regime').textContent = result.current_regime;
-					updateRegimeProbabilities(result.probabilities);
-				}
-			} catch (error) {
-				console.error('Error loading current regime:', error);
-			}
-		}		
 
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            const modal = document.getElementById('stockModal');
-            if (event.target == modal) {
-                modal.style.display = 'none';
-            }
-        }
-    </script>
+		// Close modal when clicking outside
+		window.onclick = function(event) {
+			const modal = document.getElementById('stockModal');
+			if (event.target == modal) {
+				modal.style.display = 'none';
+			}
+		}
+	</script>
 </body>
 </html>
