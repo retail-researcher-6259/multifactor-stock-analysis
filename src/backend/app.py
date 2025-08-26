@@ -288,60 +288,100 @@ def fetch_historical_regime_data():
             'traceback': traceback.format_exc()
         }), 500
 
-
 @app.route('/api/regime/historical-saved', methods=['GET'])
 def get_saved_historical_regimes():
     """
-    Get saved historical regime data without re-fetching
+    Get saved historical regime data from existing files
+    Modified to work with regime_periods.csv and regime_model.pkl
     """
     try:
-        # Debug: Print the paths being checked
         print(f"Checking for historical data in: {REGIME_ANALYSIS_DIR}")
 
-        # Read saved historical analysis
-        historical_file = REGIME_ANALYSIS_DIR / "historical_regimes.json"
-        data_summary_file = REGIME_ANALYSIS_DIR / "data_summary.json"
+        # Check for the files that actually exist
+        regime_periods_file = REGIME_ANALYSIS_DIR / "regime_periods.csv"
+        regime_model_file = REGIME_ANALYSIS_DIR / "regime_model.pkl"
 
-        print(f"Looking for historical_regimes.json at: {historical_file}")
-        print(f"File exists: {historical_file.exists()}")
+        # Also check Results directory
+        if not regime_periods_file.exists():
+            regime_periods_file = REGIME_RESULTS_DIR / "regime_periods.csv"
+        if not regime_model_file.exists():
+            regime_model_file = REGIME_RESULTS_DIR / "regime_model.pkl"
 
-        if not historical_file.exists():
-            # Also check if the files might be in Results directory
-            alt_historical = REGIME_RESULTS_DIR / "historical_regimes.json"
-            alt_summary = REGIME_RESULTS_DIR / "data_summary.json"
+        print(f"Looking for regime_periods.csv at: {regime_periods_file}")
+        print(f"File exists: {regime_periods_file.exists()}")
 
-            print(f"Checking alternative location: {alt_historical}")
-            print(f"Alternative exists: {alt_historical.exists()}")
+        if not regime_periods_file.exists():
+            return jsonify({
+                'status': 'warning',
+                'message': 'No historical data found. Please fetch data first.'
+            })
 
-            if alt_historical.exists():
-                historical_file = alt_historical
-                data_summary_file = alt_summary
-            else:
-                return jsonify({
-                    'status': 'warning',
-                    'message': 'No historical data found. Please fetch data first.'
+        # Read the regime periods CSV
+        import pandas as pd
+        df = pd.read_csv(regime_periods_file)
+
+        # Calculate statistics from the CSV
+        statistics = {}
+        if 'regime_name' in df.columns:
+            # Group by regime name and calculate percentages
+            total_days = df['days'].sum() if 'days' in df.columns else len(df)
+            regime_groups = df.groupby('regime_name')['days'].sum() if 'days' in df.columns else df[
+                'regime_name'].value_counts()
+
+            for regime_name, days in regime_groups.items():
+                statistics[regime_name] = {
+                    'days': int(days),
+                    'percentage': float(days / total_days) if total_days > 0 else 0,
+                    'periods': len(df[df['regime_name'] == regime_name])
+                }
+
+        # Convert DataFrame to regime periods format
+        regime_periods = []
+        if 'start_date' in df.columns and 'end_date' in df.columns:
+            for _, row in df.iterrows():
+                regime_periods.append({
+                    'regime': int(row['regime']) if 'regime' in row else 0,
+                    'regime_name': row['regime_name'] if 'regime_name' in row else 'Unknown',
+                    'start_date': str(row['start_date']),
+                    'end_date': str(row['end_date']),
+                    'days': int(row['days']) if 'days' in row else 0
                 })
 
-        # Read the historical data
-        with open(historical_file, 'r') as f:
-            historical_data = json.load(f)
+        # Create data range from the CSV
+        data_range = {}
+        if not df.empty and 'start_date' in df.columns and 'end_date' in df.columns:
+            all_starts = pd.to_datetime(df['start_date'])
+            all_ends = pd.to_datetime(df['end_date'])
+            data_range = {
+                'start': str(all_starts.min()),
+                'end': str(all_ends.max()),
+                'days': int((all_ends.max() - all_starts.min()).days)
+            }
 
         response_data = {
             'status': 'success',
-            'statistics': historical_data.get('statistics', {}),
-            'regime_periods': historical_data.get('regime_periods', []),
-            'last_updated': historical_data.get('last_updated', 'Unknown')
+            'statistics': statistics,
+            'regime_periods': regime_periods,
+            'data_range': data_range,
+            'last_updated': datetime.now().isoformat()
         }
 
-        # Add data range if available
-        if data_summary_file.exists():
-            print(f"Reading data summary from: {data_summary_file}")
-            with open(data_summary_file, 'r') as f:
-                summary = json.load(f)
-                response_data['data_range'] = summary.get('data_range', {})
-                response_data['symbols'] = summary.get('symbols', [])
+        print(f"Returning historical data with {len(regime_periods)} periods")
 
-        print(f"Returning historical data with {len(response_data.get('regime_periods', []))} periods")
+        # After creating response_data, add validation results if they exist
+        validation_file = REGIME_ANALYSIS_DIR / "validation_results.json"
+        if validation_file.exists():
+            with open(validation_file, 'r') as f:
+                validation_data = json.load(f)
+                response_data['validation'] = validation_data
+
+        # Also check historical_regimes.json for validation metrics
+        historical_file = REGIME_ANALYSIS_DIR / "historical_regimes.json"
+        if historical_file.exists():
+            with open(historical_file, 'r') as f:
+                hist_data = json.load(f)
+                if 'validation' in hist_data:
+                    response_data['validation'] = hist_data['validation']
 
         return jsonify(response_data)
 
@@ -354,7 +394,6 @@ def get_saved_historical_regimes():
             'status': 'error',
             'message': str(e)
         }), 500
-
 
 @app.route('/api/debug/files', methods=['GET'])
 def debug_files():

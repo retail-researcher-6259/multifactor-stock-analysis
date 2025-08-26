@@ -230,19 +230,14 @@ class MarketRegimeDetector:
 
                     df = df.set_index('date')
 
-                    # Update price_df to include adjusted fields if available
+                    # Create DataFrame with original symbol name
+                    # Use 'close' instead of 'adj_close' for v2
                     price_df = pd.DataFrame({
                         f'{symbol}_Open': df['open'],
                         f'{symbol}_High': df['high'],
                         f'{symbol}_Low': df['low'],
-                        f'{symbol}_Close': df['close'],  # Raw close
-                        f'{symbol}_Adj_Close': df.get('adj_close', df['close']),  # Prefer adjusted, fallback to close
-                        f'{symbol}_Adj_Open': df.get('adj_open', df['open']),
-                        f'{symbol}_Adj_High': df.get('adj_high', df['high']),
-                        f'{symbol}_Adj_Low': df.get('adj_low', df['low']),
-                        f'{symbol}_Volume': df['volume'],  # Note: 'adj_volume' may also be available
-                        f'{symbol}_Split_Factor': df.get('split_factor', 1.0),  # For manual adjustments if needed
-                        f'{symbol}_Dividend': df.get('dividend', 0.0)
+                        f'{symbol}_Close': df['close'],  # v2 uses 'close'
+                        f'{symbol}_Volume': df['volume']
                     })
 
                     price_df = price_df.sort_index()
@@ -313,12 +308,9 @@ class MarketRegimeDetector:
                 price_data = pd.DataFrame()
 
                 for symbol in symbols:
-                    adj_close_col = f'{symbol}_Adj_Close'
-                    if adj_close_col in all_data.columns:
-                        price_data[symbol] = all_data[adj_close_col]
-                    elif f'{symbol}_Close' in all_data.columns:
-                        print(f"⚠️ Using unadjusted close for {symbol} (adjusted not available)")
-                        price_data[symbol] = all_data[f'{symbol}_Close']
+                    close_col = f'{symbol}_Close'
+                    if close_col in all_data.columns:
+                        price_data[symbol] = all_data[close_col]
 
                 if price_data.empty:
                     print("⚠️ No close price data found, falling back to yfinance")
@@ -1020,8 +1012,7 @@ class MarketRegimeDetector:
         # 2. Plot SPY price with regime coloring
         ax2 = axes[1]
         if 'SPY' in self.data.columns:
-            # FIX: Align spy_data index with regime_history index to avoid mismatch
-            spy_data = self.data['SPY'].reindex(self.regime_history.index).dropna()
+            spy_data = self.data['SPY']
 
             for regime in range(self.n_regimes):
                 mask = self.regime_history == regime
@@ -1079,7 +1070,7 @@ class MarketRegimeDetector:
         plt.savefig(plot_file, dpi=100, bbox_inches='tight')
         print(f"✓ Saved plot to {plot_file}")
 
-        # plt.show()
+        plt.show()
 
     def generate_report(self):
         """
@@ -1240,12 +1231,8 @@ class MarketRegimeDetector:
         """
         current_regime = self.regime_history.iloc[-1]
 
-        # Fix: Handle cases where features_reduced is a numpy array (no .values)
-        if self.features_reduced is not None:
-            X = self.features_reduced  # Already a numpy array
-        else:
-            X = self.features.values  # Convert DataFrame to numpy array
-
+        # Fix: Use the correct features for prediction
+        X = self.features_reduced.values if self.features_reduced is not None else self.features.values
         regime_proba = self.model.predict_proba(X)[-1]
 
         print("\n🎯 CURRENT MARKET REGIME")
@@ -1325,36 +1312,31 @@ class MarketRegimeDetector:
             '2022 Bear Market': {
                 'dates': ('2022-01-03', '2022-10-12'),
                 'expected': 'Crisis/High Vol',
-                'description': 'Fed rate hikes, inflation'
+                'description': 'Inflation and rate hike fears'
             },
 
-            # Recovery/Bull events
-            'COVID Recovery': {
-                'dates': ('2020-03-24', '2020-06-08'),
-                'expected': 'High Vol Bull',  # Still volatile but recovering
-                'description': 'Fed stimulus, market recovery'
-            },
-            'Taper Tantrum Recovery': {
-                'dates': ('2016-02-12', '2016-12-31'),
-                'expected': 'Bull/Growth',
-                'description': 'Post-correction recovery'
-            },
-            '2023 Recovery': {
-                'dates': ('2023-01-01', '2023-12-31'),
-                'expected': 'Bull/Growth',
-                'description': 'AI boom, soft landing hopes'
-            },
-
-            # Additional validation periods
+            # Bull/Growth events
             '2017 Melt-Up': {
-                'dates': ('2017-01-01', '2017-12-31'),
+                'dates': ('2017-01-01', '2018-01-26'),
                 'expected': 'Bull/Growth',
-                'description': 'Low vol bull market'
+                'description': 'Tax cuts, synchronized global growth'
             },
-            'March 2023 Banking Crisis': {
-                'dates': ('2023-03-08', '2023-03-31'),
-                'expected': 'Crisis/High Vol',
-                'description': 'SVB collapse'
+            '2019 Recovery': {
+                'dates': ('2019-01-01', '2019-12-31'),
+                'expected': 'Bull/Growth',
+                'description': 'Fed pivot to dovish'
+            },
+            '2021 Bull Run': {
+                'dates': ('2021-01-01', '2021-12-31'),
+                'expected': 'Bull/Growth',
+                'description': 'Post-vaccine recovery'
+            },
+
+            # Recovery periods
+            'COVID Recovery': {
+                'dates': ('2020-03-24', '2020-12-31'),
+                'expected': 'High Vol Bull',
+                'description': 'Stimulus-driven recovery'
             }
         }
 
@@ -1397,6 +1379,7 @@ class MarketRegimeDetector:
             return None
 
         # Create DataFrame properly
+        import pandas as pd
         results_df = pd.DataFrame(results)
 
         # Print detailed results

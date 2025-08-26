@@ -202,7 +202,7 @@
         @keyframes slideIn {
             from {
                 opacity: 0;
-                transform: translateX(20px);
+                transform: translateX(10px);
             }
             to {
                 opacity: 1;
@@ -260,10 +260,27 @@
             overflow: hidden;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
+		.btn-primary {
+			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+			color: white;
+			padding: 10px 20px;
+			border: none;
+			border-radius: 8px;
+			cursor: pointer;
+			font-size: 1rem;
+			font-weight: 500;
+			transition: all 0.3s ease;
+			min-width: 140px;
+		}
+		
+		.btn-primary:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+		}
+		
+		#validation-accuracy {
+			animation: slideIn 0.3s ease-out;
+		}
 
         .btn-secondary {
             background: var(--light);
@@ -345,13 +362,24 @@
             background: var(--light);
         }
 
-        .regime-badge {
-            display: inline-block;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
+		.regime-badge {
+			display: inline-block;
+			padding: 8px 16px;
+			border-radius: 20px;
+			font-weight: 500;
+			font-size: 0.95rem;
+			margin-right: 12px;
+			margin-bottom: 8px;
+			transition: transform 0.2s ease;
+		}
+
+		.regime-badge:hover {
+			transform: translateY(-2px);
+		}
+
+		.regime-badge:last-child {
+			margin-right: 0;
+		}
 
         .regime-growth {
             background: #dcfce7;
@@ -571,8 +599,10 @@
                         </div>
                     </div>
                     
-                    <div class="card">
-                        <h3>Historical Regimes</h3>
+					<div class="card">
+						<h3>Historical Regimes</h3>
+						
+						<!-- Data Source Selection -->
 						<div class="input-group">
 							<label>Data Source</label>
 							<select id="historical-data-source">
@@ -580,24 +610,37 @@
 								<option value="yfinance">Yahoo Finance (5 years)</option>
 							</select>
 						</div>
-						<button class="btn btn-primary" onclick="fetchRegimeData()">Fetch Regime Data</button>
-						<button class="btn btn-secondary" onclick="loadHistoricalRegimes()" style="margin-left: 10px;">Load Saved Data</button>
-						<div class="progress-bar" id="fetch-progress" style="display: none;">
+						
+						<!-- Buttons with improved spacing -->
+						<div style="display: flex; gap: 10px; margin-top: 15px;">
+							<button class="btn btn-primary" onclick="fetchRegimeData()">Fetch Regime Data</button>
+							<button class="btn btn-primary" onclick="loadHistoricalRegimes()">Load Saved Data</button>
+						</div>
+						
+						<!-- Progress bar -->
+						<div class="progress-bar" id="fetch-progress" style="display: none; margin-top: 10px;">
 							<div class="progress-fill" style="width: 0%"></div>
 						</div>
-						<div style="margin-top: 15px;">
-							<span class="regime-badge regime-growth">Growth: --</span>
-							<span class="regime-badge regime-bull">Bull: --</span>
-							<span class="regime-badge regime-bear">Bear: --</span>
+						
+						<!-- Regime Distribution Display with better spacing -->
+						<div style="margin-top: 20px;" id="regime-badges-container">
+							<!-- Badges will be dynamically inserted here with better spacing -->
 						</div>
-                        <button class="btn btn-secondary" onclick="loadHistoricalRegimes()">Load History</button>
-                        <div style="margin-top: 15px;">
-                            <span class="regime-badge regime-growth">Growth: 45%</span>
-                            <span class="regime-badge regime-bull">Bull: 35%</span>
-                            <span class="regime-badge regime-bear">Bear: 20%</span>
-                        </div>
-                    </div>
-                </div>
+						
+						<!-- Validation Accuracy Display -->
+						<div id="validation-accuracy" style="margin-top: 20px; display: none;">
+							<div style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); 
+										border-left: 4px solid #0ea5e9; 
+										padding: 12px; 
+										border-radius: 8px;">
+								<strong style="color: #0369a1; display: block; margin-bottom: 8px;">Model Validation</strong>
+								<div style="display: flex; gap: 25px; align-items: center;">
+									<span id="accuracy-text" style="color: #075985;">Accuracy: --</span>
+									<span style="color: #64748b;" id="vix-alignment">VIX Alignment: --</span>
+								</div>
+							</div>
+						</div>
+					</div>
                 
                 <div class="chart-container" style="margin-top: 30px;">
                     <span>Regime Timeline Visualization</span>
@@ -1234,6 +1277,11 @@
 						updateRegimeBadges(response.statistics);
 					}
 					
+					// Show validation accuracy if available
+					if (response.validation) {
+						showValidationAccuracy(response.validation);
+					}
+					
 					// Display data range info if available
 					let message = 'Historical regimes loaded';
 					
@@ -1253,6 +1301,46 @@
 			} catch (error) {
 				console.error('Error loading historical regimes:', error);
 				showNotification(`Error: ${error.message}`, 'error');
+			}
+		}
+		
+		function showValidationAccuracy(validation) {
+			const validationDiv = document.getElementById('validation-accuracy');
+			const accuracyText = document.getElementById('accuracy-text');
+			const vixAlignment = document.getElementById('vix-alignment');
+			
+			if (!validation) {
+				validationDiv.style.display = 'none';
+				return;
+			}
+			
+			validationDiv.style.display = 'block';
+			
+			// Show accuracy with improved formatting
+			if (validation.accuracy !== undefined && validation.accuracy !== null) {
+				const accuracy = validation.accuracy;
+				const percentage = validation.accuracy_percentage || `${(accuracy * 100).toFixed(1)}%`;
+				
+				// Color based on accuracy level
+				const color = accuracy >= 0.8 ? '#16a34a' : accuracy >= 0.6 ? '#eab308' : '#dc2626';
+				
+				accuracyText.innerHTML = `<strong>Accuracy:</strong> <span style="color: ${color}; font-weight: 600;">${percentage}</span>`;
+				
+				// Add details if available
+				if (validation.correct_predictions !== undefined && validation.total_events !== undefined) {
+					accuracyText.innerHTML += ` <span style="color: #64748b; font-size: 0.9em;">(${validation.correct_predictions}/${validation.total_events} events)</span>`;
+				}
+			} else {
+				accuracyText.innerHTML = '<strong>Accuracy:</strong> <span style="color: #94a3b8;">N/A</span>';
+			}
+			
+			// Show VIX alignment if available with better formatting
+			if (validation.vix_alignment !== undefined && validation.vix_alignment !== null) {
+				const alignment = validation.vix_alignment;
+				const percentage = validation.vix_alignment_percentage || `${(alignment * 100).toFixed(1)}%`;
+				vixAlignment.innerHTML = `<strong>VIX Alignment:</strong> <span style="font-weight: 600;">${percentage}</span>`;
+			} else {
+				vixAlignment.innerHTML = '<strong>VIX Alignment:</strong> <span style="color: #94a3b8;">N/A</span>';
 			}
 		}
 
@@ -1282,48 +1370,72 @@
 		}
 
 		function updateRegimeBadges(statistics) {
-			const badges = document.querySelectorAll('#regime .regime-badge');
-			if (badges.length > 0) {
-				const badgeContainer = badges[0].parentElement;
-				badgeContainer.innerHTML = '';
-				
-				const regimeClasses = {
-					'Steady Growth': 'regime-growth',
-					'Strong Bull': 'regime-bull',
-					'Crisis/Bear': 'regime-bear',
-					'Bear': 'regime-bear',
-					'Crisis': 'regime-bear'
-				};
-				
-				for (const [regime, data] of Object.entries(statistics)) {
-					const badge = document.createElement('span');
-					
-					// Find the appropriate class
-					let badgeClass = 'regime-growth';
-					for (const [key, value] of Object.entries(regimeClasses)) {
-						if (regime.includes(key)) {
-							badgeClass = value;
-							break;
-						}
-					}
-					
-					badge.className = `regime-badge ${badgeClass}`;
-					
-					// Handle both percentage values and objects with percentage property
-					let percentage;
-					if (typeof data === 'number') {
-						percentage = data;
-					} else if (data && typeof data === 'object' && 'percentage' in data) {
-						percentage = data.percentage;
-					} else {
-						percentage = 0;
-					}
-					
-					badge.textContent = `${regime}: ${(percentage * 100).toFixed(1)}%`;
-					badgeContainer.appendChild(badge);
-					badgeContainer.appendChild(document.createTextNode(' '));
-				}
+			const container = document.getElementById('regime-badges-container');
+			if (!container) return;
+			
+			// Clear any existing badges
+			container.innerHTML = '';
+			
+			if (!statistics || Object.keys(statistics).length === 0) {
+				// Don't show default values - just leave empty
+				return;
 			}
+			
+			// Create a flex container for better spacing
+			const badgeWrapper = document.createElement('div');
+			badgeWrapper.style.display = 'flex';
+			badgeWrapper.style.flexWrap = 'wrap';
+			badgeWrapper.style.gap = '12px';
+			badgeWrapper.style.alignItems = 'center';
+			
+			const regimeClasses = {
+				'Steady Growth': 'regime-growth',
+				'Strong Bull': 'regime-bull',
+				'Crisis/Bear': 'regime-bear',
+				'Bear': 'regime-bear',
+				'Crisis': 'regime-bear'
+			};
+			
+			// Sort regimes for consistent display order
+			const sortedRegimes = Object.entries(statistics).sort((a, b) => {
+				const order = ['Crisis/Bear', 'Steady Growth', 'Strong Bull'];
+				const indexA = order.findIndex(o => a[0].includes(o.split('/')[0]));
+				const indexB = order.findIndex(o => b[0].includes(o.split('/')[0]));
+				return indexA - indexB;
+			});
+			
+			for (const [regime, data] of sortedRegimes) {
+				const badge = document.createElement('span');
+				
+				// Find the appropriate class
+				let badgeClass = 'regime-growth';
+				for (const [key, value] of Object.entries(regimeClasses)) {
+					if (regime.includes(key.split('/')[0])) {
+						badgeClass = value;
+						break;
+					}
+				}
+				
+				badge.className = `regime-badge ${badgeClass}`;
+				
+				// Handle both percentage values and objects with percentage property
+				let percentage;
+				if (typeof data === 'number') {
+					percentage = data;
+				} else if (data && typeof data === 'object' && 'percentage' in data) {
+					percentage = data.percentage;
+				} else {
+					percentage = 0;
+				}
+				
+				// Format the text with better readability
+				badge.textContent = `${regime}: ${(percentage * 100).toFixed(1)}%`;
+				badge.style.fontSize = '0.95rem';
+				
+				badgeWrapper.appendChild(badge);
+			}
+			
+			container.appendChild(badgeWrapper);
 		}
 		
 		async function fetchRegimeData() {
@@ -1346,7 +1458,8 @@
 					},
 					body: JSON.stringify({
 						data_source: dataSource,
-						years: dataSource === 'marketstack' ? 10 : 5
+						years: dataSource === 'marketstack' ? 10 : 5,
+						validate: true  // Request validation
 					})
 				});
 				
@@ -1360,21 +1473,21 @@
 						updateRegimeBadges(response.statistics);
 					}
 					
-					// Display success message with data info
-					let message = 'Successfully fetched historical data';
+					// Show validation if available
+					if (response.validation) {
+						showValidationAccuracy(response.validation);
+					}
 					
-					// Check if data_range exists and has the days property
+					// Display success message
+					let message = 'Successfully fetched historical data';
 					if (response.data_range && response.data_range.days) {
 						message = `Successfully fetched ${response.data_range.days} days of historical data`;
-					} else if (response.regime_periods && response.regime_periods.length > 0) {
-						message = `Successfully analyzed ${response.regime_periods.length} regime periods`;
 					}
 					
 					showNotification(message, 'success');
 					
 					// Auto-load the historical regimes after a short delay
 					setTimeout(() => {
-						loadHistoricalRegimes();
 						progressBar.style.display = 'none';
 					}, 1000);
 				} else {
