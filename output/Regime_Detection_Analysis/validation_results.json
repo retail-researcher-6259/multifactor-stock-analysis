@@ -1,49 +1,89 @@
 {
-  "accuracy": 0.4,
-  "accuracy_percentage": "40.0%",
-  "correct_predictions": 2,
-  "total_events": 5,
+  "accuracy": 0.9,
+  "accuracy_percentage": "90.0%",
+  "correct_predictions": 9,
+  "total_events": 10,
   "events": [
     {
       "Event": "COVID Crash",
       "Period": "2020-02-19 to 2020-03-23",
       "Expected": "Crisis/High Vol",
       "Dominant": "Crisis/Bear",
-      "All Regimes": "Crisis/Bear, Neutral",
+      "All Regimes": "Crisis/Bear, High Volatility, Steady Growth",
+      "Match": true
+    },
+    {
+      "Event": "Volmageddon",
+      "Period": "2018-01-26 to 2018-02-08",
+      "Expected": "Crisis/High Vol",
+      "Dominant": "Crisis/Bear",
+      "All Regimes": "Crisis/Bear, High Volatility, Steady Growth",
+      "Match": true
+    },
+    {
+      "Event": "Q4 2018 Selloff",
+      "Period": "2018-10-03 to 2018-12-24",
+      "Expected": "Crisis/High Vol",
+      "Dominant": "High Volatility",
+      "All Regimes": "High Volatility, Crisis/Bear, Steady Growth",
+      "Match": true
+    },
+    {
+      "Event": "China Devaluation",
+      "Period": "2015-08-18 to 2016-02-11",
+      "Expected": "Crisis/High Vol",
+      "Dominant": "High Volatility",
+      "All Regimes": "High Volatility, Steady Growth, Crisis/Bear",
       "Match": true
     },
     {
       "Event": "2022 Bear Market",
       "Period": "2022-01-03 to 2022-10-12",
       "Expected": "Crisis/High Vol",
-      "Dominant": "Crisis/Bear",
-      "All Regimes": "Crisis/Bear, Normal Market",
+      "Dominant": "High Volatility",
+      "All Regimes": "High Volatility, Steady Growth, Crisis/Bear",
       "Match": true
     },
     {
       "Event": "COVID Recovery",
       "Period": "2020-03-24 to 2020-06-08",
       "Expected": "High Vol Bull",
-      "Dominant": "Neutral",
-      "All Regimes": "Neutral, Crisis/Bear",
+      "Dominant": "Crisis/Bear",
+      "All Regimes": "Crisis/Bear, High Volatility",
+      "Match": true
+    },
+    {
+      "Event": "Taper Tantrum Recovery",
+      "Period": "2016-02-12 to 2016-12-31",
+      "Expected": "Bull/Growth",
+      "Dominant": "High Volatility",
+      "All Regimes": "High Volatility, Steady Growth, Crisis/Bear",
       "Match": false
     },
     {
       "Event": "2023 Recovery",
       "Period": "2023-01-01 to 2023-12-31",
       "Expected": "Bull/Growth",
-      "Dominant": "Normal Market",
-      "All Regimes": "Normal Market, Crisis/Bear",
-      "Match": false
+      "Dominant": "Steady Growth",
+      "All Regimes": "Steady Growth, High Volatility",
+      "Match": true
+    },
+    {
+      "Event": "2017 Melt-Up",
+      "Period": "2017-01-01 to 2017-12-31",
+      "Expected": "Bull/Growth",
+      "Dominant": "Steady Growth",
+      "All Regimes": "Steady Growth, High Volatility, Crisis/Bear",
+      "Match": true
     },
     {
       "Event": "March 2023 Banking Crisis",
       "Period": "2023-03-08 to 2023-03-31",
       "Expected": "Crisis/High Vol",
-      "Dominant": "Normal Market",
-      "All Regimes": "Normal Market, Crisis/Bear",
-      "Match": false
+      "Dominant": "High Volatility",
+      "All Regimes": "High Volatility, Steady Growth",
+      "Match": true
     }
   ],
-  "validation_date": "2025-08-26T23:55:20.550222"
+  "validation_date": "2025-08-28T21:45:09.393357"
 }

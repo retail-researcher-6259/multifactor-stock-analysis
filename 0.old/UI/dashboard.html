@@ -1,0 +1,1771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multifactor Stock Analysis System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1e40af;
+            --primary-dark: #1e3a8a;
+            --success: #16a34a;
+            --warning: #eab308;
+            --danger: #dc2626;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+            --border: #e5e7eb;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header h1 {
+            color: var(--dark);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            color: #6b7280;
+            font-size: 1.1rem;
+        }
+
+        .status-bar {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .status-item {
+            flex: 1;
+            min-width: 200px;
+            background: var(--light);
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .status-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(34, 197, 94, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+            }
+        }
+
+        .status-indicator.active {
+            background: var(--success);
+        }
+
+        .status-indicator.warning {
+            background: var(--warning);
+        }
+
+        .status-indicator.inactive {
+            background: var(--danger);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--dark);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+            z-index: -1;
+        }
+
+        .tab:hover::before {
+            width: 100%;
+        }
+
+        .tab:hover {
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .content-area {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h3 {
+            color: var(--dark);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+		.btn-primary {
+			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+			color: white;
+			padding: 10px 20px;
+			border: none;
+			border-radius: 8px;
+			cursor: pointer;
+			font-size: 1rem;
+			font-weight: 500;
+			transition: all 0.3s ease;
+			min-width: 140px;
+		}
+		
+		.btn-primary:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+		}
+		
+		#validation-accuracy {
+			animation: slideIn 0.3s ease-out;
+		}
+
+        .btn-secondary {
+            background: var(--light);
+            color: var(--dark);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--dark);
+            font-weight: 500;
+        }
+
+        .input-group input,
+        .input-group select,
+        .input-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus,
+        .input-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 500;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:hover {
+            background: var(--light);
+        }
+
+		.regime-badge {
+			display: inline-block;
+			padding: 8px 16px;
+			border-radius: 20px;
+			font-weight: 500;
+			font-size: 0.95rem;
+			margin-right: 12px;
+			margin-bottom: 8px;
+			transition: transform 0.2s ease;
+		}
+
+		.regime-badge:hover {
+			transform: translateY(-2px);
+		}
+
+		.regime-badge:last-child {
+			margin-right: 0;
+		}
+
+        .regime-growth {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .regime-bull {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .regime-bear {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .chart-container {
+            height: 400px;
+            background: var(--light);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            margin-top: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: var(--light);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200% center;
+            }
+            100% {
+                background-position: 200% center;
+            }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            display: none;
+            animation: slideInRight 0.3s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+            }
+            to {
+                transform: translateX(0);
+            }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            animation: scaleIn 0.3s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: translate(-50%, -50%) scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .loader {
+            border: 3px solid var(--light);
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Multifactor Stock Analysis System</h1>
+            <p>Integrated Dashboard for Regime Detection, Scoring, and Portfolio Optimization</p>
+            
+            <div class="status-bar">
+                <div class="status-item">
+                    <span class="status-indicator active"></span>
+                    <span>Current Regime: <strong id="current-regime">Steady Growth</strong></span>
+                </div>
+                <div class="status-item">
+                    <span class="status-indicator active"></span>
+                    <span>Last Update: <strong id="last-update">08/23/2025 09:30</strong></span>
+                </div>
+                <div class="status-item">
+                    <span class="status-indicator warning"></span>
+                    <span>Portfolio Status: <strong>Rebalance Needed</strong></span>
+                </div>
+                <div class="status-item">
+                    <span class="status-indicator active"></span>
+                    <span>Active Stocks: <strong>957</strong></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('regime')">Regime Detection</button>
+            <button class="tab" onclick="switchTab('weights')">Weight Optimization</button>
+            <button class="tab" onclick="switchTab('scoring')">Stock Scoring</button>
+            <button class="tab" onclick="switchTab('trends')">Score Trends</button>
+            <button class="tab" onclick="switchTab('portfolio')">Portfolio Selection</button>
+            <button class="tab" onclick="switchTab('optimization')">Portfolio Optimization</button>
+        </div>
+
+        <div class="content-area">
+            <!-- Regime Detection Tab -->
+            <div id="regime" class="tab-content active">
+                <h2>Market Regime Detection</h2>
+                <p style="color: #6b7280; margin-bottom: 20px;">Using Hidden Markov Models to identify current market conditions</p>
+                
+				<div class="grid" style="grid-template-columns: 1fr 1fr;">
+					<div class="card">
+						<h3>Current Regime Analysis</h3>
+						<div class="input-group">
+							<label>Data Source</label>
+							<select id="current-regime-source">
+								<option value="yfinance">Yahoo Finance</option>
+								<option value="custom">Custom Data</option>
+							</select>
+						</div>
+						<button class="btn btn-primary" onclick="detectRegime()">Run Detection</button>
+						<div class="progress-bar">
+							<div class="progress-fill" style="width: 0%"></div>
+						</div>
+						
+						<!-- Add regime probabilities here as a compact display -->
+						<div style="margin-top: 20px;">
+							<h4 style="font-size: 0.95rem; margin-bottom: 10px;">Regime Probabilities</h4>
+							<table id="regime-probabilities-table" style="font-size: 0.9rem;">
+								<tr>
+									<td>Steady Growth</td>
+									<td><strong>--</strong></td>
+								</tr>
+								<tr>
+									<td>Strong Bull</td>
+									<td><strong>--</strong></td>
+								</tr>
+								<tr>
+									<td>Crisis/Bear</td>
+									<td><strong>--</strong></td>
+								</tr>
+							</table>
+						</div>
+					</div>
+					
+					<div class="card">
+						<h3>Historical Regimes</h3>
+						
+						<!-- Data Source Selection -->
+						<div class="input-group">
+							<label>Data Source</label>
+							<select id="historical-data-source">
+								<option value="yfinance">Yahoo Finance (10 years)</option>
+								<option value="marketstack">Marketstack (10 years)</option>
+							</select>
+						</div>
+						
+						<!-- Buttons with improved spacing -->
+						<div style="display: flex; gap: 10px; margin-top: 15px;">
+							<button class="btn btn-primary" onclick="fetchRegimeData()">Fetch Regime Data</button>
+							<button class="btn btn-primary" onclick="loadHistoricalRegimes()">Load Saved Data</button>
+						</div>
+						
+						<!-- Progress bar -->
+						<div class="progress-bar" id="fetch-progress" style="display: none; margin-top: 10px;">
+							<div class="progress-fill" style="width: 0%"></div>
+						</div>
+						
+						<!-- Regime Distribution Display -->
+						<div style="margin-top: 20px;" id="regime-badges-container">
+							<!-- Badges will be dynamically inserted here -->
+						</div>
+						
+						<!-- Validation Accuracy Display -->
+						<div id="validation-accuracy" style="margin-top: 20px; display: none;">
+							<div style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); 
+										border-left: 4px solid #0ea5e9; 
+										padding: 12px; 
+										border-radius: 8px;">
+								<strong style="color: #0369a1; display: block; margin-bottom: 8px;">Model Validation</strong>
+								<div id="accuracy-text" style="font-size: 0.9rem;"></div>
+								<div id="vix-alignment" style="font-size: 0.9rem; margin-top: 4px;"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Expanded Regime Timeline Visualization -->
+				<div class="card" style="margin-top: 20px;">
+					<h3>Regime Timeline Visualization</h3>
+					<div class="chart-container" style="height: 400px;">
+						<span>Historical regime transitions over time</span>
+					</div>
+				</div>
+
+            <!-- Weight Optimization Tab -->
+            <div id="weights" class="tab-content">
+                <h2>Factor Weight Optimization</h2>
+                <p style="color: #6b7280; margin-bottom: 20px;">Optimize factor weights based on regime-specific backtesting</p>
+                
+                <div class="grid">
+                    <div class="card">
+                        <h3>Optimization Parameters</h3>
+                        <div class="input-group">
+                            <label>Target Regime</label>
+                            <select id="regime-select">
+                                <option>Steady Growth</option>
+                                <option>Strong Bull</option>
+                                <option>Crisis/Bear</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Backtest Period (months)</label>
+                            <input type="number" value="12" min="1" max="60">
+                        </div>
+                        <div class="input-group">
+                            <label>Sample Companies</label>
+                            <input type="number" value="150" min="50" max="500">
+                        </div>
+                        <button class="btn btn-primary" onclick="optimizeWeights()">Optimize Weights</button>
+                    </div>
+                    
+                    <div class="card" style="grid-column: span 2;">
+                        <h3>Current Factor Weights</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Factor</th>
+                                    <th>Growth</th>
+                                    <th>Bull</th>
+                                    <th>Bear</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Value</td><td>0.12</td><td>0.08</td><td>0.15</td></tr>
+                                <tr><td>Quality</td><td>0.10</td><td>0.09</td><td>0.13</td></tr>
+                                <tr><td>Financial Health</td><td>0.08</td><td>0.07</td><td>0.12</td></tr>
+                                <tr><td>Technical</td><td>0.09</td><td>0.11</td><td>0.06</td></tr>
+                                <tr><td>Insider</td><td>0.07</td><td>0.08</td><td>0.09</td></tr>
+                                <tr><td>Momentum</td><td>0.11</td><td>0.13</td><td>0.05</td></tr>
+                                <tr><td>Stability</td><td>0.09</td><td>0.06</td><td>0.11</td></tr>
+                                <tr><td>Size</td><td>0.06</td><td>0.07</td><td>0.08</td></tr>
+                                <tr><td>Credit</td><td>0.07</td><td>0.06</td><td>0.10</td></tr>
+                                <tr><td>Liquidity</td><td>0.08</td><td>0.09</td><td>0.07</td></tr>
+                                <tr><td>Carry</td><td>0.06</td><td>0.08</td><td>0.04</td></tr>
+                                <tr><td>Growth</td><td>0.07</td><td>0.08</td><td>0.00</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="card" style="margin-top: 20px;">
+                    <h3>Backtesting Results</h3>
+                    <div class="chart-container">
+                        <span>Performance Comparison Chart</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stock Scoring Tab -->
+            <div id="scoring" class="tab-content">
+                <h2>Multifactor Stock Scoring</h2>
+                <p style="color: #6b7280; margin-bottom: 20px;">Daily execution of comprehensive stock scoring</p>
+                
+                <div class="grid">
+                    <div class="card">
+                        <h3>Scoring Configuration</h3>
+                        <div class="input-group">
+                            <label>Weight Set</label>
+                            <select onchange="updateWeightSet(this.value)">
+                                <option>Auto (Based on Current Regime)</option>
+                                <option>Steady Growth</option>
+                                <option>Strong Bull</option>
+                                <option>Crisis/Bear</option>
+                                <option>Custom</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Universe Filter</label>
+                            <select>
+                                <option>All Stocks</option>
+                                <option>S&P 500</option>
+                                <option>NASDAQ 100</option>
+                                <option>Russell 2000</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="runScoring()">Run Scoring</button>
+                        <button class="btn btn-secondary" onclick="scheduleDaily()">Schedule Daily</button>
+                    </div>
+                    
+                    <div class="card" style="grid-column: span 2;">
+                        <h3>Top Ranked Stocks</h3>
+                        <div class="table-container">
+                            <table id="stocks-table">
+                                <thead>
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>Ticker</th>
+                                        <th>Company</th>
+                                        <th>Score</th>
+                                        <th>Sector</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>AAPL</td>
+                                        <td>Apple Inc.</td>
+                                        <td>92.5</td>
+                                        <td>Technology</td>
+                                        <td><button class="btn btn-success" onclick="viewDetails('AAPL')">Details</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>MSFT</td>
+                                        <td>Microsoft Corp.</td>
+                                        <td>91.8</td>
+                                        <td>Technology</td>
+                                        <td><button class="btn btn-success" onclick="viewDetails('MSFT')">Details</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>GOOGL</td>
+                                        <td>Alphabet Inc.</td>
+                                        <td>90.2</td>
+                                        <td>Technology</td>
+                                        <td><button class="btn btn-success" onclick="viewDetails('GOOGL')">Details</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <button class="btn btn-secondary" style="margin-top: 15px;" onclick="loadFromCSV()">Load from CSV</button>
+                    </div>
+                </div>
+                
+                <div class="card" style="margin-top: 20px;">
+                    <h3>Score Distribution</h3>
+                    <div class="chart-container">
+                        <span>Score Distribution Histogram</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Score Trends Tab -->
+            <div id="trends" class="tab-content">
+                <h2>Score Trend Analysis</h2>
+                <p style="color: #6b7280; margin-bottom: 20px;">Analyze historical score stability and trends</p>
+                
+                <div class="grid">
+                    <div class="card">
+                        <h3>Analysis Parameters</h3>
+                        <div class="input-group">
+                            <label>Stock Symbol</label>
+                            <input type="text" placeholder="Enter ticker..." id="trend-ticker">
+                        </div>
+                        <div class="input-group">
+                            <label>Analysis Period</label>
+                            <select>
+                                <option>Last 30 Days</option>
+                                <option>Last 90 Days</option>
+                                <option>Last 6 Months</option>
+                                <option>Last Year</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Analysis Type</label>
+                            <select>
+                                <option>Regression Analysis</option>
+                                <option>Technical Indicators</option>
+                                <option>Comparative Analysis</option>
+                                <option>All Methods</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="analyzeTrends()">Analyze</button>
+                    </div>
+                    
+                    <div class="card" style="grid-column: span 2;">
+                        <h3>Trend Results</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div>
+                                <p><strong>Trend Direction:</strong> <span style="color: var(--success);">Upward</span></p>
+                                <p><strong>Stability Score:</strong> 8.5/10</p>
+                                <p><strong>R² Value:</strong> 0.87</p>
+                            </div>
+                            <div>
+                                <p><strong>Volatility:</strong> Low (σ = 2.3)</p>
+                                <p><strong>Support Level:</strong> 85.2</p>
+                                <p><strong>Resistance Level:</strong> 93.7</p>
+                            </div>
+                        </div>
+                        <div class="chart-container" style="height: 300px; margin-top: 20px;">
+                            <span>Score Trend Chart</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid" style="margin-top: 20px;">
+                    <div class="card">
+                        <h3>Technical Indicators</h3>
+                        <table>
+                            <tr><td>RSI (14)</td><td>62.5</td></tr>
+                            <tr><td>MACD Signal</td><td style="color: var(--success);">Buy</td></tr>
+                            <tr><td>Bollinger Position</td><td>Upper Band</td></tr>
+                            <tr><td>Moving Average (20)</td><td>88.3</td></tr>
+                        </table>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>Comparative Analysis</h3>
+                        <div class="input-group">
+                            <label>Compare With</label>
+                            <input type="text" placeholder="Enter tickers (comma-separated)">
+                        </div>
+                        <button class="btn btn-secondary" onclick="compareStocks()">Compare</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Portfolio Selection Tab -->
+            <div id="portfolio" class="tab-content">
+                <h2>Dynamic Portfolio Selection</h2>
+                <p style="color: #6b7280; margin-bottom: 20px;">Create optimized portfolios using MHRP methodology</p>
+                
+                <div class="grid">
+                    <div class="card">
+                        <h3>Portfolio Parameters</h3>
+                        <div class="input-group">
+                            <label>Number of Stocks</label>
+                            <input type="number" value="20" min="5" max="50" id="portfolio-size">
+                        </div>
+                        <div class="input-group">
+                            <label>Optimization Target</label>
+                            <select>
+                                <option>Maximum Sharpe Ratio</option>
+                                <option>Maximum Returns</option>
+                                <option>Minimum Drawdown</option>
+                                <option>Balanced</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Risk Tolerance</label>
+                            <select>
+                                <option>Conservative</option>
+                                <option>Moderate</option>
+                                <option>Aggressive</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Rebalancing Frequency</label>
+                            <select>
+                                <option>Daily</option>
+                                <option>Weekly</option>
+                                <option>Monthly</option>
+                                <option>Quarterly</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="createPortfolio()">Create Portfolio</button>
+                        <button class="btn btn-secondary" onclick="backtest()">Run Backtest</button>
+                    </div>
+                    
+                    <div class="card" style="grid-column: span 2;">
+                        <h3>Selected Portfolio</h3>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Ticker</th>
+                                        <th>Company</th>
+                                        <th>Weight (%)</th>
+                                        <th>Score</th>
+                                        <th>Sector</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="portfolio-table">
+                                    <tr>
+                                        <td>AAPL</td>
+                                        <td>Apple Inc.</td>
+                                        <td>8.5%</td>
+                                        <td>92.5</td>
+                                        <td>Technology</td>
+                                    </tr>
+                                    <tr>
+                                        <td>MSFT</td>
+                                        <td>Microsoft Corp.</td>
+                                        <td>7.8%</td>
+                                        <td>91.8</td>
+                                        <td>Technology</td>
+                                    </tr>
+                                    <tr>
+                                        <td>JNJ</td>
+                                        <td>Johnson & Johnson</td>
+                                        <td>6.2%</td>
+                                        <td>88.3</td>
+                                        <td>Healthcare</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid" style="margin-top: 20px;">
+                    <div class="card">
+                        <h3>Portfolio Metrics</h3>
+                        <table>
+                            <tr><td>Expected Return</td><td><strong>12.5%</strong></td></tr>
+                            <tr><td>Sharpe Ratio</td><td><strong>1.85</strong></td></tr>
+                            <tr><td>Max Drawdown</td><td><strong>-8.3%</strong></td></tr>
+                            <tr><td>Volatility</td><td><strong>14.2%</strong></td></tr>
+                            <tr><td>Beta</td><td><strong>0.95</strong></td></tr>
+                        </table>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>Sector Allocation</h3>
+                        <div class="chart-container" style="height: 250px;">
+                            <span>Sector Allocation Pie Chart</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>Backtesting Results</h3>
+                        <div class="chart-container" style="height: 250px;">
+                            <span>Historical Performance Chart</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Portfolio Optimization Tab -->
+            <div id="optimization" class="tab-content">
+                <h2>Portfolio Optimization & Rebalancing</h2>
+                <p style="color: #6b7280; margin-bottom: 20px;">Track and optimize portfolio weights with drift-based rebalancing</p>
+                
+                <div class="grid">
+                    <div class="card">
+                        <h3>Current Holdings</h3>
+                        <div class="input-group">
+                            <label>Portfolio Name</label>
+                            <select>
+                                <option>Main Portfolio</option>
+                                <option>Growth Portfolio</option>
+                                <option>Value Portfolio</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="loadHoldings()">Load Holdings</button>
+                        <button class="btn btn-secondary" onclick="importFromBroker()">Import from Broker</button>
+                        
+                        <div style="margin-top: 20px;">
+                            <p><strong>Total Value:</strong> $1,234,567</p>
+                            <p><strong>Number of Positions:</strong> 18</p>
+                            <p><strong>Cash Available:</strong> $45,000</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card" style="grid-column: span 2;">
+                        <h3>Rebalancing Analysis</h3>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Ticker</th>
+                                        <th>Current Weight</th>
+                                        <th>Target Weight</th>
+                                        <th>Drift</th>
+                                        <th>Action</th>
+                                        <th>Shares</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>AAPL</td>
+                                        <td>10.2%</td>
+                                        <td>8.5%</td>
+                                        <td style="color: var(--danger);">+1.7%</td>
+                                        <td>Sell</td>
+                                        <td>-15</td>
+                                    </tr>
+                                    <tr>
+                                        <td>MSFT</td>
+                                        <td>6.1%</td>
+                                        <td>7.8%</td>
+                                        <td style="color: var(--success);">-1.7%</td>
+                                        <td>Buy</td>
+                                        <td>+8</td>
+                                    </tr>
+                                    <tr>
+                                        <td>JNJ</td>
+                                        <td>6.0%</td>
+                                        <td>6.2%</td>
+                                        <td style="color: var(--warning);">-0.2%</td>
+                                        <td>Hold</td>
+                                        <td>0</td>
+                                    </tr>
+                                    <tr style="background: #fef3c7;">
+                                        <td>NVDA</td>
+                                        <td>3.8%</td>
+                                        <td>8.1%</td>
+                                        <td style="color: var(--danger); font-weight: bold;">-4.3%</td>
+                                        <td><strong>Buy (>5% drift)</strong></td>
+                                        <td>+22</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div style="margin-top: 20px; display: flex; gap: 10px;">
+                            <button class="btn btn-success" onclick="executeRebalancing()">Execute Rebalancing</button>
+                            <button class="btn btn-secondary" onclick="exportOrders()">Export Orders</button>
+                            <button class="btn btn-secondary" onclick="simulateRebalancing()">Simulate Impact</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid" style="margin-top: 20px;">
+                    <div class="card">
+                        <h3>Drift Monitoring</h3>
+                        <div class="input-group">
+                            <label>Drift Threshold (%)</label>
+                            <input type="number" value="5" min="1" max="20" step="0.5">
+                        </div>
+                        <div class="input-group">
+                            <label>Alert Frequency</label>
+                            <select>
+                                <option>Real-time</option>
+                                <option>Daily</option>
+                                <option>Weekly</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="setupAlerts()">Setup Alerts</button>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>Transaction Costs</h3>
+                        <table>
+                            <tr><td>Estimated Commission</td><td>$45.00</td></tr>
+                            <tr><td>Market Impact</td><td>$123.50</td></tr>
+                            <tr><td>Spread Cost</td><td>$89.25</td></tr>
+                            <tr><td><strong>Total Cost</strong></td><td><strong>$257.75</strong></td></tr>
+                        </table>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>Performance Tracking</h3>
+                        <div class="chart-container" style="height: 250px;">
+                            <span>Portfolio vs Benchmark Chart</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for stock details -->
+    <div id="stockModal" class="modal">
+        <div class="modal-content">
+            <h2 id="modal-title">Stock Details</h2>
+            <div id="modal-body">
+                <!-- Stock details will be loaded here -->
+            </div>
+            <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification">
+        <span id="notification-text"></span>
+    </div>
+
+
+	<script>
+		// API Configuration
+		const API_URL = 'http://localhost:5000/api';
+
+		// Tab switching functionality
+		function switchTab(tabName) {
+			// Remove active class from all tabs and contents
+			document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+			document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+			
+			// Add active class to selected tab and content
+			event.target.classList.add('active');
+			document.getElementById(tabName).classList.add('active');
+		}
+
+		// Notification system
+		function showNotification(message, type = 'info') {
+			const notification = document.getElementById('notification');
+			const notificationText = document.getElementById('notification-text');
+			
+			notificationText.textContent = message;
+			notification.style.display = 'block';
+			notification.style.borderLeft = `4px solid ${type === 'success' ? 'var(--success)' : type === 'error' ? 'var(--danger)' : 'var(--primary)'}`;
+			
+			setTimeout(() => {
+				notification.style.display = 'none';
+			}, 3000);
+		}
+
+		// Modal functionality
+		function viewDetails(ticker) {
+			const modal = document.getElementById('stockModal');
+			const modalTitle = document.getElementById('modal-title');
+			const modalBody = document.getElementById('modal-body');
+			
+			modalTitle.textContent = `${ticker} - Detailed Analysis`;
+			modalBody.innerHTML = `
+				<div class="loader"></div>
+				<p style="text-align: center; color: #6b7280;">Loading stock details...</p>
+			`;
+			
+			modal.style.display = 'block';
+			
+			// Simulate loading data
+			setTimeout(() => {
+				modalBody.innerHTML = `
+					<div class="input-group">
+						<label>Score Breakdown</label>
+						<table style="width: 100%;">
+							<tr><td>Value Score</td><td>8.5</td></tr>
+							<tr><td>Quality Score</td><td>9.2</td></tr>
+							<tr><td>Technical Score</td><td>7.8</td></tr>
+							<tr><td>Momentum Score</td><td>8.9</td></tr>
+						</table>
+					</div>
+					<div class="chart-container" style="height: 200px; margin-top: 20px;">
+						<span>Price History Chart</span>
+					</div>
+				`;
+			}, 1000);
+		}
+
+		function closeModal() {
+			document.getElementById('stockModal').style.display = 'none';
+		}
+
+		// Error handling wrapper
+		async function fetchWithErrorHandling(url, options = {}) {
+			try {
+				const response = await fetch(url, options);
+				if (!response.ok) {
+					throw new Error(`HTTP error! status: ${response.status}`);
+				}
+				return await response.json();
+			} catch (error) {
+				console.error('Fetch error:', error);
+				showNotification(`Error: ${error.message}`, 'error');
+				throw error;
+			}
+		}
+
+		// ========================================
+		// REGIME DETECTION FUNCTIONS
+		// ========================================
+		
+		async function detectRegime() {
+			const progressBar = document.querySelector('#regime .progress-fill');
+			progressBar.style.width = '0%';
+			
+			try {
+				progressBar.style.width = '20%';
+				showNotification('Starting regime detection...', 'info');
+				
+				const dataSource = document.getElementById('current-regime-source').value || 'yfinance';
+				
+				const result = await fetchWithErrorHandling(`${API_URL}/regime/detect`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({
+						data_source: dataSource
+					})
+				});
+				
+				progressBar.style.width = '100%';
+				
+				if (result.status === 'success') {
+					// Update UI with results
+					if (result.data && result.data.current) {
+						const current = result.data.current;
+						
+						// Update current regime text
+						if (current.current_regime) {
+							document.getElementById('current-regime').textContent = current.current_regime;
+						} else if (current.regime_detection && current.regime_detection.current_regime) {
+							document.getElementById('current-regime').textContent = 
+								current.regime_detection.current_regime;
+						}
+						
+						// Update probabilities
+						const probs = current.regime_probabilities || 
+									 (current.regime_detection && current.regime_detection.regime_probabilities);
+						if (probs) {
+							updateRegimeProbabilities(probs);
+						}
+					}
+					
+					showNotification('Regime detection completed successfully', 'success');
+					
+					// Update last update time
+					document.getElementById('last-update').textContent = new Date().toLocaleString();
+				} else {
+					throw new Error(result.message || 'Detection failed');
+				}
+			} catch (error) {
+				console.error('Error detecting regime:', error);
+				progressBar.style.width = '0%';
+				showNotification(`Error: ${error.message}`, 'error');
+			}
+		}
+
+		async function loadHistoricalRegimes() {
+			try {
+				showNotification('Loading saved historical regime data...', 'info');
+				
+				const response = await fetchWithErrorHandling(`${API_URL}/regime/historical-saved`);
+				
+				if (response.status === 'success') {
+					// Update the regime badges with actual data
+					if (response.statistics) {
+						updateRegimeBadges(response.statistics);
+					}
+					
+					// Show validation accuracy if available
+					if (response.validation) {
+						showValidationAccuracy(response.validation);
+					}
+					
+					// Display data range info if available
+					let message = 'Historical regimes loaded';
+					
+					if (response.data_range && response.data_range.start && response.data_range.end) {
+						const days = response.data_range.days || 'unknown';
+						message = `Loaded data from ${response.data_range.start.split('T')[0]} to ${response.data_range.end.split('T')[0]} (${days} days)`;
+					} else if (response.regime_periods && response.regime_periods.length > 0) {
+						message = `Loaded ${response.regime_periods.length} historical regime periods`;
+					}
+					
+					showNotification(message, 'success');
+				} else if (response.status === 'warning') {
+					showNotification(response.message || 'No saved historical data found. Please fetch data first.', 'warning');
+				} else {
+					throw new Error(response.message || 'Failed to load historical data');
+				}
+			} catch (error) {
+				console.error('Error loading historical regimes:', error);
+				showNotification(`Error: ${error.message}`, 'error');
+			}
+		}
+		
+		function showValidationAccuracy(validation) {
+			const validationDiv = document.getElementById('validation-accuracy');
+			const accuracyText = document.getElementById('accuracy-text');
+			const vixAlignment = document.getElementById('vix-alignment');
+			
+			if (!validation) {
+				validationDiv.style.display = 'none';
+				return;
+			}
+			
+			validationDiv.style.display = 'block';
+			
+			// Show accuracy with improved formatting
+			if (validation.accuracy !== undefined && validation.accuracy !== null) {
+				const accuracy = validation.accuracy;
+				const percentage = validation.accuracy_percentage || `${(accuracy * 100).toFixed(1)}%`;
+				
+				// Color based on accuracy level
+				const color = accuracy >= 0.8 ? '#16a34a' : accuracy >= 0.6 ? '#eab308' : '#dc2626';
+				
+				accuracyText.innerHTML = `<strong>Accuracy:</strong> <span style="color: ${color}; font-weight: 600;">${percentage}</span>`;
+				
+				// Add details if available
+				if (validation.correct_predictions !== undefined && validation.total_events !== undefined) {
+					accuracyText.innerHTML += ` <span style="color: #64748b; font-size: 0.9em;">(${validation.correct_predictions}/${validation.total_events} events)</span>`;
+				}
+			} else {
+				accuracyText.innerHTML = '<strong>Accuracy:</strong> <span style="color: #94a3b8;">N/A</span>';
+			}
+			
+			// Show VIX alignment if available with better formatting
+			if (validation.vix_alignment !== undefined && validation.vix_alignment !== null) {
+				const alignment = validation.vix_alignment;
+				const percentage = validation.vix_alignment_percentage || `${(alignment * 100).toFixed(1)}%`;
+				vixAlignment.innerHTML = `<strong>VIX Alignment:</strong> <span style="font-weight: 600;">${percentage}</span>`;
+			} else {
+				vixAlignment.innerHTML = '<strong>VIX Alignment:</strong> <span style="color: #94a3b8;">N/A</span>';
+			}
+		}
+
+		function updateRegimeProbabilities(probabilities) {
+			if (!probabilities) return;
+			
+			const table = document.querySelector('#regime-probabilities-table');
+			if (!table) return;
+			
+			// Find all rows (skip header if exists)
+			const rows = table.querySelectorAll('tr');
+			
+			// Update each row based on regime name
+			rows.forEach(row => {
+				const cells = row.querySelectorAll('td');
+				if (cells.length >= 2) {
+					const regimeName = cells[0].textContent;
+					const value = probabilities[regimeName] || 0;
+					cells[1].innerHTML = `<strong>${(value * 100).toFixed(1)}%</strong>`;
+				}
+			});
+		}
+
+		function updateRegimeBadges(statistics) {
+			const container = document.getElementById('regime-badges-container');
+			if (!container) return;
+			
+			// Clear any existing badges
+			container.innerHTML = '';
+			
+			if (!statistics || Object.keys(statistics).length === 0) {
+				// Don't show default values - just leave empty
+				return;
+			}
+			
+			// Create a flex container for better spacing
+			const badgeWrapper = document.createElement('div');
+			badgeWrapper.style.display = 'flex';
+			badgeWrapper.style.flexWrap = 'wrap';
+			badgeWrapper.style.gap = '12px';
+			badgeWrapper.style.alignItems = 'center';
+			
+			const regimeClasses = {
+				'Steady Growth': 'regime-growth',
+				'Strong Bull': 'regime-bull',
+				'Crisis/Bear': 'regime-bear',
+				'Bear': 'regime-bear',
+				'Crisis': 'regime-bear'
+			};
+			
+			// Sort regimes for consistent display order
+			const sortedRegimes = Object.entries(statistics).sort((a, b) => {
+				const order = ['Crisis/Bear', 'Steady Growth', 'Strong Bull'];
+				const indexA = order.findIndex(o => a[0].includes(o.split('/')[0]));
+				const indexB = order.findIndex(o => b[0].includes(o.split('/')[0]));
+				return indexA - indexB;
+			});
+			
+			for (const [regime, data] of sortedRegimes) {
+				const badge = document.createElement('span');
+				
+				// Find the appropriate class
+				let badgeClass = 'regime-growth';
+				for (const [key, value] of Object.entries(regimeClasses)) {
+					if (regime.includes(key.split('/')[0])) {
+						badgeClass = value;
+						break;
+					}
+				}
+				
+				badge.className = `regime-badge ${badgeClass}`;
+				
+				// Handle both percentage values and objects with percentage property
+				let percentage;
+				if (typeof data === 'number') {
+					percentage = data;
+				} else if (data && typeof data === 'object' && 'percentage' in data) {
+					percentage = data.percentage;
+				} else {
+					percentage = 0;
+				}
+				
+				// Format the text with better readability
+				badge.textContent = `${regime}: ${(percentage * 100).toFixed(1)}%`;
+				badge.style.fontSize = '0.95rem';
+				
+				badgeWrapper.appendChild(badge);
+			}
+			
+			container.appendChild(badgeWrapper);
+		}
+		
+		async function fetchRegimeData() {
+			const progressBar = document.querySelector('#fetch-progress');
+			const progressFill = progressBar.querySelector('.progress-fill');
+			
+			progressBar.style.display = 'block';
+			progressFill.style.width = '0%';
+			
+			try {
+				const dataSource = document.getElementById('historical-data-source').value;
+				const sourceName = dataSource === 'yfinance' ? 'Yahoo Finance' : 'Marketstack';
+				showNotification(`Fetching historical market data from ${sourceName}...`, 'info');
+				progressFill.style.width = '30%';
+				
+				const dataSource = document.getElementById('historical-data-source').value;
+				
+				const response = await fetchWithErrorHandling(`${API_URL}/regime/fetch-historical`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({
+						data_source: dataSource,
+						years: 10,  // Both sources now use 10 years
+						validate: true  // Request validation
+					})
+				});
+				
+				progressFill.style.width = '70%';
+				
+				if (response.status === 'success') {
+					progressFill.style.width = '100%';
+					
+					// Update statistics if available
+					if (response.statistics) {
+						updateRegimeBadges(response.statistics);
+					}
+					
+					// Show validation if available
+					if (response.validation) {
+						showValidationAccuracy(response.validation);
+					}
+					
+					// Display success message
+					let message = 'Successfully fetched historical data';
+					if (response.data_range && response.data_range.days) {
+						message = `Successfully fetched ${response.data_range.days} days of historical data`;
+					}
+					
+					showNotification(message, 'success');
+					
+					// Auto-load the historical regimes after a short delay
+					setTimeout(() => {
+						progressBar.style.display = 'none';
+					}, 1000);
+				} else {
+					throw new Error(response.message || 'Failed to fetch historical data');
+				}
+			} catch (error) {
+				console.error('Error fetching regime data:', error);
+				showNotification(`Error: ${error.message}`, 'error');
+				progressBar.style.display = 'none';
+				progressFill.style.width = '0%';
+			}
+		}
+
+		// ========================================
+		// WEIGHT OPTIMIZATION FUNCTIONS
+		// ========================================
+		
+		async function optimizeWeights() {
+			try {
+				showNotification('Starting weight optimization...', 'info');
+				
+				const regime = document.getElementById('regime-select').value;
+				const backtestInputs = document.querySelectorAll('#weights input[type="number"]');
+				const backtestPeriod = backtestInputs[0] ? backtestInputs[0].value : '12';
+				const sampleCompanies = backtestInputs[1] ? backtestInputs[1].value : '150';
+				
+				const response = await fetchWithErrorHandling(`${API_URL}/weights/optimize`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({
+						regime: regime,
+						backtest_period: parseInt(backtestPeriod),
+						sample_companies: parseInt(sampleCompanies)
+					})
+				});
+				
+				if (response.status === 'success') {
+					await loadCurrentWeights();
+					showNotification(`Optimization completed for ${regime}`, 'success');
+				} else {
+					throw new Error(response.message || 'Optimization failed');
+				}
+			} catch (error) {
+				console.error('Error optimizing weights:', error);
+				showNotification(`Error: ${error.message}`, 'error');
+			}
+		}
+
+		async function loadCurrentWeights() {
+			try {
+				const response = await fetchWithErrorHandling(`${API_URL}/weights/current`);
+				
+				if (response.status === 'success' && response.weights) {
+					updateWeightsTable(response.weights);
+				}
+			} catch (error) {
+				console.error('Error loading weights:', error);
+			}
+		}
+
+		function updateWeightsTable(weights) {
+			const table = document.querySelector('#weights table tbody');
+			if (!table) return;
+			
+			// Get factor names from the first regime
+			const factors = Object.keys(weights[Object.keys(weights)[0]] || {});
+			
+			table.innerHTML = '';
+			factors.forEach(factor => {
+				const row = table.insertRow();
+				row.innerHTML = `
+					<td>${factor}</td>
+					<td>${(weights['Steady Growth'] && weights['Steady Growth'][factor]) ? weights['Steady Growth'][factor].toFixed(2) : '0.00'}</td>
+					<td>${(weights['Strong Bull'] && weights['Strong Bull'][factor]) ? weights['Strong Bull'][factor].toFixed(2) : '0.00'}</td>
+					<td>${(weights['Crisis/Bear'] && weights['Crisis/Bear'][factor]) ? weights['Crisis/Bear'][factor].toFixed(2) : '0.00'}</td>
+				`;
+			});
+		}
+
+		// ========================================
+		// OTHER TAB FUNCTIONS (keeping your original ones)
+		// ========================================
+
+		// Stock Scoring Functions
+		function runScoring() {
+			showNotification('Running multifactor scoring analysis...', 'info');
+			setTimeout(() => {
+				showNotification('Scoring completed for 957 stocks', 'success');
+				document.getElementById('last-update').textContent = new Date().toLocaleString();
+			}, 2500);
+		}
+
+		function scheduleDaily() {
+			showNotification('Daily scoring scheduled for 9:30 AM EST', 'success');
+		}
+
+		function updateWeightSet(value) {
+			showNotification(`Weight set changed to: ${value}`, 'info');
+		}
+
+		function loadFromCSV() {
+			const input = document.createElement('input');
+			input.type = 'file';
+			input.accept = '.csv';
+			input.onchange = (e) => {
+				const file = e.target.files[0];
+				if (file) {
+					showNotification(`Loading ${file.name}...`, 'info');
+					setTimeout(() => {
+						showNotification('CSV file loaded successfully', 'success');
+					}, 1500);
+				}
+			};
+			input.click();
+		}
+
+		// Score Trend Functions
+		function analyzeTrends() {
+			const ticker = document.getElementById('trend-ticker').value;
+			if (!ticker) {
+				showNotification('Please enter a stock ticker', 'error');
+				return;
+			}
+			showNotification(`Analyzing trends for ${ticker}...`, 'info');
+			setTimeout(() => {
+				showNotification('Trend analysis completed', 'success');
+			}, 2000);
+		}
+
+		function compareStocks() {
+			showNotification('Starting comparative analysis...', 'info');
+			setTimeout(() => {
+				showNotification('Comparison completed', 'success');
+			}, 1500);
+		}
+
+		// Portfolio Selection Functions
+		function createPortfolio() {
+			const size = document.getElementById('portfolio-size').value;
+			showNotification(`Creating portfolio with ${size} stocks...`, 'info');
+			setTimeout(() => {
+				showNotification('Portfolio created successfully', 'success');
+			}, 2000);
+		}
+
+		function backtest() {
+			showNotification('Running backtest simulation...', 'info');
+			setTimeout(() => {
+				showNotification('Backtest completed - Sharpe Ratio: 1.85', 'success');
+			}, 3000);
+		}
+
+		// Portfolio Optimization Functions
+		function loadHoldings() {
+			showNotification('Loading current holdings...', 'info');
+			setTimeout(() => {
+				showNotification('Holdings loaded successfully', 'success');
+			}, 1000);
+		}
+
+		function importFromBroker() {
+			showNotification('Connecting to broker API...', 'info');
+			setTimeout(() => {
+				showNotification('Holdings imported from broker', 'success');
+			}, 2000);
+		}
+
+		function executeRebalancing() {
+			if (confirm('Are you sure you want to execute these trades?')) {
+				showNotification('Executing rebalancing trades...', 'info');
+				setTimeout(() => {
+					showNotification('Rebalancing completed - 4 trades executed', 'success');
+				}, 2500);
+			}
+		}
+
+		function exportOrders() {
+			showNotification('Exporting orders to CSV...', 'info');
+			setTimeout(() => {
+				showNotification('Orders exported successfully', 'success');
+			}, 1000);
+		}
+
+		function simulateRebalancing() {
+			showNotification('Simulating rebalancing impact...', 'info');
+			setTimeout(() => {
+				showNotification('Simulation complete - Expected improvement: +0.3% Sharpe', 'success');
+			}, 1500);
+		}
+
+		function setupAlerts() {
+			showNotification('Drift alerts configured successfully', 'success');
+		}
+
+		// ========================================
+		// INITIALIZATION
+		// ========================================
+		
+		// Load current regime on startup
+		async function loadCurrentRegime() {
+			try {
+				const response = await fetchWithErrorHandling(`${API_URL}/regime/current`);
+				
+				if (response.status === 'success') {
+					document.getElementById('current-regime').textContent = response.current_regime;
+					updateRegimeProbabilities(response.probabilities);
+				}
+			} catch (error) {
+				console.error('Error loading current regime:', error);
+			}
+		}
+
+		// Initialize on page load
+		document.addEventListener('DOMContentLoaded', async () => {
+			const now = new Date();
+			document.getElementById('last-update').textContent = now.toLocaleString();
+			
+			// Check backend health
+			try {
+				const health = await fetchWithErrorHandling(`${API_URL}/health`);
+				if (health.status === 'healthy') {
+					console.log('Backend API is running');
+					console.log('Paths:', health.paths);
+					
+					// Load initial data
+					await loadCurrentRegime();
+					await loadCurrentWeights();
+				}
+			} catch (error) {
+				console.error('Backend is not responding. Make sure Flask is running.');
+				showNotification('Backend server not responding. Please start the Flask server.', 'error');
+			}
+			
+			// Simulate real-time updates
+			setInterval(() => {
+				const indicators = document.querySelectorAll('.status-indicator');
+				indicators.forEach(indicator => {
+					if (Math.random() > 0.95) {
+						indicator.classList.toggle('warning');
+						indicator.classList.toggle('active');
+					}
+				});
+			}, 5000);
+		});
+
+		// Close modal when clicking outside
+		window.onclick = function(event) {
+			const modal = document.getElementById('stockModal');
+			if (event.target == modal) {
+				modal.style.display = 'none';
+			}
+		}
+		
+		// ========================================
+		// EXPORT FUNCTIONS TO GLOBAL SCOPE
+		// ========================================
+		// This must be AFTER all function definitions
+		window.detectRegime = detectRegime;
+		window.fetchRegimeData = fetchRegimeData;
+		window.loadHistoricalRegimes = loadHistoricalRegimes;
+		window.switchTab = switchTab;
+		window.viewDetails = viewDetails;
+		window.closeModal = closeModal;
+		window.optimizeWeights = optimizeWeights;
+		window.loadCurrentWeights = loadCurrentWeights;
+		window.runScoring = runScoring;
+		window.scheduleDaily = scheduleDaily;
+		window.updateWeightSet = updateWeightSet;
+		window.loadFromCSV = loadFromCSV;
+		window.analyzeTrends = analyzeTrends;
+		window.compareStocks = compareStocks;
+		window.createPortfolio = createPortfolio;
+		window.backtest = backtest;
+		window.loadHoldings = loadHoldings;
+		window.importFromBroker = importFromBroker;
+		window.executeRebalancing = executeRebalancing;
+		window.exportOrders = exportOrders;
+		window.simulateRebalancing = simulateRebalancing;
+		window.setupAlerts = setupAlerts;
+		
+	</script>
+</body>
+</html>

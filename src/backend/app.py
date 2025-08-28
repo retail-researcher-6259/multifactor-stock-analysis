@@ -42,16 +42,16 @@ for dir_path in [REGIME_ANALYSIS_DIR, REGIME_RESULTS_DIR, WEIGHT_RESULTS_DIR]:
 @app.route('/api/regime/detect', methods=['POST'])
 def detect_regime():
     """
-    Endpoint to run regime detection
+    Endpoint to run current regime detection using current_regime_detector.py
     """
     try:
         data = request.json or {}
-        data_source = data.get('data_source', 'marketstack')
+        data_source = data.get('data_source', 'yfinance')
 
-        print(f"Running regime detection with data source: {data_source}")
+        print(f"Running current regime detection with data source: {data_source}")
 
-        # Call the regime detector script directly
-        script_path = project_root / 'src' / 'regime_detection' / 'regime_detector.py'
+        # Call the CURRENT regime detector script (not the historical one)
+        script_path = project_root / 'src' / 'regime_detection' / 'current_regime_detector.py'
 
         result = subprocess.run(
             [sys.executable, str(script_path)],
@@ -62,47 +62,46 @@ def detect_regime():
 
         print(f"Script return code: {result.returncode}")
         if result.stdout:
-            print(f"Script output: {result.stdout[:500]}")  # First 500 chars
+            print(f"Script output: {result.stdout[:500]}")
         if result.stderr:
             print(f"Script error: {result.stderr[:500]}")
 
-        # Read the generated files
-        regime_data = {}
-
-        # Read regime_periods.csv
-        regime_file = REGIME_RESULTS_DIR / "regime_periods.csv"
-        if regime_file.exists():
-            df = pd.read_csv(regime_file)
-            regime_data['periods'] = df.to_dict('records')
-            print(f"Loaded {len(df)} regime periods")
-        else:
-            print(f"Warning: {regime_file} not found")
-
-        # Read current_regime_analysis.json
+        # Read the current regime analysis file
         analysis_file = REGIME_ANALYSIS_DIR / "current_regime_analysis.json"
-        if not analysis_file.exists():
-            # Try the Results directory as fallback
-            analysis_file = REGIME_RESULTS_DIR / "current_regime_analysis.json"
 
         if analysis_file.exists():
             with open(analysis_file, 'r') as f:
-                regime_data['current'] = json.load(f)
-            print("Loaded current regime analysis")
-        else:
-            print(f"Warning: current_regime_analysis.json not found")
+                current_data = json.load(f)
 
-        return jsonify({
-            'status': 'success',
-            'data': regime_data,
-            'message': 'Regime detection completed'
-        })
+            # Extract the relevant information
+            regime_info = current_data.get('regime_detection', {})
+
+            return jsonify({
+                'status': 'success',
+                'data': {
+                    'current': {
+                        'current_regime': regime_info.get('regime_name', 'Unknown'),
+                        'regime_detection': regime_info,
+                        'regime_probabilities': {
+                            'Steady Growth': regime_info.get('prob_growth', 0),
+                            'Strong Bull': regime_info.get('prob_bull', 0),
+                            'Crisis/Bear': regime_info.get('prob_bear', 0)
+                        }
+                    }
+                },
+                'message': 'Current regime detection completed'
+            })
+        else:
+            return jsonify({
+                'status': 'error',
+                'message': 'No analysis file generated'
+            }), 500
 
     except Exception as e:
         print(f"Error in detect_regime: {str(e)}")
         return jsonify({
             'status': 'error',
-            'message': str(e),
-            'traceback': traceback.format_exc()
+            'message': str(e)
         }), 500
 
 
@@ -233,21 +232,27 @@ def get_regime_probabilities():
 @app.route('/api/regime/fetch-historical', methods=['POST'])
 def fetch_historical_regime_data():
     """
-    Fetch historical data from Marketstack and detect regimes
+    Fetch historical data and detect regimes using regime_detector.py
     """
     try:
         data = request.json or {}
-        data_source = data.get('data_source', 'marketstack')
+        data_source = data.get('data_source', 'yfinance')
         years = data.get('years', 10)
 
         print(f"Fetching {years} years of historical data from {data_source}")
 
-        # Run the regime detector with historical data fetching
+        # Run the regime detector with the correct parameter
         script_path = project_root / 'src' / 'regime_detection' / 'regime_detector.py'
 
-        # Run with special flag to fetch historical data
+        # Determine if we should use marketstack based on data_source
+        use_marketstack_flag = '--use-marketstack' if data_source == 'marketstack' else '--use-yfinance'
+
+        # Run with proper flags
         result = subprocess.run(
-            [sys.executable, str(script_path), '--fetch-historical', f'--years={years}'],
+            [sys.executable, str(script_path),
+             '--fetch-historical',
+             f'--years={years}',
+             use_marketstack_flag],
             capture_output=True,
             text=True,
             cwd=str(project_root)
@@ -257,26 +262,34 @@ def fetch_historical_regime_data():
         if result.stdout:
             print(f"Script output: {result.stdout[:500]}")
 
-        # Read the saved historical analysis
+        # Read the validation results
+        validation_file = REGIME_ANALYSIS_DIR / "validation_results.json"
         historical_file = REGIME_ANALYSIS_DIR / "historical_regimes.json"
-        data_summary_file = REGIME_ANALYSIS_DIR / "data_summary.json"
 
         response_data = {
             'status': 'success',
-            'message': 'Historical data fetched and analyzed'
+            'message': f'Historical data fetched from {data_source}'
         }
 
+        # Get validation results if available
+        if validation_file.exists():
+            with open(validation_file, 'r') as f:
+                validation_data = json.load(f)
+                response_data['validation'] = {
+                    'accuracy': validation_data.get('accuracy', 0),
+                    'accuracy_percentage': f"{validation_data.get('accuracy', 0) * 100:.1f}%",
+                    'correct_predictions': validation_data.get('correct', 0),
+                    'total_events': validation_data.get('total', 0),
+                    'vix_alignment': validation_data.get('vix_alignment', 0),
+                    'vix_alignment_percentage': f"{validation_data.get('vix_alignment', 0) * 100:.1f}%"
+                }
+
+        # Get regime statistics
         if historical_file.exists():
             with open(historical_file, 'r') as f:
                 historical_data = json.load(f)
                 response_data['statistics'] = historical_data.get('statistics', {})
-                response_data['regime_periods'] = historical_data.get('regime_periods', [])
-
-        if data_summary_file.exists():
-            with open(data_summary_file, 'r') as f:
-                summary = json.load(f)
-                response_data['data_range'] = summary.get('data_range', {})
-                response_data['symbols'] = summary.get('symbols', [])
+                response_data['data_range'] = historical_data.get('data_range', {})
 
         return jsonify(response_data)
 
@@ -284,8 +297,7 @@ def fetch_historical_regime_data():
         print(f"Error fetching historical data: {str(e)}")
         return jsonify({
             'status': 'error',
-            'message': str(e),
-            'traceback': traceback.format_exc()
+            'message': str(e)
         }), 500
 
 @app.route('/api/regime/historical-saved', methods=['GET'])

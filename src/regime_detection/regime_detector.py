@@ -168,7 +168,7 @@ class MarketRegimeDetector:
     def fetch_marketstack_data(self, symbols, date_from, date_to, api_key):
         """
         Fetch EOD data from Marketstack API v2 for multiple symbols
-        Updated for v2 API structure
+        WITH PAGINATION to get more than 1000 records
         """
         print(f"📊 Fetching data from Marketstack API v2 for {len(symbols)} symbols...")
         print(f"📅 Date range: {date_from} to {date_to}")
@@ -180,7 +180,6 @@ class MarketRegimeDetector:
             clean_symbol = symbol.replace('^', '')
 
             # Map symbols to Marketstack format
-            # Note: In v2, index symbols might be different
             symbol_map = {
                 'SPY': 'SPY',
                 'VIX': 'VIX.INDX',
@@ -193,74 +192,93 @@ class MarketRegimeDetector:
 
             print(f"  Fetching {symbol} as {marketstack_symbol} ({i + 1}/{len(symbols)})", end='')
 
-            params = {
-                'access_key': api_key,
-                'symbols': marketstack_symbol,
-                'date_from': date_from,
-                'date_to': date_to,
-                'limit': 1000
-            }
+            # Initialize pagination
+            symbol_data = []
+            offset = 0
+            total_fetched = 0
 
-            endpoint = f"{MARKETSTACK_BASE_URL}/eod"
+            while True:
+                params = {
+                    'access_key': api_key,
+                    'symbols': marketstack_symbol,
+                    'date_from': date_from,
+                    'date_to': date_to,
+                    'limit': 1000,  # Maximum allowed per request
+                    'offset': offset,
+                    'sort': 'ASC'
+                }
 
-            try:
-                response = requests.get(endpoint, params=params, timeout=30)
-                response.raise_for_status()
+                endpoint = f"{MARKETSTACK_BASE_URL}/eod"
 
-                data = response.json()
+                try:
+                    response = requests.get(endpoint, params=params, timeout=30)
+                    response.raise_for_status()
 
-                if 'error' in data:
-                    print(f" ❌ API Error: {data['error'].get('message', 'Unknown error')}")
-                    continue
+                    data = response.json()
 
-                if 'data' not in data or not data['data']:
-                    print(f" ✗ (no data)")
-                    continue
+                    if 'error' in data:
+                        print(f" ❌ API Error: {data['error'].get('message', 'Unknown error')}")
+                        break
 
-                # Process the data
-                symbol_data = data['data']
+                    if 'data' not in data or not data['data']:
+                        # No more data
+                        break
 
-                if symbol_data:
-                    df = pd.DataFrame(symbol_data)
-                    df['date'] = pd.to_datetime(df['date'])
+                    # Add data from this page
+                    page_data = data['data']
+                    symbol_data.extend(page_data)
+                    total_fetched += len(page_data)
 
-                    # Remove timezone info if present
-                    if df['date'].dt.tz is not None:
-                        df['date'] = df['date'].dt.tz_localize(None)
+                    # Check pagination info
+                    pagination = data.get('pagination', {})
+                    total = pagination.get('total', 0)
+                    count = pagination.get('count', 0)
 
-                    df = df.set_index('date')
+                    print(f".", end='')  # Progress indicator
 
-                    # Update price_df to include adjusted fields if available
-                    price_df = pd.DataFrame({
-                        f'{symbol}_Open': df['open'],
-                        f'{symbol}_High': df['high'],
-                        f'{symbol}_Low': df['low'],
-                        f'{symbol}_Close': df['close'],  # Raw close
-                        f'{symbol}_Adj_Close': df.get('adj_close', df['close']),  # Prefer adjusted, fallback to close
-                        f'{symbol}_Adj_Open': df.get('adj_open', df['open']),
-                        f'{symbol}_Adj_High': df.get('adj_high', df['high']),
-                        f'{symbol}_Adj_Low': df.get('adj_low', df['low']),
-                        f'{symbol}_Volume': df['volume'],  # Note: 'adj_volume' may also be available
-                        f'{symbol}_Split_Factor': df.get('split_factor', 1.0),  # For manual adjustments if needed
-                        f'{symbol}_Dividend': df.get('dividend', 0.0)
-                    })
+                    # Check if we've fetched all data
+                    if offset + count >= total:
+                        break
 
-                    price_df = price_df.sort_index()
-                    all_symbol_dfs.append(price_df)
+                    # Move to next page
+                    offset += count
 
-                    print(f" ✓ ({len(df)} records)")
-                else:
-                    print(f" ✗ (empty response)")
+                    # Rate limiting - be respectful to the API
+                    time.sleep(0.2)
 
-            except requests.exceptions.RequestException as e:
-                print(f" ❌ Request Error: {str(e)}")
-                continue
-            except Exception as e:
-                print(f" ❌ Processing Error: {str(e)}")
-                continue
+                except requests.exceptions.RequestException as e:
+                    print(f" ❌ Request Error: {str(e)}")
+                    break
+                except Exception as e:
+                    print(f" ❌ Processing Error: {str(e)}")
+                    break
 
-            # Rate limiting
-            time.sleep(0.2)
+            # Process all fetched data for this symbol
+            if symbol_data:
+                df = pd.DataFrame(symbol_data)
+                df['date'] = pd.to_datetime(df['date'])
+
+                # Remove timezone info if present
+                if df['date'].dt.tz is not None:
+                    df['date'] = df['date'].dt.tz_localize(None)
+
+                df = df.set_index('date')
+
+                # Create DataFrame with original symbol name
+                price_df = pd.DataFrame({
+                    f'{symbol}_Open': df['open'],
+                    f'{symbol}_High': df['high'],
+                    f'{symbol}_Low': df['low'],
+                    f'{symbol}_Close': df['close'],
+                    f'{symbol}_Volume': df['volume']
+                })
+
+                price_df = price_df.sort_index()
+                all_symbol_dfs.append(price_df)
+
+                print(f" ✓ ({total_fetched} records)")
+            else:
+                print(f" ✗ (no data)")
 
         # Concatenate all dataframes
         if all_symbol_dfs:
@@ -273,14 +291,15 @@ class MarketRegimeDetector:
 
         print(f"\n✅ Successfully fetched data for {len(all_symbol_dfs)} symbols")
         if not all_price_data.empty:
-            print(f"Total date range: {all_price_data.index[0]} to {all_price_data.index[-1]}")
+            print(f"📈 Total date range: {all_price_data.index[0]} to {all_price_data.index[-1]}")
+            print(f"📊 Total records: {len(all_price_data)}")
 
         return all_price_data
 
-    def fetch_market_data(self, symbols=['SPY', '^VIX', '^TNX', 'GLD'], use_marketstack=True):
+    def fetch_market_data(self, symbols=['SPY', '^VIX', '^TNX', 'GLD'], use_marketstack=False):
         """
         Fetch market data for regime detection
-        Updated to properly handle Marketstack v2
+        Updated with choice between Marketstack and yfinance
         """
         print("\n📊 FETCHING MARKET DATA")
         print("-" * 40)
@@ -289,15 +308,17 @@ class MarketRegimeDetector:
             # Load API key
             api_key = self.load_marketstack_config()
             if not api_key:
-                print("⚠️ Falling back to yfinance due to missing API key")
+                print("⚠️ No valid API key, falling back to yfinance")
                 use_marketstack = False
 
         if use_marketstack:
-            # Calculate date range
+            # Calculate date range - request full 10 years
             end_date = datetime.now()
             start_date = end_date - timedelta(days=365 * self.lookback_years)
 
-            # Fetch from Marketstack
+            print(f"Using Marketstack API for {self.lookback_years} years of data")
+
+            # Fetch from Marketstack with pagination
             all_data = self.fetch_marketstack_data(
                 symbols,
                 start_date.strftime('%Y-%m-%d'),
@@ -313,12 +334,9 @@ class MarketRegimeDetector:
                 price_data = pd.DataFrame()
 
                 for symbol in symbols:
-                    adj_close_col = f'{symbol}_Adj_Close'
-                    if adj_close_col in all_data.columns:
-                        price_data[symbol] = all_data[adj_close_col]
-                    elif f'{symbol}_Close' in all_data.columns:
-                        print(f"⚠️ Using unadjusted close for {symbol} (adjusted not available)")
-                        price_data[symbol] = all_data[f'{symbol}_Close']
+                    close_col = f'{symbol}_Close'
+                    if close_col in all_data.columns:
+                        price_data[symbol] = all_data[close_col]
 
                 if price_data.empty:
                     print("⚠️ No close price data found, falling back to yfinance")
@@ -328,22 +346,44 @@ class MarketRegimeDetector:
                     print(f"✅ Loaded {len(self.data)} days of data from Marketstack")
 
         if not use_marketstack:
-            # Original yfinance code
+            # Use yfinance as fallback or alternative
+            # print("Using yfinance for data fetching")
+            print("Using yfinance for data fetching (recommended for better accuracy)")
             import yfinance as yf
 
             end_date = datetime.now()
             start_date = end_date - timedelta(days=365 * self.lookback_years)
 
+            # Download data
             data = yf.download(
                 symbols,
                 start=start_date,
                 end=end_date,
-                progress=False
-            )['Adj Close']
+                progress=False,
+                auto_adjust=True,  # This is the key change
+                back_adjust=True  # Recommended for continuous historical data
+            )
 
-            if len(symbols) == 1:
+            # # Handle multi-level columns from yfinance
+            # if isinstance(data.columns, pd.MultiIndex):
+            #     # If multiple symbols, get Adj Close
+            #     data = data['Adj Close']
+
+            # We only need the 'Close' prices which are now adjusted automatically
+            if not data.empty:
+                if isinstance(data.columns, pd.MultiIndex):
+                    # In case of multiple symbols, yfinance might still return a MultiIndex
+                    # with ('Close', 'SPY'), ('Volume', 'SPY'), etc.
+                    data = data['Close']
+
+            # if len(symbols) == 1 and not isinstance(data, pd.DataFrame):
+            #     data = pd.DataFrame(data)
+            #     data.columns = symbols
+
+            if len(symbols) == 1 and not isinstance(data, pd.DataFrame):
                 data = pd.DataFrame(data)
-                data.columns = symbols
+                if not data.empty:
+                    data.columns = symbols  # Ensure columns are named correctly for single symbol
 
             self.data = data
             print(f"✅ Loaded {len(self.data)} days of data from yfinance")
@@ -1614,15 +1654,22 @@ class MarketRegimeDetector:
         self.vix_alignment = vix_alignment
         return vix_alignment
 
-def main():
+
+def main(use_marketstack=False):  # Add parameter
     """
     Run the complete regime detection analysis
+
+    Args:
+        use_marketstack: If True, use Marketstack API; if False, use yfinance
     """
     # Initialize detector
     detector = MarketRegimeDetector(n_regimes=3, lookback_years=10)
 
-    # Fetch data - remove DXY as it has less history
-    detector.fetch_market_data(symbols=['SPY', '^VIX', '^TNX', 'GLD'])
+    # Fetch data with chosen source
+    detector.fetch_market_data(
+        symbols=['SPY', '^VIX', '^TNX', 'GLD'],
+        use_marketstack=use_marketstack
+    )
 
     # IMPORTANT: Prepare features before fitting HMM
     # Check which method exists and use it
@@ -1686,33 +1733,62 @@ def api_wrapper():
 if __name__ == "__main__":
     import sys
 
-    # Check for command line arguments
-    if "--fetch-historical" in sys.argv:
+    # Parse command line arguments
+    use_marketstack = False
+    fetch_historical = False
+    years = 10
+
+    for arg in sys.argv:
+        if arg == "--fetch-historical":
+            fetch_historical = True
+        elif arg.startswith("--years="):
+            years = int(arg.split("=")[1])
+        elif arg == "--use-marketstack":
+            use_marketstack = True
+        elif arg == "--use-yfinance":
+            use_marketstack = False
+
+    if fetch_historical:
         # Special mode to fetch and save historical data
-        detector = MarketRegimeDetector(n_regimes=3, lookback_years=10)
+        detector = MarketRegimeDetector(n_regimes=3, lookback_years=years)
 
-        # Parse years argument if provided
-        for arg in sys.argv:
-            if arg.startswith("--years="):
-                years = int(arg.split("=")[1])
-                detector.lookback_years = years
+        # Fetch with the specified data source
+        detector.fetch_market_data(
+            symbols=['SPY', '^VIX', '^TNX', 'GLD'],
+            use_marketstack=use_marketstack
+        )
 
-        # Fetch and save historical data
-        success = detector.fetch_and_save_historical_regimes()
+        # Process the data
+        if hasattr(detector, 'prepare_features'):
+            detector.prepare_features()
+        elif hasattr(detector, 'engineer_features'):
+            detector.engineer_features()
 
-        if success:
-            print("✅ Historical regime data fetched and saved")
-            sys.exit(0)
-        else:
-            print("❌ Failed to fetch historical regime data")
-            sys.exit(1)
+        # Fit the model
+        detector.fit_hmm(use_pca=True, n_components=5)
 
-    elif "--api" in sys.argv:
-        # API mode
-        detector = RegimeDetectorAPI()
-        result = detector.run_detection()
-        print(json.dumps(result))
+        # Characterize and validate
+        detector.characterize_regimes()
+        accuracy = detector.validate_against_known_events()
+        vix_alignment = detector.compare_with_vix_regimes()
 
+        # Save validation results
+        validation_results = {
+            'accuracy': accuracy,
+            'vix_alignment': vix_alignment,
+            'correct': int(accuracy * 10) if accuracy else 0,
+            'total': 10
+        }
+
+        output_dir = Path(__file__).parent.parent.parent / "output" / "Regime_Detection_Analysis"
+        with open(output_dir / "validation_results.json", 'w') as f:
+            json.dump(validation_results, f, indent=2)
+
+        # Save historical analysis
+        detector.save_historical_analysis()
+
+        print("✅ Historical regime analysis completed")
+        sys.exit(0)
     else:
         # Normal execution
-        detector = main()
+        detector = main(use_marketstack=use_marketstack)
