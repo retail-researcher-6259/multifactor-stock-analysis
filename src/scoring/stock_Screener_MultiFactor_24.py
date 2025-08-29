@@ -54,6 +54,8 @@ from sklearn.linear_model import LinearRegression
 from scipy.stats import zscore
 import json
 import warnings
+from io import StringIO
+import sys
 
 pd.options.mode.chained_assignment = None  # disable copy-view warning
 
@@ -61,7 +63,11 @@ pd.options.mode.chained_assignment = None  # disable copy-view warning
 FRED_API_KEY = "a6472bcc951dc72f091984a09a36fc9e"
 FRED_SERIES_ID = "GDP"  # U.S. Real GDP, quarterly
 
-TICKER_FILE = "Buyable_stock.txt"
+# Get project root directory
+PROJECT_ROOT = Path(__file__).parent.parent.parent if '__file__' in globals() else Path.cwd().parent.parent.parent
+# PROJECT_ROOT = Path(__file__).parent.parent  # Go up two levels from src/scoring/
+TICKER_FILE = PROJECT_ROOT / "config" / "Buyable_stocks_test.txt"
+
 INSIDER_LOOKBACK_DAYS = 90
 TOP_N = 20
 CACHE_DIR = Path("cache")
@@ -70,36 +76,50 @@ CACHE_DIR.mkdir(exist_ok=True)
 # Scoring Weights (keeping proven optimal configuration)
 # Total score: 120
 
-# Weights for Steady Growth
-WEIGHTS = {
-    "credit": 48.6,
-    "quality": 18.1,
-    "momentum": 18.1,
-    "financial_health": 14.4,
-    "growth": 10.9,
-    "value": -7.3,
-    "technical": 3.8,
-    "liquidity": 3.6,
-    "carry": -3.6,
-    "stability": -3.0,
-    "size": -2.2,
-    "insider": -1.4,
-}
-
-# Weights for Crisis/Bear=
-WEIGHTS = {
-    "momentum": 72.0,      # Slight increase from 70.7
-    "size": 20.0,          # Rounded up from 17.6
-    "financial_health": 13.0,  # Reduced to minimize drag
-    "credit": 0.0,         # Eliminated (negative correlation)
-    "insider": 5.0,        # Rounded up from 4.4
-    "growth": 5.0,         # Reduced from 8.8 (negative correlation)
-    "quality": 0.0,        # Keep at zero
-    "liquidity": 5.0,      # Add for positive correlation
-    "value": 0.0,          # Keep at zero
-    "technical": -5.0,     # Unchanged
-    "carry": -5.0,         # Rounded from -4.4
-    "stability": -10.0,    # Rounded from -10.3
+REGIME_WEIGHTS = {
+        "Steady_Growth": {
+        "credit": 48.6,
+        "quality": 18.1,
+        "momentum": 18.1,
+        "financial_health": 14.4,
+        "growth": 10.9,
+        "value": -7.3,
+        "technical": 3.8,
+        "liquidity": 3.6,
+        "carry": -3.6,
+        "stability": -3.0,
+        "size": -2.2,
+        "insider": -1.4,
+    },
+    "Strong_Bull": {
+        # Placeholder weights - to be optimized later
+        "credit": 40.0,
+        "quality": 20.0,
+        "momentum": 25.0,
+        "financial_health": 15.0,
+        "growth": 15.0,
+        "value": -5.0,
+        "technical": 8.0,
+        "liquidity": 5.0,
+        "carry": -2.0,
+        "stability": -5.0,
+        "size": 0.0,
+        "insider": 2.0,
+    },
+    "Crisis_Bear": {
+        "momentum": 72.0,      # Slight increase from 70.7
+        "size": 20.0,          # Rounded up from 17.6
+        "financial_health": 13.0,  # Reduced to minimize drag
+        "credit": 0.0,         # Eliminated (negative correlation)
+        "insider": 5.0,        # Rounded up from 4.4
+        "growth": 5.0,         # Reduced from 8.8 (negative correlation)
+        "quality": 0.0,        # Keep at zero
+        "liquidity": 5.0,      # Add for positive correlation
+        "value": 0.0,          # Keep at zero
+        "technical": -5.0,     # Unchanged
+        "carry": -5.0,         # Rounded from -4.4
+        "stability": -10.0,    # Rounded from -10.3
+    }
 }
 
 # Update FUND_THRESHOLDS to reorganize metrics
@@ -174,6 +194,51 @@ _insider_no_data_tickers = set()
 _carry_data_cache = {}
 _carry_no_data_tickers = set()
 
+
+# Add a progress callback mechanism
+class ProgressTracker:
+    """Track progress and emit updates for UI"""
+
+    def __init__(self, callback=None):
+        self.callback = callback
+        self.total_tickers = 0
+        self.processed_tickers = 0
+
+    def set_total(self, total):
+        self.total_tickers = total
+
+    def update_progress(self, ticker_name, action="processing"):
+        if action == "completed":
+            self.processed_tickers += 1
+
+        if self.callback:
+            # Calculate progress: 90% for data fetching, 10% for final processing
+            fetch_progress = (self.processed_tickers / self.total_tickers) * 90 if self.total_tickers > 0 else 0
+            total_progress = int(fetch_progress)
+
+            self.callback('progress', total_progress)
+            self.callback('status', f"Processing {ticker_name} ({self.processed_tickers}/{self.total_tickers})...")
+
+# Global progress tracker
+_progress_tracker = None
+
+def set_progress_callback(callback):
+    """Set the progress callback function"""
+    global _progress_tracker
+    _progress_tracker = ProgressTracker(callback)
+
+# Add a function to get weights for a specific regime
+def get_regime_weights(regime_name):
+    """Get weights for a specific regime"""
+    return REGIME_WEIGHTS.get(regime_name, REGIME_WEIGHTS["Steady_Growth"])
+
+# Add a function to set output directory based on regime
+def get_output_directory(regime_name):
+    """Get output directory path for a specific regime"""
+    output_base = PROJECT_ROOT / "output" / "Ranked_Lists"
+    regime_dir = output_base / regime_name
+    regime_dir.mkdir(parents=True, exist_ok=True)
+    return regime_dir
 
 def fast_info(ticker):
     if ticker in _info_cache:
@@ -1450,15 +1515,60 @@ def get_stability_score(df, market_df=None):
     return round(stability_score, 3)  # Return positive score
 
 # --- Main Logic ---
-def main():
+def main(regime="Steady_Growth", progress_callback=None):
+    """
+    Main scoring function with progress tracking
+
+    Args:
+        regime: Regime name for scoring weights
+        progress_callback: Function to call with progress updates (type, value)
+    """
     start_time = time.time()
 
+    # Set up progress tracking
+    if progress_callback:
+        set_progress_callback(progress_callback)
+
+    # Get weights for the specified regime
+    global WEIGHTS
+    WEIGHTS = get_regime_weights(regime)
+
+    print(f"🎯 Running multifactor scoring for regime: {regime}")
+    print(f"📊 Using weights: {WEIGHTS}")
+
+    if _progress_tracker:
+        _progress_tracker.callback('status', f"Loading tickers for {regime} regime...")
+        _progress_tracker.callback('progress', 5)
+
     # -------- 0.  load tickers -------------------------------------------------
-    with open(TICKER_FILE, "r") as f:
-        tickers = [ln.strip().replace("$", "") for ln in f if ln.strip()]
+    try:
+        with open(TICKER_FILE, "r") as f:
+            tickers = [ln.strip().replace("$", "") for ln in f if ln.strip()]
+    except FileNotFoundError:
+        error_msg = f"⛔ Ticker file '{TICKER_FILE}' not found!"
+        print(error_msg)
+        if _progress_tracker:
+            _progress_tracker.callback('error', error_msg)
+        return
+
+    if len(tickers) < 5:
+        warning_msg = f"⚠️ Warning: Only {len(tickers)} tickers found"
+        print(warning_msg)
+        if _progress_tracker:
+            _progress_tracker.callback('status', warning_msg)
+
+    print(f"✅ Loaded {len(tickers)} tickers from file.")
+
+    if _progress_tracker:
+        _progress_tracker.set_total(len(tickers))
+        _progress_tracker.callback('status', f"Analyzing {len(tickers)} tickers...")
+        _progress_tracker.callback('progress', 10)
 
     # -------- 1-a. pre-scan: avgVol for liquidity -----------------------------
     avg_vol = {}
+    if _progress_tracker:
+        _progress_tracker.callback('status', "Pre-scanning for liquidity data...")
+
     for tk in tickers:
         try:
             avg_vol[tk] = fast_info(tk).get("averageVolume10days", 0)
@@ -1466,65 +1576,63 @@ def main():
             avg_vol[tk] = 0
     vol_min, vol_max = min(avg_vol.values()), max(avg_vol.values())
 
+    if _progress_tracker:
+        _progress_tracker.callback('progress', 15)
+
     # -------- 1-b. main data harvest ------------------------------------------
-    raw = []  # store everything, score later
+    raw = []
     pm_cache, em_cache, mcaps = [], [], []
     value_metrics_by_ticker = {}
 
-    # Debug: Track which tickers are processed vs skipped
     processed_tickers = []
     skipped_tickers = []
 
     for i, tk in enumerate(tickers, 1):
         print(f"[{i}/{len(tickers)}] scraping {tk} …")
-        try:
-            # info = fast_info(tk)
-            info = safe_get_info(tk)
 
-            # DEBUG: Confirm info was fetched
+        # Update progress tracker
+        if _progress_tracker:
+            _progress_tracker.update_progress(tk, "processing")
+
+        try:
+            info = safe_get_info(tk)
             print(f"  ✓ Info fetched for {tk}: MarketCap={info.get('marketCap', 'N/A')}")
 
-            # Use yahooquery instead of Stooq
             hist = yahooquery_hist(tk, years=1)
 
             if hist.empty or len(hist) < 150:
-                # DEBUG: Show why ticker is being skipped
                 if hist.empty:
                     print(f"  ⚠️ SKIPPING {tk}: Historical data is empty")
                 else:
                     print(f"  ⚠️ SKIPPING {tk}: Insufficient data points ({len(hist)} < 150)")
                 skipped_tickers.append((tk, f"Empty" if hist.empty else f"Only {len(hist)} points"))
+
+                # Still update progress for skipped tickers
+                if _progress_tracker:
+                    _progress_tracker.update_progress(tk, "completed")
                 continue
 
-            # value, quality = get_fundamentals(tk)  # Now using V09 enhanced version
-
+            # Get all the scores
             value, quality, financial_health, roic, value_dict = get_fundamentals(tk)
             value_metrics_by_ticker[tk] = value_dict
 
             tech = get_technical_score(hist)
             insider = get_insider_score_simple(tk)
 
-            # ─ momentum raw numbers
             pm, em = get_momentum_score(tk, hist)
             pm_cache.append(pm)
             em_cache.append(em)
 
-            # ─ downside-risk penalty
-            # penalty = get_risk_penalty(hist)
             stability = get_stability_score(hist)
 
-            # ─ misc factors
             mcap = info.get("marketCap")
             mcaps.append(mcap)
             sector, industry = sector_industry(info)
 
-            # ─ get company name and country
             company_name, country = get_company_info(info)
-
             credit = get_credit_score(info)
             carry = get_carry_score_simple(tk, info)
 
-            # liquidity (0-1)
             liq = 0
             if vol_max != vol_min:
                 liq = round((avg_vol[tk] - vol_min) / (vol_max - vol_min), 2)
@@ -1533,7 +1641,7 @@ def main():
                 Ticker=tk, Value=value, Quality=quality,
                 FinancialHealth=financial_health,
                 Technical=tech, Insider=insider, PriceMom=pm, EarnMom=em,
-                Stability=stability,  # Changed from Penalty
+                Stability=stability,
                 MarketCap=mcap, Credit=credit,
                 Liquidity=liq, Carry=carry, Sector=sector, Industry=industry,
                 Growth=get_growth_score(tk, info),
@@ -1541,26 +1649,40 @@ def main():
                 CompanyName=company_name, Country=country
             ))
 
-            # DEBUG: Confirm ticker was added to raw results
             print(f"  ✅ {tk} successfully added to results")
             processed_tickers.append(tk)
 
+            # Update progress tracker for completed ticker
+            if _progress_tracker:
+                _progress_tracker.update_progress(tk, "completed")
+
         except Exception as e:
             print(f"⚠️ {tk}: {e}")
+            # Update progress even for failed tickers
+            if _progress_tracker:
+                _progress_tracker.update_progress(tk, "completed")
 
-    # DEBUG: Summary of processing
-    print("\n" + "="*60)
+    # Debug summary
+    print("\n" + "=" * 60)
     print(f"PROCESSING SUMMARY:")
     print(f"Total tickers: {len(tickers)}")
     print(f"Successfully processed: {len(processed_tickers)} - {processed_tickers}")
     print(f"Skipped: {len(skipped_tickers)}")
     for tk, reason in skipped_tickers:
         print(f"  - {tk}: {reason}")
-    print("="*60 + "\n")
+    print("=" * 60 + "\n")
 
     if not raw:
-        print("⚠️ No usable tickers")
+        error_msg = "⚠️ No usable tickers"
+        print(error_msg)
+        if _progress_tracker:
+            _progress_tracker.callback('error', error_msg)
         return
+
+    # -------- Final processing phase (10% of progress) ----------------------
+    if _progress_tracker:
+        _progress_tracker.callback('progress', 90)
+        _progress_tracker.callback('status', "Finalizing scores and rankings...")
 
     # -------- 2.  cross-sectional normalisations ------------------------------
     # 2-a momentum z-scores → logistic 0-1
@@ -1686,13 +1808,52 @@ def main():
         })
 
     # -------- 4.  output ------------------------------------------------------
+    if _progress_tracker:
+        _progress_tracker.callback('progress', 95)
+        _progress_tracker.callback('status', "Generating output file...")
+
     df = pd.DataFrame(results).sort_values("Score", ascending=False)
+
+    # Get output directory for the regime
+    output_dir = get_output_directory(regime)
     today = datetime.now().strftime("%m%d")  # e.g. 0503
-    fname = f"top_ranked_stocks_{today}.csv"
-    df.to_csv(fname, index=False)
-    print(f"⭢  saved {fname}")
+    fname = f"top_ranked_stocks_{regime}_{today}.csv"
+    output_path = output_dir / fname
+
+    # Save the file
+    df.to_csv(output_path, index=False)
+    print(f"📁 Saved {fname} to {output_dir}")
+    print(f"📈 Top {TOP_N} stocks for {regime} regime:")
     print(df.head(TOP_N))
-    print(f"✅ finished in {round(time.time() - start_time, 1)} s")
+    print(f"✅ Finished in {round(time.time() - start_time, 1)} seconds")
+
+    if _progress_tracker:
+        _progress_tracker.callback('progress', 100)
+        _progress_tracker.callback('status', f"Complete! Analyzed {len(processed_tickers)} stocks.")
+
+    return output_path, df
+
+# Add this function to be called from the UI
+def run_scoring_for_regime(regime_name, progress_callback=None):
+    """Entry point for UI to run scoring for a specific regime with progress tracking"""
+    try:
+        output_path, df = main(regime_name, progress_callback)
+        return {
+            'success': True,
+            'output_path': str(output_path),
+            'results_df': df,
+            'regime': regime_name,
+            'total_stocks': len(df),
+            'weights': get_regime_weights(regime_name)
+        }
+    except Exception as e:
+        if progress_callback:
+            progress_callback('error', str(e))
+        return {
+            'success': False,
+            'error': str(e),
+            'regime': regime_name
+        }
 
 if __name__ == "__main__":
     main()
