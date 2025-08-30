@@ -11,17 +11,18 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
                              QGroupBox, QSplitter, QTabWidget, QTableWidget,
                              QTableWidgetItem, QProgressBar, QComboBox,
                              QMessageBox, QHeaderView, QGridLayout, QTableView,
-                             QAbstractItemView, QLineEdit, QScrollArea, QFrame)
+                             QAbstractItemView)
 from PyQt5.QtCore import Qt, QThread, pyqtSignal, QTimer, QAbstractTableModel
 from PyQt5.QtGui import QFont, QPixmap, QPalette, QColor
+from PyQt5.QtWidgets import QScrollArea
 import pyqtgraph as pg
 from pyqtgraph import DateAxisItem
 import matplotlib.cm as cm
 import time
-import re
 
 # Get project root directory (Current directory)
 PROJECT_ROOT = Path(file).parent if 'file' in globals() else Path.cwd()
+
 
 class MultifactorScoringThread(QThread):
     """Enhanced thread for running multifactor scoring with detailed progress tracking"""
@@ -378,6 +379,16 @@ class MultifactorScoringWidget(QWidget):
         # Results actions
         actions_layout = QHBoxLayout()
 
+        # self.export_btn = QPushButton("Export to CSV")
+        # self.export_btn.clicked.connect(self.export_results)
+        # self.export_btn.setEnabled(False)
+        # actions_layout.addWidget(self.export_btn)
+        #
+        # self.refresh_btn = QPushButton("Refresh Results")
+        # self.refresh_btn.clicked.connect(self.refresh_results)
+        # self.refresh_btn.setEnabled(False)
+        # actions_layout.addWidget(self.refresh_btn)
+
         actions_layout.addStretch()
 
         self.results_info_label = QLabel("No results available")
@@ -649,6 +660,7 @@ class MultifactorScoringWidget(QWidget):
         if "Processing" in message and "(" in message:
             # Extract current/total from messages like "Processing XOM (1/10)..."
             try:
+                import re
                 match = re.search(r'Processing \w+ \((\d+)/(\d+)\)', message)
                 if match:
                     current, total = match.groups()
@@ -860,18 +872,12 @@ class RegimeDetectorThread(QThread):
 class RegimeDetectionWidget(QWidget):
     """Main widget for regime detection visualization"""
 
-    # ADD THIS SIGNAL to the class
-    regime_detected = pyqtSignal(str)  # Signal to emit when regime is detected
-
     def __init__(self):
         super().__init__()
         self.detector_thread = None
         self.current_results = None
         self.historical_results = None
-        self.current_regime = "Steady Growth"  # Default regime
         self.init_ui()
-        # Load previous regime result at startup
-        self.load_previous_regime()
 
     def init_ui(self):
         # Main layout
@@ -914,64 +920,6 @@ class RegimeDetectionWidget(QWidget):
         main_layout.addWidget(self.status_group)
 
         self.setLayout(main_layout)
-
-    def load_previous_regime(self):
-        """Load the previous regime detection result at startup"""
-        try:
-            regime_file = PROJECT_ROOT / 'output' / 'Regime_Detection_Analysis' / 'current_regime_analysis.json'
-
-            if regime_file.exists():
-                with open(regime_file, 'r') as f:
-                    data = json.load(f)
-
-                # Extract regime information
-                regime_info = data.get('regime_detection', {})
-                detected_regime = regime_info.get('regime_name', 'Steady Growth')
-
-                # Update current regime
-                self.current_regime = detected_regime
-
-                # Update UI display
-                self.current_regime_label.setText(f"Current Regime: {detected_regime}")
-
-                # Set color coding
-                if 'Bull' in detected_regime:
-                    color = '#4CAF50'  # Green
-                elif 'Growth' in detected_regime:
-                    color = '#2196F3'  # Blue
-                elif 'Bear' in detected_regime or 'Crisis' in detected_regime:
-                    color = '#f44336'  # Red
-                else:
-                    color = '#757575'  # Grey
-
-                self.current_regime_label.setStyleSheet(f"""
-                    QLabel {{
-                        padding: 15px;
-                        border-radius: 8px;
-                        background-color: {color};
-                        color: white;
-                    }}
-                """)
-
-                # Update probabilities if available
-                all_probs = regime_info.get('all_probabilities', {})
-                if all_probs:
-                    self.prob_labels["Steady Growth"].setText(f"{all_probs.get('Steady Growth', 0):.2%}")
-                    self.prob_labels["Strong Bull"].setText(f"{all_probs.get('Strong Bull', 0):.2%}")
-                    self.prob_labels["Crisis/Bear"].setText(f"{all_probs.get('Crisis/Bear', 0):.2%}")
-
-                # Emit signal for other widgets
-                self.regime_detected.emit(detected_regime)
-
-                print(f"✅ Loaded previous regime: {detected_regime}")
-
-            else:
-                print("ℹ️ No previous regime analysis found, using default")
-
-        except Exception as e:
-            print(f"⚠️ Error loading previous regime: {e}")
-            # Use default regime
-            self.current_regime = "Steady Growth"
 
     def create_current_regime_section(self):
         """Create current regime analysis section"""
@@ -1452,7 +1400,6 @@ class RegimeDetectionWidget(QWidget):
 
         # Update current regime label
         current_regime = regime_info.get('regime_name', 'Unknown')
-        self.current_regime = current_regime  # Store current regime
         self.current_regime_label.setText(f"Current Regime: {current_regime}")
 
         # Color coding based on regime
@@ -1466,15 +1413,20 @@ class RegimeDetectionWidget(QWidget):
             color = '#757575'  # Grey
 
         self.current_regime_label.setStyleSheet(f"""
-                    QLabel {{
-                        padding: 15px;
-                        border-radius: 8px;
-                        background-color: {color};
-                        color: white;
-                    }}
-                """)
+            QLabel {{
+                padding: 15px;
+                border-radius: 8px;
+                background-color: {color};
+                color: white;
+            }}
+        """)
 
         # Update probabilities
+        # self.prob_labels["Steady Growth"].setText(f"{regime_info.get('prob_growth', 0):.2%}")
+        # self.prob_labels["Strong Bull"].setText(f"{regime_info.get('prob_bull', 0):.2%}")
+        # self.prob_labels["Crisis/Bear"].setText(f"{regime_info.get('prob_bear', 0):.2%}")
+
+        # Update probabilities - FIX: Use all_probabilities instead
         all_probs = regime_info.get('all_probabilities', {})
         self.prob_labels["Steady Growth"].setText(f"{all_probs.get('Steady Growth', 0):.2%}")
         self.prob_labels["Strong Bull"].setText(f"{all_probs.get('Strong Bull', 0):.2%}")
@@ -1482,9 +1434,45 @@ class RegimeDetectionWidget(QWidget):
 
         self.update_status("Current regime detected successfully")
 
-        # Emit signal for other widgets to update
-        self.regime_detected.emit(current_regime)
-
+    # def display_historical_results(self, data):
+    #     """Display historical regime analysis results"""
+    #     # Update validation accuracy if available
+    #     if 'validation_results' in data:
+    #         validation = data['validation_results']
+    #         accuracy = validation.get('accuracy', 0)
+    #         self.accuracy_label.setText(f"{accuracy:.2%}")
+    #
+    #     # Update regime statistics if available
+    #     if 'data_summary' in data:
+    #         summary = data['data_summary']
+    #         regime_stats = summary.get('regime_statistics', {})
+    #
+    #         # Map regime statistics to display labels
+    #         total_days = 0
+    #         regime_days = {}
+    #
+    #         for regime_name, stats in regime_stats.items():
+    #             if 'total_days' in stats:
+    #                 regime_days[regime_name] = stats['total_days']
+    #                 total_days += stats['total_days']
+    #
+    #         # Calculate percentages
+    #         if total_days > 0:
+    #             for regime_name, days in regime_days.items():
+    #                 percentage = (days / total_days) * 100
+    #
+    #                 if 'Growth' in regime_name:
+    #                     self.hist_prob_labels["Steady Growth"].setText(f"{percentage:.1f}%")
+    #                 elif 'Bull' in regime_name:
+    #                     self.hist_prob_labels["Strong Bull"].setText(f"{percentage:.1f}%")
+    #                 elif 'Bear' in regime_name or 'Crisis' in regime_name:
+    #                     self.hist_prob_labels["Crisis/Bear"].setText(f"{percentage:.1f}%")
+    #
+    #     # Display plot if available
+    #     if 'plot_path' in data:
+    #         self.display_timeline_plot(data['plot_path'])
+    #
+    #     self.update_status("Historical data loaded successfully")
 
     def display_historical_results(self, data):
         """Display historical regime analysis results"""
@@ -1509,6 +1497,16 @@ class RegimeDetectionWidget(QWidget):
 
         self.update_status("Historical data loaded successfully")
 
+    # def display_timeline_plot(self, plot_path):
+    #     """Display the regime timeline plot"""
+    #     if os.path.exists(plot_path):
+    #         pixmap = QPixmap(plot_path)
+    #         # Scale the image to fit
+    #         scaled_pixmap = pixmap.scaled(1200, 600, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+    #         self.timeline_image_label.setPixmap(scaled_pixmap)
+    #     else:
+    #         self.timeline_image_label.setText("Plot file not found")
+
     def display_timeline_plot(self, plot_path):
         """Display the regime timeline plot - Updated for interactive plots"""
         # This method is no longer needed since we use interactive plots
@@ -1530,783 +1528,187 @@ class RegimeDetectionWidget(QWidget):
         QMessageBox.critical(self, "Detection Error", f"An error occurred:\n{error_message}")
 
 
-class StabilityAnalysisThread(QThread):
-    """Thread for running stability analysis without blocking UI"""
-    progress_update = pyqtSignal(int)
-    status_update = pyqtSignal(str)
-    result_ready = pyqtSignal(dict)
-    error_occurred = pyqtSignal(str)
-
-    def __init__(self, regime_name):
-        super().__init__()
-        self.regime_name = regime_name
-
-    def run(self):
-        try:
-            self.status_update.emit("Starting stability analysis...")
-            self.progress_update.emit(10)
-
-            # Import and run the stability analysis script
-            script_path = PROJECT_ROOT / 'src' / 'trend_analysis' / 'stock_score_trend_analyzer_04.py'
-
-            if not script_path.exists():
-                self.error_occurred.emit(f"Script not found: {script_path}")
-                return
-
-            self.progress_update.emit(30)
-            self.status_update.emit("Loading ranking files...")
-
-            # Add script directory to path
-            sys.path.insert(0, str(script_path.parent))
-
-            try:
-                import stock_score_trend_analyzer_04 as analyzer_module
-
-                self.progress_update.emit(50)
-                self.status_update.emit("Running stability analysis...")
-
-                # Create analyzer instance
-                csv_directory = PROJECT_ROOT / "output" / "Ranked_Lists" / self.regime_name
-                output_directory = PROJECT_ROOT / "output" / "Score_Trend_Analysis_Results" / self.regime_name
-                output_directory.mkdir(parents=True, exist_ok=True)
-
-                analyzer = analyzer_module.StockScoreTrendAnalyzer(
-                    csv_directory=str(csv_directory),
-                    start_date="0601",  # Configurable
-                    end_date=datetime.now().strftime("%m%d"),
-                    sigmoid_sensitivity=5
-                )
-
-                self.progress_update.emit(70)
-                self.status_update.emit("Analyzing stock trends...")
-
-                # Run analysis and export results
-                today = datetime.now().strftime("%m%d")
-                output_file = output_directory / f"stability_analysis_results_{today}.csv"
-                results_df = analyzer.export_results(output_path=str(output_file))
-
-                self.progress_update.emit(90)
-                self.status_update.emit("Finalizing results...")
-
-                # Prepare result data
-                result = {
-                    'success': True,
-                    'output_path': str(output_file),
-                    'results_df': results_df,
-                    'regime': self.regime_name,
-                    'total_stocks': len(results_df),
-                    'analyzer': analyzer
-                }
-
-                self.progress_update.emit(100)
-                self.result_ready.emit(result)
-
-            except Exception as e:
-                self.error_occurred.emit(f"Analysis failed: {str(e)}")
-            finally:
-                if str(script_path.parent) in sys.path:
-                    sys.path.remove(str(script_path.parent))
-
-        except Exception as e:
-            self.error_occurred.emit(f"Thread execution failed: {str(e)}")
-
-
-class TechnicalPlotsThread(QThread):
-    """Thread for generating technical plots for a specific ticker"""
-    progress_update = pyqtSignal(int)
-    status_update = pyqtSignal(str)
-    result_ready = pyqtSignal(dict)
-    error_occurred = pyqtSignal(str)
-
-    def __init__(self, ticker, regime_name):
-        super().__init__()
-        self.ticker = ticker.upper()
-        self.regime_name = regime_name
-
-    def run(self):
-        try:
-            self.status_update.emit(f"Initializing technical analysis for {self.ticker}...")
-            self.progress_update.emit(10)
-
-            # Import technical analysis script
-            script_path = PROJECT_ROOT / 'src' / 'trend_analysis' / 'stock_score_trend_technical_single.py'
-
-            if not script_path.exists():
-                self.error_occurred.emit(f"Technical script not found: {script_path}")
-                return
-
-            self.progress_update.emit(30)
-            self.status_update.emit("Loading historical data...")
-
-            sys.path.insert(0, str(script_path.parent))
-
-            try:
-                import stock_score_trend_technical_single as tech_module
-
-                self.progress_update.emit(50)
-                self.status_update.emit("Running technical analysis...")
-
-                # Set up directories
-                csv_directory = PROJECT_ROOT / "output" / "Ranked_Lists" / self.regime_name
-                output_base_dir = PROJECT_ROOT / "output" / "Score_Trend_Analysis_Results"
-                tech_plots_dir = output_base_dir / "technical_plots" / self.ticker
-                tech_plots_dir.mkdir(parents=True, exist_ok=True)
-
-                # Create analyzer instance
-                analyzer = tech_module.SingleTickerTechnicalAnalyzer(
-                    csv_directory=str(csv_directory),
-                    start_date="0601",
-                    end_date=datetime.now().strftime("%m%d"),
-                    sigmoid_sensitivity=5
-                )
-
-                self.progress_update.emit(70)
-                self.status_update.emit("Generating technical plots...")
-
-                # Run analysis
-                success = analyzer.analyze_single_ticker(
-                    ticker=self.ticker,
-                    output_base_dir=str(output_base_dir),
-                    min_appearances=3
-                )
-
-                if not success:
-                    self.error_occurred.emit(f"Technical analysis failed for {self.ticker}")
-                    return
-
-                self.progress_update.emit(90)
-                self.status_update.emit("Generating recommendation...")
-
-                # Get technical score and recommendation
-                recommendation = analyzer.generate_recommendation(self.ticker)
-
-                # Find plot files
-                plot_files = list(tech_plots_dir.glob("*.png"))
-
-                result = {
-                    'success': True,
-                    'ticker': self.ticker,
-                    'regime': self.regime_name,
-                    'recommendation': recommendation,
-                    'plot_directory': str(tech_plots_dir),
-                    'plot_files': [str(p) for p in plot_files],
-                    'analyzer': analyzer
-                }
-
-                self.progress_update.emit(100)
-                self.result_ready.emit(result)
-
-            except Exception as e:
-                self.error_occurred.emit(f"Technical analysis failed: {str(e)}")
-            finally:
-                if str(script_path.parent) in sys.path:
-                    sys.path.remove(str(script_path.parent))
-
-        except Exception as e:
-            self.error_occurred.emit(f"Thread execution failed: {str(e)}")
-
-
-class ScoreTrendAnalysisWidget(QWidget):
-    """Main widget for score trend analysis system"""
-
-    def __init__(self):
-        super().__init__()
-        self.stability_thread = None
-        self.technical_thread = None
-        self.current_stability_results = None
-        self.current_technical_results = None
-        self.recommended_regime = "Steady Growth"  # Default
-        self.init_ui()
-
-    def init_ui(self):
-        # Main layout
-        main_layout = QVBoxLayout()
-        main_layout.setSpacing(15)
-
-        # Title
-        title_label = QLabel("Score Trend Analysis System")
-        title_label.setAlignment(Qt.AlignCenter)
-        title_font = QFont("Arial", 18, QFont.Bold)
-        title_label.setFont(title_font)
-        main_layout.addWidget(title_label)
-
-        # Subtitle
-        subtitle_label = QLabel("Stability analysis and technical plotting for stock score trends")
-        subtitle_label.setAlignment(Qt.AlignCenter)
-        subtitle_label.setStyleSheet("color: #888;")
-        main_layout.addWidget(subtitle_label)
-
-        # Create two main sections
-        sections_layout = QHBoxLayout()
-        sections_layout.setSpacing(15)
-
-        # Left section: Stability Analysis
-        stability_section = self.create_stability_section()
-        sections_layout.addWidget(stability_section, 1)
-
-        # Right section: Technical Analysis
-        technical_section = self.create_technical_section()
-        sections_layout.addWidget(technical_section, 1)
-
-        main_layout.addLayout(sections_layout)
-
-        # Results display area
-        results_section = self.create_results_section()
-        main_layout.addWidget(results_section)
-
-        # Progress bars
-        self.create_progress_bars()
-        main_layout.addWidget(self.stability_progress_group)
-        main_layout.addWidget(self.technical_progress_group)
-
-        self.setLayout(main_layout)
-
-    def create_stability_section(self):
-        """Create stability analysis section"""
-        group = QGroupBox("Stability Analysis")
-        layout = QVBoxLayout()
-
-        # Regime selection with recommendation
-        regime_layout = QHBoxLayout()
-        regime_layout.addWidget(QLabel("Target Regime:"))
-
-        self.stability_regime_combo = QComboBox()
-        self.stability_regime_combo.addItems(["Steady Growth", "Strong Bull", "Crisis/Bear"])
-        self.stability_regime_combo.setCurrentText(self.recommended_regime)
-        regime_layout.addWidget(self.stability_regime_combo)
-
-        # Recommendation indicator
-        self.regime_recommendation_label = QLabel("(Recommended)")
-        self.regime_recommendation_label.setStyleSheet("color: #4CAF50; font-style: italic;")
-        regime_layout.addWidget(self.regime_recommendation_label)
-
-        regime_layout.addStretch()
-        layout.addLayout(regime_layout)
-
-        # Run Analysis Button
-        self.run_stability_btn = QPushButton("Run Stability Analysis")
-        self.run_stability_btn.clicked.connect(self.run_stability_analysis)
-        self.run_stability_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #2196F3;
-                color: white;
-                font-weight: bold;
-                font-size: 13px;
-                padding: 12px;
-                border-radius: 6px;
-                border: none;
-            }
-            QPushButton:hover {
-                background-color: #1976D2;
-            }
-            QPushButton:disabled {
-                background-color: #cccccc;
-                color: #666666;
-            }
-        """)
-        layout.addWidget(self.run_stability_btn)
-
-        # Analysis Info
-        analysis_info = QLabel(
-            "• Analyzes all ranked lists in selected regime folder\n"
-            "• Generates stability metrics and trend analysis\n"
-            "• Outputs results to Score_Trend_Analysis_Results/[Regime]/"
-        )
-        analysis_info.setStyleSheet("""
-            QLabel {
-                background-color: #3c3c3c;
-                padding: 10px;
-                border-radius: 5px;
-                color: #cccccc;
-                font-size: 11px;
-            }
-        """)
-        analysis_info.setWordWrap(True)
-        layout.addWidget(analysis_info)
-
-        # Stability Statistics
-        stats_label = QLabel("Analysis Statistics")
-        stats_label.setFont(QFont("Arial", 11, QFont.Bold))
-        layout.addWidget(stats_label)
-
-        self.stability_stats = {
-            'total_analyzed': QLabel("Total Stocks Analyzed: --"),
-            'strong_buy': QLabel("Strong Buy Recommendations: --"),
-            'avg_stability': QLabel("Average Stability Score: --")
-        }
-
-        for label in self.stability_stats.values():
-            label.setStyleSheet("color: #cccccc; font-size: 12px;")
-            layout.addWidget(label)
-
-        layout.addStretch()
-        group.setLayout(layout)
-        return group
-
-    def create_technical_section(self):
-        """Create technical analysis section"""
-        group = QGroupBox("Technical Plot Analysis")
-        layout = QVBoxLayout()
-
-        # Ticker input
-        ticker_layout = QHBoxLayout()
-        ticker_layout.addWidget(QLabel("Ticker Symbol:"))
-
-        self.ticker_input = QLineEdit()
-        self.ticker_input.setPlaceholderText("Enter ticker (e.g., AAPL)")
-        self.ticker_input.setStyleSheet("""
-            QLineEdit {
-                background-color: #3c3c3c;
-                border: 1px solid #555;
-                padding: 8px;
-                border-radius: 4px;
-                font-size: 13px;
-            }
-        """)
-        self.ticker_input.returnPressed.connect(self.run_technical_analysis)
-        ticker_layout.addWidget(self.ticker_input)
-
-        layout.addLayout(ticker_layout)
-
-        # Generate Plots Button
-        self.run_technical_btn = QPushButton("Generate Technical Plots")
-        self.run_technical_btn.clicked.connect(self.run_technical_analysis)
-        self.run_technical_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #FF9800;
-                color: white;
-                font-weight: bold;
-                font-size: 13px;
-                padding: 12px;
-                border-radius: 6px;
-                border: none;
-            }
-            QPushButton:hover {
-                background-color: #F57C00;
-            }
-            QPushButton:disabled {
-                background-color: #cccccc;
-                color: #666666;
-            }
-        """)
-        layout.addWidget(self.run_technical_btn)
-
-        # Technical Results Display
-        results_label = QLabel("Technical Analysis Results")
-        results_label.setFont(QFont("Arial", 11, QFont.Bold))
-        layout.addWidget(results_label)
-
-        self.technical_results_area = QTextEdit()
-        self.technical_results_area.setMaximumHeight(150)
-        self.technical_results_area.setStyleSheet("""
-            QTextEdit {
-                background-color: #3c3c3c;
-                border: 1px solid #555;
-                border-radius: 5px;
-                color: #ffffff;
-                font-family: 'Courier New', monospace;
-                font-size: 11px;
-            }
-        """)
-        self.technical_results_area.setPlaceholderText("Technical analysis results will appear here...")
-        layout.addWidget(self.technical_results_area)
-
-        # Plot Files Display
-        plots_label = QLabel("Generated Plots")
-        plots_label.setFont(QFont("Arial", 11, QFont.Bold))
-        layout.addWidget(plots_label)
-
-        self.plots_list_widget = QTextEdit()
-        self.plots_list_widget.setMaximumHeight(100)
-        self.plots_list_widget.setStyleSheet("""
-            QTextEdit {
-                background-color: #2b2b2b;
-                border: 1px solid #444;
-                border-radius: 5px;
-                color: #cccccc;
-                font-size: 11px;
-            }
-        """)
-        self.plots_list_widget.setPlaceholderText("Plot files will be listed here...")
-        layout.addWidget(self.plots_list_widget)
-
-        layout.addStretch()
-        group.setLayout(layout)
-        return group
-
-    def create_results_section(self):
-        """Create unified results display section"""
-        group = QGroupBox("Analysis Results")
-        layout = QVBoxLayout()
-
-        # Tab-like buttons for switching views
-        view_buttons_layout = QHBoxLayout()
-
-        self.stability_view_btn = QPushButton("Stability Results")
-        self.stability_view_btn.setCheckable(True)
-        self.stability_view_btn.setChecked(True)
-        self.stability_view_btn.clicked.connect(lambda: self.switch_results_view("stability"))
-
-        self.technical_view_btn = QPushButton("Technical Plots")
-        self.technical_view_btn.setCheckable(True)
-        self.technical_view_btn.clicked.connect(lambda: self.switch_results_view("technical"))
-
-        # Style the view buttons
-        button_style = """
-            QPushButton {
-                background-color: #3c3c3c;
-                color: white;
-                padding: 8px 15px;
-                border-radius: 4px;
-                border: none;
-            }
-            QPushButton:checked {
-                background-color: #7c4dff;
-            }
-            QPushButton:hover {
-                background-color: #4c4c4c;
-            }
-        """
-        self.stability_view_btn.setStyleSheet(button_style)
-        self.technical_view_btn.setStyleSheet(button_style)
-
-        view_buttons_layout.addWidget(self.stability_view_btn)
-        view_buttons_layout.addWidget(self.technical_view_btn)
-        view_buttons_layout.addStretch()
-        layout.addLayout(view_buttons_layout)
-
-        # Results display area
-        self.results_stack = QWidget()
-        results_stack_layout = QVBoxLayout(self.results_stack)
-
-        # Stability results table
-        self.stability_table = QTableWidget()
-        self.stability_table.setMinimumHeight(350)
-        self.stability_table.setAlternatingRowColors(True)
-        self.stability_table.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.stability_table.setStyleSheet("""
-            QTableWidget {
-                gridline-color: #444;
-                background-color: #2b2b2b;
-                alternate-background-color: #353535;
-            }
-            QHeaderView::section {
-                background-color: #404040;
-                padding: 8px;
-                border: none;
-                font-weight: bold;
-            }
-            QTableWidget::item {
-                padding: 8px;
-                border-bottom: 1px solid #444;
-            }
-            QTableWidget::item:selected {
-                background-color: #7c4dff;
-            }
-        """)
-
-        # Technical plots display area
-        self.technical_plots_area = QScrollArea()
-        self.technical_plots_area.setWidgetResizable(True)
-        self.technical_plots_area.setMinimumHeight(350)
-        self.technical_plots_area.setStyleSheet("""
-            QScrollArea {
-                border: 1px solid #444;
-                border-radius: 5px;
-                background-color: #2b2b2b;
-            }
-        """)
-
-        # Initially show stability table
-        results_stack_layout.addWidget(self.stability_table)
-        results_stack_layout.addWidget(self.technical_plots_area)
-        self.technical_plots_area.hide()
-
-        layout.addWidget(self.results_stack)
-
-        # Action buttons
-        actions_layout = QHBoxLayout()
-
-        self.export_stability_btn = QPushButton("Export Stability Results")
-        self.export_stability_btn.clicked.connect(self.export_stability_results)
-        self.export_stability_btn.setEnabled(False)
-        actions_layout.addWidget(self.export_stability_btn)
-
-        self.open_plots_folder_btn = QPushButton("Open Plots Folder")
-        self.open_plots_folder_btn.clicked.connect(self.open_plots_folder)
-        self.open_plots_folder_btn.setEnabled(False)
-        actions_layout.addWidget(self.open_plots_folder_btn)
-
-        actions_layout.addStretch()
-
-        self.results_summary_label = QLabel("No analysis results available")
-        self.results_summary_label.setStyleSheet("color: #888; font-style: italic;")
-        actions_layout.addWidget(self.results_summary_label)
-
-        layout.addLayout(actions_layout)
-
-        group.setLayout(layout)
-        return group
-
-    def create_progress_bars(self):
-        """Create progress bars for both analysis types"""
-        # Stability analysis progress
-        self.stability_progress_group = QGroupBox("Stability Analysis Progress")
-        self.stability_progress_group.setVisible(False)
-        stability_layout = QVBoxLayout()
-
-        self.stability_progress_bar = QProgressBar()
-        self.stability_progress_bar.setMinimum(0)
-        self.stability_progress_bar.setMaximum(100)
-        stability_layout.addWidget(self.stability_progress_bar)
-
-        self.stability_progress_status = QLabel("Ready...")
-        self.stability_progress_status.setAlignment(Qt.AlignCenter)
-        stability_layout.addWidget(self.stability_progress_status)
-
-        self.stability_progress_group.setLayout(stability_layout)
-
-        # Technical analysis progress
-        self.technical_progress_group = QGroupBox("Technical Analysis Progress")
-        self.technical_progress_group.setVisible(False)
-        technical_layout = QVBoxLayout()
-
-        self.technical_progress_bar = QProgressBar()
-        self.technical_progress_bar.setMinimum(0)
-        self.technical_progress_bar.setMaximum(100)
-        technical_layout.addWidget(self.technical_progress_bar)
-
-        self.technical_progress_status = QLabel("Ready...")
-        self.technical_progress_status.setAlignment(Qt.AlignCenter)
-        technical_layout.addWidget(self.technical_progress_status)
-
-        self.technical_progress_group.setLayout(technical_layout)
-
-    def switch_results_view(self, view_type):
-        """Switch between stability and technical results views"""
-        if view_type == "stability":
-            self.stability_view_btn.setChecked(True)
-            self.technical_view_btn.setChecked(False)
-            self.stability_table.show()
-            self.technical_plots_area.hide()
-        else:  # technical
-            self.stability_view_btn.setChecked(False)
-            self.technical_view_btn.setChecked(True)
-            self.stability_table.hide()
-            self.technical_plots_area.show()
-
-    def set_recommended_regime(self, regime):
-        """Set the recommended regime from regime detection tab"""
-        print(f"📊 Updating recommended regime to: {regime}")
-
-        self.recommended_regime = regime
-
-        # Map regime names properly
-        regime_mapping = {
-            "Steady Growth": "Steady Growth",
-            "Strong Bull": "Strong Bull",
-            "Crisis/Bear": "Crisis/Bear",
-            "Crisis": "Crisis/Bear",  # Handle variations
-            "Bear": "Crisis/Bear"
-        }
-
-        mapped_regime = regime_mapping.get(regime, regime)
-
-        # Update combo box if the regime is in our list
-        combo_items = [self.stability_regime_combo.itemText(i) for i in range(self.stability_regime_combo.count())]
-        if mapped_regime in combo_items:
-            self.stability_regime_combo.setCurrentText(mapped_regime)
-            # self.regime_recommendation_label.setText("(Recommended from Regime Detection)")
-            self.regime_recommendation_label.setText("")
-            self.regime_recommendation_label.setStyleSheet("color: #4CAF50; font-style: italic; font-weight: bold;")
-        else:
-            self.regime_recommendation_label.setText("(Regime not in analysis list)")
-            self.regime_recommendation_label.setStyleSheet("color: #ff9800; font-style: italic;")
-
-    def run_stability_analysis(self):
-        """Run stability analysis for selected regime"""
-        selected_regime = self.stability_regime_combo.currentText()
-        regime_key = selected_regime.replace(" ", "_").replace("/", "_")
-
-        # Show progress
-        self.stability_progress_group.setVisible(True)
-        self.stability_progress_bar.setValue(0)
-        self.stability_progress_status.setText("Starting stability analysis...")
-
-        # Disable button
-        self.run_stability_btn.setEnabled(False)
-        self.run_stability_btn.setText("Analyzing...")
-
-        # Start thread
-        self.stability_thread = StabilityAnalysisThread(regime_key)
-        self.stability_thread.progress_update.connect(self.update_stability_progress)
-        self.stability_thread.status_update.connect(self.update_stability_status)
-        self.stability_thread.result_ready.connect(self.handle_stability_results)
-        self.stability_thread.error_occurred.connect(self.handle_stability_error)
-        self.stability_thread.finished.connect(self.on_stability_finished)
-        self.stability_thread.start()
-
-    def run_technical_analysis(self):
-        """Run technical analysis for entered ticker"""
-        ticker = self.ticker_input.text().strip().upper()
-
-        if not ticker:
-            QMessageBox.warning(self, "Input Error", "Please enter a ticker symbol!")
-            return
-
-        selected_regime = self.stability_regime_combo.currentText()
-        regime_key = selected_regime.replace(" ", "_").replace("/", "_")
-
-        # Show progress
-        self.technical_progress_group.setVisible(True)
-        self.technical_progress_bar.setValue(0)
-        self.technical_progress_status.setText(f"Starting technical analysis for {ticker}...")
-
-        # Disable button
-        self.run_technical_btn.setEnabled(False)
-        self.run_technical_btn.setText("Generating...")
-
-        # Start thread
-        self.technical_thread = TechnicalPlotsThread(ticker, regime_key)
-        self.technical_thread.progress_update.connect(self.update_technical_progress)
-        self.technical_thread.status_update.connect(self.update_technical_status)
-        self.technical_thread.result_ready.connect(self.handle_technical_results)
-        self.technical_thread.error_occurred.connect(self.handle_technical_error)
-        self.technical_thread.finished.connect(self.on_technical_finished)
-        self.technical_thread.start()
-
-    # Progress update methods
-    def update_stability_progress(self, value):
-        self.stability_progress_bar.setValue(value)
-
-    def update_stability_status(self, message):
-        self.stability_progress_status.setText(message)
-
-    def update_technical_progress(self, value):
-        self.technical_progress_bar.setValue(value)
-
-    def update_technical_status(self, message):
-        self.technical_progress_status.setText(message)
-
-    # Results handlers
-    def handle_stability_results(self, results):
-        """Handle stability analysis results"""
-        self.current_stability_results = results
-        self.display_stability_results(results['results_df'])
-
-        # Update statistics
-        df = results['results_df']
-        total_stocks = len(df)
-        strong_buy_count = len(df[df['recommendation'].str.contains('STRONG BUY', na=False)])
-        avg_stability = df['stability_adjusted_score'].mean()
-
-        self.stability_stats['total_analyzed'].setText(f"Total Stocks Analyzed: {total_stocks}")
-        self.stability_stats['strong_buy'].setText(f"Strong Buy Recommendations: {strong_buy_count}")
-        self.stability_stats['avg_stability'].setText(f"Average Stability Score: {avg_stability:.2f}")
-
-        self.results_summary_label.setText(f"Stability analysis complete: {total_stocks} stocks")
-        self.export_stability_btn.setEnabled(True)
-
-    def handle_technical_results(self, results):
-        """Handle technical analysis results"""
-        self.current_technical_results = results
-
-        # Display technical analysis text results
-        ticker = results['ticker']
-        recommendation = results['recommendation']
-
-        results_text = f"TECHNICAL ANALYSIS FOR {ticker}\n"
-        results_text += "=" * 40 + "\n"
-        results_text += f"Recommendation: {recommendation}\n"
-        results_text += f"Regime: {results['regime']}\n"
-        results_text += f"Plots Generated: {len(results['plot_files'])}\n"
-        results_text += f"Output Directory: {results['plot_directory']}\n"
-
-        self.technical_results_area.setText(results_text)
-
-        # Display plot files
-        plot_files_text = "\n".join([Path(p).name for p in results['plot_files']])
-        self.plots_list_widget.setText(plot_files_text)
-
-        # Switch to technical view
-        self.switch_results_view("technical")
-
-        self.results_summary_label.setText(f"Technical analysis complete for {ticker}")
-        self.open_plots_folder_btn.setEnabled(True)
-
-    def handle_stability_error(self, error_message):
-        QMessageBox.critical(self, "Stability Analysis Error", f"Error occurred:\n{error_message}")
-
-    def handle_technical_error(self, error_message):
-        QMessageBox.critical(self, "Technical Analysis Error", f"Error occurred:\n{error_message}")
-
-    def on_stability_finished(self):
-        """Clean up after stability analysis"""
-        self.stability_progress_group.setVisible(False)
-        self.run_stability_btn.setEnabled(True)
-        self.run_stability_btn.setText("Run Stability Analysis")
-
-    def on_technical_finished(self):
-        """Clean up after technical analysis"""
-        self.technical_progress_group.setVisible(False)
-        self.run_technical_btn.setEnabled(True)
-        self.run_technical_btn.setText("Generate Technical Plots")
-
-    def display_stability_results(self, df):
-        """Display stability analysis results in table"""
-        if df is None or df.empty:
-            return
-
-        # Set up table
-        self.stability_table.setRowCount(len(df))
-        self.stability_table.setColumnCount(len(df.columns))
-        self.stability_table.setHorizontalHeaderLabels(df.columns.tolist())
-
-        # Populate table
-        for row in range(len(df)):
-            for col in range(len(df.columns)):
-                value = df.iloc[row, col]
-                item = QTableWidgetItem(str(value))
-                item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
-                self.stability_table.setItem(row, col, item)
-
-        # Resize columns
-        self.stability_table.resizeColumnsToContents()
-
-    def export_stability_results(self):
-        """Export stability results"""
-        if self.current_stability_results:
-            output_path = self.current_stability_results['output_path']
-            QMessageBox.information(self, "Export Complete",
-                                    f"Stability results saved to:\n{output_path}")
-        else:
-            QMessageBox.warning(self, "Export", "No stability results to export!")
-
-    def open_plots_folder(self):
-        """Open the plots folder in file explorer"""
-        if self.current_technical_results:
-            plot_directory = self.current_technical_results['plot_directory']
-            import os
-            import subprocess
-            import platform
-
-            try:
-                if platform.system() == "Windows":
-                    os.startfile(plot_directory)
-                elif platform.system() == "Darwin":  # macOS
-                    subprocess.run(["open", plot_directory])
-                else:  # Linux
-                    subprocess.run(["xdg-open", plot_directory])
-            except Exception as e:
-                QMessageBox.information(self, "Folder Location",
-                                        f"Plots saved to:\n{plot_directory}\n\nCouldn't auto-open: {e}")
-        else:
-            QMessageBox.warning(self, "No Plots", "No technical plots available!")
-
+# class MainWindow(QMainWindow):
+#     """Main application window"""
+#
+#     def __init__(self):
+#         super().__init__()
+#         self.init_ui()
+#
+#     def init_ui(self):
+#         self.setWindowTitle("Multifactor Stock Analysis System - Regime Detection")
+#         self.setGeometry(100, 100, 1400, 900)
+#
+#         # Set modern dark theme
+#         self.setStyleSheet("""
+#             QMainWindow {
+#                 background-color: #1a1a1a;
+#             }
+#             QWidget {
+#                 background-color: #2b2b2b;
+#                 color: #ffffff;
+#                 font-family: 'Segoe UI', Arial, sans-serif;
+#             }
+#             QGroupBox {
+#                 border: 2px solid #444;
+#                 border-radius: 8px;
+#                 margin-top: 1.5ex;
+#                 font-weight: bold;
+#                 font-size: 12px;
+#                 padding-top: 10px;
+#             }
+#             QGroupBox::title {
+#                 subcontrol-origin: margin;
+#                 left: 10px;
+#                 padding: 0 10px 0 10px;
+#                 color: #fff;
+#             }
+#             QPushButton {
+#                 background-color: #3c3c3c;
+#                 border: 1px solid #555;
+#                 padding: 8px 15px;
+#                 border-radius: 5px;
+#                 font-weight: bold;
+#             }
+#             QPushButton:hover {
+#                 background-color: #4c4c4c;
+#             }
+#             QPushButton:pressed {
+#                 background-color: #2c2c2c;
+#             }
+#             QPushButton:disabled {
+#                 background-color: #2c2c2c;
+#                 color: #777;
+#             }
+#             QComboBox {
+#                 background-color: #3c3c3c;
+#                 border: 1px solid #555;
+#                 padding: 5px;
+#                 border-radius: 3px;
+#                 min-width: 150px;
+#             }
+#             QComboBox::drop-down {
+#                 border: none;
+#             }
+#             QComboBox::down-arrow {
+#                 image: none;
+#                 border-left: 4px solid transparent;
+#                 border-right: 4px solid transparent;
+#                 border-top: 6px solid #888;
+#                 margin-right: 5px;
+#             }
+#             QProgressBar {
+#                 border: 1px solid #444;
+#                 border-radius: 3px;
+#                 text-align: center;
+#                 background-color: #2b2b2b;
+#             }
+#             QProgressBar::chunk {
+#                 background-color: #7c4dff;
+#                 border-radius: 3px;
+#             }
+#             QLabel {
+#                 color: #ffffff;
+#             }
+#             QScrollArea {
+#                 border: none;
+#                 background-color: #2b2b2b;
+#             }
+#             QScrollBar:vertical {
+#                 background-color: #2b2b2b;
+#                 width: 12px;
+#                 border-radius: 6px;
+#             }
+#             QScrollBar::handle:vertical {
+#                 background-color: #555;
+#                 border-radius: 6px;
+#                 min-height: 20px;
+#             }
+#             QScrollBar::handle:vertical:hover {
+#                 background-color: #666;
+#             }
+#         """)
+#
+#         # Create central widget
+#         self.regime_widget = RegimeDetectionWidget()
+#         self.setCentralWidget(self.regime_widget)
+#
+#         # Create menu bar
+#         self.create_menu_bar()
+#
+#     def create_menu_bar(self):
+#         """Create application menu bar"""
+#         menubar = self.menuBar()
+#         menubar.setStyleSheet("""
+#             QMenuBar {
+#                 background-color: #2b2b2b;
+#                 color: #ffffff;
+#             }
+#             QMenuBar::item:selected {
+#                 background-color: #3c3c3c;
+#             }
+#             QMenu {
+#                 background-color: #2b2b2b;
+#                 color: #ffffff;
+#                 border: 1px solid #444;
+#             }
+#             QMenu::item:selected {
+#                 background-color: #3c3c3c;
+#             }
+#         """)
+#
+#         # File menu
+#         file_menu = menubar.addMenu('File')
+#
+#         export_action = file_menu.addAction('Export Results')
+#         export_action.setShortcut('Ctrl+E')
+#         export_action.triggered.connect(self.export_results)
+#
+#         file_menu.addSeparator()
+#
+#         exit_action = file_menu.addAction('Exit')
+#         exit_action.setShortcut('Ctrl+Q')
+#         exit_action.triggered.connect(self.close)
+#
+#         # Tools menu
+#         tools_menu = menubar.addMenu('Tools')
+#
+#         refresh_action = tools_menu.addAction('Refresh Current')
+#         refresh_action.setShortcut('F5')
+#         refresh_action.triggered.connect(self.regime_widget.detect_current_regime)
+#
+#         # Help menu
+#         help_menu = menubar.addMenu('Help')
+#
+#         about_action = help_menu.addAction('About')
+#         about_action.triggered.connect(self.show_about)
+#
+#     def export_results(self):
+#         """Export current results to CSV"""
+#         if self.regime_widget.historical_results:
+#             QMessageBox.information(self, "Export",
+#                                     "Results would be exported to:\n" +
+#                                     str(PROJECT_ROOT / "output" / "exported_results.csv"))
+#         else:
+#             QMessageBox.warning(self, "Export",
+#                                 "No results to export. Please run detection first.")
+#
+#     def show_about(self):
+#         """Show about dialog"""
+#         QMessageBox.about(self, "About",
+#                           "Multifactor Stock Analysis System\n"
+#                           "Regime Detection Module v2.0\n\n"
+#                           "This system uses Hidden Markov Models (HMM) to detect and analyze "
+#                           "market regimes: Steady Growth, Strong Bull, and Crisis/Bear periods.\n\n"
+#                           "Features:\n"
+#                           "• Current regime detection with confidence scores\n"
+#                           "• Historical regime analysis with validation\n"
+#                           "• Visual timeline of regime transitions\n\n"
+#                           "Developed for intelligent portfolio management.")
 
 # Modified MainWindow class to use tabs
 class MainWindow(QMainWindow):
-    """Main application window with three tabs"""
+    """Main application window with tabs"""
 
     def __init__(self):
         super().__init__()
@@ -2314,149 +1716,136 @@ class MainWindow(QMainWindow):
 
     def init_ui(self):
         self.setWindowTitle("Multifactor Stock Analysis System (MSAS)")
-        self.setGeometry(100, 100, 1500, 1000)  # Increased window size
+        self.setGeometry(100, 100, 1400, 900)
 
-        # Set modern dark theme (same styling as before)
+        # Set modern dark theme (same as before)
         self.setStyleSheet("""
-                    QMainWindow {
-                        background-color: #1a1a1a;
-                    }
-                    QWidget {
-                        background-color: #2b2b2b;
-                        color: #ffffff;
-                        font-family: 'Segoe UI', Arial, sans-serif;
-                    }
-                    QTabWidget::pane {
-                        border: 1px solid #444;
-                        background-color: #2b2b2b;
-                    }
-                    QTabBar::tab {
-                        background-color: #3c3c3c;
-                        color: #ffffff;
-                        padding: 12px 20px;
-                        margin-right: 2px;
-                        border-top-left-radius: 5px;
-                        border-top-right-radius: 5px;
-                        min-width: 120px;
-                    }
-                    QTabBar::tab:selected {
-                        background-color: #7c4dff;
-                        color: #ffffff;
-                    }
-                    QTabBar::tab:hover {
-                        background-color: #4c4c4c;
-                    }
-                    QGroupBox {
-                        border: 2px solid #444;
-                        border-radius: 8px;
-                        margin-top: 1.5ex;
-                        font-weight: bold;
-                        font-size: 12px;
-                        padding-top: 10px;
-                    }
-                    QGroupBox::title {
-                        subcontrol-origin: margin;
-                        left: 10px;
-                        padding: 0 10px 0 10px;
-                        color: #fff;
-                    }
-                    QPushButton {
-                        background-color: #3c3c3c;
-                        border: 1px solid #555;
-                        padding: 8px 15px;
-                        border-radius: 5px;
-                        font-weight: bold;
-                    }
-                    QPushButton:hover {
-                        background-color: #4c4c4c;
-                    }
-                    QPushButton:pressed {
-                        background-color: #2c2c2c;
-                    }
-                    QPushButton:disabled {
-                        background-color: #2c2c2c;
-                        color: #777;
-                    }
-                    QComboBox {
-                        background-color: #3c3c3c;
-                        border: 1px solid #555;
-                        padding: 5px;
-                        border-radius: 3px;
-                        min-width: 150px;
-                    }
-                    QComboBox::drop-down {
-                        border: none;
-                    }
-                    QComboBox::down-arrow {
-                        image: none;
-                        border-left: 4px solid transparent;
-                        border-right: 4px solid transparent;
-                        border-top: 6px solid #888;
-                        margin-right: 5px;
-                    }
-                    QProgressBar {
-                        border: 1px solid #444;
-                        border-radius: 3px;
-                        text-align: center;
-                        background-color: #2b2b2b;
-                    }
-                    QProgressBar::chunk {
-                        background-color: #7c4dff;
-                        border-radius: 3px;
-                    }
-                    QLabel {
-                        color: #ffffff;
-                    }
-                    QScrollArea {
-                        border: none;
-                        background-color: #2b2b2b;
-                    }
-                    QScrollBar:vertical {
-                        background-color: #2b2b2b;
-                        width: 12px;
-                        border-radius: 6px;
-                    }
-                    QScrollBar::handle:vertical {
-                        background-color: #555;
-                        border-radius: 6px;
-                        min-height: 20px;
-                    }
-                    QScrollBar::handle:vertical:hover {
-                        background-color: #666;
-                    }
-                """)
+            QMainWindow {
+                background-color: #1a1a1a;
+            }
+            QWidget {
+                background-color: #2b2b2b;
+                color: #ffffff;
+                font-family: 'Segoe UI', Arial, sans-serif;
+            }
+            QTabWidget::pane {
+                border: 1px solid #444;
+                background-color: #2b2b2b;
+            }
+            QTabBar::tab {
+                background-color: #3c3c3c;
+                color: #ffffff;
+                padding: 10px 20px;
+                margin-right: 2px;
+                border-top-left-radius: 5px;
+                border-top-right-radius: 5px;
+            }
+            QTabBar::tab:selected {
+                background-color: #7c4dff;
+                color: #ffffff;
+            }
+            QTabBar::tab:hover {
+                background-color: #4c4c4c;
+            }
+            QGroupBox {
+                border: 2px solid #444;
+                border-radius: 8px;
+                margin-top: 1.5ex;
+                font-weight: bold;
+                font-size: 12px;
+                padding-top: 10px;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 10px;
+                padding: 0 10px 0 10px;
+                color: #fff;
+            }
+            QPushButton {
+                background-color: #3c3c3c;
+                border: 1px solid #555;
+                padding: 8px 15px;
+                border-radius: 5px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #4c4c4c;
+            }
+            QPushButton:pressed {
+                background-color: #2c2c2c;
+            }
+            QPushButton:disabled {
+                background-color: #2c2c2c;
+                color: #777;
+            }
+            QComboBox {
+                background-color: #3c3c3c;
+                border: 1px solid #555;
+                padding: 5px;
+                border-radius: 3px;
+                min-width: 150px;
+            }
+            QComboBox::drop-down {
+                border: none;
+            }
+            QComboBox::down-arrow {
+                image: none;
+                border-left: 4px solid transparent;
+                border-right: 4px solid transparent;
+                border-top: 6px solid #888;
+                margin-right: 5px;
+            }
+            QProgressBar {
+                border: 1px solid #444;
+                border-radius: 3px;
+                text-align: center;
+                background-color: #2b2b2b;
+            }
+            QProgressBar::chunk {
+                background-color: #7c4dff;
+                border-radius: 3px;
+            }
+            QLabel {
+                color: #ffffff;
+            }
+            QScrollArea {
+                border: none;
+                background-color: #2b2b2b;
+            }
+            QScrollBar:vertical {
+                background-color: #2b2b2b;
+                width: 12px;
+                border-radius: 6px;
+            }
+            QScrollBar::handle:vertical {
+                background-color: #555;
+                border-radius: 6px;
+                min-height: 20px;
+            }
+            QScrollBar::handle:vertical:hover {
+                background-color: #666;
+            }
+        """)
 
         # Create tab widget as central widget
         self.tab_widget = QTabWidget()
         self.setCentralWidget(self.tab_widget)
 
-        # Add all three tabs
+        # Add tabs
         self.regime_widget = RegimeDetectionWidget()
         self.scoring_widget = MultifactorScoringWidget()
-        self.trend_analysis_widget = ScoreTrendAnalysisWidget()
 
         self.tab_widget.addTab(self.regime_widget, "Regime Detection")
         self.tab_widget.addTab(self.scoring_widget, "Multifactor Scoring")
-        self.tab_widget.addTab(self.trend_analysis_widget, "Score Trend Analysis")
 
-        # FIXED: Connect to the correct signal from RegimeDetectionWidget
-        self.regime_widget.regime_detected.connect(self.update_trend_regime_recommendation)
+        # Set the Multifactor Scoring tab as default for now
+        self.tab_widget.setCurrentIndex(1)
 
-        # Set default tab
-        self.tab_widget.setCurrentIndex(0)  # Start with Regime Detection
-
-        # Create enhanced menu bar
+        # Create menu bar
         self.create_menu_bar()
 
-    def update_trend_regime_recommendation(self, detected_regime):
-        """Update trend analysis with detected regime recommendation"""
-        print(f"📡 Regime detected: {detected_regime}")
-
-        # Update the trend analysis widget with the detected regime
-        self.trend_analysis_widget.set_recommended_regime(detected_regime)
-
     def create_menu_bar(self):
-        """Create enhanced application menu bar"""
+        """Create application menu bar"""
         menubar = self.menuBar()
         menubar.setStyleSheet("""
             QMenuBar {
@@ -2479,9 +1868,9 @@ class MainWindow(QMainWindow):
         # File menu
         file_menu = menubar.addMenu('File')
 
-        export_action = file_menu.addAction('Export Current Results')
+        export_action = file_menu.addAction('Export Results')
         export_action.setShortcut('Ctrl+E')
-        export_action.triggered.connect(self.export_current_results)
+        export_action.triggered.connect(self.export_results)
 
         file_menu.addSeparator()
 
@@ -2489,22 +1878,18 @@ class MainWindow(QMainWindow):
         exit_action.setShortcut('Ctrl+Q')
         exit_action.triggered.connect(self.close)
 
-        # Analysis menu
-        analysis_menu = menubar.addMenu('Analysis')
+        # Tools menu
+        tools_menu = menubar.addMenu('Tools')
 
-        run_regime_action = analysis_menu.addAction('Run Regime Detection')
-        run_regime_action.setShortcut('F5')
-        run_regime_action.triggered.connect(lambda: self.regime_widget.detect_current_regime())
+        refresh_regime_action = tools_menu.addAction('Refresh Regime Detection')
+        refresh_regime_action.setShortcut('F5')
+        refresh_regime_action.triggered.connect(lambda: self.regime_widget.detect_current_regime())
 
-        run_scoring_action = analysis_menu.addAction('Run Scoring Process')
+        tools_menu.addSeparator()
+
+        run_scoring_action = tools_menu.addAction('Run Scoring Process')
         run_scoring_action.setShortcut('Ctrl+R')
         run_scoring_action.triggered.connect(lambda: self.scoring_widget.run_scoring_process())
-
-        analysis_menu.addSeparator()
-
-        run_stability_action = analysis_menu.addAction('Run Stability Analysis')
-        run_stability_action.setShortcut('Ctrl+T')
-        run_stability_action.triggered.connect(lambda: self.trend_analysis_widget.run_stability_analysis())
 
         # View menu
         view_menu = menubar.addMenu('View')
@@ -2517,38 +1902,11 @@ class MainWindow(QMainWindow):
         scoring_tab_action.setShortcut('Ctrl+2')
         scoring_tab_action.triggered.connect(lambda: self.tab_widget.setCurrentIndex(1))
 
-        trend_tab_action = view_menu.addAction('Score Trend Analysis Tab')
-        trend_tab_action.setShortcut('Ctrl+3')
-        trend_tab_action.triggered.connect(lambda: self.tab_widget.setCurrentIndex(2))
-
         # Help menu
         help_menu = menubar.addMenu('Help')
 
         about_action = help_menu.addAction('About')
         about_action.triggered.connect(self.show_about)
-
-    def export_current_results(self):
-        """Export results from currently active tab"""
-        current_tab = self.tab_widget.currentIndex()
-
-        if current_tab == 0:  # Regime Detection
-            if hasattr(self.regime_widget, 'historical_results') and self.regime_widget.historical_results:
-                QMessageBox.information(self, "Export", "Regime results exported!")
-            else:
-                QMessageBox.warning(self, "Export", "No regime results to export.")
-
-        elif current_tab == 1:  # Multifactor Scoring
-            if hasattr(self.scoring_widget, 'current_results') and self.scoring_widget.current_results:
-                self.scoring_widget.export_results()
-            else:
-                QMessageBox.warning(self, "Export", "No scoring results to export.")
-
-        elif current_tab == 2:  # Score Trend Analysis
-            if hasattr(self.trend_analysis_widget,
-                       'current_stability_results') and self.trend_analysis_widget.current_stability_results:
-                self.trend_analysis_widget.export_stability_results()
-            else:
-                QMessageBox.warning(self, "Export", "No trend analysis results to export.")
 
     def export_results(self):
         """Export current results to CSV"""
@@ -2571,26 +1929,18 @@ class MainWindow(QMainWindow):
                                     "No scoring results to export. Please run scoring first.")
 
     def show_about(self):
-        """Show enhanced about dialog"""
+        """Show about dialog"""
         QMessageBox.about(self, "About",
                           "Multifactor Stock Analysis System (MSAS)\n"
                           "Version 2.0\n\n"
                           "This comprehensive system provides:\n"
                           "• Market regime detection using Hidden Markov Models\n"
                           "• Advanced multifactor stock scoring and ranking\n"
-                          "• Score trend analysis and stability assessment\n"
-                          "• Technical analysis with detailed plotting\n\n"
+                          "• Intelligent portfolio optimization\n\n"
                           "Tabs:\n"
                           "• Regime Detection: Analyze current market conditions\n"
-                          "• Multifactor Scoring: Score and rank stocks using multiple factors\n"
-                          "• Score Trend Analysis: Assess stability and generate technical plots\n\n"
-                          "Keyboard Shortcuts:\n"
-                          "• Ctrl+1/2/3: Switch between tabs\n"
-                          "• Ctrl+R: Run scoring process\n"
-                          "• Ctrl+T: Run stability analysis\n"
-                          "• F5: Refresh regime detection\n\n"
+                          "• Multifactor Scoring: Score and rank stocks using multiple factors\n\n"
                           "Developed for intelligent investment analysis.")
-
 
 def main():
     app = QApplication(sys.argv)
