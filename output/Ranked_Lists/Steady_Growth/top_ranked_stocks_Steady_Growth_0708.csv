@@ -1,0 +1,960 @@
+Ticker,CompanyName,Country,Score,Value,Quality,FinancialHealth,Technical,Insider,Momentum,Stability,Size,Credit,Liquidity,Carry,Growth,Sector,Industry
+PLTR,Palantir Technologies Inc.,United States,101.83,0.342,0.781,1.0,0.8325,-0.94,0.728,0.412,0.0,1.0,0.43,0.0,0.846,Technology,Software - Infrastructure
+EXEL,"Exelixis, Inc.",United States,100.77,0.471,0.971,1.0,0.8257,-0.95,0.712,0.64,0.67,1.0,0.02,0.0,0.881,Healthcare,Biotechnology
+NVDA,NVIDIA Corporation,United States,99.67,0.33,0.971,1.0,0.7339,-0.97,0.527,0.34,0.0,1.0,1.0,0.6,0.678,Technology,Semiconductors
+HIMS,"Hims & Hers Health, Inc.",United States,97.56,0.278,0.818,0.827,0.4179,-0.95,0.728,0.349,0.68,1.0,0.31,0.0,0.881,Consumer Defensive,Household & Personal Products
+VEEV,Veeva Systems Inc.,United States,96.36,0.388,0.807,1.0,0.8001,-0.92,0.614,0.468,0.31,1.0,0.01,0.0,0.751,Healthcare,Health Information Services
+RMBS,Rambus Inc.,United States,95.5,0.347,0.885,1.0,0.7026,-0.87,0.453,0.267,0.73,1.0,0.0,0.0,0.857,Technology,Semiconductors
+META,"Meta Platforms, Inc.",United States,94.39,0.282,0.971,1.0,0.7497,-0.95,0.564,0.427,0.0,0.92,0.06,0.28,0.683,Communication Services,Internet Content & Information
+MNST,Monster Beverage Corporation,United States,94.11,0.308,0.855,1.0,0.7958,-0.94,0.532,0.608,0.14,1.0,0.03,0.0,0.545,Consumer Defensive,Beverages - Non-Alcoholic
+NXT,Nextracker Inc.,United States,94.08,0.428,0.771,0.922,0.8187,-0.96,0.572,0.275,0.69,1.0,0.02,0.0,0.811,Technology,Solar
+FTNT,"Fortinet, Inc.",United States,93.45,0.342,0.971,0.767,0.7283,-0.95,0.671,0.601,0.0,1.0,0.02,0.0,0.387,Technology,Software - Infrastructure
+WPM,Wheaton Precious Metals Corp.,Canada,93.24,0.303,0.723,1.0,0.8323,0.0,0.643,0.583,0.35,1.0,0.01,0.57,0.835,Basic Materials,Gold
+CDNS,"Cadence Design Systems, Inc.",United States,93.12,0.378,0.971,0.994,0.7496,-0.94,0.457,0.41,0.0,0.91,0.01,0.0,0.782,Technology,Software - Application
+DUOL,"Duolingo, Inc.",United States,92.44,0.378,0.684,1.0,0.4397,-0.95,0.714,0.436,0.61,1.0,0.01,0.0,0.597,Technology,Software - Application
+DASH,"DoorDash, Inc.",United States,92.42,0.311,0.474,0.851,0.8079,-0.95,0.728,0.515,0.0,1.0,0.03,0.0,0.837,Consumer Cyclical,Internet Retail
+GOOGL,Alphabet Inc.,United States,92.17,0.341,0.961,0.861,0.5005,-0.77,0.435,0.414,0.0,0.99,0.24,0.3,0.674,Communication Services,Internet Content & Information
+ONON,On Holding AG,Switzerland,92.12,0.244,0.699,1.0,0.5866,0.0,0.586,0.511,0.61,0.97,0.04,0.0,0.881,Consumer Cyclical,Footwear & Accessories
+GOOG,Alphabet Inc.,United States,92.11,0.339,0.961,0.861,0.4965,-0.96,0.434,0.417,0.0,0.99,0.16,0.3,0.674,Communication Services,Internet Content & Information
+AXON,"Axon Enterprise, Inc.",United States,92.1,0.331,0.681,0.9,0.7795,-0.95,0.728,0.432,0.13,0.9,0.0,0.0,0.881,Industrials,Aerospace & Defense
+SEIC,SEI Investments Company,United States,91.34,0.305,0.971,1.0,0.7484,-0.9,0.585,0.571,0.68,1.0,0.01,0.66,0.353,Financial Services,Asset Management
+RDDT,"Reddit, Inc.",United States,91.17,0.276,0.543,1.0,0.1671,-0.95,0.727,0.341,0.5,1.0,0.04,0.0,0.661,Communication Services,Internet Content & Information
+PAYC,"Paycom Software, Inc.",United States,90.9,0.401,0.971,0.753,0.651,-0.94,0.645,0.466,0.66,1.0,0.0,0.36,0.503,Technology,Software - Application
+FFIV,"F5, Inc.",United States,90.78,0.414,0.895,0.816,0.7604,-0.92,0.661,0.633,0.62,1.0,0.0,0.0,0.401,Technology,Software - Infrastructure
+UTHR,United Therapeutics Corporation,United States,90.36,0.564,0.895,1.0,0.265,-0.95,0.43,0.552,0.66,1.0,0.0,0.0,0.759,Healthcare,Drug Manufacturers - Specialty & Generic
+NOW,"ServiceNow, Inc.",United States,89.91,0.378,0.798,0.738,0.6193,-0.94,0.562,0.527,0.0,0.98,0.01,0.0,0.704,Technology,Software - Application
+QLYS,"Qualys, Inc.",United States,89.91,0.408,0.971,0.789,0.6506,-0.95,0.466,0.488,0.74,1.0,0.0,0.0,0.57,Technology,Software - Infrastructure
+PINS,"Pinterest, Inc.",United States,89.36,0.388,0.829,1.0,0.4959,-0.95,0.402,0.351,0.54,1.0,0.05,0.0,0.528,Communication Services,Internet Content & Information
+NTES,"NetEase, Inc.",China,89.24,0.768,0.952,1.0,0.8277,0.0,0.591,0.484,0.0,0.97,0.0,0.75,0.585,Communication Services,Electronic Gaming & Multimedia
+SPOT,Spotify Technology S.A.,Luxembourg,89.21,0.265,0.512,0.806,0.8182,0.0,0.728,0.554,0.0,0.98,0.01,0.0,0.732,Communication Services,Internet Content & Information
+MPWR,"Monolithic Power Systems, Inc.",United States,89.02,0.424,0.936,1.0,0.4578,-0.82,0.416,0.448,0.42,1.0,0.0,0.69,0.597,Technology,Semiconductors
+CPRT,"Copart, Inc.",United States,88.83,0.343,0.769,1.0,0.4045,-0.74,0.422,0.481,0.29,1.0,0.03,0.0,0.567,Industrials,Specialty Business Services
+GRMN,Garmin Ltd.,Switzerland,88.63,0.375,0.851,1.0,0.5787,-0.93,0.555,0.558,0.36,1.0,0.0,0.52,0.344,Technology,Scientific & Technical Instruments
+RMD,ResMed Inc.,United States,88.53,0.422,0.967,1.0,0.7292,-0.95,0.556,0.5,0.4,0.9,0.0,0.63,0.592,Healthcare,Medical Instruments & Supplies
+ARM,Arm Holdings plc,United Kingdom,88.41,0.319,0.578,1.0,0.4227,0.0,0.395,0.309,0.0,1.0,0.03,0.0,0.857,Technology,Semiconductors
+SHOP,Shopify Inc.,Canada,88.22,0.378,0.565,1.0,0.6615,0.95,0.662,0.477,0.0,1.0,0.04,0.0,0.539,Technology,Software - Application
+DDOG,"Datadog, Inc.",United States,87.28,0.378,0.55,0.952,0.5375,-0.96,0.501,0.336,0.23,0.97,0.04,0.0,0.748,Technology,Software - Application
+LRCX,Lam Research Corporation,United States,87.26,0.359,0.879,0.991,0.6628,0.0,0.422,0.345,0.0,0.91,0.05,0.7,0.798,Technology,Semiconductor Equipment & Materials
+AEM,Agnico Eagle Mines Limited,Canada,87.14,0.454,0.768,0.975,0.8139,0.0,0.665,0.642,0.13,0.88,0.01,0.64,0.835,Basic Materials,Gold
+EW,Edwards Lifesciences Corporation,United States,86.93,0.348,0.844,1.0,0.5528,-0.93,0.406,0.396,0.32,1.0,0.02,0.0,0.208,Healthcare,Medical Devices
+KGC,Kinross Gold Corporation,Canada,86.93,0.636,0.877,0.974,0.8294,0.0,0.69,0.618,0.59,0.85,0.09,0.43,0.835,Basic Materials,Gold
+CELH,"Celsius Holdings, Inc.",United States,86.85,0.308,0.647,1.0,0.6025,-0.85,0.401,0.307,0.67,1.0,0.03,0.0,0.545,Consumer Defensive,Beverages - Non-Alcoholic
+ASML,ASML Holding N.V.,Netherlands,86.83,0.348,0.91,0.813,0.3752,0.0,0.378,0.357,0.0,0.97,0.01,0.7,0.857,Technology,Semiconductor Equipment & Materials
+MTSI,"MACOM Technology Solutions Holdings, Inc.",United States,86.64,0.335,0.592,1.0,0.6813,-0.95,0.507,0.39,0.69,0.91,0.0,0.0,0.857,Technology,Semiconductors
+NFLX,"Netflix, Inc.",United States,86.42,0.24,0.87,0.59,0.8262,-0.94,0.692,0.635,0.0,0.85,0.02,0.0,0.685,Communication Services,Entertainment
+COIN,"Coinbase Global, Inc.",United States,86.32,0.404,0.488,1.0,0.7695,-0.95,0.636,0.252,0.0,0.94,0.1,0.0,0.457,Financial Services,Financial Data & Stock Exchanges
+MNDY,monday.com Ltd.,Israel,86.3,0.378,0.543,1.0,0.7221,0.0,0.534,0.435,0.63,1.0,0.0,0.0,0.597,Technology,Software - Application
+SE,Sea Limited,Singapore,86.28,0.311,0.386,0.811,0.6904,0.0,0.723,0.555,0.0,0.95,0.02,0.0,0.881,Consumer Cyclical,Internet Retail
+IDCC,"InterDigital, Inc.",United States,86.07,0.592,0.908,0.853,0.791,-0.92,0.688,0.611,0.74,0.94,0.0,0.71,0.483,Technology,Software - Application
+CRUS,"Cirrus Logic, Inc.",United States,85.98,0.645,0.802,1.0,0.3349,-0.89,0.4,0.514,0.74,0.99,0.0,0.0,0.649,Technology,Semiconductors
+DT,"Dynatrace, Inc.",United States,85.93,0.399,0.811,0.79,0.5971,-0.95,0.532,0.545,0.62,1.0,0.01,0.0,0.359,Technology,Software - Application
+PANW,"Palo Alto Networks, Inc.",United States,85.75,0.342,0.817,0.694,0.7255,-0.95,0.514,0.578,0.0,0.99,0.02,0.0,0.332,Technology,Software - Infrastructure
+PCTY,Paylocity Holding Corporation,United States,85.48,0.396,0.753,0.739,0.5228,-0.95,0.571,0.607,0.69,0.98,0.0,0.0,0.565,Technology,Software - Application
+TTD,"The Trade Desk, Inc.",United States,85.45,0.273,0.743,0.869,0.1609,-0.92,0.381,0.446,0.41,1.0,0.03,0.0,0.57,Communication Services,Advertising Agencies
+INCY,Incyte Corporation,United States,85.35,0.397,0.489,0.912,0.4114,-0.92,0.503,0.506,0.66,1.0,0.01,0.0,0.793,Healthcare,Biotechnology
+MSFT,Microsoft Corporation,United States,85.26,0.345,0.971,0.785,0.7843,-0.95,0.475,0.454,0.0,0.87,0.11,0.62,0.633,Technology,Software - Infrastructure
+KLAC,KLA Corporation,United States,85.22,0.337,0.971,0.667,0.7947,-0.89,0.471,0.319,0.0,0.86,0.01,0.69,0.855,Technology,Semiconductor Equipment & Materials
+MMYT,MakeMyTrip Limited,India,85.08,0.296,0.576,0.876,0.4374,0.0,0.486,0.516,0.7,0.98,0.01,0.0,0.841,Consumer Cyclical,Travel Services
+ZM,Zoom Communications Inc.,United States,85.06,0.693,0.779,1.0,0.5763,-0.94,0.56,0.599,0.55,1.0,0.02,0.0,0.212,Technology,Software - Application
+BAM,Brookfield Asset Management Ltd.,United States,85.02,0.236,0.9,0.714,0.6584,0.0,0.592,0.576,0.0,0.85,0.02,0.42,0.809,Financial Services,Asset Management
+ROKU,"Roku, Inc.",United States,84.92,0.245,0.384,1.0,0.5591,-0.95,0.589,0.457,0.66,0.99,0.02,0.0,0.539,Communication Services,Entertainment
+DECK,Deckers Outdoor Corporation,United States,84.66,0.414,0.931,1.0,0.2686,-0.51,0.362,0.463,0.63,1.0,0.01,0.0,0.21,Consumer Cyclical,Footwear & Accessories
+KEYS,"Keysight Technologies, Inc.",United States,84.66,0.37,0.81,0.998,0.5615,-0.91,0.509,0.566,0.5,0.88,0.0,0.0,0.527,Technology,Scientific & Technical Instruments
+MLI,"Mueller Industries, Inc.",United States,84.59,0.76,0.577,1.0,0.5204,-0.92,0.592,0.58,0.7,1.0,0.01,0.73,0.788,Industrials,Metal Fabrication
+AMD,"Advanced Micro Devices, Inc.",United States,84.53,0.33,0.492,1.0,0.3169,-0.66,0.384,0.332,0.0,0.93,0.28,0.0,0.857,Technology,Semiconductors
+ABNB,"Airbnb, Inc.",United States,84.49,0.335,0.829,0.766,0.5299,-0.95,0.425,0.343,0.0,1.0,0.02,0.0,0.204,Consumer Cyclical,Travel Services
+TSM,Taiwan Semiconductor Manufacturing Company Limited,Taiwan,84.38,0.77,0.951,0.979,0.7244,0.0,0.525,0.378,0.0,0.82,0.05,0.5,0.857,Technology,Semiconductors
+FIZZ,National Beverage Corp.,United States,84.33,0.51,0.705,1.0,0.6111,-0.7,0.423,0.499,0.75,0.97,0.0,0.0,0.545,Consumer Defensive,Beverages - Non-Alcoholic
+WDAY,"Workday, Inc.",United States,84.23,0.408,0.582,0.918,0.5493,-0.95,0.474,0.586,0.11,0.96,0.01,0.0,0.621,Technology,Software - Application
+AU,AngloGold Ashanti plc,United States,84.21,0.575,0.757,0.97,0.8274,0.0,0.654,0.397,0.54,0.85,0.03,0.66,0.835,Basic Materials,Gold
+TWLO,Twilio Inc.,United States,84.13,0.458,0.47,1.0,0.5786,-0.93,0.728,0.488,0.6,0.96,0.01,0.0,0.365,Technology,Software - Infrastructure
+VRTX,Vertex Pharmaceuticals Incorporated,United States,84.04,0.258,0.632,1.0,0.5623,-0.88,0.441,0.503,0.0,0.99,0.01,0.0,0.192,Healthcare,Biotechnology
+TER,"Teradyne, Inc.",United States,84.03,0.398,0.912,1.0,0.1528,0.0,0.343,0.328,0.64,1.0,0.02,0.6,0.47,Technology,Semiconductor Equipment & Materials
+INFY,Infosys Limited,India,83.83,0.344,0.738,0.955,0.3572,0.0,0.444,0.6,0.0,1.0,0.06,0.68,0.483,Technology,Information Technology Services
+ADSK,"Autodesk, Inc.",United States,83.78,0.398,0.971,0.509,0.7065,-0.96,0.538,0.633,0.07,0.88,0.01,0.0,0.666,Technology,Software - Application
+BKNG,Booking Holdings Inc.,United States,83.62,0.324,0.96,0.633,0.7868,-0.95,0.594,0.529,0.0,0.87,0.0,0.32,0.448,Consumer Cyclical,Travel Services
+BMRN,BioMarin Pharmaceutical Inc.,United States,83.53,0.493,0.72,1.0,0.2172,-0.89,0.369,0.54,0.68,0.95,0.01,0.0,0.721,Healthcare,Biotechnology
+EXPO,"Exponent, Inc.",United States,83.47,0.328,0.81,1.0,0.229,-0.92,0.397,0.594,0.76,0.98,0.0,0.61,0.503,Industrials,Engineering & Construction
+V,Visa Inc.,United States,83.43,0.307,0.971,0.715,0.7552,-0.91,0.559,0.691,0.0,0.86,0.03,0.67,0.561,Financial Services,Credit Services
+GRAB,Grab Holdings Limited,Singapore,83.41,0.514,0.393,0.997,0.6436,0.0,0.577,0.47,0.58,1.0,0.19,0.0,0.57,Technology,Software - Application
+TAL,TAL Education Group,China,83.37,0.364,0.393,1.0,0.2567,0.0,0.446,0.401,0.73,1.0,0.02,0.0,0.881,Consumer Defensive,Education & Training Services
+GWRE,"Guidewire Software, Inc.",United States,83.36,0.378,0.543,0.994,0.7084,-0.96,0.648,0.542,0.59,0.91,0.0,0.0,0.451,Technology,Software - Application
+SAP,SAP SE,Germany,83.27,0.378,0.79,0.746,0.7878,0.0,0.606,0.668,0.0,0.91,0.01,0.53,0.613,Technology,Software - Application
+RGLD,"Royal Gold, Inc.",United States,83.21,0.345,0.546,1.0,0.6991,-0.78,0.542,0.661,0.68,1.0,0.0,0.7,0.485,Basic Materials,Gold
+YELP,Yelp Inc.,United States,83.05,0.616,0.781,1.0,0.5234,-0.94,0.44,0.55,0.78,1.0,0.0,0.0,0.23,Communication Services,Internet Content & Information
+PDD,PDD Holdings Inc.,Ireland,82.89,0.797,0.939,0.957,0.2737,0.0,0.392,0.458,0.0,0.99,0.03,0.0,0.27,Consumer Cyclical,Internet Retail
+AGI,Alamos Gold Inc.,Canada,82.89,0.342,0.714,0.807,0.7536,0.0,0.645,0.559,0.68,0.9,0.02,0.59,0.715,Basic Materials,Gold
+FHI,"Federated Hermes, Inc.",United States,82.81,0.686,0.971,1.0,0.7545,-0.92,0.58,0.573,0.76,0.86,0.0,0.76,0.506,Financial Services,Asset Management
+OLED,Universal Display Corporation,United States,82.77,0.423,0.815,1.0,0.2549,0.0,0.37,0.335,0.72,1.0,0.0,0.62,0.483,Technology,Electronic Components
+QCOM,QUALCOMM Incorporated,United States,82.75,0.561,0.938,0.991,0.3378,-0.91,0.386,0.384,0.0,0.87,0.04,0.72,0.676,Technology,Semiconductors
+APP,AppLovin Corporation,United States,82.27,0.273,0.971,0.177,0.4435,-0.95,0.728,0.376,0.0,0.81,0.03,0.0,0.881,Communication Services,Advertising Agencies
+SNA,Snap-on Incorporated,United States,82.26,0.33,0.828,1.0,0.5065,-0.91,0.526,0.62,0.62,0.89,0.0,0.82,0.503,Industrials,Tools & Accessories
+DOCU,"DocuSign, Inc.",United States,82.23,0.622,0.856,0.674,0.3868,-0.95,0.589,0.509,0.63,1.0,0.01,0.0,0.219,Technology,Software - Application
+INMD,InMode Ltd.,Israel,82.15,0.818,0.964,1.0,0.2869,0.0,0.415,0.44,0.79,1.0,0.01,0.0,0.192,Healthcare,Medical Devices
+CBOE,"Cboe Global Markets, Inc.",United States,82.01,0.627,0.799,0.829,0.7535,-0.91,0.575,0.649,0.54,0.86,0.0,0.61,0.842,Financial Services,Financial Data & Stock Exchanges
+TROW,"T. Rowe Price Group, Inc.",United States,82.0,0.577,0.778,1.0,0.3444,-0.9,0.414,0.47,0.57,1.0,0.01,0.93,0.463,Financial Services,Asset Management
+LULU,lululemon athletica inc.,Canada,81.89,0.38,0.874,0.958,0.3038,0.0,0.399,0.405,0.49,0.87,0.02,0.0,0.606,Consumer Cyclical,Apparel Retail
+PODD,Insulet Corporation,United States,81.87,0.316,0.715,0.729,0.7237,-0.94,0.608,0.596,0.57,0.86,0.0,0.0,0.634,Healthcare,Medical Devices
+ANSS,"ANSYS, Inc.",United States,81.79,0.378,0.67,1.0,0.6955,0.0,0.488,0.524,0.46,0.96,0.0,0.0,0.227,Technology,Software - Application
+TME,Tencent Music Entertainment Group,China,81.77,0.661,0.685,0.873,0.8511,0.0,0.571,0.29,0.47,0.91,0.03,0.29,0.612,Communication Services,Internet Content & Information
+AMAT,"Applied Materials, Inc.",United States,81.7,0.395,0.847,0.993,0.3585,-0.77,0.39,0.349,0.0,0.89,0.04,0.7,0.516,Technology,Semiconductor Equipment & Materials
+MANH,"Manhattan Associates, Inc.",United States,81.68,0.378,0.898,0.738,0.196,0.0,0.401,0.477,0.67,1.0,0.0,0.0,0.354,Technology,Software - Application
+UI,Ubiquiti Inc.,United States,81.64,0.313,0.833,0.509,0.7468,0.0,0.728,0.433,0.53,0.84,0.0,0.61,0.857,Technology,Communication Equipment
+OKTA,"Okta, Inc.",United States,81.59,0.44,0.549,0.803,0.5037,-0.94,0.453,0.329,0.62,0.98,0.01,0.0,0.602,Technology,Software - Infrastructure
+NICE,NICE Ltd.,Israel,81.41,0.705,0.797,0.828,0.5262,0.0,0.447,0.499,0.69,0.98,0.0,0.0,0.505,Technology,Software - Application
+NEM,Newmont Corporation,United States,81.4,0.737,0.79,0.894,0.823,-0.89,0.566,0.343,0.08,0.83,0.05,0.77,0.775,Basic Materials,Gold
+MELI,"MercadoLibre, Inc.",Uruguay,81.4,0.311,0.691,0.42,0.7683,0.0,0.601,0.511,0.0,0.89,0.0,0.0,0.881,Consumer Cyclical,Internet Retail
+FAST,Fastenal Company,United States,81.11,0.293,0.738,0.902,0.7489,-0.93,0.562,0.501,0.28,0.85,0.03,0.61,0.503,Industrials,Industrial Distribution
+GEV,GE Vernova Inc.,United States,80.98,0.324,0.365,0.722,0.8455,-0.93,0.728,0.381,0.0,1.0,0.02,0.32,0.208,Industrials,Specialty Industrial Machinery
+BLK,"BlackRock, Inc.",United States,80.97,0.282,0.723,0.864,0.6709,-0.84,0.565,0.476,0.0,0.84,0.0,0.7,0.612,Financial Services,Asset Management
+CSGP,"CoStar Group, Inc.",United States,80.59,0.322,0.329,1.0,0.7067,-0.79,0.493,0.541,0.43,0.99,0.01,0.0,0.394,Real Estate,Real Estate Services
+ALGN,"Align Technology, Inc.",United States,80.51,0.387,0.702,0.754,0.2992,0.0,0.391,0.472,0.65,1.0,0.0,0.0,0.533,Healthcare,Medical Instruments & Supplies
+PSTG,"Pure Storage, Inc.",United States,80.4,0.332,0.555,0.83,0.3727,-0.96,0.414,0.273,0.6,1.0,0.01,0.0,0.374,Technology,Computer Hardware
+LSCC,Lattice Semiconductor Corporation,United States,80.16,0.33,0.573,1.0,0.2874,-0.88,0.404,0.307,0.73,1.0,0.01,0.0,0.188,Technology,Semiconductors
+SSRM,SSR Mining Inc.,United States,80.15,0.51,0.305,1.0,0.8449,0.0,0.728,0.556,0.77,0.86,0.01,0.0,0.835,Basic Materials,Gold
+ADBE,Adobe Inc.,United States,80.05,0.519,0.971,0.688,0.2454,-0.87,0.359,0.506,0.0,0.88,0.02,0.0,0.586,Technology,Software - Application
+EA,Electronic Arts Inc.,United States,80.0,0.383,0.838,0.704,0.6806,-0.93,0.485,0.552,0.38,0.89,0.01,0.6,0.567,Communication Services,Electronic Gaming & Multimedia
+NBIX,"Neurocrine Biosciences, Inc.",United States,80.0,0.248,0.537,1.0,0.4901,-0.93,0.425,0.326,0.66,0.95,0.0,0.0,0.283,Healthcare,Drug Manufacturers - Specialty & Generic
+TS,Tenaris S.A.,Luxembourg,79.9,0.336,0.53,1.0,0.6226,0.0,0.529,0.59,0.58,1.0,0.01,0.99,0.404,Energy,Oil & Gas Equipment & Services
+PAAS,Pan American Silver Corp.,Canada,79.85,0.547,0.557,1.0,0.787,0.96,0.566,0.447,0.69,0.89,0.02,0.54,0.821,Basic Materials,Gold
+AMZN,"Amazon.com, Inc.",United States,79.83,0.316,0.635,0.717,0.6264,-0.94,0.492,0.457,0.0,0.85,0.24,0.0,0.634,Consumer Cyclical,Internet Retail
+CSCO,"Cisco Systems, Inc.",United States,79.63,0.42,0.917,0.599,0.7572,-0.96,0.604,0.674,0.0,0.82,0.12,0.69,0.6,Technology,Communication Equipment
+LOGI,Logitech International S.A.,Switzerland,79.4,0.455,0.71,0.972,0.5404,0.0,0.446,0.353,0.65,1.0,0.0,0.67,0.188,Technology,Computer Hardware
+CRM,"Salesforce, Inc.",United States,79.37,0.457,0.751,0.727,0.2706,-0.94,0.469,0.57,0.0,0.92,0.04,0.31,0.531,Technology,Software - Application
+JOYY,JOYY Inc.,Singapore,79.31,0.436,0.55,1.0,0.7875,0.0,0.614,0.552,0.77,1.0,0.0,0.92,0.192,Communication Services,Internet Content & Information
+RACE,Ferrari N.V.,Italy,79.28,0.265,0.754,0.726,0.735,0.0,0.497,0.535,0.0,0.85,0.0,0.62,0.72,Consumer Cyclical,Auto Manufacturers
+SNPS,"Synopsys, Inc.",United States,78.95,0.342,0.829,0.806,0.5407,-0.93,0.417,0.391,0.0,0.87,0.01,0.0,0.255,Technology,Software - Infrastructure
+AVAV,"AeroVironment, Inc.",United States,78.58,0.33,0.248,1.0,0.6299,0.0,0.581,0.266,0.67,0.86,0.02,0.0,0.881,Industrials,Aerospace & Defense
+ADP,"Automatic Data Processing, Inc.",United States,78.43,0.407,0.87,0.635,0.7046,-0.78,0.553,0.72,0.0,0.86,0.01,0.65,0.496,Technology,Software - Application
+EOG,"EOG Resources, Inc.",United States,78.43,0.535,0.91,0.879,0.4696,0.0,0.44,0.605,0.1,0.91,0.02,0.89,0.404,Energy,Oil & Gas E&P
+GNTX,Gentex Corporation,United States,78.23,0.489,0.555,1.0,0.1916,-0.88,0.365,0.438,0.75,1.0,0.01,0.82,0.556,Consumer Cyclical,Auto Parts
+EXPD,"Expeditors International of Washington, Inc.",United States,78.22,0.332,0.361,0.872,0.552,-0.9,0.445,0.6,0.63,0.96,0.01,0.69,0.836,Industrials,Integrated Freight & Logistics
+ADI,"Analog Devices, Inc.",United States,78.2,0.34,0.676,0.719,0.7,-0.8,0.466,0.356,0.0,0.83,0.02,0.52,0.771,Technology,Semiconductors
+NTCT,"NetScout Systems, Inc.",United States,78.15,0.859,0.59,0.857,0.7321,-0.92,0.545,0.489,0.78,1.0,0.0,0.0,0.188,Technology,Software - Infrastructure
+CTSH,Cognizant Technology Solutions Corporation,United States,78.13,0.566,0.503,0.946,0.5869,-0.92,0.513,0.596,0.37,0.94,0.02,0.61,0.529,Technology,Information Technology Services
+FIX,"Comfort Systems USA, Inc.",United States,78.12,0.331,0.408,0.729,0.793,-0.94,0.675,0.476,0.6,0.87,0.0,0.63,0.811,Industrials,Engineering & Construction
+ACN,Accenture plc,Ireland,77.96,0.374,0.693,0.802,0.3357,-0.92,0.456,0.54,0.0,0.91,0.02,0.75,0.533,Technology,Information Technology Services
+APH,Amphenol Corporation,United States,77.92,0.359,0.647,0.567,0.8496,-0.93,0.591,0.506,0.0,0.82,0.05,0.67,0.857,Technology,Electronic Components
+TYL,"Tyler Technologies, Inc.",United States,77.82,0.378,0.57,0.703,0.581,-0.95,0.502,0.626,0.53,0.91,0.0,0.0,0.581,Technology,Software - Application
+HALO,"Halozyme Therapeutics, Inc.",United States,77.76,0.624,0.971,0.583,0.4351,-0.93,0.464,0.326,0.73,0.78,0.02,0.0,0.881,Healthcare,Biotechnology
+EPAM,"EPAM Systems, Inc.",United States,77.74,0.487,0.363,1.0,0.1819,-0.93,0.445,0.444,0.69,1.0,0.0,0.0,0.416,Technology,Information Technology Services
+ABT,Abbott Laboratories,United States,77.67,0.407,0.908,0.8,0.7476,-0.88,0.55,0.752,0.0,0.85,0.03,0.72,0.192,Healthcare,Medical Devices
+UPWK,Upwork Inc.,United States,77.66,0.638,0.971,0.959,0.4673,-0.96,0.517,0.443,0.78,0.81,0.01,0.0,0.192,Communication Services,Internet Content & Information
+VICR,Vicor Corporation,United States,77.58,0.429,0.358,1.0,0.2487,0.0,0.567,0.438,0.78,1.0,0.0,0.0,0.28,Technology,Electronic Components
+JNJ,Johnson & Johnson,United States,77.39,0.359,0.971,0.707,0.6285,0.0,0.475,0.624,0.0,0.82,0.04,0.74,0.533,Healthcare,Drug Manufacturers - General
+BSX,Boston Scientific Corporation,United States,77.35,0.316,0.703,0.459,0.7587,-0.94,0.566,0.662,0.0,0.8,0.04,0.0,0.811,Healthcare,Medical Devices
+REGN,"Regeneron Pharmaceuticals, Inc.",United States,77.34,0.578,0.744,1.0,0.1752,0.0,0.327,0.373,0.17,0.98,0.01,0.32,0.192,Healthcare,Biotechnology
+DXCM,"DexCom, Inc.",United States,77.31,0.316,0.827,0.596,0.418,-0.93,0.383,0.329,0.45,0.88,0.02,0.0,0.493,Healthcare,Medical Devices
+IDXX,"IDEXX Laboratories, Inc.",United States,77.22,0.303,0.971,0.338,0.8043,-0.92,0.494,0.41,0.33,0.82,0.0,0.0,0.533,Healthcare,Diagnostics & Research
+ELF,"e.l.f. Beauty, Inc.",United States,77.17,0.278,0.689,0.907,0.3312,-0.95,0.347,0.294,0.73,0.85,0.01,0.0,0.545,Consumer Defensive,Household & Personal Products
+CME,CME Group Inc.,United States,77.08,0.555,0.797,0.569,0.7878,-0.93,0.591,0.786,0.0,0.84,0.01,0.38,0.586,Financial Services,Financial Data & Stock Exchanges
+QGEN,Qiagen N.V.,Netherlands,77.06,0.473,0.686,1.0,0.7296,0.0,0.51,0.497,0.69,0.82,0.01,0.3,0.541,Healthcare,Diagnostics & Research
+MA,Mastercard Incorporated,United States,76.9,0.309,0.971,0.269,0.7435,-0.98,0.537,0.681,0.0,0.84,0.02,0.65,0.667,Financial Services,Credit Services
+MU,"Micron Technology, Inc.",United States,76.89,0.536,0.402,1.0,0.6553,-0.96,0.43,0.316,0.0,0.83,0.15,0.49,0.857,Technology,Semiconductors
+WSM,"Williams-Sonoma, Inc.",United States,76.8,0.402,0.747,0.767,0.3624,-0.93,0.512,0.383,0.58,0.87,0.01,0.76,0.556,Consumer Cyclical,Specialty Retail
+ODFL,"Old Dominion Freight Line, Inc.",United States,76.79,0.33,0.729,0.775,0.2218,0.0,0.427,0.424,0.43,0.93,0.01,0.62,0.503,Industrials,Trucking
+VRT,Vertiv Holdings Co,United States,76.76,0.34,0.628,0.532,0.4989,-0.97,0.567,0.389,0.28,0.84,0.03,0.56,0.878,Industrials,Electrical Equipment & Parts
+HWM,Howmet Aerospace Inc.,United States,76.71,0.331,0.666,0.555,0.8353,-0.95,0.728,0.627,0.02,0.81,0.03,0.57,0.541,Industrials,Aerospace & Defense
+GE,GE Aerospace,United States,76.58,0.333,0.591,0.541,0.8206,-0.91,0.61,0.592,0.0,0.85,0.04,0.46,0.649,Industrials,Aerospace & Defense
+CCJ,Cameco Corporation,Canada,76.5,0.5,0.476,0.822,0.8446,0.0,0.616,0.341,0.45,0.84,0.03,0.42,0.728,Energy,Uranium
+CTAS,Cintas Corporation,United States,76.41,0.329,0.893,0.49,0.7268,-0.72,0.524,0.474,0.0,0.81,0.01,0.57,0.589,Industrials,Specialty Business Services
+FICO,Fair Isaac Corporation,United States,76.31,0.376,0.96,0.389,0.4032,-0.94,0.523,0.553,0.31,0.8,0.0,0.0,0.662,Technology,Software - Application
+ACLS,"Axcelis Technologies, Inc.",United States,76.28,0.742,0.631,1.0,0.2159,-0.88,0.323,0.319,0.78,1.0,0.0,0.0,0.188,Technology,Semiconductor Equipment & Materials
+TMDX,"TransMedics Group, Inc.",United States,76.27,0.323,0.714,0.665,0.3917,-0.92,0.407,0.437,0.76,0.81,0.0,0.0,0.881,Healthcare,Medical Devices
+CGNX,Cognex Corporation,United States,76.16,0.354,0.641,1.0,0.1937,0.0,0.364,0.353,0.74,0.98,0.01,0.6,0.239,Technology,Scientific & Technical Instruments
+HEI,HEICO Corporation,United States,75.98,0.331,0.602,0.664,0.8164,-0.89,0.584,0.446,0.38,0.81,0.0,0.61,0.736,Industrials,Aerospace & Defense
+CIEN,Ciena Corporation,United States,75.92,0.334,0.261,0.976,0.5267,-0.93,0.647,0.481,0.68,0.8,0.01,0.0,0.788,Technology,Communication Equipment
+UBER,"Uber Technologies, Inc.",United States,75.82,0.508,0.619,0.675,0.807,-0.92,0.564,0.34,0.0,0.85,0.11,0.0,0.308,Technology,Software - Application
+AVGO,Broadcom Inc.,United States,75.78,0.469,0.881,0.154,0.8071,-0.95,0.623,0.358,0.0,0.83,0.11,0.49,0.685,Technology,Semiconductors
+AEIS,"Advanced Energy Industries, Inc.",United States,75.55,0.34,0.243,0.982,0.7532,-0.89,0.533,0.357,0.75,0.83,0.0,0.38,0.87,Industrials,Electrical Equipment & Parts
+TDG,TransDigm Group Incorporated,United States,75.52,0.33,0.957,0.5,0.7512,-0.95,0.516,0.499,0.0,0.7,0.0,0.0,0.675,Industrials,Aerospace & Defense
+GOLD,Barrick Mining Corporation,Canada,75.48,0.638,0.482,1.0,0.7649,0.0,0.529,0.382,0.45,0.84,0.1,0.36,0.622,Basic Materials,Gold
+TXN,Texas Instruments Incorporated,United States,75.46,0.319,0.742,0.75,0.6635,0.0,0.473,0.5,0.0,0.83,0.03,0.66,0.542,Technology,Semiconductors
+EDU,New Oriental Education & Technology Group Inc.,China,75.45,0.47,0.481,0.839,0.2138,0.0,0.356,0.402,0.71,0.98,0.01,0.0,0.545,Consumer Defensive,Education & Training Services
+BRK-B,Berkshire Hathaway Inc.,United States,75.4,0.454,0.422,1.0,0.6234,0.0,0.506,0.698,0.0,0.94,0.03,0.0,0.133,Financial Services,Insurance - Diversified
+AJG,Arthur J. Gallagher & Co.,United States,75.26,0.399,0.609,0.765,0.6714,-0.94,0.515,0.711,0.0,0.84,0.01,0.58,0.579,Financial Services,Insurance Brokers
+MTG,MGIC Investment Corporation,United States,75.25,0.466,0.823,0.753,0.7512,-0.92,0.543,0.575,0.73,0.82,0.01,0.74,0.463,Financial Services,Insurance - Specialty
+CAVA,"CAVA Group, Inc.",United States,75.23,0.345,0.394,0.977,0.1348,-0.97,0.422,0.458,0.7,0.88,0.03,0.0,0.649,Consumer Cyclical,Restaurants
+VRSN,"VeriSign, Inc.",United States,75.12,0.356,0.96,0.235,0.8193,-0.95,0.64,0.752,0.51,0.83,0.0,0.36,0.483,Technology,Software - Infrastructure
+EME,"EMCOR Group, Inc.",United States,75.06,0.515,0.396,0.745,0.7384,-0.93,0.609,0.361,0.54,0.88,0.0,0.62,0.69,Industrials,Engineering & Construction
+CTVA,"Corteva, Inc.",United States,74.98,0.315,0.553,0.719,0.8107,-0.91,0.599,0.67,0.24,0.84,0.02,0.49,0.47,Basic Materials,Agricultural Inputs
+WAT,Waters Corporation,United States,74.86,0.346,0.966,0.513,0.45,0.0,0.521,0.587,0.58,0.82,0.0,0.0,0.418,Healthcare,Diagnostics & Research
+CRS,Carpenter Technology Corporation,United States,74.84,0.352,0.473,0.715,0.8331,-0.93,0.728,0.539,0.65,0.82,0.01,0.48,0.531,Industrials,Metal Fabrication
+PLNT,"Planet Fitness, Inc.",United States,74.73,0.267,0.957,0.41,0.7394,-0.92,0.597,0.51,0.7,0.7,0.01,0.0,0.694,Consumer Cyclical,Leisure
+RL,Ralph Lauren Corporation,United States,74.58,0.243,0.798,0.685,0.7858,-0.92,0.634,0.462,0.61,0.8,0.0,0.68,0.238,Consumer Cyclical,Apparel Manufacturing
+WST,"West Pharmaceutical Services, Inc.",United States,74.42,0.328,0.511,1.0,0.1766,0.0,0.368,0.394,0.63,0.92,0.0,0.59,0.533,Healthcare,Medical Instruments & Supplies
+GILD,"Gilead Sciences, Inc.",United States,74.35,0.393,0.971,0.329,0.7627,-0.94,0.644,0.631,0.0,0.77,0.04,0.68,0.533,Healthcare,Drug Manufacturers - General
+QFIN,"Qifu Technology, Inc.",China,74.34,0.789,0.757,1.0,0.7051,0.0,0.728,0.553,0.74,0.73,0.01,0.85,0.64,Financial Services,Credit Services
+TSLA,"Tesla, Inc.",United States,74.28,0.265,0.043,0.904,0.358,-0.94,0.504,0.385,0.0,0.98,0.58,0.0,0.188,Consumer Cyclical,Auto Manufacturers
+COST,Costco Wholesale Corporation,United States,74.24,0.284,0.286,0.717,0.6844,-0.91,0.493,0.687,0.0,0.94,0.01,0.65,0.615,Consumer Defensive,Discount Stores
+PGR,The Progressive Corporation,United States,74.1,0.254,0.607,0.522,0.6078,-0.94,0.519,0.659,0.0,0.84,0.02,0.73,0.747,Financial Services,Insurance - Property & Casualty
+IPGP,IPG Photonics Corporation,United States,73.99,0.638,0.347,1.0,0.3849,-0.92,0.406,0.363,0.77,1.0,0.0,0.0,0.188,Technology,Semiconductor Equipment & Materials
+HQY,"HealthEquity, Inc.",United States,73.97,0.388,0.544,0.741,0.6266,-0.85,0.531,0.538,0.71,0.79,0.0,0.0,0.724,Healthcare,Health Information Services
+A,"Agilent Technologies, Inc.",United States,73.92,0.364,0.83,0.743,0.3108,-0.72,0.438,0.482,0.44,0.81,0.01,0.63,0.553,Healthcare,Diagnostics & Research
+PAYX,"Paychex, Inc.",United States,73.85,0.414,0.971,0.33,0.6639,-0.84,0.533,0.725,0.23,0.82,0.02,0.65,0.578,Technology,Software - Application
+CF,"CF Industries Holdings, Inc.",United States,73.58,0.607,0.724,0.872,0.709,-0.93,0.568,0.462,0.64,0.76,0.02,0.77,0.609,Basic Materials,Agricultural Inputs
+LPX,Louisiana-Pacific Corporation,United States,73.41,0.662,0.581,1.0,0.3129,-0.89,0.488,0.572,0.73,0.86,0.0,0.53,0.503,Industrials,Building Products & Equipment
+BHP,BHP Group Limited,Australia,73.32,0.398,0.971,0.73,0.4035,0.0,0.409,0.54,0.0,0.79,0.02,0.77,0.47,Basic Materials,Other Industrial Metals & Mining
+ACGL,Arch Capital Group Ltd.,Bermuda,73.2,0.493,0.633,0.667,0.3883,-0.93,0.428,0.632,0.44,0.91,0.01,0.0,0.349,Financial Services,Insurance - Diversified
+EBAY,eBay Inc.,United States,73.18,0.509,0.971,0.43,0.7825,-0.95,0.587,0.658,0.42,0.76,0.03,0.56,0.556,Consumer Cyclical,Internet Retail
+ROL,"Rollins, Inc.",United States,73.14,0.356,0.874,0.352,0.7547,-0.92,0.493,0.715,0.51,0.82,0.01,0.57,0.661,Consumer Cyclical,Personal Services
+ATHM,Autohome Inc.,China,73.1,0.629,0.557,1.0,0.3441,0.0,0.444,0.511,0.77,1.0,0.0,1.0,0.192,Communication Services,Internet Content & Information
+KLIC,"Kulicke and Soffa Industries, Inc.",United States,73.0,0.633,0.525,1.0,0.171,0.0,0.376,0.363,0.78,1.0,0.0,0.44,0.188,Technology,Semiconductor Equipment & Materials
+TT,Trane Technologies plc,Ireland,72.92,0.322,0.69,0.375,0.7701,-0.94,0.548,0.504,0.0,0.82,0.01,0.64,0.656,Industrials,Building Products & Equipment
+MCO,Moody's Corporation,United States,72.91,0.404,0.971,0.268,0.6792,-0.92,0.504,0.635,0.0,0.82,0.0,0.62,0.524,Financial Services,Financial Data & Stock Exchanges
+ATGE,Adtalem Global Education Inc.,United States,72.9,0.624,0.819,0.431,0.6975,-0.8,0.673,0.56,0.75,0.74,0.0,0.0,0.719,Consumer Defensive,Education & Training Services
+CPNG,"Coupang, Inc.",United States,72.71,0.367,0.094,0.603,0.8054,-0.89,0.577,0.411,0.21,0.91,0.07,0.0,0.686,Consumer Cyclical,Internet Retail
+NVS,Novartis AG,Switzerland,72.62,0.376,0.971,0.295,0.749,0.0,0.495,0.488,0.0,0.79,0.01,0.73,0.679,Healthcare,Drug Manufacturers - General
+SNY,Sanofi,France,72.55,0.732,0.943,0.802,0.4552,0.0,0.443,0.496,0.0,0.78,0.01,0.76,0.533,Healthcare,Drug Manufacturers - General
+MRCY,"Mercury Systems, Inc.",United States,72.52,0.618,0.358,0.866,0.7989,-0.93,0.657,0.546,0.77,0.82,0.0,0.0,0.489,Industrials,Aerospace & Defense
+MMSI,"Merit Medical Systems, Inc.",United States,72.39,0.287,0.511,0.89,0.4587,-0.95,0.479,0.661,0.74,0.77,0.0,0.0,0.629,Healthcare,Medical Instruments & Supplies
+VRSK,"Verisk Analytics, Inc.",United States,72.33,0.315,0.971,0.197,0.7394,-0.95,0.494,0.692,0.34,0.81,0.01,0.41,0.553,Industrials,Consulting Services
+PYPL,"PayPal Holdings, Inc.",United States,72.15,0.443,0.6,0.718,0.414,-0.93,0.544,0.547,0.0,0.78,0.04,0.0,0.463,Financial Services,Credit Services
+HIG,"The Hartford Insurance Group, Inc.",United States,72.14,0.646,0.604,0.864,0.7236,-0.93,0.53,0.619,0.42,0.82,0.01,0.71,0.485,Financial Services,Insurance - Property & Casualty
+HOLX,"Hologic, Inc.",United States,72.12,0.592,0.772,0.984,0.2922,0.73,0.414,0.534,0.65,0.78,0.01,0.0,0.533,Healthcare,Medical Instruments & Supplies
+EXTR,"Extreme Networks, Inc.",United States,72.0,0.424,0.412,0.368,0.7114,-0.89,0.573,0.324,0.77,0.85,0.01,0.0,0.857,Technology,Communication Equipment
+FOXA,Fox Corporation,United States,71.95,0.688,0.579,0.925,0.7567,-0.79,0.628,0.681,0.55,0.68,0.02,0.45,0.879,Communication Services,Entertainment
+VNOM,"Viper Energy, Inc.",United States,71.78,0.652,0.623,1.0,0.242,0.0,0.434,0.546,0.69,0.86,0.01,1.0,0.644,Energy,Oil & Gas Midstream
+IT,"Gartner, Inc.",United States,71.75,0.301,0.954,0.398,0.306,-0.94,0.422,0.557,0.47,0.85,0.0,0.0,0.204,Technology,Information Technology Services
+NKE,"NIKE, Inc.",United States,71.72,0.289,0.579,0.834,0.4095,-0.81,0.469,0.528,0.0,0.85,0.17,0.62,0.188,Consumer Cyclical,Footwear & Accessories
+SYK,Stryker Corporation,United States,71.69,0.316,0.765,0.393,0.7009,-0.93,0.508,0.607,0.0,0.78,0.01,0.58,0.669,Healthcare,Medical Devices
+AYI,Acuity Inc.,United States,71.61,0.49,0.581,0.712,0.5149,0.0,0.543,0.53,0.7,0.79,0.0,0.52,0.848,Industrials,Electrical Equipment & Parts
+AAPL,Apple Inc.,United States,71.59,0.33,0.868,0.278,0.3766,-0.78,0.431,0.529,0.0,0.85,0.31,0.6,0.485,Technology,Consumer Electronics
+PG,The Procter & Gamble Company,United States,71.46,0.383,0.907,0.37,0.5556,-0.94,0.444,0.737,0.0,0.81,0.05,0.62,0.545,Consumer Defensive,Household & Personal Products
+CLS,Celestica Inc.,Canada,71.44,0.404,0.286,0.5,0.8266,0.0,0.728,0.311,0.61,0.82,0.02,0.0,0.738,Technology,Electronic Components
+FSLR,"First Solar, Inc.",United States,71.42,0.576,0.507,0.891,0.2283,-0.9,0.391,0.439,0.6,0.92,0.03,0.0,0.204,Technology,Solar
+BOOT,"Boot Barn Holdings, Inc.",United States,71.41,0.244,0.384,0.656,0.7061,-0.91,0.534,0.379,0.75,0.77,0.0,0.0,0.783,Consumer Cyclical,Apparel Retail
+GRBK,"Green Brick Partners, Inc.",United States,71.23,0.532,0.549,0.814,0.3471,0.0,0.503,0.543,0.77,0.8,0.0,0.0,0.686,Consumer Cyclical,Residential Construction
+CMG,"Chipotle Mexican Grill, Inc.",United States,71.21,0.345,0.698,0.32,0.4409,-0.96,0.434,0.459,0.0,0.83,0.07,0.0,0.587,Consumer Cyclical,Restaurants
+ZTS,Zoetis Inc.,United States,71.2,0.276,0.971,0.282,0.412,-0.82,0.423,0.492,0.05,0.81,0.02,0.68,0.533,Healthcare,Drug Manufacturers - Specialty & Generic
+FTI,TechnipFMC plc,United States,71.17,0.356,0.586,0.696,0.7682,0.0,0.556,0.478,0.64,0.81,0.02,0.46,0.479,Energy,Oil & Gas Equipment & Services
+WELL,Welltower Inc.,United States,71.11,0.351,0.497,0.58,0.7616,0.0,0.598,0.728,0.0,0.75,0.02,0.37,0.881,Real Estate,REIT - Healthcare Facilities
+GWW,"W.W. Grainger, Inc.",United States,71.01,0.342,0.619,0.674,0.5233,-0.87,0.494,0.663,0.27,0.82,0.0,0.64,0.503,Industrials,Industrial Distribution
+WWD,"Woodward, Inc.",United States,70.88,0.331,0.371,0.738,0.8278,-0.91,0.595,0.512,0.64,0.83,0.0,0.65,0.523,Industrials,Aerospace & Defense
+U,Unity Software Inc.,United States,70.57,0.462,0.543,0.939,0.7295,-0.96,0.66,0.423,0.68,0.72,0.07,0.0,0.188,Technology,Software - Application
+TRMB,Trimble Inc.,United States,70.56,0.624,0.897,0.394,0.706,-0.92,0.576,0.442,0.6,0.81,0.01,0.0,0.188,Technology,Scientific & Technical Instruments
+JKHY,"Jack Henry & Associates, Inc.",United States,70.26,0.267,0.696,0.471,0.6799,-0.92,0.485,0.647,0.66,0.82,0.0,0.63,0.549,Technology,Information Technology Services
+ECL,Ecolab Inc.,United States,70.2,0.264,0.703,0.299,0.7228,-0.86,0.491,0.637,0.0,0.8,0.01,0.6,0.68,Basic Materials,Specialty Chemicals
+JNPR,"Juniper Networks, Inc.",United States,70.12,0.456,0.573,0.808,0.6469,0.0,0.48,0.577,0.66,0.8,0.03,0.57,0.6,Technology,Communication Equipment
+ITRI,"Itron, Inc.",United States,70.12,0.488,0.472,0.779,0.7953,-0.95,0.565,0.41,0.74,0.76,0.0,0.0,0.483,Technology,Scientific & Technical Instruments
+ETN,Eaton Corporation plc,Ireland,70.1,0.311,0.637,0.435,0.6762,-0.93,0.493,0.503,0.0,0.81,0.01,0.62,0.561,Industrials,Specialty Industrial Machinery
+WING,Wingstop Inc.,United States,70.09,0.335,0.79,0.554,0.4337,-0.93,0.397,0.463,0.7,0.77,0.0,0.43,0.658,Consumer Cyclical,Restaurants
+PH,Parker-Hannifin Corporation,United States,70.04,0.426,0.791,0.354,0.6948,-0.89,0.573,0.466,0.0,0.78,0.0,0.7,0.503,Industrials,Specialty Industrial Machinery
+SFM,"Sprouts Farmers Market, Inc.",United States,70.02,0.327,0.548,0.105,0.7259,-0.94,0.71,0.484,0.63,0.78,0.02,0.0,0.818,Consumer Defensive,Grocery Stores
+TRI,Thomson Reuters Corporation,Canada,69.92,0.329,0.681,0.591,0.787,0.0,0.516,0.718,0.0,0.84,0.0,0.62,0.249,Industrials,Specialty Business Services
+PTC,PTC Inc.,United States,69.83,0.412,0.805,0.379,0.5009,-0.77,0.435,0.499,0.58,0.81,0.0,0.0,0.492,Technology,Software - Application
+ULTA,"Ulta Beauty, Inc.",United States,69.78,0.446,0.639,0.463,0.7881,0.0,0.517,0.413,0.57,0.8,0.0,0.0,0.556,Consumer Cyclical,Specialty Retail
+MRVL,"Marvell Technology, Inc.",United States,69.67,0.335,0.536,0.473,0.1159,-0.92,0.441,0.414,0.14,0.81,0.13,0.48,0.857,Technology,Semiconductors
+AZTA,"Azenta, Inc.",United States,69.66,0.51,0.261,1.0,0.1,0.0,0.346,0.476,0.79,1.0,0.01,0.0,0.197,Healthcare,Medical Instruments & Supplies
+FSS,Federal Signal Corporation,United States,69.64,0.5,0.518,0.674,0.7477,0.0,0.552,0.449,0.73,0.82,0.0,0.6,0.609,Industrials,Pollution & Treatment Controls
+NVT,nVent Electric plc,United Kingdom,69.59,0.406,0.511,0.994,0.6256,-0.89,0.446,0.366,0.67,0.8,0.01,0.36,0.207,Industrials,Electrical Equipment & Parts
+SPGI,S&P Global Inc.,United States,69.41,0.506,0.765,0.362,0.6858,-0.85,0.505,0.577,0.0,0.81,0.01,0.67,0.536,Financial Services,Financial Data & Stock Exchanges
+NTAP,"NetApp, Inc.",United States,69.36,0.534,0.971,0.43,0.3349,-0.93,0.4,0.517,0.57,0.82,0.01,0.74,0.483,Technology,Computer Hardware
+FDS,FactSet Research Systems Inc.,United States,69.35,0.575,0.92,0.441,0.5678,-0.8,0.477,0.666,0.62,0.8,0.0,0.6,0.483,Financial Services,Financial Data & Stock Exchanges
+PNR,Pentair plc,United Kingdom,69.25,0.466,0.718,0.538,0.6837,-0.76,0.575,0.585,0.62,0.77,0.01,0.55,0.503,Industrials,Specialty Industrial Machinery
+TPR,"Tapestry, Inc.",United States,69.18,0.466,0.815,0.271,0.8042,-0.8,0.728,0.401,0.59,0.71,0.02,0.56,0.598,Consumer Cyclical,Luxury Goods
+ATI,ATI Inc.,United States,69.13,0.368,0.386,0.59,0.8495,-0.95,0.606,0.323,0.67,0.75,0.01,0.0,0.621,Industrials,Metal Fabrication
+EQT,EQT Corporation,United States,69.08,0.286,0.686,0.333,0.7463,-0.87,0.616,0.593,0.44,0.71,0.04,0.51,0.796,Energy,Oil & Gas E&P
+FCX,Freeport-McMoRan Inc.,United States,69.07,0.5,0.499,0.867,0.5469,-0.91,0.42,0.453,0.1,0.79,0.07,0.54,0.47,Basic Materials,Copper
+LLY,Eli Lilly and Company,United States,68.99,0.239,0.757,0.118,0.4217,-0.92,0.408,0.56,0.0,0.81,0.01,0.63,0.881,Healthcare,Drug Manufacturers - General
+SMCI,"Super Micro Computer, Inc.",United States,68.96,0.464,0.211,1.0,0.4224,-0.94,0.33,0.268,0.5,0.86,0.26,0.0,0.405,Technology,Computer Hardware
+URBN,"Urban Outfitters, Inc.",United States,68.89,0.464,0.382,0.654,0.8044,-0.95,0.635,0.405,0.73,0.73,0.01,0.0,0.677,Consumer Cyclical,Apparel Retail
+TEL,TE Connectivity plc,Ireland,68.85,0.47,0.457,0.701,0.764,-0.94,0.496,0.45,0.25,0.81,0.01,0.57,0.483,Technology,Electronic Components
+SWKS,"Skyworks Solutions, Inc.",United States,68.8,0.624,0.477,1.0,0.2109,0.0,0.374,0.336,0.68,0.88,0.01,0.78,0.483,Technology,Semiconductors
+NDAQ,"Nasdaq, Inc.",United States,68.76,0.543,0.767,0.262,0.7557,-0.94,0.604,0.617,0.24,0.73,0.02,0.67,0.843,Financial Services,Financial Data & Stock Exchanges
+KFY,Korn Ferry,United States,68.59,0.636,0.382,0.873,0.6242,-0.81,0.487,0.621,0.76,0.87,0.0,0.78,0.503,Industrials,Staffing & Employment Services
+PHM,"PulteGroup, Inc.",United States,68.52,0.547,0.494,0.975,0.2562,0.0,0.463,0.552,0.57,0.83,0.01,0.63,0.457,Consumer Cyclical,Residential Construction
+SPXC,"SPX Technologies, Inc.",United States,68.45,0.326,0.576,0.521,0.6899,-0.91,0.511,0.523,0.72,0.77,0.0,0.0,0.503,Industrials,Building Products & Equipment
+QRVO,"Qorvo, Inc.",United States,68.42,0.604,0.547,1.0,0.3244,-0.91,0.375,0.32,0.71,0.75,0.01,0.0,0.483,Technology,Semiconductors
+CHWY,"Chewy, Inc.",United States,68.32,0.376,0.376,0.368,0.6359,-0.94,0.644,0.535,0.62,0.9,0.06,0.0,0.238,Consumer Cyclical,Internet Retail
+IR,Ingersoll Rand Inc.,United States,68.29,0.422,0.583,0.781,0.4033,-0.85,0.437,0.518,0.42,0.78,0.01,0.56,0.503,Industrials,Specialty Industrial Machinery
+MSI,"Motorola Solutions, Inc.",United States,68.2,0.334,0.905,0.152,0.4508,-0.9,0.483,0.677,0.03,0.81,0.0,0.65,0.498,Technology,Communication Equipment
+BRO,"Brown & Brown, Inc.",United States,68.19,0.416,0.762,0.401,0.5601,0.0,0.513,0.65,0.42,0.79,0.03,0.6,0.621,Financial Services,Insurance Brokers
+ZBRA,Zebra Technologies Corporation,United States,68.15,0.444,0.705,0.581,0.2522,0.0,0.457,0.509,0.63,0.77,0.0,0.0,0.599,Technology,Communication Equipment
+VIAV,Viavi Solutions Inc.,United States,68.14,0.469,0.539,0.695,0.3861,-0.8,0.581,0.544,0.78,0.71,0.01,0.0,0.689,Technology,Communication Equipment
+LIN,Linde plc,United Kingdom,68.13,0.269,0.67,0.387,0.6936,-0.81,0.478,0.599,0.0,0.8,0.01,0.63,0.47,Basic Materials,Specialty Chemicals
+GFS,GLOBALFOUNDRIES Inc.,United States,68.09,0.635,0.306,1.0,0.2563,0.0,0.377,0.345,0.57,0.93,0.01,0.0,0.188,Technology,Semiconductors
+PM,Philip Morris International Inc.,United States,67.94,0.343,0.96,0.011,0.7685,0.0,0.669,0.727,0.0,0.74,0.03,0.6,0.564,Consumer Defensive,Tobacco
+ORI,Old Republic International Corporation,United States,67.79,0.694,0.742,0.667,0.7001,-0.82,0.533,0.677,0.7,0.78,0.01,0.85,0.463,Financial Services,Insurance - Property & Casualty
+MMM,3M Company,United States,67.78,0.448,0.612,0.43,0.7278,-0.92,0.605,0.591,0.0,0.76,0.02,0.54,0.503,Industrials,Conglomerates
+KO,The Coca-Cola Company,United States,67.74,0.37,0.876,0.16,0.7369,-0.9,0.494,0.586,0.0,0.76,0.08,0.59,0.545,Consumer Defensive,Beverages - Non-Alcoholic
+GDDY,GoDaddy Inc.,United States,67.73,0.381,0.971,0.042,0.5157,-0.95,0.53,0.56,0.53,0.75,0.01,0.0,0.533,Technology,Software - Infrastructure
+MTD,Mettler-Toledo International Inc.,United States,67.72,0.377,0.96,0.075,0.3478,-0.91,0.423,0.421,0.53,0.79,0.0,0.0,0.533,Healthcare,Diagnostics & Research
+BROS,Dutch Bros Inc.,United States,67.49,0.345,0.164,0.419,0.5482,-0.94,0.619,0.367,0.68,0.81,0.01,0.0,0.881,Consumer Cyclical,Restaurants
+MRK,"Merck & Co., Inc.",United States,67.46,0.58,0.971,0.471,0.1967,-0.8,0.356,0.431,0.0,0.77,0.1,0.91,0.533,Healthcare,Drug Manufacturers - General
+FLR,Fluor Corporation,United States,67.45,0.681,0.286,0.856,0.5096,-0.93,0.51,0.474,0.71,0.9,0.02,0.0,0.149,Industrials,Engineering & Construction
+HLIT,Harmonic Inc.,United States,67.45,0.773,0.629,0.917,0.1825,0.87,0.409,0.484,0.79,0.84,0.01,0.0,0.363,Technology,Communication Equipment
+ROST,"Ross Stores, Inc.",United States,67.36,0.312,0.499,0.686,0.4965,0.0,0.422,0.631,0.34,0.83,0.02,0.73,0.556,Consumer Cyclical,Apparel Retail
+MSCI,MSCI Inc.,United States,67.26,0.387,0.96,0.027,0.5963,-0.93,0.515,0.684,0.31,0.79,0.0,0.68,0.57,Financial Services,Financial Data & Stock Exchanges
+AME,"AMETEK, Inc.",United States,67.25,0.418,0.633,0.484,0.6255,0.0,0.488,0.51,0.35,0.82,0.01,0.67,0.503,Industrials,Specialty Industrial Machinery
+NXPI,NXP Semiconductors N.V.,Netherlands,67.17,0.421,0.878,0.491,0.3811,-0.91,0.401,0.355,0.19,0.74,0.01,0.69,0.483,Technology,Semiconductors
+VST,Vistra Corp.,United States,67.11,0.389,0.684,0.022,0.7898,-0.95,0.725,0.302,0.09,0.68,0.03,0.4,0.842,Utilities,Utilities - Independent Power Producers
+DOV,Dover Corporation,United States,66.95,0.549,0.595,0.929,0.5538,0.0,0.473,0.591,0.52,0.82,0.0,0.61,0.129,Industrials,Specialty Industrial Machinery
+ROK,"Rockwell Automation, Inc.",United States,66.83,0.319,0.747,0.179,0.7796,-0.95,0.54,0.509,0.39,0.78,0.0,0.56,0.503,Industrials,Specialty Industrial Machinery
+IEX,IDEX Corporation,United States,66.83,0.522,0.656,0.778,0.305,-0.87,0.43,0.559,0.66,0.77,0.0,0.66,0.503,Industrials,Specialty Industrial Machinery
+ORCL,Oracle Corporation,United States,66.8,0.342,0.757,0.001,0.7543,-0.96,0.631,0.35,0.0,0.75,0.09,0.64,0.599,Technology,Software - Infrastructure
+ORLY,"O'Reilly Automotive, Inc.",United States,66.71,0.178,0.689,0.0,0.7454,-0.93,0.565,0.793,0.0,0.77,0.02,0.0,0.556,Consumer Cyclical,Auto Parts
+ICE,"Intercontinental Exchange, Inc.",United States,66.67,0.444,0.752,0.302,0.7635,-0.95,0.546,0.687,0.0,0.75,0.01,0.66,0.531,Financial Services,Financial Data & Stock Exchanges
+UFPI,"UFP Industries, Inc.",United States,66.59,0.5,0.096,1.0,0.262,0.0,0.438,0.509,0.73,0.97,0.0,0.74,0.352,Basic Materials,Lumber & Wood Production
+ALGM,"Allegro MicroSystems, Inc.",United States,66.49,0.335,0.226,0.799,0.8146,-0.9,0.494,0.258,0.73,0.83,0.01,0.0,0.188,Technology,Semiconductors
+CL,Colgate-Palmolive Company,United States,66.41,0.382,0.96,0.025,0.5227,-0.89,0.441,0.54,0.0,0.78,0.03,0.58,0.545,Consumer Defensive,Household & Personal Products
+TTWO,"Take-Two Interactive Software, Inc.",United States,66.38,0.362,0.529,0.159,0.8098,-0.96,0.63,0.721,0.32,0.81,0.01,0.0,0.44,Communication Services,Electronic Gaming & Multimedia
+G,Genpact Limited,Bermuda,66.22,0.591,0.606,0.807,0.4691,0.89,0.597,0.581,0.71,0.74,0.01,0.51,0.527,Technology,Information Technology Services
+AZN,AstraZeneca PLC,United Kingdom,66.2,0.426,0.893,0.286,0.4504,0.0,0.426,0.491,0.0,0.76,0.02,0.62,0.578,Healthcare,Drug Manufacturers - General
+RDN,Radian Group Inc.,United States,66.19,0.534,0.794,0.681,0.7037,-0.94,0.501,0.479,0.75,0.7,0.01,0.88,0.463,Financial Services,Insurance - Specialty
+ROP,"Roper Technologies, Inc.",United States,66.12,0.45,0.717,0.333,0.6944,-0.92,0.46,0.673,0.14,0.77,0.0,0.66,0.611,Technology,Software - Application
+ON,ON Semiconductor Corporation,United States,66.09,0.492,0.415,1.0,0.1927,-0.9,0.377,0.457,0.56,0.81,0.04,0.0,0.188,Technology,Semiconductors
+VICI,VICI Properties Inc.,United States,66.07,0.5,0.748,0.614,0.6978,0.0,0.51,0.583,0.43,0.71,0.03,0.73,0.566,Real Estate,REIT - Diversified
+DOX,Amdocs Limited,United States,66.04,0.681,0.605,0.606,0.724,0.0,0.508,0.632,0.69,0.83,0.0,0.78,0.483,Technology,Software - Infrastructure
+HLT,Hilton Worldwide Holdings Inc.,United States,65.99,0.397,0.96,0.0,0.7006,0.0,0.535,0.485,0.11,0.75,0.01,0.47,0.556,Consumer Cyclical,Lodging
+DCI,"Donaldson Company, Inc.",United States,65.92,0.611,0.592,0.632,0.5746,-0.8,0.453,0.607,0.71,0.81,0.0,0.67,0.503,Industrials,Specialty Industrial Machinery
+SHOO,"Steven Madden, Ltd.",United States,65.82,0.721,0.491,0.952,0.1601,0.5,0.341,0.477,0.78,0.86,0.01,0.65,0.556,Consumer Cyclical,Footwear & Accessories
+RIO,Rio Tinto Group,United Kingdom,65.77,0.544,0.561,0.834,0.4411,0.0,0.413,0.592,0.0,0.8,0.02,1.0,0.445,Basic Materials,Other Industrial Metals & Mining
+DHR,Danaher Corporation,United States,65.64,0.357,0.703,0.463,0.2283,-0.94,0.405,0.528,0.0,0.77,0.02,0.66,0.533,Healthcare,Diagnostics & Research
+RCL,Royal Caribbean Cruises Ltd.,United States,65.62,0.325,0.738,0.0,0.7998,-0.95,0.719,0.428,0.0,0.7,0.02,0.6,0.606,Consumer Cyclical,Travel Services
+ETSY,"Etsy, Inc.",United States,65.23,0.513,0.856,0.634,0.4912,-0.96,0.445,0.528,0.74,0.62,0.03,0.0,0.556,Consumer Cyclical,Internet Retail
+MCK,McKesson Corporation,United States,65.16,0.375,0.0,0.543,0.7952,-0.95,0.531,0.539,0.0,0.85,0.0,0.59,0.784,Healthcare,Medical Distribution
+COLM,Columbia Sportswear Company,United States,65.14,0.574,0.436,1.0,0.1659,-0.88,0.394,0.554,0.76,0.86,0.0,0.7,0.193,Consumer Cyclical,Apparel Manufacturing
+CEG,Constellation Energy Corporation,United States,65.04,0.476,0.542,0.481,0.7337,0.0,0.598,0.388,0.0,0.81,0.01,0.55,0.175,Utilities,Utilities - Renewable
+AFL,Aflac Incorporated,United States,65.01,0.353,0.564,0.787,0.5687,-0.92,0.505,0.598,0.2,0.76,0.02,0.77,0.133,Financial Services,Insurance - Life
+WAB,Westinghouse Air Brake Technologies Corporation,United States,64.96,0.338,0.461,0.453,0.7295,-0.94,0.565,0.484,0.41,0.77,0.01,0.65,0.503,Industrials,Railroads
+TCOM,Trip.com Group Limited,Singapore,64.88,0.752,0.724,0.802,0.4443,0.0,0.529,0.487,0.37,0.69,0.01,0.3,0.388,Consumer Cyclical,Travel Services
+BWXT,"BWX Technologies, Inc.",United States,64.8,0.331,0.407,0.378,0.7799,0.0,0.606,0.393,0.66,0.78,0.01,0.62,0.678,Industrials,Aerospace & Defense
+GME,GameStop Corp.,United States,64.8,0.357,0.15,1.0,0.3827,0.7,0.432,0.333,0.69,0.87,0.05,0.0,0.188,Consumer Cyclical,Specialty Retail
+MCD,McDonald's Corporation,United States,64.79,0.427,0.926,0.123,0.6406,-0.85,0.511,0.613,0.0,0.71,0.02,0.64,0.556,Consumer Cyclical,Restaurants
+HAS,"Hasbro, Inc.",United States,64.78,0.395,0.918,0.198,0.764,0.0,0.561,0.371,0.69,0.65,0.01,0.68,0.788,Consumer Cyclical,Leisure
+RHI,Robert Half Inc.,United States,64.77,0.557,0.315,0.838,0.2724,0.0,0.356,0.493,0.76,0.92,0.01,0.97,0.503,Industrials,Staffing & Employment Services
+MAR,"Marriott International, Inc.",United States,64.76,0.446,0.96,0.0,0.6045,-0.93,0.504,0.541,0.0,0.74,0.01,0.7,0.556,Consumer Cyclical,Lodging
+FCN,"FTI Consulting, Inc.",United States,64.64,0.659,0.35,0.79,0.2326,-0.93,0.39,0.568,0.74,0.83,0.0,0.0,0.503,Industrials,Consulting Services
+ABBV,AbbVie Inc.,United States,64.55,0.267,0.971,0.002,0.5518,0.0,0.494,0.541,0.0,0.73,0.04,0.75,0.602,Healthcare,Drug Manufacturers - General
+IBM,International Business Machines Corporation,United States,64.51,0.274,0.829,0.131,0.7937,0.0,0.642,0.661,0.0,0.69,0.02,0.53,0.483,Technology,Information Technology Services
+MDT,Medtronic plc,Ireland,64.39,0.468,0.663,0.618,0.6164,0.0,0.498,0.674,0.0,0.69,0.04,0.53,0.533,Healthcare,Medical Devices
+CINF,Cincinnati Financial Corporation,United States,64.39,0.301,0.218,0.731,0.6478,0.0,0.533,0.673,0.55,0.91,0.0,0.68,0.133,Financial Services,Insurance - Property & Casualty
+COP,ConocoPhillips,United States,64.19,0.6,0.755,0.546,0.3571,0.78,0.403,0.447,0.0,0.75,0.04,0.75,0.635,Energy,Oil & Gas E&P
+BIO,"Bio-Rad Laboratories, Inc.",United States,64.16,0.528,0.438,1.0,0.1753,0.0,0.424,0.512,0.73,0.79,0.0,0.0,0.192,Healthcare,Medical Devices
+STM,STMicroelectronics N.V.,Netherlands,64.1,0.673,0.159,1.0,0.4506,0.0,0.382,0.331,0.49,0.92,0.03,0.47,0.188,Technology,Semiconductors
+PSA,Public Storage,United States,64.05,0.365,0.898,0.175,0.4161,0.0,0.456,0.514,0.25,0.76,0.0,0.76,0.55,Real Estate,REIT - Industrial
+SHAK,Shake Shack Inc.,United States,64.04,0.345,0.165,0.388,0.7517,-0.96,0.636,0.294,0.74,0.77,0.01,0.0,0.672,Consumer Cyclical,Restaurants
+NWSA,News Corporation,United States,64.02,0.456,0.315,0.843,0.6965,0.0,0.478,0.64,0.61,0.77,0.02,0.52,0.536,Communication Services,Entertainment
+YUMC,"Yum China Holdings, Inc.",China,63.99,0.745,0.263,0.763,0.5322,0.0,0.621,0.545,0.61,0.82,0.01,0.71,0.556,Consumer Cyclical,Restaurants
+SKX,"Skechers U.S.A., Inc.",United States,63.92,0.63,0.464,0.864,0.4049,0.0,0.435,0.456,0.7,0.71,0.03,0.0,0.602,Consumer Cyclical,Footwear & Accessories
+CTRA,Coterra Energy Inc.,United States,63.9,0.524,0.737,0.362,0.4894,-0.92,0.435,0.529,0.6,0.73,0.04,0.9,0.796,Energy,Oil & Gas E&P
+XOM,Exxon Mobil Corporation,United States,63.89,0.339,0.348,0.651,0.5365,0.0,0.452,0.667,0.0,0.83,0.09,0.72,0.404,Energy,Oil & Gas Integrated
+IIPR,"Innovative Industrial Properties, Inc.",United States,63.84,0.712,0.714,0.875,0.2157,0.0,0.326,0.489,0.78,0.8,0.0,1.0,0.431,Real Estate,REIT - Industrial
+GSK,GSK plc,United Kingdom,63.71,0.351,0.971,0.142,0.5998,0.0,0.451,0.485,0.0,0.7,0.02,0.62,0.533,Healthcare,Drug Manufacturers - General
+WMS,"Advanced Drainage Systems, Inc.",United States,63.71,0.489,0.67,0.629,0.2437,-0.91,0.384,0.522,0.7,0.76,0.0,0.66,0.503,Industrials,Building Products & Equipment
+FANG,"Diamondback Energy, Inc.",United States,63.62,0.564,0.816,0.354,0.2346,-0.94,0.365,0.385,0.37,0.73,0.01,0.88,0.796,Energy,Oil & Gas E&P
+WB,Weibo Corporation,China,63.62,0.798,0.692,0.99,0.4369,0.0,0.514,0.465,0.78,0.67,0.0,1.0,0.536,Communication Services,Internet Content & Information
+NVO,Novo Nordisk A/S,Denmark,63.55,0.688,0.971,0.362,0.2251,0.0,0.321,0.353,0.0,0.7,0.04,0.73,0.793,Healthcare,Drug Manufacturers - General
+EMR,Emerson Electric Co.,United States,63.52,0.434,0.663,0.249,0.7015,-0.81,0.534,0.419,0.0,0.72,0.02,0.46,0.503,Industrials,Specialty Industrial Machinery
+RVTY,"Revvity, Inc.",United States,63.34,0.523,0.583,0.809,0.2887,-0.86,0.438,0.475,0.68,0.69,0.01,0.48,0.533,Healthcare,Diagnostics & Research
+AZO,"AutoZone, Inc.",United States,63.27,0.204,0.686,0.027,0.7699,-0.95,0.558,0.771,0.12,0.7,0.0,0.0,0.565,Consumer Cyclical,Auto Parts
+ENPH,"Enphase Energy, Inc.",United States,63.26,0.277,0.577,0.551,0.1618,0.89,0.308,0.433,0.74,0.77,0.05,0.0,0.669,Technology,Solar
+AIG,"American International Group, Inc.",United States,63.26,0.546,0.43,0.667,0.736,-0.95,0.488,0.657,0.28,0.83,0.02,0.66,0.133,Financial Services,Insurance - Diversified
+DBX,"Dropbox, Inc.",United States,63.16,0.677,0.96,0.269,0.5296,-0.95,0.526,0.612,0.72,0.66,0.02,0.0,0.483,Technology,Software - Infrastructure
+TJX,"The TJX Companies, Inc.",United States,63.13,0.23,0.455,0.209,0.6862,-0.93,0.49,0.765,0.0,0.81,0.03,0.69,0.558,Consumer Cyclical,Apparel Retail
+GOOS,Canada Goose Holdings Inc.,Canada,63.11,0.635,0.852,0.611,0.7338,0.0,0.452,0.348,0.79,0.59,0.01,0.0,0.608,Consumer Cyclical,Apparel Manufacturing
+HES,Hess Corporation,United States,63.01,0.318,0.759,0.307,0.5426,-0.8,0.448,0.442,0.32,0.74,0.01,0.69,0.404,Energy,Oil & Gas E&P
+STX,Seagate Technology Holdings plc,Singapore,63.01,0.369,0.376,0.184,0.8553,-0.96,0.586,0.326,0.46,0.74,0.02,0.65,0.857,Technology,Computer Hardware
+FI,"Fiserv, Inc.",United States,62.92,0.355,0.771,0.209,0.2205,-0.91,0.5,0.501,0.0,0.69,0.02,0.0,0.485,Technology,Information Technology Services
+NDSN,Nordson Corporation,United States,62.91,0.365,0.716,0.572,0.4243,0.0,0.444,0.585,0.67,0.72,0.0,0.7,0.503,Industrials,Specialty Industrial Machinery
+PKG,Packaging Corporation of America,United States,62.8,0.39,0.342,0.737,0.3635,0.0,0.492,0.481,0.61,0.76,0.0,0.67,0.626,Consumer Cyclical,Packaging & Containers
+JBL,Jabil Inc.,United States,62.73,0.654,0.305,0.272,0.8317,-0.96,0.719,0.459,0.54,0.77,0.01,0.47,0.674,Technology,Electronic Components
+MO,"Altria Group, Inc.",United States,62.71,0.592,0.96,0.035,0.7571,0.0,0.55,0.709,0.0,0.74,0.04,1.0,0.545,Consumer Defensive,Tobacco
+EQNR,Equinor ASA,Norway,62.71,0.632,0.577,0.767,0.6273,0.0,0.43,0.425,0.1,0.7,0.02,1.0,0.612,Energy,Oil & Gas Integrated
+YUM,"Yum! Brands, Inc.",United States,62.6,0.408,0.817,0.187,0.6858,-0.81,0.509,0.721,0.35,0.67,0.01,0.59,0.698,Consumer Cyclical,Restaurants
+EFX,Equifax Inc.,United States,62.56,0.315,0.696,0.196,0.5654,-0.93,0.484,0.439,0.45,0.74,0.0,0.53,0.503,Industrials,Consulting Services
+ITW,Illinois Tool Works Inc.,United States,62.55,0.504,0.845,0.161,0.5771,0.88,0.482,0.669,0.0,0.78,0.01,0.69,0.503,Industrials,Specialty Industrial Machinery
+UNM,Unum Group,United States,62.5,0.591,0.356,1.0,0.7616,-0.91,0.638,0.688,0.65,0.72,0.01,0.76,0.133,Financial Services,Insurance - Life
+ALRM,"Alarm.com Holdings, Inc.",United States,62.49,0.518,0.725,0.663,0.4214,-0.93,0.418,0.45,0.77,0.69,0.0,0.0,0.243,Technology,Software - Application
+TRV,"The Travelers Companies, Inc.",United States,62.48,0.55,0.42,0.667,0.7135,-0.95,0.537,0.645,0.17,0.8,0.01,0.71,0.136,Financial Services,Insurance - Property & Casualty
+PWR,"Quanta Services, Inc.",United States,62.47,0.325,0.146,0.394,0.7864,0.0,0.609,0.396,0.18,0.79,0.01,0.56,0.705,Industrials,Engineering & Construction
+RRC,Range Resources Corporation,United States,62.46,0.247,0.387,0.364,0.6762,-0.92,0.498,0.462,0.7,0.73,0.01,0.59,0.796,Energy,Oil & Gas E&P
+AFG,"American Financial Group, Inc.",United States,62.45,0.461,0.28,0.919,0.4805,0.0,0.468,0.669,0.69,0.79,0.0,0.75,0.463,Financial Services,Insurance - Property & Casualty
+AR,Antero Resources Corporation,United States,62.45,0.279,0.468,0.493,0.6248,-0.92,0.494,0.454,0.68,0.63,0.03,0.0,0.775,Energy,Oil & Gas E&P
+AMGN,Amgen Inc.,United States,62.43,0.394,0.971,0.083,0.5139,-0.91,0.437,0.61,0.0,0.68,0.02,0.74,0.622,Healthcare,Drug Manufacturers - General
+HON,Honeywell International Inc.,United States,62.43,0.349,0.726,0.204,0.7089,0.0,0.495,0.496,0.0,0.71,0.02,0.59,0.577,Industrials,Conglomerates
+BUD,Anheuser-Busch InBev SA/NV,Belgium,62.36,0.386,0.875,0.351,0.7506,0.0,0.502,0.431,0.0,0.61,0.01,0.55,0.545,Consumer Defensive,Beverages - Brewers
+BLD,TopBuild Corp.,United States,62.33,0.663,0.626,0.531,0.248,-0.89,0.422,0.513,0.7,0.74,0.0,0.0,0.503,Industrials,Engineering & Construction
+CWST,"Casella Waste Systems, Inc.",United States,62.15,0.376,0.157,0.518,0.718,-0.94,0.495,0.705,0.72,0.74,0.0,0.0,0.856,Industrials,Waste Management
+IVZ,Invesco Ltd.,United States,62.14,0.719,0.427,0.667,0.4432,0.0,0.491,0.527,0.72,0.83,0.02,0.78,0.463,Financial Services,Asset Management
+DLR,"Digital Realty Trust, Inc.",United States,62.11,0.395,0.605,0.408,0.5887,-0.77,0.491,0.561,0.17,0.69,0.01,0.58,0.6,Real Estate,REIT - Specialty
+DY,"Dycom Industries, Inc.",United States,62.06,0.439,0.243,0.532,0.8458,0.0,0.6,0.39,0.72,0.72,0.0,0.0,0.632,Industrials,Engineering & Construction
+AFRM,"Affirm Holdings, Inc.",United States,62.0,0.344,0.357,0.359,0.5975,-0.92,0.728,0.415,0.55,0.6,0.03,0.0,0.857,Technology,Software - Infrastructure
+WMT,Walmart Inc.,United States,61.99,0.329,0.294,0.253,0.7403,-0.96,0.584,0.66,0.0,0.79,0.09,0.55,0.545,Consumer Defensive,Discount Stores
+MHO,"M/I Homes, Inc.",United States,61.74,0.544,0.349,1.0,0.1887,0.0,0.436,0.504,0.77,0.69,0.0,0.0,0.556,Consumer Cyclical,Residential Construction
+COHR,Coherent Corp.,United States,61.49,0.499,0.283,0.717,0.3484,-0.9,0.501,0.441,0.65,0.66,0.02,0.0,0.792,Technology,Scientific & Technical Instruments
+LYFT,"Lyft, Inc.",United States,61.43,0.583,0.373,0.348,0.6547,-0.5,0.514,0.366,0.73,0.81,0.08,0.0,0.412,Technology,Software - Application
+BIIB,Biogen Inc.,United States,61.4,0.73,0.734,0.644,0.2011,-0.48,0.34,0.414,0.6,0.68,0.01,0.0,0.555,Healthcare,Drug Manufacturers - General
+JCI,Johnson Controls International plc,Ireland,61.39,0.359,0.45,0.321,0.8215,-0.9,0.625,0.611,0.05,0.72,0.02,0.49,0.384,Industrials,Building Products & Equipment
+O,Realty Income Corporation,United States,61.3,0.52,0.686,0.368,0.5811,0.0,0.48,0.564,0.24,0.71,0.03,0.91,0.676,Real Estate,REIT - Retail
+DIS,The Walt Disney Company,United States,61.13,0.388,0.408,0.333,0.7455,-0.79,0.536,0.43,0.0,0.71,0.05,0.43,0.577,Communication Services,Entertainment
+CSL,Carlisle Companies Incorporated,United States,61.05,0.588,0.766,0.542,0.4744,0.0,0.445,0.528,0.62,0.78,0.0,0.71,0.129,Industrials,Building Products & Equipment
+TDC,Teradata Corporation,United States,61.04,0.778,0.922,0.35,0.1807,-0.89,0.363,0.371,0.78,0.7,0.01,0.0,0.483,Technology,Software - Infrastructure
+STNG,Scorpio Tankers Inc.,Monaco,61.0,0.809,0.867,0.966,0.1958,0.0,0.336,0.368,0.78,0.71,0.01,0.81,0.153,Energy,Oil & Gas Midstream
+SPG,"Simon Property Group, Inc.",United States,60.95,0.432,0.971,0.0,0.5118,0.0,0.493,0.603,0.13,0.71,0.01,0.82,0.566,Real Estate,REIT - Retail
+HL,Hecla Mining Company,United States,60.94,0.5,0.336,0.462,0.4549,0.14,0.51,0.482,0.76,0.75,0.11,0.48,0.835,Basic Materials,Other Precious Metals & Mining
+VMC,Vulcan Materials Company,United States,60.93,0.398,0.392,0.591,0.6448,-0.95,0.486,0.547,0.42,0.74,0.01,0.68,0.428,Basic Materials,Building Materials
+NOK,Nokia Oyj,Finland,60.89,0.753,0.28,0.783,0.7424,0.0,0.553,0.58,0.5,0.81,0.09,0.47,0.188,Technology,Communication Equipment
+AMG,"Affiliated Managers Group, Inc.",United States,60.88,0.521,0.718,0.748,0.6961,0.0,0.546,0.425,0.74,0.64,0.0,0.35,0.133,Financial Services,Asset Management
+AON,Aon plc,Ireland,60.83,0.526,0.869,0.056,0.5194,0.0,0.512,0.647,0.0,0.69,0.01,0.68,0.707,Financial Services,Insurance Brokers
+GLW,Corning Incorporated,United States,60.78,0.365,0.3,0.447,0.7018,-0.92,0.521,0.514,0.32,0.72,0.02,0.56,0.679,Technology,Electronic Components
+BF-B,Brown-Forman Corporation,United States,60.77,0.644,0.824,0.601,0.2384,0.0,0.361,0.526,0.66,0.71,0.02,0.84,0.545,Consumer Defensive,Beverages - Wineries & Distilleries
+DHI,"D.R. Horton, Inc.",United States,60.71,0.481,0.309,0.802,0.2035,-0.87,0.443,0.544,0.37,0.74,0.02,0.72,0.556,Consumer Cyclical,Residential Construction
+TMUS,"T-Mobile US, Inc.",United States,60.51,0.264,0.807,0.078,0.5749,-0.96,0.555,0.636,0.0,0.64,0.02,0.65,0.569,Communication Services,Telecom Services
+LNG,"Cheniere Energy, Inc.",United States,60.49,0.449,0.834,0.083,0.7469,-0.91,0.565,0.66,0.23,0.64,0.01,0.63,0.62,Energy,Oil & Gas Midstream
+AMT,American Tower Corporation,United States,60.46,0.537,0.971,0.0,0.67,0.0,0.492,0.61,0.0,0.69,0.01,0.71,0.566,Real Estate,REIT - Specialty
+COO,"The Cooper Companies, Inc.",United States,60.43,0.426,0.491,0.59,0.181,0.0,0.412,0.415,0.64,0.71,0.02,0.0,0.559,Healthcare,Medical Instruments & Supplies
+BABA,Alibaba Group Holding Limited,Hong Kong,60.4,0.663,0.341,0.819,0.4383,0.0,0.59,0.414,0.0,0.66,0.07,0.54,0.531,Consumer Cyclical,Internet Retail
+AAON,"AAON, Inc.",United States,60.35,0.329,0.313,0.667,0.284,-0.94,0.411,0.468,0.74,0.81,0.01,0.65,0.332,Industrials,Building Products & Equipment
+RS,"Reliance, Inc.",United States,60.34,0.36,0.203,0.672,0.725,0.0,0.502,0.459,0.62,0.78,0.0,0.7,0.47,Basic Materials,Steel
+MNSO,MINISO Group Holding Limited,China,60.18,0.695,0.768,0.781,0.2412,0.0,0.465,0.393,0.74,0.57,0.0,0.83,0.814,Consumer Cyclical,Specialty Retail
+URI,"United Rentals, Inc.",United States,60.13,0.38,0.816,0.02,0.5496,-0.92,0.525,0.518,0.25,0.67,0.0,0.4,0.546,Industrials,Rental & Leasing Services
+BTI,British American Tobacco p.l.c.,United Kingdom,60.11,0.55,0.688,0.261,0.8077,0.0,0.616,0.626,0.0,0.68,0.03,0.98,0.545,Consumer Defensive,Tobacco
+UNP,Union Pacific Corporation,United States,59.94,0.466,0.938,0.0,0.5719,0.0,0.471,0.59,0.0,0.71,0.02,0.73,0.503,Industrials,Railroads
+GNRC,Generac Holdings Inc.,United States,59.94,0.731,0.466,0.542,0.2767,-0.9,0.468,0.477,0.71,0.73,0.01,0.0,0.526,Industrials,Specialty Industrial Machinery
+OHI,"Omega Healthcare Investors, Inc.",United States,59.68,0.643,0.756,0.22,0.5041,0.0,0.479,0.571,0.68,0.73,0.01,0.98,0.749,Real Estate,REIT - Healthcare Facilities
+LVS,Las Vegas Sands Corp.,United States,59.61,0.419,0.968,0.051,0.4702,0.0,0.506,0.482,0.43,0.65,0.03,0.53,0.556,Consumer Cyclical,Resorts & Casinos
+BEN,"Franklin Resources, Inc.",United States,59.58,0.556,0.205,1.0,0.7582,0.0,0.488,0.384,0.66,0.71,0.02,0.89,0.463,Financial Services,Asset Management
+CRK,"Comstock Resources, Inc.",United States,59.58,0.216,0.433,0.039,0.5055,0.0,0.728,0.52,0.73,0.66,0.02,0.0,0.796,Energy,Oil & Gas E&P
+GEN,Gen Digital Inc.,United States,59.56,0.523,0.971,0.0,0.7053,-0.91,0.524,0.619,0.6,0.66,0.02,0.52,0.483,Technology,Software - Infrastructure
+TMO,Thermo Fisher Scientific Inc.,United States,59.55,0.457,0.606,0.482,0.1763,-0.9,0.391,0.53,0.0,0.7,0.01,0.64,0.533,Healthcare,Diagnostics & Research
+MSM,"MSC Industrial Direct Co., Inc.",United States,59.53,0.618,0.42,0.556,0.6777,0.0,0.503,0.45,0.75,0.76,0.01,0.75,0.503,Industrials,Industrial Distribution
+ALL,The Allstate Corporation,United States,59.51,0.551,0.293,0.667,0.6533,-0.95,0.522,0.643,0.25,0.8,0.01,0.8,0.166,Financial Services,Insurance - Property & Casualty
+RSG,"Republic Services, Inc.",United States,59.45,0.542,0.683,0.113,0.741,-0.81,0.529,0.773,0.0,0.72,0.01,0.64,0.503,Industrials,Waste Management
+ZBH,"Zimmer Biomet Holdings, Inc.",United States,59.4,0.644,0.685,0.653,0.3905,-0.8,0.416,0.645,0.6,0.65,0.01,0.56,0.533,Healthcare,Medical Devices
+CROX,"Crocs, Inc.",United States,59.39,0.684,0.966,0.332,0.3034,-0.94,0.379,0.473,0.74,0.65,0.01,0.0,0.387,Consumer Cyclical,Footwear & Accessories
+MCHP,Microchip Technology Incorporated,United States,59.31,0.342,0.512,0.561,0.4088,-0.89,0.388,0.315,0.39,0.75,0.04,0.61,0.188,Technology,Semiconductors
+WMB,"The Williams Companies, Inc.",United States,59.29,0.262,0.688,0.0,0.71,-0.88,0.571,0.684,0.03,0.67,0.06,0.52,0.523,Energy,Oil & Gas Midstream
+TLN,Talen Energy Corporation,United States,59.28,0.465,0.578,0.166,0.8271,-0.97,0.728,0.426,0.66,0.69,0.01,0.0,0.119,Utilities,Utilities - Independent Power Producers
+FLEX,Flex Ltd.,United States,59.22,0.759,0.156,0.605,0.7937,-0.95,0.663,0.406,0.59,0.7,0.03,0.0,0.483,Technology,Electronic Components
+MFC,Manulife Financial Corporation,Canada,59.13,0.515,0.397,1.0,0.6802,0.94,0.496,0.681,0.23,0.72,0.01,0.8,0.133,Financial Services,Insurance - Life
+EQIX,"Equinix, Inc.",United States,59.04,0.417,0.62,0.16,0.434,-0.94,0.463,0.637,0.0,0.71,0.01,0.44,0.566,Real Estate,REIT - Specialty
+ESI,Element Solutions Inc,United States,59.0,0.537,0.566,0.735,0.3994,0.0,0.425,0.416,0.74,0.68,0.02,0.69,0.47,Basic Materials,Specialty Chemicals
+EXPE,"Expedia Group, Inc.",United States,58.99,0.597,0.799,0.333,0.5128,0.0,0.581,0.538,0.56,0.71,0.01,0.59,0.188,Consumer Cyclical,Travel Services
+ILMN,"Illumina, Inc.",United States,58.93,0.322,0.542,0.584,0.1303,0.92,0.425,0.498,0.64,0.76,0.01,0.0,0.192,Healthcare,Diagnostics & Research
+MMC,"Marsh & McLennan Companies, Inc.",United States,58.9,0.646,0.85,0.074,0.5618,-0.94,0.453,0.695,0.0,0.7,0.01,0.7,0.556,Financial Services,Insurance Brokers
+UL,Unilever PLC,United Kingdom,58.88,0.45,0.74,0.086,0.6946,0.0,0.485,0.523,0.0,0.7,0.01,0.64,0.545,Consumer Defensive,Household & Personal Products
+TECK,Teck Resources Limited,Canada,58.86,0.408,0.159,1.0,0.2927,0.85,0.404,0.455,0.58,0.67,0.02,0.49,0.835,Basic Materials,Other Industrial Metals & Mining
+NSC,Norfolk Southern Corporation,United States,58.84,0.47,0.813,0.099,0.6494,0.0,0.52,0.626,0.17,0.69,0.01,0.71,0.503,Industrials,Railroads
+CNM,"Core & Main, Inc.",United States,58.79,0.461,0.437,0.265,0.7798,-0.96,0.53,0.462,0.67,0.67,0.01,0.0,0.623,Industrials,Industrial Distribution
+KVUE,Kenvue Inc.,United States,58.76,0.374,0.64,0.227,0.5422,0.0,0.499,0.486,0.37,0.69,0.08,0.54,0.545,Consumer Defensive,Household & Personal Products
+SHW,The Sherwin-Williams Company,United States,58.65,0.272,0.697,0.003,0.5321,-0.88,0.502,0.676,0.0,0.72,0.01,0.69,0.47,Basic Materials,Specialty Chemicals
+VIPS,Vipshop Holdings Limited,China,58.65,0.811,0.342,0.767,0.526,0.0,0.497,0.371,0.72,0.72,0.01,0.57,0.556,Consumer Cyclical,Internet Retail
+LII,Lennox International Inc.,United States,58.61,0.366,0.63,0.13,0.4985,-0.9,0.482,0.614,0.57,0.81,0.0,0.69,0.215,Industrials,Building Products & Equipment
+BIDU,"Baidu, Inc.",China,58.57,0.776,0.594,0.96,0.4055,0.0,0.461,0.476,0.48,0.62,0.01,0.0,0.192,Communication Services,Internet Content & Information
+ANF,Abercrombie & Fitch Co.,United States,58.57,0.664,0.728,0.662,0.119,0.0,0.324,0.311,0.76,0.71,0.01,0.0,0.225,Consumer Cyclical,Apparel Retail
+CCL,Carnival Corporation & plc,United States,58.55,0.567,0.743,0.0,0.6896,-0.89,0.648,0.357,0.37,0.57,0.2,0.0,0.652,Consumer Cyclical,Travel Services
+HRB,"H&R Block, Inc.",United States,58.51,0.67,0.774,0.291,0.5037,-0.73,0.463,0.628,0.72,0.7,0.01,0.77,0.556,Consumer Cyclical,Personal Services
+LEVI,Levi Strauss & Co.,United States,58.51,0.399,0.631,0.375,0.5982,-0.86,0.464,0.533,0.72,0.66,0.01,0.63,0.556,Consumer Cyclical,Apparel Manufacturing
+GNW,"Genworth Financial, Inc.",United States,58.42,0.6,0.248,1.0,0.7006,0.0,0.55,0.442,0.77,0.6,0.03,0.0,0.463,Financial Services,Insurance - Life
+IBP,"Installed Building Products, Inc.",United States,58.4,0.296,0.561,0.456,0.2239,0.91,0.433,0.358,0.74,0.73,0.0,0.67,0.556,Consumer Cyclical,Residential Construction
+KIM,Kimco Realty Corporation,United States,58.29,0.556,0.686,0.446,0.4267,0.0,0.486,0.51,0.65,0.66,0.02,0.73,0.6,Real Estate,REIT - Retail
+L,Loews Corporation,United States,58.25,0.601,0.473,0.667,0.7292,-0.92,0.525,0.674,0.59,0.63,0.0,0.48,0.49,Financial Services,Insurance - Property & Casualty
+VNO,Vornado Realty Trust,United States,58.23,0.338,0.624,0.374,0.4524,-0.83,0.583,0.563,0.72,0.59,0.01,0.39,0.602,Real Estate,REIT - Office
+MAT,"Mattel, Inc.",United States,58.16,0.679,0.69,0.633,0.6013,0.0,0.526,0.478,0.73,0.63,0.02,0.0,0.188,Consumer Cyclical,Leisure
+FIVE,"Five Below, Inc.",United States,58.12,0.318,0.284,0.451,0.8481,-0.93,0.529,0.281,0.72,0.66,0.01,0.0,0.46,Consumer Cyclical,Specialty Retail
+AIZ,"Assurant, Inc.",United States,58.1,0.584,0.254,0.667,0.4851,-0.9,0.512,0.676,0.7,0.75,0.0,0.71,0.501,Financial Services,Insurance - Property & Casualty
+GD,General Dynamics Corporation,United States,58.08,0.604,0.257,0.44,0.6746,-0.97,0.47,0.665,0.0,0.74,0.01,0.76,0.716,Industrials,Aerospace & Defense
+PFE,Pfizer Inc.,United States,57.98,0.612,0.725,0.462,0.3751,0.0,0.426,0.477,0.0,0.66,0.19,1.0,0.533,Healthcare,Drug Manufacturers - General
+HAE,Haemonetics Corporation,United States,57.9,0.484,0.801,0.232,0.4236,0.0,0.419,0.443,0.76,0.65,0.0,0.0,0.533,Healthcare,Medical Devices
+GIL,Gildan Activewear Inc.,Canada,57.77,0.296,0.59,0.376,0.6289,0.93,0.552,0.611,0.72,0.67,0.0,0.68,0.556,Consumer Cyclical,Apparel Manufacturing
+LI,Li Auto Inc.,China,57.38,0.603,0.115,0.88,0.551,0.0,0.554,0.37,0.5,0.72,0.02,0.0,0.188,Consumer Cyclical,Auto Manufacturers
+CB,Chubb Limited,Switzerland,57.33,0.47,0.472,0.447,0.6546,-0.79,0.487,0.589,0.0,0.73,0.01,0.53,0.141,Financial Services,Insurance - Property & Casualty
+NVST,Envista Holdings Corporation,United States,57.22,0.753,0.498,0.923,0.5164,0.0,0.516,0.486,0.77,0.62,0.01,0.0,0.192,Healthcare,Medical Instruments & Supplies
+HSY,The Hershey Company,United States,57.19,0.483,0.713,0.28,0.5215,-0.95,0.44,0.613,0.42,0.74,0.01,0.73,0.174,Consumer Defensive,Confectioners
+CSX,CSX Corporation,United States,57.12,0.536,0.872,0.025,0.5512,0.0,0.451,0.587,0.13,0.69,0.06,0.71,0.503,Industrials,Railroads
+SU,Suncor Energy Inc.,Canada,57.08,0.623,0.787,0.482,0.5933,0.85,0.454,0.549,0.3,0.67,0.02,0.99,0.404,Energy,Oil & Gas Integrated
+BMY,Bristol-Myers Squibb Company,United States,57.07,0.57,0.971,0.16,0.2995,0.82,0.505,0.58,0.0,0.64,0.07,0.89,0.533,Healthcare,Drug Manufacturers - General
+OMCL,"Omnicell, Inc.",United States,57.01,0.602,0.331,0.787,0.2343,0.0,0.485,0.445,0.79,0.7,0.0,0.0,0.318,Healthcare,Health Information Services
+LU,Lufax Holding Ltd,China,56.99,0.849,0.543,0.983,0.3676,0.0,0.479,0.418,0.78,0.63,0.01,0.0,0.133,Financial Services,Credit Services
+EPR,EPR Properties,United States,56.98,0.766,0.689,0.166,0.7957,-0.92,0.581,0.621,0.75,0.68,0.0,0.81,0.575,Real Estate,REIT - Specialty
+PLD,"Prologis, Inc.",United States,56.94,0.41,0.698,0.311,0.4145,0.0,0.433,0.599,0.0,0.71,0.02,0.73,0.299,Real Estate,REIT - Industrial
+APA,APA Corporation,United States,56.9,0.733,0.971,0.243,0.1813,0.0,0.364,0.334,0.73,0.64,0.04,0.95,0.796,Energy,Oil & Gas E&P
+MTCH,"Match Group, Inc.",United States,56.86,0.551,0.96,0.249,0.4184,0.94,0.471,0.517,0.72,0.62,0.02,0.5,0.536,Communication Services,Internet Content & Information
+CMC,Commercial Metals Company,United States,56.72,0.552,0.099,1.0,0.4101,0.0,0.447,0.443,0.74,0.71,0.01,0.5,0.47,Basic Materials,Steel
+CVX,Chevron Corporation,United States,56.7,0.339,0.337,0.401,0.4878,0.0,0.441,0.562,0.0,0.77,0.04,0.78,0.404,Energy,Oil & Gas Integrated
+T,AT&T Inc.,United States,56.47,0.468,0.695,0.103,0.7874,-0.87,0.607,0.734,0.0,0.59,0.16,0.63,0.536,Communication Services,Telecom Services
+SKYW,"SkyWest, Inc.",United States,56.44,0.48,0.462,0.244,0.5821,-0.93,0.542,0.469,0.75,0.6,0.0,0.0,0.793,Industrials,Airlines
+CAT,Caterpillar Inc.,United States,56.36,0.386,0.657,0.109,0.6177,0.91,0.513,0.543,0.0,0.7,0.01,0.71,0.503,Industrials,Farm & Heavy Construction Machinery
+HD,"The Home Depot, Inc.",United States,56.32,0.43,0.536,0.065,0.4646,-0.87,0.48,0.666,0.0,0.71,0.02,0.7,0.65,Consumer Cyclical,Home Improvement Retail
+AVB,"AvalonBay Communities, Inc.",United States,56.26,0.475,0.741,0.263,0.4837,-0.94,0.454,0.663,0.49,0.71,0.01,0.64,0.182,Real Estate,REIT - Residential
+FOUR,"Shift4 Payments, Inc.",United States,56.26,0.403,0.459,0.305,0.4148,-0.95,0.579,0.489,0.7,0.65,0.01,0.0,0.412,Technology,Software - Infrastructure
+CHTR,"Charter Communications, Inc.",United States,56.23,0.481,0.767,0.0,0.7728,-0.88,0.578,0.479,0.2,0.56,0.01,0.0,0.536,Communication Services,Telecom Services
+WM,"Waste Management, Inc.",United States,56.13,0.574,0.591,0.016,0.704,-0.95,0.478,0.653,0.0,0.67,0.01,0.64,0.77,Industrials,Waste Management
+SSNC,"SS&C Technologies Holdings, Inc.",United States,56.11,0.654,0.692,0.226,0.672,-0.78,0.561,0.667,0.58,0.65,0.01,0.67,0.492,Technology,Software - Application
+AA,Alcoa Corporation,United States,56.02,0.5,0.316,0.736,0.173,0.0,0.374,0.374,0.72,0.65,0.03,0.59,0.831,Basic Materials,Aluminum
+ZD,"Ziff Davis, Inc.",United States,56.01,0.673,0.592,0.724,0.1584,0.0,0.347,0.449,0.79,0.62,0.0,0.0,0.536,Communication Services,Advertising Agencies
+THC,Tenet Healthcare Corporation,United States,56.01,0.531,0.624,0.253,0.7576,-0.95,0.559,0.35,0.63,0.56,0.01,0.0,0.533,Healthcare,Medical Care Facilities
+K,Kellanova,United States,55.96,0.279,0.561,0.01,0.6768,-0.94,0.582,0.691,0.5,0.67,0.02,0.59,0.545,Consumer Defensive,Packaged Foods
+DE,Deere & Company,United States,55.95,0.296,0.617,0.265,0.7625,0.0,0.587,0.656,0.0,0.59,0.01,0.73,0.503,Industrials,Farm & Heavy Construction Machinery
+TOL,"Toll Brothers, Inc.",United States,55.84,0.544,0.365,0.729,0.1881,0.0,0.47,0.52,0.68,0.67,0.01,0.59,0.556,Consumer Cyclical,Residential Construction
+MOMO,Hello Group Inc.,China,55.84,0.789,0.32,0.916,0.678,0.0,0.575,0.459,0.79,0.63,0.01,0.0,0.192,Communication Services,Internet Content & Information
+AKAM,"Akamai Technologies, Inc.",United States,55.83,0.537,0.648,0.346,0.2686,-0.92,0.411,0.541,0.68,0.64,0.01,0.0,0.483,Technology,Software - Infrastructure
+CNI,Canadian National Railway Company,Canada,55.67,0.702,0.882,0.172,0.4899,0.86,0.42,0.518,0.1,0.68,0.01,0.75,0.503,Industrials,Railroads
+ELV,"Elevance Health, Inc.",United States,55.39,0.541,0.217,0.728,0.2651,-0.92,0.36,0.51,0.0,0.67,0.01,0.78,0.721,Healthcare,Healthcare Plans
+KMB,Kimberly-Clark Corporation,United States,55.33,0.551,0.67,0.002,0.5699,-0.88,0.438,0.569,0.33,0.72,0.01,0.74,0.545,Consumer Defensive,Household & Personal Products
+BYD,Boyd Gaming Corporation,United States,55.28,0.627,0.853,0.009,0.7254,-0.93,0.6,0.5,0.73,0.59,0.01,0.64,0.556,Consumer Cyclical,Resorts & Casinos
+CBRE,"CBRE Group, Inc.",United States,55.28,0.382,0.105,0.214,0.6593,-0.92,0.634,0.63,0.34,0.67,0.01,0.0,0.721,Real Estate,Real Estate Services
+NSP,"Insperity, Inc.",United States,55.27,0.317,0.286,0.405,0.2668,-0.92,0.365,0.376,0.78,0.78,0.0,0.8,0.503,Industrials,Staffing & Employment Services
+VTR,"Ventas, Inc.",United States,55.17,0.374,0.492,0.137,0.6019,-0.93,0.521,0.674,0.49,0.63,0.02,0.5,0.754,Real Estate,REIT - Healthcare Facilities
+PFG,"Principal Financial Group, Inc.",United States,55.15,0.633,0.347,0.8,0.5153,0.0,0.461,0.546,0.61,0.74,0.01,0.78,0.133,Financial Services,Asset Management
+ENSG,"The Ensign Group, Inc.",United States,55.0,0.199,0.21,0.293,0.7203,-0.91,0.51,0.452,0.71,0.66,0.0,0.57,0.742,Healthcare,Medical Care Facilities
+DEO,Diageo plc,United Kingdom,54.98,0.356,0.826,0.162,0.3013,0.0,0.398,0.614,0.18,0.63,0.0,0.66,0.545,Consumer Defensive,Beverages - Wineries & Distilleries
+HRL,Hormel Foods Corporation,United States,54.97,0.374,0.085,0.731,0.6027,0.0,0.458,0.653,0.62,0.72,0.02,0.73,0.545,Consumer Defensive,Packaged Foods
+PTON,"Peloton Interactive, Inc.",United States,54.77,0.547,0.606,0.601,0.2713,-0.95,0.675,0.429,0.77,0.52,0.06,0.0,0.188,Consumer Cyclical,Leisure
+RPM,RPM International Inc.,United States,54.75,0.396,0.522,0.482,0.3588,0.0,0.468,0.589,0.65,0.72,0.0,0.69,0.194,Basic Materials,Specialty Chemicals
+CASY,"Casey's General Stores, Inc.",United States,54.71,0.337,0.208,0.251,0.8008,-0.97,0.586,0.684,0.59,0.72,0.0,0.6,0.487,Consumer Cyclical,Specialty Retail
+EEFT,"Euronet Worldwide, Inc.",United States,54.69,0.77,0.475,0.495,0.7107,0.0,0.466,0.542,0.75,0.64,0.0,0.0,0.516,Technology,Software - Infrastructure
+SHEL,Shell plc,United Kingdom,54.68,0.395,0.273,0.675,0.695,0.0,0.443,0.495,0.0,0.65,0.03,0.66,0.404,Energy,Oil & Gas Integrated
+HXL,Hexcel Corporation,United States,54.59,0.508,0.234,0.662,0.3715,0.0,0.421,0.378,0.75,0.72,0.01,0.62,0.503,Industrials,Aerospace & Defense
+EQR,Equity Residential,United States,54.54,0.525,0.729,0.266,0.5107,-0.75,0.449,0.642,0.52,0.7,0.01,0.76,0.182,Real Estate,REIT - Residential
+OXY,Occidental Petroleum Corporation,United States,54.48,0.564,0.734,0.303,0.2137,0.0,0.373,0.405,0.34,0.64,0.07,0.58,0.558,Energy,Oil & Gas E&P
+RTX,RTX Corporation,United States,54.46,0.394,0.166,0.323,0.7653,-0.82,0.593,0.68,0.0,0.68,0.03,0.49,0.508,Industrials,Aerospace & Defense
+PCAR,PACCAR Inc,United States,54.42,0.653,0.278,0.814,0.3852,0.77,0.441,0.506,0.25,0.67,0.01,0.54,0.503,Industrials,Farm & Heavy Construction Machinery
+COR,"Cencora, Inc.",United States,54.32,0.415,0.286,0.062,0.7953,-0.94,0.563,0.719,0.17,0.71,0.01,0.62,0.639,Healthcare,Medical Distribution
+DVN,Devon Energy Corporation,United States,54.3,0.696,0.638,0.359,0.2321,0.0,0.371,0.381,0.57,0.67,0.04,0.75,0.684,Energy,Oil & Gas E&P
+CMI,Cummins Inc.,United States,54.3,0.776,0.419,0.473,0.4805,0.9,0.521,0.543,0.31,0.72,0.0,0.72,0.503,Industrials,Specialty Industrial Machinery
+CCEP,Coca-Cola Europacific Partners PLC,United Kingdom,53.95,0.608,0.487,0.088,0.794,0.0,0.552,0.672,0.32,0.66,0.01,0.59,0.736,Consumer Defensive,Beverages - Non-Alcoholic
+CARR,Carrier Global Corporation,United States,53.65,0.427,0.367,0.314,0.6255,-0.8,0.511,0.577,0.11,0.71,0.02,0.32,0.129,Industrials,Building Products & Equipment
+MKC,"McCormick & Company, Incorporated",United States,53.61,0.215,0.432,0.236,0.5131,0.0,0.472,0.56,0.59,0.67,0.02,0.59,0.545,Consumer Defensive,Packaged Foods
+FLS,Flowserve Corporation,United States,53.57,0.641,0.311,0.616,0.3582,0.0,0.49,0.503,0.73,0.68,0.02,0.56,0.508,Industrials,Specialty Industrial Machinery
+KDP,Keurig Dr Pepper Inc.,United States,53.56,0.561,0.551,0.245,0.5869,-0.91,0.469,0.561,0.31,0.62,0.05,0.48,0.545,Consumer Defensive,Beverages - Non-Alcoholic
+LHX,"L3Harris Technologies, Inc.",United States,53.53,0.652,0.397,0.338,0.7427,-0.92,0.496,0.569,0.28,0.66,0.01,0.59,0.503,Industrials,Aerospace & Defense
+WYNN,"Wynn Resorts, Limited",United States,53.48,0.431,0.697,0.117,0.7035,-0.88,0.539,0.338,0.68,0.55,0.01,0.46,0.556,Consumer Cyclical,Resorts & Casinos
+MLM,"Martin Marietta Materials, Inc.",United States,53.31,0.602,0.282,0.572,0.6194,0.0,0.47,0.532,0.44,0.73,0.0,0.61,0.255,Basic Materials,Building Materials
+WMG,Warner Music Group Corp.,United States,53.26,0.31,0.757,0.0,0.358,0.0,0.444,0.541,0.64,0.65,0.01,0.56,0.536,Communication Services,Entertainment
+SLB,Schlumberger Limited,United States,53.18,0.412,0.425,0.461,0.2068,-0.87,0.385,0.414,0.29,0.67,0.08,0.69,0.404,Energy,Oil & Gas Equipment & Services
+SNDR,"Schneider National, Inc.",United States,53.17,0.552,0.0,0.639,0.2818,0.0,0.479,0.565,0.75,0.77,0.0,0.46,0.536,Industrials,Trucking
+HCA,"HCA Healthcare, Inc.",United States,53.12,0.351,0.58,0.127,0.6793,-0.92,0.516,0.608,0.0,0.57,0.01,0.48,0.547,Healthcare,Medical Care Facilities
+NRG,"NRG Energy, Inc.",United States,53.09,0.646,0.466,0.059,0.8436,-0.93,0.715,0.526,0.47,0.6,0.02,0.71,0.643,Utilities,Utilities - Independent Power Producers
+CHRW,"C.H. Robinson Worldwide, Inc.",United States,52.99,0.37,0.286,0.271,0.4528,-0.78,0.49,0.628,0.68,0.72,0.01,0.61,0.503,Industrials,Integrated Freight & Logistics
+KMI,"Kinder Morgan, Inc.",United States,52.95,0.36,0.433,0.153,0.6579,-0.76,0.583,0.654,0.12,0.62,0.07,0.6,0.497,Energy,Oil & Gas Midstream
+PRGS,Progress Software Corporation,United States,52.94,0.534,0.777,0.0,0.37,-0.83,0.439,0.53,0.78,0.59,0.01,0.69,0.857,Technology,Software - Infrastructure
+NI,NiSource Inc.,United States,52.85,0.364,0.453,0.045,0.7248,-0.91,0.573,0.794,0.6,0.6,0.02,0.68,0.842,Utilities,Utilities - Regulated Gas
+HST,"Host Hotels & Resorts, Inc.",United States,52.84,0.525,0.486,0.478,0.437,-0.8,0.426,0.528,0.68,0.6,0.05,0.77,0.644,Real Estate,REIT - Hotel & Motel
+NUE,Nucor Corporation,United States,52.79,0.447,0.021,0.937,0.3986,-0.95,0.424,0.424,0.46,0.69,0.01,0.62,0.239,Basic Materials,Steel
+CLX,The Clorox Company,United States,52.77,0.548,0.803,0.0,0.3204,0.74,0.436,0.621,0.64,0.7,0.01,0.71,0.545,Consumer Defensive,Household & Personal Products
+SQM,Sociedad Química y Minera de Chile S.A.,Chile,52.74,0.494,0.318,0.79,0.3273,0.0,0.415,0.39,0.69,0.65,0.01,1.0,0.47,Basic Materials,Specialty Chemicals
+UMC,United Microelectronics Corporation,Taiwan,52.7,0.868,0.305,1.0,0.5983,0.0,0.417,0.541,0.6,0.69,0.04,1.0,0.199,Technology,Semiconductors
+ENTG,"Entegris, Inc.",United States,52.69,0.34,0.439,0.473,0.1871,-0.84,0.343,0.323,0.67,0.65,0.02,0.6,0.483,Technology,Semiconductor Equipment & Materials
+DD,"DuPont de Nemours, Inc.",United States,52.62,0.526,0.464,0.517,0.3754,0.0,0.43,0.552,0.47,0.69,0.01,0.44,0.194,Basic Materials,Specialty Chemicals
+ZTO,ZTO Express (Cayman) Inc.,China,52.48,0.804,0.382,0.724,0.2246,0.0,0.422,0.526,0.65,0.67,0.01,0.79,0.529,Industrials,Integrated Freight & Logistics
+ZI,ZoomInfo Technologies Inc.,United States,52.43,0.599,0.669,0.216,0.3592,0.0,0.409,0.339,0.76,0.62,0.03,0.0,0.483,Technology,Software - Application
+MAS,Masco Corporation,United States,52.39,0.662,0.643,0.284,0.2827,0.0,0.452,0.586,0.65,0.67,0.01,0.74,0.503,Industrials,Building Products & Equipment
+STLD,"Steel Dynamics, Inc.",United States,52.32,0.488,0.121,0.769,0.5763,-0.91,0.477,0.479,0.59,0.69,0.01,0.76,0.222,Basic Materials,Steel
+SO,The Southern Company,United States,52.25,0.433,0.486,0.021,0.701,-0.8,0.509,0.608,0.0,0.62,0.03,0.67,0.671,Utilities,Utilities - Regulated Electric
+DGX,Quest Diagnostics Incorporated,United States,52.2,0.605,0.403,0.32,0.7465,-0.71,0.532,0.765,0.59,0.62,0.0,0.73,0.673,Healthcare,Diagnostics & Research
+PAGS,PagSeguro Digital Ltd.,Brazil,52.18,0.881,0.517,0.631,0.4624,0.0,0.378,0.474,0.77,0.6,0.03,0.35,0.613,Technology,Software - Infrastructure
+AWK,"American Water Works Company, Inc.",United States,52.16,0.5,0.538,0.041,0.6708,-0.91,0.478,0.535,0.51,0.65,0.01,0.64,0.588,Utilities,Utilities - Regulated Water
+LH,Labcorp Holdings Inc.,United States,52.07,0.545,0.237,0.443,0.7329,-0.93,0.538,0.632,0.57,0.62,0.0,0.36,0.538,Healthcare,Diagnostics & Research
+DRI,"Darden Restaurants, Inc.",United States,51.93,0.512,0.487,0.0,0.7677,-0.98,0.602,0.7,0.53,0.62,0.01,0.72,0.675,Consumer Cyclical,Restaurants
+ARRY,"Array Technologies, Inc.",United States,51.89,0.568,0.207,0.572,0.397,0.0,0.4,0.419,0.79,0.59,0.08,0.0,0.857,Technology,Solar
+APD,"Air Products and Chemicals, Inc.",United States,51.84,0.259,0.308,0.218,0.4561,0.0,0.496,0.604,0.11,0.69,0.01,0.65,0.47,Basic Materials,Specialty Chemicals
+BURL,"Burlington Stores, Inc.",United States,51.76,0.277,0.492,0.059,0.4497,-0.9,0.47,0.531,0.63,0.6,0.01,0.0,0.581,Consumer Cyclical,Apparel Retail
+FIS,"Fidelity National Information Services, Inc.",United States,51.75,0.32,0.449,0.233,0.5821,0.9,0.479,0.628,0.34,0.66,0.02,0.5,0.483,Technology,Information Technology Services
+ALV,"Autoliv, Inc.",Sweden,51.73,0.486,0.341,0.222,0.7747,-0.89,0.478,0.398,0.7,0.66,0.0,0.65,0.556,Consumer Cyclical,Auto Parts
+CNX,CNX Resources Corporation,United States,51.69,0.476,0.543,0.253,0.4023,0.88,0.54,0.562,0.75,0.54,0.01,0.0,0.796,Energy,Oil & Gas E&P
+TRIP,"Tripadvisor, Inc.",United States,51.57,0.468,0.347,0.551,0.587,-0.91,0.442,0.288,0.78,0.61,0.04,0.0,0.188,Consumer Cyclical,Travel Services
+PEP,"PepsiCo, Inc.",United States,51.51,0.765,0.763,0.036,0.2738,0.0,0.405,0.504,0.0,0.67,0.06,0.78,0.545,Consumer Defensive,Beverages - Non-Alcoholic
+ATKR,Atkore Inc.,United States,51.36,0.828,0.356,0.76,0.2149,-0.89,0.338,0.331,0.77,0.63,0.0,0.44,0.503,Industrials,Electrical Equipment & Parts
+OTIS,Otis Worldwide Corporation,United States,51.31,0.461,0.441,0.132,0.6423,0.0,0.462,0.668,0.38,0.69,0.01,0.62,0.503,Industrials,Specialty Industrial Machinery
+TTEK,"Tetra Tech, Inc.",United States,51.3,0.352,0.204,0.307,0.2644,0.0,0.424,0.537,0.7,0.76,0.01,0.62,0.503,Industrials,Engineering & Construction
+NGG,National Grid plc,United Kingdom,51.14,0.36,0.507,0.185,0.7527,0.0,0.506,0.485,0.04,0.61,0.01,0.76,0.414,Utilities,Utilities - Regulated Electric
+VZ,Verizon Communications Inc.,United States,51.05,0.646,0.826,0.0,0.6599,-0.79,0.464,0.575,0.0,0.57,0.09,0.93,0.536,Communication Services,Telecom Services
+MET,"MetLife, Inc.",United States,51.0,0.416,0.265,0.495,0.5669,-0.95,0.498,0.636,0.23,0.56,0.01,0.78,0.695,Financial Services,Insurance - Life
+PPG,"PPG Industries, Inc.",United States,50.94,0.469,0.496,0.313,0.4835,0.0,0.427,0.541,0.52,0.65,0.01,0.74,0.47,Basic Materials,Specialty Chemicals
+POOL,Pool Corporation,United States,50.93,0.397,0.471,0.336,0.2991,0.85,0.446,0.576,0.68,0.75,0.0,0.72,0.166,Industrials,Industrial Distribution
+DKS,"DICK'S Sporting Goods, Inc.",United States,50.91,0.516,0.491,0.223,0.3864,-0.26,0.463,0.373,0.62,0.65,0.01,0.8,0.56,Consumer Cyclical,Specialty Retail
+BEKE,KE Holdings Inc.,China,50.91,0.75,0.059,0.777,0.287,0.0,0.524,0.416,0.57,0.63,0.04,0.65,0.7,Real Estate,Real Estate Services
+NEE,"NextEra Energy, Inc.",United States,50.9,0.247,0.487,0.005,0.526,-0.76,0.466,0.625,0.0,0.64,0.07,0.73,0.501,Utilities,Utilities - Regulated Electric
+SOLV,Solventum Corporation,United States,50.86,0.512,0.553,0.084,0.6271,0.0,0.614,0.562,0.66,0.56,0.0,0.0,0.533,Healthcare,Medical Instruments & Supplies
+CAH,"Cardinal Health, Inc.",United States,50.67,0.651,0.0,0.37,0.8291,0.0,0.662,0.782,0.37,0.71,0.01,0.62,0.533,Healthcare,Medical Distribution
+LDOS,"Leidos Holdings, Inc.",United States,50.67,0.523,0.384,0.205,0.4961,-0.88,0.494,0.557,0.57,0.65,0.01,0.5,0.516,Technology,Information Technology Services
+GPN,Global Payments Inc.,United States,50.65,0.746,0.702,0.307,0.1733,-0.87,0.407,0.504,0.59,0.61,0.01,0.73,0.503,Industrials,Specialty Business Services
+BDX,"Becton, Dickinson and Company",United States,50.64,0.577,0.542,0.317,0.1679,-0.77,0.388,0.505,0.27,0.62,0.01,0.59,0.533,Healthcare,Medical Instruments & Supplies
+TNL,Travel + Leisure Co.,United States,50.52,0.736,0.601,0.5,0.6485,-0.88,0.543,0.452,0.76,0.51,0.0,0.98,0.556,Consumer Cyclical,Travel Services
+MTZ,"MasTec, Inc.",United States,50.47,0.513,0.084,0.292,0.7918,-0.91,0.651,0.4,0.66,0.69,0.0,0.0,0.141,Industrials,Engineering & Construction
+KRC,Kilroy Realty Corporation,United States,50.38,0.68,0.686,0.218,0.3623,0.0,0.482,0.541,0.76,0.62,0.01,0.93,0.566,Real Estate,REIT - Office
+WEC,"WEC Energy Group, Inc.",United States,50.21,0.393,0.443,0.0,0.7221,-0.78,0.558,0.779,0.44,0.61,0.01,0.74,0.68,Utilities,Utilities - Regulated Electric
+UNH,UnitedHealth Group Incorporated,United States,50.19,0.384,0.335,0.463,0.2796,0.96,0.351,0.494,0.0,0.65,0.06,0.83,0.629,Healthcare,Healthcare Plans
+IRM,Iron Mountain Incorporated,United States,50.15,0.404,0.617,0.0,0.3853,-0.95,0.479,0.556,0.48,0.59,0.01,0.66,0.629,Real Estate,REIT - Specialty
+BWA,BorgWarner Inc.,United States,50.14,0.586,0.093,0.707,0.695,-0.91,0.488,0.553,0.72,0.59,0.01,0.48,0.556,Consumer Cyclical,Auto Parts
+VRNT,Verint Systems Inc.,United States,50.12,0.659,0.472,0.522,0.1515,-0.85,0.365,0.331,0.79,0.64,0.02,0.0,0.188,Technology,Software - Infrastructure
+FND,"Floor & Decor Holdings, Inc.",United States,50.02,0.361,0.268,0.297,0.178,0.0,0.418,0.506,0.71,0.66,0.01,0.0,0.574,Consumer Cyclical,Home Improvement Retail
+TKR,The Timken Company,United States,50.0,0.571,0.365,0.604,0.4717,0.0,0.44,0.476,0.74,0.6,0.0,0.69,0.503,Industrials,Tools & Accessories
+TGNA,TEGNA Inc.,United States,50.0,0.5,0.659,0.343,0.5153,0.0,0.522,0.548,0.77,0.56,0.01,0.8,0.399,Communication Services,Broadcasting
+CCI,Crown Castle Inc.,United States,49.9,0.408,0.686,0.0,0.5496,-0.9,0.471,0.599,0.32,0.65,0.02,0.71,0.182,Real Estate,REIT - Specialty
+OVV,Ovintiv Inc.,United States,49.82,0.641,0.553,0.277,0.3815,-0.9,0.408,0.384,0.69,0.63,0.02,0.56,0.404,Energy,Oil & Gas E&P
+MLCO,Melco Resorts & Entertainment Limited,Hong Kong,49.82,0.284,0.418,0.132,0.7348,0.0,0.546,0.289,0.76,0.51,0.03,0.0,0.678,Consumer Cyclical,Resorts & Casinos
+HIMX,"Himax Technologies, Inc.",Taiwan,49.81,0.518,0.199,0.764,0.4102,0.0,0.491,0.29,0.78,0.64,0.01,0.81,0.267,Technology,Semiconductors
+MUR,Murphy Oil Corporation,United States,49.79,0.727,0.725,0.357,0.168,0.0,0.345,0.351,0.76,0.65,0.01,0.93,0.404,Energy,Oil & Gas E&P
+THO,"THOR Industries, Inc.",United States,49.78,0.598,0.034,0.761,0.3172,0.77,0.451,0.52,0.75,0.7,0.0,0.72,0.556,Consumer Cyclical,Recreational Vehicles
+CRWD,"CrowdStrike Holdings, Inc.",United States,49.74,0.347,0.543,0.876,0.8123,-0.95,0.545,0.308,0.0,0.2,0.02,0.0,0.613,Technology,Software - Infrastructure
+IP,International Paper Company,United States,49.68,0.345,0.089,0.42,0.405,-0.89,0.502,0.569,0.52,0.58,0.02,0.65,0.881,Consumer Cyclical,Packaging & Containers
+OGE,OGE Energy Corp.,United States,49.61,0.59,0.415,0.075,0.7074,-0.75,0.532,0.725,0.71,0.61,0.01,0.78,0.81,Utilities,Utilities - Regulated Electric
+JBHT,"J.B. Hunt Transport Services, Inc.",United States,49.45,0.298,0.141,0.36,0.2729,0.88,0.438,0.551,0.64,0.74,0.0,0.62,0.503,Industrials,Integrated Freight & Logistics
+USFD,US Foods Holding Corp.,United States,49.4,0.381,0.078,0.219,0.778,-0.92,0.612,0.668,0.6,0.61,0.01,0.0,0.545,Consumer Defensive,Food Distribution
+NOV,NOV Inc.,United States,49.3,0.686,0.3,0.917,0.233,0.0,0.372,0.511,0.75,0.61,0.03,0.81,0.404,Energy,Oil & Gas Equipment & Services
+MATX,"Matson, Inc.",United States,49.23,0.636,0.538,0.371,0.2271,0.3,0.421,0.51,0.76,0.71,0.0,0.68,0.172,Industrials,Marine Shipping
+AEE,Ameren Corporation,United States,49.22,0.447,0.449,0.02,0.6755,-0.78,0.564,0.78,0.52,0.6,0.01,0.7,0.643,Utilities,Utilities - Regulated Electric
+VALE,Vale S.A.,Brazil,49.22,0.708,0.532,0.447,0.4985,0.0,0.415,0.533,0.33,0.56,0.27,1.0,0.61,Basic Materials,Other Industrial Metals & Mining
+AMBA,"Ambarella, Inc.",United States,49.2,0.375,0.543,1.0,0.3292,-0.94,0.476,0.292,0.77,0.2,0.01,0.0,0.857,Technology,Semiconductor Equipment & Materials
+ORA,"Ormat Technologies, Inc.",United States,49.11,0.402,0.241,0.209,0.7615,-0.93,0.524,0.428,0.74,0.65,0.0,0.61,0.414,Utilities,Utilities - Renewable
+HUM,Humana Inc.,United States,49.06,0.52,0.074,0.797,0.2282,0.76,0.356,0.366,0.49,0.66,0.01,0.75,0.602,Healthcare,Healthcare Plans
+LMT,Lockheed Martin Corporation,United States,49.05,0.666,0.425,0.062,0.3551,0.0,0.459,0.474,0.0,0.7,0.01,0.68,0.503,Industrials,Aerospace & Defense
+MPW,"Medical Properties Trust, Inc.",United States,48.96,0.645,0.686,0.333,0.297,-0.85,0.46,0.467,0.77,0.62,0.05,0.94,0.182,Real Estate,REIT - Healthcare Facilities
+XPO,"XPO, Inc.",United States,48.9,0.353,0.313,0.051,0.4173,0.0,0.531,0.446,0.64,0.64,0.01,0.0,0.503,Industrials,Trucking
+UHS,"Universal Health Services, Inc.",United States,48.87,0.636,0.465,0.362,0.3407,-0.89,0.456,0.566,0.68,0.58,0.01,0.59,0.567,Healthcare,Medical Care Facilities
+MTH,Meritage Homes Corporation,United States,48.83,0.638,0.239,0.951,0.1944,0.77,0.422,0.525,0.75,0.64,0.0,0.76,0.277,Consumer Cyclical,Residential Construction
+ETR,Entergy Corporation,United States,48.83,0.436,0.437,0.014,0.7087,-0.94,0.621,0.734,0.41,0.6,0.01,0.54,0.414,Utilities,Utilities - Regulated Electric
+NUS,"Nu Skin Enterprises, Inc.",United States,48.78,0.85,0.429,0.908,0.5268,-0.2,0.404,0.459,0.8,0.57,0.0,0.5,0.164,Consumer Defensive,Household & Personal Products
+VLO,Valero Energy Corporation,United States,48.75,0.555,0.0,0.692,0.5641,0.0,0.446,0.408,0.32,0.67,0.02,0.69,0.404,Energy,Oil & Gas Refining & Marketing
+CBT,Cabot Corporation,United States,48.69,0.706,0.489,0.468,0.1967,0.0,0.411,0.549,0.76,0.64,0.0,0.79,0.47,Basic Materials,Specialty Chemicals
+UA,"Under Armour, Inc.",United States,48.68,0.633,0.291,0.703,0.2,-0.88,0.456,0.468,0.77,0.59,0.01,0.0,0.188,Consumer Cyclical,Apparel Manufacturing
+CMCSA,Comcast Corporation,United States,48.66,0.669,0.722,0.122,0.3612,0.0,0.439,0.574,0.0,0.58,0.11,0.92,0.536,Communication Services,Telecom Services
+MOS,The Mosaic Company,United States,48.56,0.525,0.086,0.404,0.8399,-0.95,0.574,0.397,0.67,0.6,0.02,0.44,0.47,Basic Materials,Agricultural Inputs
+KMT,Kennametal Inc.,United States,48.53,0.687,0.278,0.651,0.3081,0.0,0.463,0.508,0.78,0.61,0.01,0.65,0.503,Industrials,Tools & Accessories
+CCK,"Crown Holdings, Inc.",United States,48.52,0.559,0.438,0.023,0.7899,-0.91,0.6,0.501,0.67,0.57,0.01,0.45,0.556,Consumer Cyclical,Packaging & Containers
+SSTK,"Shutterstock, Inc.",United States,48.47,0.689,0.54,0.485,0.1411,0.0,0.336,0.468,0.79,0.61,0.0,0.85,0.613,Communication Services,Internet Content & Information
+ANET,Arista Networks Inc,United States,48.45,0.332,0.971,1.0,0.3741,-0.95,0.483,0.433,0.0,0.0,0.05,0.0,0.782,Technology,Computer Hardware
+SBLK,Star Bulk Carriers Corp.,Greece,48.42,0.543,0.474,0.588,0.3566,0.0,0.386,0.39,0.78,0.62,0.01,0.47,0.129,Industrials,Marine Shipping
+JD,"JD.com, Inc.",China,48.4,0.811,0.155,0.763,0.2338,0.0,0.519,0.501,0.3,0.61,0.04,0.61,0.442,Consumer Cyclical,Internet Retail
+GAP,"The Gap, Inc.",United States,48.38,0.677,0.509,0.372,0.4892,-0.76,0.445,0.401,0.71,0.56,0.04,0.8,0.556,Consumer Cyclical,Apparel Retail
+MKSI,MKS Inc.,United States,48.27,0.673,0.583,0.333,0.2078,-0.86,0.383,0.311,0.73,0.57,0.01,0.59,0.535,Technology,Scientific & Technical Instruments
+TRGP,Targa Resources Corp.,United States,48.23,0.319,0.482,0.0,0.3913,-0.81,0.547,0.559,0.4,0.6,0.01,0.48,0.404,Energy,Oil & Gas Midstream
+HTHT,H World Group Limited,China,48.18,0.626,0.787,0.143,0.483,0.0,0.485,0.501,0.69,0.54,0.01,0.97,0.556,Consumer Cyclical,Lodging
+WY,Weyerhaeuser Company,United States,48.16,0.431,0.1,0.566,0.3178,0.0,0.433,0.603,0.6,0.64,0.02,0.53,0.566,Real Estate,REIT - Specialty
+TXT,Textron Inc.,United States,48.1,0.785,0.122,0.616,0.5195,0.0,0.439,0.45,0.64,0.65,0.01,0.46,0.516,Industrials,Aerospace & Defense
+AVY,Avery Dennison Corporation,United States,48.08,0.424,0.498,0.053,0.3966,0.0,0.407,0.553,0.65,0.66,0.01,0.71,0.556,Consumer Cyclical,Packaging & Containers
+PEG,Public Service Enterprise Group Incorporated,United States,47.98,0.342,0.353,0.035,0.5075,-0.81,0.486,0.69,0.36,0.61,0.01,0.65,0.665,Utilities,Utilities - Regulated Electric
+EL,The Estée Lauder Companies Inc.,United States,47.95,0.41,0.513,0.223,0.3942,0.0,0.398,0.338,0.47,0.65,0.03,0.47,0.164,Consumer Defensive,Household & Personal Products
+AMKR,"Amkor Technology, Inc.",United States,47.9,0.727,0.026,0.916,0.1772,0.0,0.33,0.324,0.74,0.74,0.01,0.71,0.188,Technology,Semiconductor Equipment & Materials
+DVA,DaVita Inc.,United States,47.88,0.556,0.642,0.095,0.3703,-0.94,0.467,0.597,0.69,0.52,0.0,0.0,0.533,Healthcare,Medical Care Facilities
+MTN,"Vail Resorts, Inc.",United States,47.87,0.537,0.798,0.006,0.415,0.84,0.434,0.531,0.74,0.61,0.0,0.97,0.556,Consumer Cyclical,Resorts & Casinos
+UAA,"Under Armour, Inc.",United States,47.8,0.619,0.291,0.703,0.1839,0.0,0.463,0.455,0.77,0.59,0.05,0.0,0.188,Consumer Cyclical,Apparel Manufacturing
+AXTA,Axalta Coating Systems Ltd.,United States,47.79,0.635,0.549,0.275,0.2505,0.0,0.419,0.583,0.73,0.58,0.01,0.0,0.47,Basic Materials,Specialty Chemicals
+OMC,Omnicom Group Inc.,United States,47.76,0.659,0.451,0.369,0.1949,-0.84,0.403,0.583,0.65,0.62,0.03,0.84,0.536,Communication Services,Advertising Agencies
+APTV,Aptiv PLC,Switzerland,47.7,0.664,0.291,0.361,0.7351,0.0,0.465,0.514,0.63,0.57,0.01,0.0,0.556,Consumer Cyclical,Auto Parts
+MDLZ,"Mondelez International, Inc.",United States,47.6,0.517,0.368,0.24,0.6536,0.0,0.467,0.513,0.0,0.67,0.04,0.73,0.164,Consumer Defensive,Confectioners
+HPE,Hewlett Packard Enterprise Company,United States,47.48,0.714,0.105,0.691,0.4311,-0.87,0.455,0.382,0.51,0.6,0.12,0.8,0.486,Technology,Communication Equipment
+DLTR,"Dollar Tree, Inc.",United States,47.46,0.483,0.426,0.056,0.8388,-0.22,0.448,0.352,0.57,0.6,0.02,0.0,0.362,Consumer Defensive,Discount Stores
+DPZ,"Domino's Pizza, Inc.",United States,47.46,0.444,0.457,0.0,0.6601,-0.88,0.427,0.444,0.63,0.62,0.0,0.7,0.556,Consumer Cyclical,Restaurants
+FRO,Frontline plc,Cyprus,47.37,0.674,0.729,0.205,0.3643,0.0,0.391,0.422,0.76,0.61,0.02,0.97,0.404,Energy,Oil & Gas Midstream
+PPL,PPL Corporation,United States,47.14,0.475,0.35,0.107,0.6637,-0.91,0.525,0.715,0.53,0.6,0.02,0.52,0.494,Utilities,Utilities - Regulated Electric
+TDOC,"Teladoc Health, Inc.",United States,47.05,0.662,0.436,0.64,0.1615,-0.91,0.417,0.328,0.79,0.53,0.06,0.0,0.192,Healthcare,Health Information Services
+ZS,"Zscaler, Inc.",United States,47.05,0.347,0.543,0.699,0.8636,-0.97,0.622,0.497,0.27,0.17,0.01,0.0,0.696,Technology,Software - Infrastructure
+SONY,Sony Group Corporation,Japan,47.03,0.67,0.445,0.532,0.7632,0.0,0.594,0.677,0.0,0.49,0.03,0.55,0.242,Technology,Consumer Electronics
+ED,"Consolidated Edison, Inc.",United States,46.98,0.623,0.455,0.234,0.6043,0.81,0.494,0.571,0.41,0.59,0.01,0.69,0.569,Utilities,Utilities - Regulated Electric
+ICLR,ICON Public Limited Company,Ireland,46.97,0.877,0.358,0.432,0.1384,0.0,0.317,0.357,0.67,0.64,0.01,0.0,0.533,Healthcare,Diagnostics & Research
+TXNM,"TXNM Energy, Inc.",United States,46.97,0.442,0.461,0.0,0.7852,0.0,0.621,0.76,0.75,0.58,0.01,0.69,0.534,Utilities,Utilities - Regulated Electric
+CI,The Cigna Group,United States,46.79,0.419,0.108,0.364,0.5511,0.0,0.445,0.614,0.0,0.6,0.01,0.73,0.714,Healthcare,Healthcare Plans
+CMS,CMS Energy Corporation,United States,46.79,0.432,0.416,0.059,0.6464,-0.87,0.512,0.688,0.58,0.58,0.01,0.71,0.578,Utilities,Utilities - Regulated Electric
+IOT,Samsara Inc.,United States,46.78,0.347,0.543,0.815,0.2768,-0.96,0.48,0.436,0.56,0.2,0.04,0.0,0.857,Technology,Software - Infrastructure
+MHK,"Mohawk Industries, Inc.",United States,46.73,0.657,0.11,0.649,0.1976,0.0,0.442,0.396,0.73,0.6,0.0,0.0,0.465,Consumer Cyclical,"Furnishings, Fixtures & Appliances"
+NOC,Northrop Grumman Corporation,United States,46.71,0.63,0.386,0.135,0.6379,-0.95,0.51,0.481,0.01,0.66,0.0,0.73,0.129,Industrials,Aerospace & Defense
+HSIC,"Henry Schein, Inc.",United States,46.69,0.568,0.16,0.393,0.5762,0.0,0.496,0.623,0.7,0.59,0.01,0.0,0.533,Healthcare,Medical Distribution
+MT,ArcelorMittal S.A.,Luxembourg,46.65,0.692,0.005,0.663,0.7899,0.0,0.578,0.545,0.54,0.59,0.01,0.67,0.47,Basic Materials,Steel
+AEP,"American Electric Power Company, Inc.",United States,46.63,0.506,0.438,0.0,0.7108,-0.91,0.515,0.607,0.2,0.59,0.01,0.76,0.494,Utilities,Utilities - Regulated Electric
+INTC,Intel Corporation,United States,46.62,0.576,0.121,0.64,0.2833,0.0,0.357,0.318,0.0,0.6,0.45,0.0,0.188,Technology,Semiconductors
+BRKR,Bruker Corporation,United States,46.52,0.469,0.397,0.272,0.157,0.84,0.361,0.462,0.73,0.62,0.02,0.4,0.653,Healthcare,Medical Devices
+BEPC,Brookfield Renewable Corporation,United States,46.49,0.535,0.67,0.121,0.7357,0.0,0.505,0.514,0.74,0.6,0.01,0.76,0.119,Utilities,Utilities - Renewable
+ALK,"Alaska Air Group, Inc.",United States,46.45,0.588,0.163,0.18,0.2682,-0.9,0.554,0.453,0.74,0.54,0.01,0.0,0.881,Industrials,Airlines
+FUTU,Futu Holdings Limited,Hong Kong,46.42,0.521,0.933,0.744,0.7961,0.0,0.691,0.396,0.62,0.0,0.01,0.0,0.881,Financial Services,Capital Markets
+SRE,Sempra,United States,46.42,0.335,0.382,0.168,0.389,-0.86,0.451,0.591,0.28,0.6,0.02,0.74,0.414,Utilities,Utilities - Diversified
+ES,Eversource Energy,United States,46.19,0.489,0.422,0.001,0.685,-0.73,0.493,0.535,0.55,0.55,0.01,0.82,0.785,Utilities,Utilities - Regulated Electric
+HOOD,"Robinhood Markets, Inc.",United States,46.18,0.28,0.895,0.527,0.8695,-0.93,0.728,0.36,0.0,0.0,0.32,0.0,0.604,Financial Services,Capital Markets
+D,"Dominion Energy, Inc.",United States,46.16,0.489,0.41,0.016,0.6364,0.0,0.499,0.713,0.28,0.61,0.03,0.72,0.571,Utilities,Utilities - Regulated Electric
+CNC,Centene Corporation,United States,46.09,0.741,0.098,0.684,0.287,0.0,0.324,0.491,0.62,0.56,0.1,0.0,0.75,Healthcare,Healthcare Plans
+ENB,Enbridge Inc.,Canada,46.08,0.429,0.418,0.017,0.7118,0.0,0.531,0.77,0.0,0.54,0.02,1.0,0.796,Energy,Oil & Gas Midstream
+DUK,Duke Energy Corporation,United States,46.07,0.553,0.459,0.003,0.696,0.0,0.506,0.608,0.0,0.6,0.01,0.7,0.468,Utilities,Utilities - Regulated Electric
+MDU,"MDU Resources Group, Inc.",United States,45.97,0.696,0.374,0.253,0.4854,0.0,0.52,0.633,0.77,0.57,0.01,0.76,0.732,Industrials,Conglomerates
+KHC,The Kraft Heinz Company,United States,45.96,0.653,0.374,0.439,0.2737,-0.9,0.4,0.629,0.47,0.57,0.09,0.82,0.545,Consumer Defensive,Packaged Foods
+LUV,Southwest Airlines Co.,United States,45.95,0.277,0.036,0.553,0.6905,0.9,0.527,0.517,0.59,0.65,0.05,0.52,0.129,Industrials,Airlines
+KBH,KB Home,United States,45.92,0.62,0.245,0.676,0.1827,-0.87,0.395,0.529,0.76,0.56,0.01,0.79,0.556,Consumer Cyclical,Residential Construction
+LNT,Alliant Energy Corporation,United States,45.86,0.411,0.438,0.0,0.6649,0.0,0.518,0.719,0.63,0.61,0.01,0.74,0.51,Utilities,Utilities - Regulated Electric
+BXP,"BXP, Inc.",United States,45.83,0.476,0.686,0.08,0.3244,0.0,0.488,0.57,0.67,0.61,0.01,0.78,0.182,Real Estate,REIT - Office
+CAKE,The Cheesecake Factory Incorporated,United States,45.76,0.632,0.464,0.0,0.7983,-0.95,0.649,0.528,0.77,0.52,0.01,0.62,0.556,Consumer Cyclical,Restaurants
+FE,FirstEnergy Corp.,United States,45.66,0.565,0.521,0.0,0.6007,-0.79,0.464,0.596,0.55,0.56,0.02,0.69,0.62,Utilities,Utilities - Regulated Electric
+PBR,Petróleo Brasileiro S.A. - Petrobras,Brazil,45.63,0.653,0.696,0.19,0.3799,0.0,0.41,0.589,0.0,0.55,0.12,1.0,0.404,Energy,Oil & Gas Integrated
+IPG,"The Interpublic Group of Companies, Inc.",United States,45.56,0.618,0.335,0.399,0.3098,0.0,0.421,0.589,0.7,0.62,0.05,0.94,0.536,Communication Services,Advertising Agencies
+OTEX,Open Text Corporation,Canada,45.43,0.862,0.803,0.052,0.5451,0.0,0.443,0.599,0.72,0.57,0.01,0.91,0.483,Technology,Software - Application
+OKE,"ONEOK, Inc.",United States,45.41,0.442,0.458,0.017,0.2365,0.0,0.448,0.576,0.26,0.57,0.02,0.85,0.796,Energy,Oil & Gas Midstream
+SMG,The Scotts Miracle-Gro Company,United States,45.4,0.483,0.494,0.273,0.2535,-0.74,0.484,0.465,0.76,0.53,0.0,0.7,0.47,Basic Materials,Agricultural Inputs
+TREE,"LendingTree, Inc.",United States,45.39,0.5,0.356,0.139,0.2019,-0.89,0.43,0.447,0.8,0.5,0.0,0.0,0.881,Financial Services,Financial Conglomerates
+MDB,"MongoDB, Inc.",United States,45.27,0.347,0.543,1.0,0.165,-0.92,0.399,0.439,0.62,0.2,0.01,0.0,0.676,Technology,Software - Infrastructure
+PHG,Koninklijke Philips N.V.,Netherlands,45.21,0.595,0.255,0.392,0.2597,0.0,0.427,0.418,0.56,0.62,0.0,0.8,0.533,Healthcare,Medical Devices
+X,United States Steel Corporation,United States,45.13,0.378,0.0,0.467,0.8419,0.0,0.576,0.404,0.67,0.6,0.05,0.34,0.194,Basic Materials,Steel
+SNX,TD SYNNEX Corporation,United States,45.1,0.398,0.044,0.425,0.6671,-0.94,0.53,0.56,0.68,0.57,0.01,0.73,0.524,Technology,Electronics & Computer Distribution
+UAL,"United Airlines Holdings, Inc.",United States,45.09,0.594,0.422,0.24,0.2763,0.0,0.662,0.456,0.52,0.54,0.03,0.0,0.134,Industrials,Airlines
+VOD,Vodafone Group Public Limited Company,United Kingdom,45.06,0.389,0.379,0.38,0.7789,0.0,0.518,0.446,0.51,0.53,0.06,0.66,0.192,Communication Services,Telecom Services
+DTE,DTE Energy Company,United States,45.04,0.468,0.315,0.023,0.7111,0.0,0.517,0.694,0.51,0.55,0.01,0.73,0.866,Utilities,Utilities - Regulated Electric
+SNOW,Snowflake Inc.,United States,44.98,0.374,0.543,0.62,0.8231,-0.95,0.63,0.412,0.0,0.12,0.02,0.0,0.774,Technology,Software - Application
+CRL,"Charles River Laboratories International, Inc.",United States,44.97,0.76,0.429,0.323,0.1786,-0.9,0.386,0.327,0.72,0.61,0.0,0.0,0.192,Healthcare,Diagnostics & Research
+CNP,"CenterPoint Energy, Inc.",United States,44.92,0.434,0.405,0.034,0.7286,0.87,0.515,0.654,0.55,0.58,0.03,0.49,0.554,Utilities,Utilities - Regulated Electric
+ARW,"Arrow Electronics, Inc.",United States,44.91,0.53,0.01,0.463,0.7281,-0.93,0.484,0.591,0.73,0.56,0.0,0.0,0.483,Technology,Electronics & Computer Distribution
+LOW,"Lowe's Companies, Inc.",United States,44.77,0.74,0.34,0.075,0.3523,-0.81,0.466,0.64,0.0,0.63,0.01,0.77,0.556,Consumer Cyclical,Home Improvement Retail
+JWN,"Nordstrom, Inc.",United States,44.73,0.381,0.458,0.153,0.7105,0.0,0.504,0.608,0.76,0.51,0.06,0.66,0.556,Consumer Cyclical,Department Stores
+YPF,YPF Sociedad Anónima,Argentina,44.56,0.662,0.271,0.22,0.339,0.0,0.606,0.507,0.66,0.48,0.01,0.0,0.796,Energy,Oil & Gas Integrated
+BBY,"Best Buy Co., Inc.",United States,44.54,0.668,0.325,0.196,0.1975,-0.97,0.403,0.505,0.64,0.65,0.02,0.97,0.556,Consumer Cyclical,Specialty Retail
+STZ,"Constellation Brands, Inc.",United States,44.51,0.335,0.539,0.033,0.2085,-0.89,0.363,0.483,0.48,0.64,0.02,0.65,0.164,Consumer Defensive,Beverages - Brewers
+BHC,Bausch Health Companies Inc.,Canada,44.41,0.621,0.852,0.171,0.1328,0.95,0.437,0.414,0.77,0.51,0.01,0.0,0.192,Healthcare,Drug Manufacturers - Specialty & Generic
+HAL,Halliburton Company,United States,44.34,0.652,0.38,0.504,0.2335,0.74,0.353,0.373,0.61,0.6,0.07,0.73,0.404,Energy,Oil & Gas Equipment & Services
+GPC,Genuine Parts Company,United States,44.33,0.382,0.356,0.121,0.5416,0.0,0.438,0.606,0.61,0.59,0.01,0.74,0.556,Consumer Cyclical,Auto Parts
+XEL,Xcel Energy Inc.,United States,44.31,0.502,0.389,0.009,0.668,0.0,0.548,0.565,0.38,0.59,0.02,0.79,0.456,Utilities,Utilities - Regulated Electric
+HUBG,"Hub Group, Inc.",United States,44.29,0.605,0.004,0.509,0.184,0.0,0.404,0.531,0.78,0.67,0.0,0.4,0.503,Industrials,Integrated Freight & Logistics
+BAH,Booz Allen Hamilton Holding Corporation,United States,44.27,0.695,0.409,0.243,0.1869,0.0,0.375,0.496,0.65,0.63,0.01,0.81,0.561,Industrials,Consulting Services
+CNK,"Cinemark Holdings, Inc.",United States,44.25,0.471,0.576,0.046,0.5576,-0.95,0.567,0.569,0.76,0.53,0.02,0.46,0.192,Communication Services,Entertainment
+GIS,"General Mills, Inc.",United States,44.25,0.456,0.54,0.0,0.2335,-0.93,0.405,0.483,0.5,0.57,0.04,0.82,0.545,Consumer Defensive,Packaged Foods
+RNG,"RingCentral, Inc.",United States,44.24,0.813,0.76,0.0,0.2059,-0.95,0.469,0.436,0.77,0.55,0.01,0.0,0.188,Technology,Software - Application
+BBWI,"Bath & Body Works, Inc.",United States,44.24,0.778,0.554,0.187,0.3435,0.0,0.418,0.348,0.73,0.56,0.03,0.67,0.556,Consumer Cyclical,Specialty Retail
+WBD,"Warner Bros. Discovery, Inc.",United States,44.2,0.71,0.414,0.162,0.5842,0.0,0.618,0.381,0.51,0.52,0.29,0.0,0.192,Communication Services,Entertainment
+MGM,MGM Resorts International,United States,44.15,0.525,0.546,0.106,0.3977,-0.92,0.41,0.37,0.69,0.47,0.02,0.0,0.556,Consumer Cyclical,Resorts & Casinos
+KR,The Kroger Co.,United States,44.08,0.643,0.323,0.038,0.781,-0.94,0.569,0.732,0.29,0.56,0.04,0.74,0.545,Consumer Defensive,Grocery Stores
+HGV,Hilton Grand Vacations Inc.,United States,43.83,0.547,0.136,0.333,0.6878,-0.91,0.502,0.367,0.76,0.5,0.0,0.0,0.556,Consumer Cyclical,Resorts & Casinos
+UPS,"United Parcel Service, Inc.",United States,43.78,0.501,0.361,0.1,0.1913,0.0,0.382,0.423,0.0,0.64,0.03,1.0,0.503,Industrials,Integrated Freight & Logistics
+DAR,Darling Ingredients Inc.,United States,43.68,0.449,0.099,0.32,0.5324,-0.91,0.47,0.463,0.74,0.53,0.02,0.0,0.545,Consumer Defensive,Packaged Foods
+Z,"Zillow Group, Inc.",United States,43.54,0.305,0.421,0.993,0.4392,-0.94,0.617,0.511,0.61,0.16,0.01,0.0,0.436,Communication Services,Internet Content & Information
+NTR,Nutrien Ltd.,Canada,43.52,0.456,0.093,0.386,0.8002,0.93,0.528,0.539,0.48,0.57,0.01,0.52,0.47,Basic Materials,Agricultural Inputs
+TEVA,Teva Pharmaceutical Industries Limited,Israel,43.49,0.565,0.487,0.054,0.3553,-0.96,0.464,0.421,0.59,0.56,0.05,0.0,0.192,Healthcare,Drug Manufacturers - Specialty & Generic
+ISRG,"Intuitive Surgical, Inc.",United States,43.47,0.275,0.835,1.0,0.5948,-0.93,0.517,0.609,0.0,0.0,0.01,0.0,0.443,Healthcare,Medical Instruments & Supplies
+OGN,Organon & Co.,United States,43.41,0.72,0.799,0.176,0.2423,0.9,0.321,0.468,0.77,0.51,0.02,0.38,0.533,Healthcare,Drug Manufacturers - General
+EC,Ecopetrol S.A.,Colombia,43.4,0.653,0.636,0.227,0.4499,0.0,0.394,0.406,0.6,0.54,0.01,1.0,0.404,Energy,Oil & Gas Integrated
+RH,RH,United States,43.38,0.286,0.317,0.177,0.0838,0.0,0.402,0.405,0.76,0.51,0.01,0.0,0.702,Consumer Cyclical,Specialty Retail
+IGT,Brightstar Lottery PLC,United Kingdom,43.31,0.534,0.355,0.329,0.238,0.0,0.412,0.54,0.77,0.55,0.01,0.51,0.556,Consumer Cyclical,Gambling
+TW,Tradeweb Markets Inc.,United States,43.01,0.28,0.666,1.0,0.7147,-0.88,0.557,0.697,0.47,0.0,0.01,0.43,0.845,Financial Services,Capital Markets
+ENOV,Enovis Corporation,United States,42.95,0.807,0.329,0.648,0.2355,0.0,0.382,0.444,0.78,0.53,0.01,0.0,0.275,Healthcare,Medical Devices
+EXC,Exelon Corporation,United States,42.8,0.64,0.392,0.064,0.676,0.0,0.535,0.7,0.33,0.55,0.03,0.77,0.547,Utilities,Utilities - Regulated Electric
+MMS,"Maximus, Inc.",United States,42.69,0.671,0.277,0.384,0.3505,-0.63,0.408,0.595,0.76,0.58,0.0,0.77,0.503,Industrials,Specialty Business Services
+SEE,Sealed Air Corporation,United States,42.59,0.669,0.565,0.098,0.4404,0.0,0.43,0.425,0.75,0.53,0.01,0.71,0.556,Consumer Cyclical,Packaging & Containers
+TAP,Molson Coors Beverage Company,United States,42.58,0.705,0.282,0.361,0.3725,-0.65,0.448,0.611,0.69,0.56,0.01,0.79,0.544,Consumer Defensive,Beverages - Brewers
+SYY,Sysco Corporation,United States,42.58,0.619,0.292,0.098,0.6404,-0.69,0.486,0.655,0.4,0.57,0.01,0.73,0.545,Consumer Defensive,Food Distribution
+NBIS,Nebius Group N.V.,Netherlands,42.5,0.323,0.239,1.0,0.0,0.0,0.5,0.321,0.68,0.2,0.06,0.0,0.881,Communication Services,Internet Content & Information
+LKQ,LKQ Corporation,United States,42.47,0.534,0.284,0.331,0.5052,-0.27,0.429,0.493,0.69,0.54,0.01,0.82,0.556,Consumer Cyclical,Auto Parts
+NCLH,Norwegian Cruise Line Holdings Ltd.,United States,42.32,0.61,0.506,0.0,0.233,0.0,0.511,0.441,0.7,0.52,0.09,0.0,0.436,Consumer Cyclical,Travel Services
+DELL,Dell Technologies Inc.,United States,42.26,0.562,0.058,0.151,0.5253,-0.97,0.412,0.34,0.0,0.61,0.03,0.47,0.485,Technology,Computer Hardware
+SLGN,Silgan Holdings Inc.,United States,42.08,0.528,0.206,0.074,0.7122,-0.94,0.554,0.681,0.74,0.53,0.0,0.7,0.69,Consumer Cyclical,Packaging & Containers
+CALM,"Cal-Maine Foods, Inc.",United States,42.02,0.618,0.814,1.0,0.5848,-0.79,0.633,0.578,0.75,0.0,0.0,1.0,0.881,Consumer Defensive,Farm Products
+CVE,Cenovus Energy Inc.,Canada,41.92,0.584,0.163,0.548,0.2319,0.93,0.375,0.38,0.53,0.61,0.06,0.83,0.404,Energy,Oil & Gas Integrated
+WCC,"WESCO International, Inc.",United States,41.89,0.831,0.158,0.382,0.5539,-0.78,0.521,0.431,0.7,0.53,0.0,0.4,0.503,Industrials,Industrial Distribution
+SBUX,Starbucks Corporation,United States,41.85,0.361,0.145,0.0,0.3715,0.0,0.533,0.525,0.0,0.67,0.05,0.67,0.188,Consumer Cyclical,Restaurants
+BALL,Ball Corporation,United States,41.7,0.358,0.102,0.133,0.51,-0.9,0.447,0.607,0.63,0.58,0.01,0.69,0.617,Consumer Cyclical,Packaging & Containers
+BP,BP p.l.c.,United Kingdom,41.68,0.287,0.132,0.529,0.4521,0.0,0.404,0.471,0.0,0.56,0.08,0.84,0.153,Energy,Oil & Gas Integrated
+AN,"AutoNation, Inc.",United States,41.58,0.505,0.288,0.005,0.7534,-0.76,0.556,0.443,0.72,0.47,0.0,0.0,0.556,Consumer Cyclical,Auto & Truck Dealerships
+PLAY,"Dave & Buster's Entertainment, Inc.",United States,41.42,0.45,0.423,0.0,0.3491,-0.93,0.409,0.315,0.79,0.49,0.01,0.0,0.536,Communication Services,Entertainment
+HII,"Huntington Ingalls Industries, Inc.",United States,41.38,0.85,0.115,0.322,0.7036,-0.94,0.468,0.49,0.69,0.59,0.0,0.77,0.503,Industrials,Aerospace & Defense
+AVT,"Avnet, Inc.",United States,41.09,0.579,0.009,0.629,0.6665,-0.73,0.477,0.597,0.75,0.51,0.0,0.75,0.483,Technology,Electronics & Computer Distribution
+PATH,UiPath Inc.,United States,41.07,0.513,0.543,1.0,0.5131,-0.84,0.463,0.516,0.73,0.2,0.04,0.0,0.217,Technology,Software - Infrastructure
+TSN,"Tyson Foods, Inc.",United States,41.05,0.508,0.0,0.508,0.4755,0.0,0.45,0.557,0.59,0.56,0.01,0.76,0.545,Consumer Defensive,Farm Products
+UHAL,U-Haul Holding Company,United States,41.04,0.435,0.089,0.272,0.3504,0.0,0.448,0.629,0.68,0.59,0.0,0.0,0.362,Industrials,Rental & Leasing Services
+KNX,Knight-Swift Transportation Holdings Inc.,United States,40.98,0.525,0.052,0.358,0.2968,-0.88,0.435,0.541,0.72,0.58,0.01,0.56,0.503,Industrials,Trucking
+DXC,DXC Technology Company,United States,40.88,0.846,0.282,0.336,0.1807,-0.87,0.405,0.495,0.77,0.53,0.01,0.0,0.483,Technology,Information Technology Services
+VSH,"Vishay Intertechnology, Inc.",United States,40.87,0.809,0.022,0.955,0.2149,0.91,0.38,0.328,0.78,0.6,0.01,0.65,0.188,Technology,Semiconductors
+ASGN,ASGN Incorporated,United States,40.7,0.783,0.17,0.557,0.2663,0.0,0.339,0.377,0.78,0.53,0.0,0.0,0.483,Technology,Information Technology Services
+RBLX,Roblox Corporation,United States,40.67,0.36,0.295,0.385,0.8636,-0.95,0.728,0.47,0.01,0.13,0.04,0.0,0.881,Communication Services,Electronic Gaming & Multimedia
+BCE,BCE Inc.,Canada,40.49,0.538,0.534,0.0,0.2114,0.0,0.379,0.439,0.57,0.55,0.02,0.83,0.536,Communication Services,Telecom Services
+WLK,Westlake Corporation,United States,40.46,0.558,0.0,0.892,0.1525,0.09,0.336,0.507,0.69,0.59,0.01,0.73,0.194,Basic Materials,Specialty Chemicals
+SLAB,Silicon Laboratories Inc.,United States,40.42,0.374,0.497,1.0,0.623,-0.91,0.52,0.33,0.75,0.0,0.0,0.0,0.857,Technology,Semiconductors
+CIG,Companhia Energética de Minas Gerais - CEMIG,Brazil,40.37,0.657,0.376,0.483,0.6195,0.0,0.474,0.61,0.73,0.53,0.01,1.0,0.157,Utilities,Utilities - Diversified
+IQ,"iQIYI, Inc.",China,40.34,0.659,0.265,0.281,0.196,0.0,0.319,0.301,0.78,0.54,0.09,0.0,0.536,Communication Services,Entertainment
+PKX,POSCO Holdings Inc.,South Korea,40.31,0.617,0.0,0.847,0.3443,0.0,0.402,0.449,0.61,0.48,0.0,0.48,0.47,Basic Materials,Steel
+EMN,Eastman Chemical Company,United States,40.29,0.768,0.326,0.398,0.1932,0.0,0.401,0.553,0.7,0.57,0.01,0.94,0.47,Basic Materials,Specialty Chemicals
+DFS,Discover Financial Services,United States,40.26,0.557,0.964,0.632,0.7244,0.0,0.619,0.491,0.26,0.0,0.03,0.34,0.64,Financial Services,Credit Services
+KBR,"KBR, Inc.",United States,40.24,0.716,0.343,0.072,0.2535,-0.91,0.381,0.546,0.74,0.56,0.01,0.69,0.696,Industrials,Engineering & Construction
+BAX,Baxter International Inc.,United States,40.18,0.717,0.427,0.309,0.3151,0.0,0.42,0.577,0.64,0.56,0.02,0.53,0.201,Healthcare,Medical Instruments & Supplies
+FMC,FMC Corporation,United States,40.15,0.613,0.394,0.337,0.1952,0.0,0.388,0.479,0.74,0.54,0.01,0.96,0.47,Basic Materials,Agricultural Inputs
+ALB,Albemarle Corporation,United States,40.03,0.466,0.0,0.788,0.1682,0.0,0.361,0.396,0.72,0.57,0.02,0.61,0.194,Basic Materials,Specialty Chemicals
+PRU,"Prudential Financial, Inc.",United States,39.92,0.379,0.11,0.387,0.4056,0.0,0.428,0.527,0.39,0.54,0.01,0.85,0.463,Financial Services,Insurance - Life
+BKH,Black Hills Corporation,United States,39.8,0.636,0.339,0.116,0.5397,0.0,0.472,0.742,0.76,0.56,0.0,0.88,0.54,Utilities,Utilities - Regulated Gas
+NU,Nu Holdings Ltd.,Brazil,39.72,0.192,0.545,1.0,0.534,0.0,0.467,0.505,0.11,0.0,0.47,0.0,0.591,Financial Services,Banks - Regional
+TGT,Target Corporation,United States,39.65,0.78,0.38,0.101,0.1698,-0.83,0.366,0.513,0.3,0.58,0.03,0.96,0.545,Consumer Defensive,Discount Stores
+BLDR,"Builders FirstSource, Inc.",United States,39.62,0.816,0.37,0.315,0.171,0.95,0.433,0.5,0.65,0.59,0.01,0.0,0.129,Industrials,Building Products & Equipment
+ALAB,"Astera Labs, Inc.",United States,39.58,0.337,0.548,1.0,0.3012,-0.96,0.61,0.339,0.64,0.0,0.03,0.0,0.597,Technology,Semiconductors
+AGCO,AGCO Corporation,United States,39.56,0.76,0.138,0.417,0.7209,0.43,0.5,0.423,0.71,0.59,0.0,0.51,0.129,Industrials,Farm & Heavy Construction Machinery
+DG,Dollar General Corporation,United States,39.55,0.605,0.246,0.092,0.7466,-0.93,0.423,0.351,0.53,0.52,0.02,0.76,0.551,Consumer Defensive,Discount Stores
+FNV,Franco-Nevada Corporation,Canada,39.51,0.304,0.535,1.0,0.7467,0.0,0.561,0.616,0.46,0.0,0.0,0.44,0.835,Basic Materials,Gold
+PTEN,"Patterson-UTI Energy, Inc.",United States,39.5,0.534,0.16,0.514,0.1612,-0.9,0.354,0.465,0.78,0.59,0.07,0.74,0.153,Energy,Oil & Gas Drilling
+CVS,CVS Health Corporation,United States,39.44,0.391,0.014,0.167,0.7738,-0.94,0.508,0.387,0.0,0.49,0.04,0.79,0.571,Healthcare,Healthcare Plans
+ASX,"ASE Technology Holding Co., Ltd.",Taiwan,39.38,0.826,0.091,0.539,0.4754,0.0,0.413,0.387,0.56,0.5,0.06,0.55,0.603,Technology,Semiconductors
+AMP,"Ameriprise Financial, Inc.",United States,39.35,0.453,0.945,0.919,0.6288,0.0,0.533,0.602,0.25,0.0,0.0,0.67,0.463,Financial Services,Asset Management
+LUMN,"Lumen Technologies, Inc.",United States,39.17,0.606,0.237,0.087,0.1457,0.0,0.728,0.388,0.75,0.51,0.07,0.0,0.192,Communication Services,Telecom Services
+PRGO,Perrigo Company plc,Ireland,39.17,0.691,0.268,0.514,0.633,0.89,0.467,0.46,0.76,0.53,0.0,0.68,0.192,Healthcare,Drug Manufacturers - Specialty & Generic
+VIRT,"Virtu Financial, Inc.",United States,39.0,0.593,0.91,0.401,0.7888,-0.84,0.722,0.592,0.73,0.0,0.0,0.66,0.881,Financial Services,Capital Markets
+R,"Ryder System, Inc.",United States,38.87,0.567,0.206,0.0,0.6572,-0.93,0.579,0.484,0.73,0.52,0.0,0.75,0.503,Industrials,Rental & Leasing Services
+AAP,"Advance Auto Parts, Inc.",United States,38.77,0.535,0.313,0.292,0.5711,-0.87,0.429,0.294,0.77,0.5,0.02,0.61,0.188,Consumer Cyclical,Auto Parts
+WU,The Western Union Company,United States,38.75,0.711,0.567,0.231,0.2612,0.0,0.369,0.442,0.77,0.57,0.04,1.0,0.133,Financial Services,Credit Services
+TEAM,Atlassian Corporation,Australia,38.72,0.401,0.543,0.631,0.2149,-0.95,0.513,0.425,0.19,0.17,0.01,0.0,0.431,Technology,Software - Application
+PARA,Paramount Global,United States,38.66,0.745,0.358,0.313,0.767,0.0,0.492,0.485,0.71,0.48,0.04,0.35,0.192,Communication Services,Entertainment
+VTRS,Viatris Inc.,United States,38.65,0.723,0.4,0.37,0.182,0.0,0.415,0.474,0.68,0.54,0.06,0.69,0.192,Healthcare,Drug Manufacturers - Specialty & Generic
+CRI,"Carter's, Inc.",United States,38.61,0.744,0.484,0.492,0.1498,0.0,0.325,0.476,0.79,0.52,0.01,0.68,0.188,Consumer Cyclical,Apparel Retail
+PAG,"Penske Automotive Group, Inc.",United States,38.6,0.461,0.189,0.029,0.7246,-0.96,0.528,0.467,0.67,0.5,0.0,0.84,0.556,Consumer Cyclical,Auto & Truck Dealerships
+RKLB,Rocket Lab Corporation,United States,38.56,0.341,0.076,0.709,0.8128,-0.97,0.728,0.293,0.61,0.08,0.16,0.0,0.881,Industrials,Aerospace & Defense
+AXP,American Express Company,United States,38.52,0.334,0.964,0.49,0.701,-0.89,0.57,0.436,0.0,0.0,0.02,0.7,0.549,Financial Services,Credit Services
+SOFI,"SoFi Technologies, Inc.",United States,38.49,0.311,0.513,0.741,0.7516,-0.95,0.728,0.313,0.57,0.0,0.41,0.0,0.381,Financial Services,Credit Services
+CMBT,Cmb.Tech NV,Belgium,38.48,0.545,0.636,0.037,0.1985,0.0,0.34,0.507,0.78,0.59,0.0,1.0,0.153,Energy,Oil & Gas Midstream
+ESTC,Elastic N.V.,Netherlands,38.46,0.445,0.543,0.841,0.2312,-0.97,0.382,0.339,0.7,0.16,0.01,0.0,0.492,Technology,Software - Application
+PVH,PVH Corp.,United States,38.36,0.766,0.417,0.299,0.1818,0.93,0.367,0.325,0.76,0.5,0.01,0.47,0.556,Consumer Cyclical,Apparel Manufacturing
+CAR,"Avis Budget Group, Inc.",United States,38.35,0.506,0.339,0.0,0.8636,0.0,0.672,0.253,0.73,0.44,0.01,0.0,0.129,Industrials,Rental & Leasing Services
+FOXF,Fox Factory Holding Corp.,United States,38.31,0.575,0.169,0.544,0.2015,0.0,0.344,0.46,0.79,0.52,0.0,0.0,0.227,Consumer Cyclical,Auto Parts
+PSX,Phillips 66,United States,38.22,0.432,0.008,0.37,0.4937,-0.86,0.434,0.412,0.25,0.57,0.02,0.75,0.153,Energy,Oil & Gas Refining & Marketing
+IFF,International Flavors & Fragrances Inc.,United States,38.16,0.471,0.187,0.464,0.2311,0.83,0.389,0.593,0.59,0.56,0.01,0.42,0.194,Basic Materials,Specialty Chemicals
+HP,"Helmerich & Payne, Inc.",United States,37.88,0.466,0.188,0.427,0.2777,0.0,0.315,0.467,0.78,0.53,0.01,0.91,0.511,Energy,Oil & Gas Drilling
+QDEL,QuidelOrtho Corporation,United States,37.73,0.829,0.379,0.286,0.1733,0.0,0.443,0.358,0.78,0.51,0.01,0.0,0.192,Healthcare,Medical Devices
+BC,Brunswick Corporation,United States,37.65,0.49,0.147,0.189,0.1852,-0.88,0.402,0.483,0.76,0.54,0.0,0.71,0.556,Consumer Cyclical,Recreational Vehicles
+PCG,PG&E Corporation,United States,37.62,0.787,0.332,0.038,0.2485,-0.91,0.395,0.578,0.48,0.55,0.14,0.42,0.414,Utilities,Utilities - Regulated Electric
+BNTX,BioNTech SE,Germany,37.6,0.585,0.329,1.0,0.4846,0.0,0.567,0.42,0.52,0.2,0.0,0.0,0.192,Healthcare,Biotechnology
+ABM,ABM Industries Incorporated,United States,37.33,0.528,0.0,0.347,0.4594,-0.85,0.446,0.55,0.77,0.52,0.0,0.62,0.503,Industrials,Specialty Business Services
+ARCB,ArcBest Corporation,United States,37.3,0.679,0.124,0.428,0.1469,0.88,0.378,0.468,0.78,0.65,0.0,0.61,0.129,Industrials,Trucking
+EIX,Edison International,United States,37.3,0.773,0.552,0.039,0.2227,0.0,0.372,0.533,0.59,0.55,0.02,1.0,0.414,Utilities,Utilities - Regulated Electric
+HLF,Herbalife Ltd.,United States,37.13,0.8,0.411,0.063,0.4986,0.87,0.425,0.438,0.79,0.48,0.01,0.0,0.545,Consumer Defensive,Packaged Foods
+SIRI,Sirius XM Holdings Inc.,United States,37.13,0.689,0.504,0.189,0.2487,-0.89,0.377,0.481,0.72,0.53,0.02,1.0,0.192,Communication Services,Entertainment
+UPST,"Upstart Holdings, Inc.",United States,37.06,0.353,0.488,0.53,0.453,-0.95,0.728,0.393,0.72,0.0,0.03,0.0,0.881,Financial Services,Credit Services
+CAG,"Conagra Brands, Inc.",United States,36.83,0.596,0.293,0.191,0.2543,0.0,0.375,0.455,0.7,0.53,0.05,1.0,0.545,Consumer Defensive,Packaged Foods
+MGA,Magna International Inc.,Canada,36.62,0.733,0.062,0.351,0.4988,0.0,0.443,0.413,0.68,0.53,0.01,0.9,0.556,Consumer Cyclical,Auto Parts
+KMX,"CarMax, Inc.",United States,36.61,0.256,0.045,0.313,0.2993,0.82,0.437,0.505,0.69,0.45,0.02,0.0,0.582,Consumer Cyclical,Auto & Truck Dealerships
+SWK,"Stanley Black & Decker, Inc.",United States,36.58,0.434,0.126,0.295,0.1818,0.0,0.411,0.459,0.69,0.52,0.01,0.78,0.503,Industrials,Tools & Accessories
+MBLY,Mobileye Global Inc.,Israel,36.54,0.33,0.452,1.0,0.3613,-0.75,0.361,0.294,0.64,0.0,0.03,0.0,0.881,Consumer Cyclical,Auto Parts
+ABG,"Asbury Automotive Group, Inc.",United States,36.51,0.609,0.098,0.151,0.4427,0.0,0.491,0.436,0.75,0.48,0.0,0.0,0.556,Consumer Cyclical,Auto & Truck Dealerships
+VYX,NCR Voyix Corporation,United States,36.45,0.716,0.093,0.381,0.4481,0.92,0.437,0.304,0.78,0.55,0.01,0.0,0.188,Technology,Information Technology Services
+SCHW,The Charles Schwab Corporation,United States,36.22,0.32,0.755,0.466,0.788,-0.94,0.536,0.548,0.0,0.0,0.04,0.67,0.742,Financial Services,Capital Markets
+PNW,Pinnacle West Capital Corporation,United States,36.21,0.621,0.24,0.0,0.6858,-0.89,0.51,0.69,0.69,0.57,0.01,0.7,0.154,Utilities,Utilities - Regulated Electric
+STLA,Stellantis N.V.,Netherlands,36.19,0.698,0.011,0.73,0.1832,0.0,0.325,0.344,0.49,0.56,0.12,1.0,0.188,Consumer Cyclical,Auto Manufacturers
+CZR,"Caesars Entertainment, Inc.",United States,35.86,0.481,0.384,0.016,0.1883,0.0,0.391,0.469,0.74,0.52,0.03,0.0,0.188,Consumer Cyclical,Resorts & Casinos
+IBN,ICICI Bank Limited,India,35.81,0.503,0.416,1.0,0.7741,0.0,0.5,0.686,0.0,0.0,0.02,0.57,0.881,Financial Services,Banks - Regional
+ADM,Archer-Daniels-Midland Company,United States,35.77,0.377,0.0,0.435,0.4858,0.0,0.413,0.453,0.52,0.54,0.02,0.74,0.164,Consumer Defensive,Farm Products
+WERN,"Werner Enterprises, Inc.",United States,35.71,0.579,0.018,0.508,0.1801,0.0,0.4,0.45,0.78,0.58,0.0,0.6,0.129,Industrials,Trucking
+SLM,SLM Corporation,United States,35.65,0.49,0.964,0.446,0.7985,-0.93,0.647,0.545,0.72,0.0,0.01,0.71,0.463,Financial Services,Credit Services
+MS,Morgan Stanley,United States,35.61,0.629,0.751,0.585,0.7208,-0.94,0.585,0.459,0.0,0.0,0.03,0.81,0.709,Financial Services,Capital Markets
+DAL,"Delta Air Lines, Inc.",United States,35.42,0.474,0.317,0.006,0.2352,0.0,0.479,0.454,0.45,0.54,0.05,0.55,0.129,Industrials,Airlines
+SJM,The J. M. Smucker Company,United States,35.19,0.508,0.344,0.083,0.4868,0.9,0.437,0.633,0.68,0.56,0.01,0.74,0.164,Consumer Defensive,Packaged Foods
+CPB,The Campbell's Company,United States,35.05,0.534,0.326,0.006,0.244,0.0,0.366,0.587,0.7,0.53,0.03,0.86,0.545,Consumer Defensive,Packaged Foods
+LAD,"Lithia Motors, Inc.",United States,34.9,0.699,0.107,0.082,0.5166,-0.86,0.574,0.566,0.7,0.46,0.0,0.66,0.604,Consumer Cyclical,Auto & Truck Dealerships
+PK,Park Hotels & Resorts Inc.,United States,34.89,0.475,0.297,0.115,0.1916,0.0,0.379,0.496,0.78,0.5,0.02,1.0,0.566,Real Estate,REIT - Hotel & Motel
+INTU,Intuit Inc.,United States,34.74,0.357,0.823,0.398,0.8123,-0.96,0.513,0.46,0.0,0.0,0.01,0.6,0.597,Technology,Software - Application
+KKR,KKR & Co. Inc.,United States,34.51,0.253,0.587,0.765,0.3794,-0.91,0.544,0.495,0.0,0.0,0.02,0.41,0.463,Financial Services,Asset Management
+COTY,Coty Inc.,United States,34.49,0.791,0.378,0.165,0.1752,0.0,0.324,0.357,0.75,0.52,0.05,0.0,0.164,Consumer Defensive,Household & Personal Products
+FL,"Foot Locker, Inc.",United States,34.42,0.599,0.089,0.308,0.4347,0.0,0.475,0.413,0.78,0.48,0.02,0.0,0.188,Consumer Cyclical,Apparel Retail
+MPC,Marathon Petroleum Corporation,United States,34.4,0.519,0.143,0.12,0.7432,0.0,0.471,0.561,0.22,0.53,0.01,0.77,0.153,Energy,Oil & Gas Refining & Marketing
+OI,"O-I Glass, Inc.",United States,34.35,0.793,0.053,0.093,0.815,-0.9,0.606,0.395,0.78,0.48,0.01,0.0,0.188,Consumer Cyclical,Packaging & Containers
+JPM,JPMorgan Chase & Co.,United States,34.0,0.443,0.399,1.0,0.7662,-0.94,0.583,0.519,0.0,0.0,0.05,0.79,0.463,Financial Services,Banks - Diversified
+COF,Capital One Financial Corporation,United States,33.96,0.512,0.221,1.0,0.7625,-0.93,0.632,0.452,0.0,0.0,0.02,0.61,0.655,Financial Services,Credit Services
+HOG,"Harley-Davidson, Inc.",United States,33.9,0.422,0.213,0.154,0.1995,0.0,0.387,0.516,0.77,0.47,0.01,0.71,0.556,Consumer Cyclical,Recreational Vehicles
+GM,General Motors Company,United States,33.9,0.599,0.064,0.088,0.5221,0.0,0.489,0.544,0.26,0.47,0.05,0.52,0.556,Consumer Cyclical,Auto Manufacturers
+XRAY,DENTSPLY SIRONA Inc.,United States,33.69,0.823,0.43,0.172,0.1974,0.0,0.357,0.344,0.77,0.54,0.01,0.95,0.192,Healthcare,Medical Instruments & Supplies
+BX,Blackstone Inc.,United States,33.47,0.253,0.964,0.33,0.3038,-0.8,0.537,0.529,0.0,0.0,0.02,0.67,0.463,Financial Services,Asset Management
+GT,The Goodyear Tire & Rubber Company,United States,33.38,0.665,0.01,0.09,0.7084,0.0,0.455,0.347,0.77,0.46,0.04,0.0,0.556,Consumer Cyclical,Auto Parts
+ACDC,ProFrac Holding Corp.,United States,32.79,0.665,0.144,0.163,0.3064,0.91,0.461,0.251,0.79,0.52,0.0,0.0,0.153,Energy,Oil & Gas Equipment & Services
+TM,Toyota Motor Corporation,Japan,32.71,0.698,0.167,0.307,0.4979,0.0,0.402,0.497,0.0,0.47,0.0,1.0,0.316,Consumer Cyclical,Auto Manufacturers
+SEM,Select Medical Holdings Corporation,United States,32.62,0.523,0.061,0.123,0.2493,-0.75,0.388,0.425,0.78,0.47,0.01,0.32,0.533,Healthcare,Medical Care Facilities
+CPRI,Capri Holdings Limited,United Kingdom,32.61,0.545,0.378,0.074,0.1706,0.0,0.334,0.421,0.78,0.47,0.02,0.0,0.188,Consumer Cyclical,Luxury Goods
+VFC,V.F. Corporation,United States,32.53,0.426,0.312,0.124,0.1209,0.94,0.433,0.432,0.75,0.49,0.04,0.51,0.188,Consumer Cyclical,Apparel Manufacturing
+DAN,Dana Incorporated,United States,32.43,0.65,0.0,0.139,0.8178,0.0,0.614,0.39,0.77,0.49,0.01,0.58,0.188,Consumer Cyclical,Auto Parts
+MLKN,"MillerKnoll, Inc.",United States,32.15,0.573,0.228,0.205,0.1745,0.0,0.391,0.365,0.79,0.49,0.0,0.69,0.277,Consumer Cyclical,"Furnishings, Fixtures & Appliances"
+BK,The Bank of New York Mellon Corporation,United States,32.02,0.432,0.282,1.0,0.7606,-0.83,0.622,0.661,0.08,0.0,0.03,0.81,0.488,Financial Services,Banks - Diversified
+SYF,Synchrony Financial,United States,31.87,0.68,0.423,1.0,0.666,-0.87,0.594,0.359,0.52,0.0,0.02,0.73,0.463,Financial Services,Credit Services
+EWBC,"East West Bancorp, Inc.",United States,31.81,0.453,0.367,1.0,0.6694,-0.93,0.611,0.482,0.64,0.0,0.0,0.84,0.463,Financial Services,Banks - Regional
+PNFP,"Pinnacle Financial Partners, Inc.",United States,31.76,0.344,0.216,1.0,0.5688,-0.86,0.61,0.557,0.7,0.0,0.0,0.64,0.648,Financial Services,Banks - Regional
+CYBR,CyberArk Software Ltd.,Israel,31.76,0.344,0.543,0.307,0.782,0.0,0.596,0.6,0.58,0.0,0.0,0.0,0.857,Technology,Software - Infrastructure
+PZZA,"Papa John's International, Inc.",United States,31.65,0.823,0.048,0.03,0.4741,0.0,0.479,0.482,0.78,0.53,0.01,0.78,0.556,Consumer Cyclical,Restaurants
+GS,"The Goldman Sachs Group, Inc.",United States,31.26,0.58,0.719,0.484,0.7487,-0.19,0.613,0.443,0.0,0.0,0.01,0.77,0.492,Financial Services,Capital Markets
+CLF,Cleveland-Cliffs Inc.,United States,31.24,0.489,0.0,0.371,0.1711,-0.89,0.335,0.297,0.76,0.44,0.16,0.0,0.194,Basic Materials,Steel
+MP,MP Materials Corp.,United States,31.2,0.279,0.0,0.866,0.6464,0.0,0.728,0.439,0.75,0.0,0.04,0.0,0.73,Basic Materials,Other Industrial Metals & Mining
+NWG,NatWest Group plc,United Kingdom,31.07,0.578,0.312,1.0,0.7215,0.0,0.615,0.614,0.22,0.0,0.03,0.89,0.623,Financial Services,Banks - Regional
+HPQ,HP Inc.,United States,30.88,0.862,0.077,0.085,0.243,0.0,0.375,0.345,0.54,0.56,0.05,1.0,0.483,Technology,Computer Hardware
+JKS,"JinkoSolar Holding Co., Ltd.",China,30.81,0.7,0.0,0.494,0.2435,0.0,0.495,0.383,0.79,0.48,0.01,1.0,0.188,Technology,Solar
+BCS,Barclays PLC,United Kingdom,30.76,0.529,0.239,1.0,0.8082,0.0,0.627,0.658,0.11,0.0,0.08,0.78,0.57,Financial Services,Banks - Diversified
+WHR,Whirlpool Corporation,United States,30.75,0.28,0.002,0.0,0.3162,0.0,0.471,0.388,0.74,0.48,0.01,1.0,0.556,Consumer Cyclical,"Furnishings, Fixtures & Appliances"
+HBAN,Huntington Bancshares Incorporated,United States,30.7,0.473,0.265,1.0,0.6638,-0.91,0.562,0.483,0.53,0.0,0.16,0.87,0.565,Financial Services,Banks - Regional
+LEG,"Leggett & Platt, Incorporated",United States,30.58,0.532,0.042,0.31,0.2217,0.0,0.416,0.445,0.79,0.48,0.02,0.42,0.188,Consumer Cyclical,"Furnishings, Fixtures & Appliances"
+SNV,Synovus Financial Corp.,United States,30.57,0.398,0.268,1.0,0.5979,0.0,0.573,0.47,0.72,0.0,0.01,0.85,0.697,Financial Services,Banks - Regional
+DB,Deutsche Bank Aktiengesellschaft,Germany,30.38,0.486,0.182,1.0,0.8251,0.0,0.661,0.598,0.2,0.0,0.02,0.81,0.57,Financial Services,Banks - Regional
+WFC,Wells Fargo & Company,United States,30.34,0.437,0.278,1.0,0.7394,0.0,0.575,0.492,0.0,0.0,0.09,0.65,0.401,Financial Services,Banks - Diversified
+CHKP,Check Point Software Technologies Ltd.,Israel,30.33,0.381,0.971,0.198,0.7593,0.0,0.552,0.576,0.54,0.0,0.0,0.0,0.25,Technology,Software - Infrastructure
+HSBC,HSBC Holdings plc,United Kingdom,30.22,0.479,0.277,1.0,0.7889,0.0,0.578,0.537,0.0,0.0,0.01,0.73,0.463,Financial Services,Banks - Diversified
+M,"Macy's, Inc.",United States,29.76,0.607,0.281,0.217,0.1824,0.0,0.36,0.35,0.77,0.47,0.04,0.98,0.188,Consumer Cyclical,Department Stores
+BAP,Credicorp Ltd.,Peru,29.74,0.734,0.386,1.0,0.7867,0.0,0.575,0.661,0.61,0.0,0.0,0.94,0.645,Financial Services,Banks - Regional
+AAL,American Airlines Group Inc.,United States,29.43,0.609,0.078,0.072,0.1703,0.0,0.473,0.449,0.72,0.47,0.25,0.0,0.129,Industrials,Airlines
+NTRS,Northern Trust Corporation,United States,29.29,0.577,0.405,0.668,0.7425,-0.89,0.618,0.503,0.53,0.0,0.02,0.79,0.619,Financial Services,Asset Management
+LYG,Lloyds Banking Group plc,United Kingdom,29.22,0.419,0.244,1.0,0.7777,0.0,0.568,0.545,0.14,0.0,0.07,0.87,0.463,Financial Services,Banks - Regional
+BAC,Bank of America Corporation,United States,29.21,0.463,0.248,1.0,0.6902,0.0,0.516,0.476,0.0,0.0,0.22,0.77,0.472,Financial Services,Banks - Diversified
+MODG,Topgolf Callaway Brands Corp.,United States,29.13,0.694,0.133,0.26,0.2282,0.95,0.344,0.311,0.78,0.47,0.01,0.0,0.188,Consumer Cyclical,Leisure
+OLN,Olin Corporation,United States,29.09,0.469,0.0,0.155,0.1706,0.0,0.316,0.335,0.78,0.49,0.01,0.65,0.47,Basic Materials,Chemicals
+STT,State Street Corporation,United States,28.91,0.704,0.282,1.0,0.7172,-0.93,0.604,0.503,0.46,0.0,0.01,0.84,0.467,Financial Services,Asset Management
+AES,The AES Corporation,United States,28.89,0.458,0.09,0.018,0.2049,0.0,0.357,0.439,0.71,0.51,0.08,1.0,0.414,Utilities,Utilities - Diversified
+AEO,"American Eagle Outfitters, Inc.",United States,28.87,0.743,0.243,0.221,0.2461,0.0,0.325,0.47,0.78,0.49,0.03,0.82,0.188,Consumer Cyclical,Apparel Retail
+AMN,"AMN Healthcare Services, Inc.",United States,28.87,0.701,0.201,0.079,0.2201,0.0,0.311,0.313,0.79,0.48,0.0,0.0,0.192,Healthcare,Medical Care Facilities
+RUN,Sunrun Inc.,United States,28.87,0.372,0.011,0.109,0.2043,0.66,0.419,0.41,0.77,0.44,0.15,0.0,0.31,Technology,Solar
+DOW,Dow Inc.,United States,28.82,0.502,0.0,0.305,0.2388,0.0,0.329,0.49,0.59,0.51,0.08,1.0,0.231,Basic Materials,Chemicals
+CC,The Chemours Company,United States,28.82,0.531,0.026,0.191,0.1387,0.87,0.337,0.314,0.78,0.48,0.03,0.51,0.47,Basic Materials,Specialty Chemicals
+LCID,"Lucid Group, Inc.",United States,28.81,0.337,0.0,0.991,0.2168,0.0,0.362,0.416,0.73,0.0,0.8,0.0,0.881,Consumer Cyclical,Auto Manufacturers
+F,Ford Motor Company,United States,28.71,0.542,0.083,0.088,0.4987,0.0,0.423,0.397,0.3,0.45,0.52,1.0,0.188,Consumer Cyclical,Auto Manufacturers
+CRSP,CRISPR Therapeutics AG,Switzerland,28.56,0.48,0.0,1.0,0.417,-0.74,0.443,0.331,0.75,0.0,0.02,0.0,0.881,Healthcare,Biotechnology
+RY,Royal Bank of Canada,Canada,28.51,0.499,0.342,1.0,0.7248,0.91,0.518,0.602,0.0,0.0,0.0,0.89,0.524,Financial Services,Banks - Diversified
+KSS,Kohl's Corporation,United States,28.47,0.517,0.177,0.065,0.1175,0.0,0.306,0.295,0.79,0.44,0.04,0.79,0.556,Consumer Cyclical,Department Stores
+MTB,M&T Bank Corporation,United States,28.4,0.531,0.247,1.0,0.569,-0.9,0.563,0.546,0.45,0.0,0.01,0.78,0.476,Financial Services,Banks - Regional
+C,Citigroup Inc.,United States,28.23,0.652,0.19,1.0,0.747,-0.72,0.563,0.436,0.0,0.0,0.08,0.81,0.463,Financial Services,Banks - Diversified
+POWI,"Power Integrations, Inc.",United States,28.13,0.33,0.509,1.0,0.2558,0.0,0.393,0.36,0.77,0.0,0.0,0.55,0.329,Technology,Semiconductors
+MAIN,Main Street Capital Corporation,United States,28.1,0.529,0.886,0.568,0.6832,-0.78,0.507,0.58,0.74,0.0,0.0,1.0,0.17,Financial Services,Asset Management
+PENN,"PENN Entertainment, Inc.",United States,27.98,0.574,0.176,0.0,0.3434,0.83,0.429,0.408,0.77,0.45,0.02,0.0,0.188,Consumer Cyclical,Resorts & Casinos
+ZION,"Zions Bancorporation, National Association",United States,27.9,0.625,0.319,1.0,0.5088,-0.81,0.545,0.464,0.71,0.0,0.01,0.88,0.499,Financial Services,Banks - Regional
+LYB,LyondellBasell Industries N.V.,United States,27.77,0.71,0.022,0.359,0.1785,0.9,0.356,0.506,0.59,0.53,0.02,1.0,0.194,Basic Materials,Specialty Chemicals
+CSIQ,Canadian Solar Inc.,Canada,27.7,0.662,0.0,0.164,0.3108,0.0,0.407,0.359,0.79,0.46,0.01,0.0,0.188,Technology,Solar
+UBS,UBS Group AG,Switzerland,27.53,0.369,0.182,1.0,0.6766,0.0,0.493,0.608,0.0,0.0,0.01,0.62,0.463,Financial Services,Banks - Diversified
+XPEV,XPeng Inc.,China,27.52,0.675,0.0,0.729,0.4372,0.0,0.728,0.422,0.62,0.0,0.04,0.0,0.881,Consumer Cyclical,Auto Manufacturers
+LNC,Lincoln National Corporation,United States,27.49,0.73,0.494,0.774,0.5529,-0.85,0.49,0.485,0.74,0.0,0.01,1.0,0.663,Financial Services,Insurance - Life
+WOOF,"Petco Health and Wellness Company, Inc.",United States,27.3,0.695,0.159,0.019,0.1973,0.0,0.436,0.398,0.79,0.44,0.02,0.0,0.188,Consumer Cyclical,Specialty Retail
+FCNCA,"First Citizens BancShares, Inc.",United States,27.17,0.545,0.286,1.0,0.5066,0.0,0.526,0.499,0.51,0.0,0.0,0.64,0.463,Financial Services,Banks - Regional
+OZK,Bank OZK,United States,26.82,0.683,0.313,1.0,0.6678,-0.86,0.534,0.53,0.74,0.0,0.0,0.97,0.463,Financial Services,Banks - Regional
+WBS,Webster Financial Corporation,United States,26.72,0.513,0.233,0.913,0.6042,-0.92,0.564,0.465,0.7,0.0,0.01,0.79,0.463,Financial Services,Banks - Regional
+BMO,Bank of Montreal,Canada,26.7,0.549,0.258,1.0,0.7612,0.81,0.555,0.682,0.0,0.0,0.0,0.88,0.463,Financial Services,Banks - Diversified
+CMA,Comerica Incorporated,United States,26.47,0.557,0.281,1.0,0.4727,-0.74,0.534,0.549,0.71,0.0,0.01,0.93,0.465,Financial Services,Banks - Regional
+HAIN,"The Hain Celestial Group, Inc.",United States,26.29,0.764,0.095,0.332,0.38,0.91,0.277,0.42,0.8,0.44,0.01,0.0,0.164,Consumer Defensive,Packaged Foods
+PB,"Prosperity Bancshares, Inc.",United States,26.29,0.488,0.198,0.945,0.4863,-0.9,0.53,0.638,0.73,0.0,0.0,0.83,0.593,Financial Services,Banks - Regional
+HUN,Huntsman Corporation,United States,26.25,0.54,0.0,0.392,0.2581,0.79,0.323,0.454,0.78,0.48,0.02,1.0,0.194,Basic Materials,Chemicals
+USB,U.S. Bancorp,United States,26.16,0.539,0.288,1.0,0.5231,0.77,0.52,0.585,0.0,0.0,0.07,0.94,0.463,Financial Services,Banks - Regional
+SMFG,"Sumitomo Mitsui Financial Group, Inc.",Japan,25.65,0.69,0.182,1.0,0.6247,0.0,0.478,0.476,0.0,0.0,0.01,0.47,0.463,Financial Services,Banks - Diversified
+SIMO,Silicon Motion Technology Corporation,Hong Kong,25.38,0.391,0.364,1.0,0.7266,0.0,0.419,0.346,0.77,0.0,0.0,0.67,0.188,Technology,Semiconductors
+SNAP,Snap Inc.,United States,25.37,0.322,0.351,0.667,0.1816,-0.95,0.337,0.311,0.64,0.0,0.22,0.0,0.477,Communication Services,Internet Content & Information
+NWL,Newell Brands Inc.,United States,25.28,0.819,0.131,0.073,0.1502,0.0,0.433,0.356,0.78,0.47,0.05,0.72,0.164,Consumer Defensive,Household & Personal Products
+WBA,"Walgreens Boots Alliance, Inc.",United States,25.21,0.5,0.0,0.0,0.691,0.0,0.475,0.327,0.69,0.43,0.04,1.0,0.247,Healthcare,Pharmaceutical Retailers
+PII,Polaris Inc.,United States,25.1,0.509,0.027,0.071,0.1705,0.0,0.349,0.461,0.77,0.51,0.01,0.96,0.188,Consumer Cyclical,Recreational Vehicles
+MSTR,Strategy Incorporated,United States,24.96,0.542,0.329,0.333,0.6458,-0.95,0.728,0.366,0.0,0.0,0.07,0.0,0.188,Technology,Software - Application
+WDC,Western Digital Corporation,United States,24.72,0.546,0.396,0.463,0.7927,-0.93,0.485,0.294,0.56,0.0,0.03,0.41,0.483,Technology,Computer Hardware
+KEX,Kirby Corporation,United States,24.45,0.243,0.244,0.473,0.5707,0.0,0.443,0.434,0.73,0.0,0.0,0.0,0.708,Industrials,Marine Shipping
+COLB,"Columbia Banking System, Inc.",United States,24.23,0.629,0.253,1.0,0.3335,0.0,0.541,0.456,0.74,0.0,0.01,0.92,0.463,Financial Services,Banks - Regional
+ARWR,"Arrowhead Pharmaceuticals, Inc.",United States,24.21,0.366,0.471,0.806,0.1953,0.0,0.36,0.305,0.78,0.0,0.01,0.0,0.192,Healthcare,Biotechnology
+MARA,"MARA Holdings, Inc.",United States,24.2,0.516,0.359,0.272,0.2205,-0.85,0.413,0.263,0.74,0.0,0.24,0.0,0.881,Financial Services,Capital Markets
+PPBI,"Pacific Premier Bancorp, Inc.",United States,24.09,0.492,0.182,1.0,0.3287,-0.72,0.467,0.427,0.78,0.0,0.01,0.78,0.463,Financial Services,Banks - Regional
+HDB,HDFC Bank Limited,India,24.06,0.471,0.346,0.542,0.806,0.0,0.522,0.609,0.0,0.0,0.01,0.65,0.463,Financial Services,Banks - Regional
+NMR,"Nomura Holdings, Inc.",Japan,24.02,0.828,0.674,0.479,0.6201,0.0,0.472,0.451,0.6,0.0,0.0,0.64,0.463,Financial Services,Capital Markets
+LITE,Lumentum Holdings Inc.,United States,23.96,0.307,0.094,0.468,0.6603,-0.91,0.636,0.442,0.73,0.0,0.01,0.0,0.492,Technology,Communication Equipment
+DKNG,DraftKings Inc.,United States,23.94,0.454,0.214,0.407,0.3394,-0.94,0.479,0.45,0.58,0.02,0.05,0.0,0.708,Consumer Cyclical,Gambling
+JACK,Jack in the Box Inc.,United States,23.89,0.796,0.251,0.0,0.0875,-0.83,0.305,0.462,0.8,0.47,0.0,1.0,0.188,Consumer Cyclical,Restaurants
+PFSI,"PennyMac Financial Services, Inc.",United States,22.81,0.5,0.568,0.038,0.4888,-0.88,0.482,0.632,0.75,0.0,0.0,0.62,0.881,Financial Services,Mortgage Finance
+SFIX,"Stitch Fix, Inc.",United States,22.74,0.659,0.21,0.868,0.3095,-0.8,0.438,0.255,0.8,0.03,0.01,0.0,0.188,Consumer Cyclical,Apparel Retail
+MRNA,"Moderna, Inc.",United States,22.28,0.847,0.0,1.0,0.1533,-0.86,0.282,0.298,0.68,0.15,0.05,0.0,0.192,Healthcare,Biotechnology
+BA,The Boeing Company,United States,22.17,0.443,0.0,0.441,0.8112,-0.92,0.509,0.372,0.0,0.0,0.04,0.0,0.591,Industrials,Aerospace & Defense
+XRX,Xerox Holdings Corporation,United States,22.06,0.744,0.137,0.064,0.1497,0.91,0.32,0.454,0.79,0.44,0.02,0.39,0.188,Technology,Information Technology Services
+DNUT,"Krispy Kreme, Inc.",United States,21.96,0.55,0.059,0.071,0.0108,-0.95,0.29,0.408,0.8,0.44,0.02,0.83,0.164,Consumer Defensive,Grocery Stores
+TFC,Truist Financial Corporation,United States,21.87,0.519,0.182,1.0,0.5775,0.0,0.51,0.562,0.16,0.0,0.04,0.88,0.147,Financial Services,Banks - Regional
+MXL,"MaxLinear, Inc.",United States,21.81,0.426,0.291,0.834,0.1493,-0.87,0.353,0.281,0.79,0.0,0.0,0.0,0.188,Technology,Semiconductors
+JEF,Jefferies Financial Group Inc.,United States,21.66,0.547,0.719,0.5,0.2363,0.0,0.482,0.503,0.68,0.0,0.01,0.74,0.133,Financial Services,Capital Markets
+RIVN,"Rivian Automotive, Inc.",United States,21.01,0.332,0.0,0.906,0.4302,-0.93,0.403,0.317,0.64,0.0,0.13,0.0,0.188,Consumer Cyclical,Auto Manufacturers
+ARCC,Ares Capital Corporation,United States,20.08,0.662,0.75,0.16,0.6443,0.0,0.472,0.699,0.63,0.0,0.02,1.0,0.463,Financial Services,Asset Management
+AL,Air Lease Corporation,United States,19.74,0.652,0.508,0.0,0.8049,-0.89,0.528,0.478,0.73,0.0,0.0,0.75,0.659,Industrials,Rental & Leasing Services
+PACB,"Pacific Biosciences of California, Inc.",United States,19.49,0.57,0.293,0.584,0.1453,-0.69,0.484,0.295,0.8,0.0,0.06,0.0,0.192,Healthcare,Medical Devices
+SEDG,"SolarEdge Technologies, Inc.",Israel,19.1,0.664,0.214,0.654,0.636,0.0,0.444,0.27,0.78,0.0,0.03,0.0,0.24,Technology,Solar
+DQ,Daqo New Energy Corp.,China,18.66,0.593,0.0,1.0,0.1586,0.0,0.491,0.418,0.79,0.0,0.01,0.0,0.188,Technology,Semiconductor Equipment & Materials
+FLG,"Flagstar Financial, Inc.",United States,18.55,0.52,0.0,1.0,0.5582,0.0,0.493,0.5,0.75,0.0,0.05,0.44,0.133,Financial Services,Banks - Regional
+KEY,KeyCorp,United States,16.91,0.483,0.182,0.186,0.5686,-0.39,0.548,0.559,0.59,0.0,0.09,0.87,0.699,Financial Services,Banks - Regional
+NLY,"Annaly Capital Management, Inc.",United States,16.86,0.623,0.6,0.0,0.5429,-0.88,0.46,0.559,0.68,0.0,0.04,1.0,0.51,Real Estate,REIT - Mortgage
+FITB,Fifth Third Bancorp,United States,16.34,0.45,0.291,0.289,0.4994,0.0,0.513,0.596,0.49,0.0,0.03,0.91,0.463,Financial Services,Banks - Regional
+AGNC,AGNC Investment Corp.,United States,16.18,0.377,0.6,0.092,0.5068,-0.9,0.445,0.589,0.7,0.0,0.12,1.0,0.182,Real Estate,REIT - Mortgage
+PNC,"The PNC Financial Services Group, Inc.",United States,15.5,0.446,0.284,0.05,0.5467,-0.84,0.527,0.591,0.0,0.0,0.01,0.89,0.463,Financial Services,Banks - Regional
+FDX,FedEx Corporation,United States,14.94,0.605,0.232,0.254,0.2721,0.0,0.395,0.418,0.19,0.0,0.02,0.8,0.716,Industrials,Integrated Freight & Logistics
+RF,Regions Financial Corporation,United States,14.74,0.604,0.283,0.0,0.527,-0.86,0.529,0.584,0.56,0.0,0.05,0.98,0.695,Financial Services,Banks - Regional
+NIO,NIO Inc.,China,13.87,0.684,0.0,0.35,0.2231,0.0,0.387,0.423,0.72,0.0,0.16,0.0,0.757,Consumer Cyclical,Auto Manufacturers
+PLUG,Plug Power Inc.,United States,13.01,0.597,0.0,0.669,0.0763,0.76,0.329,0.269,0.78,0.0,0.47,0.0,0.31,Industrials,Electrical Equipment & Parts
+WOLF,"Wolfspeed, Inc.",United States,9.54,0.566,0.0,0.378,0.0189,-0.78,0.272,0.4,0.8,0.0,0.85,0.0,0.188,Technology,Semiconductors
+FLNC,"Fluence Energy, Inc.",United States,8.32,0.72,0.0,0.708,0.043,0.73,0.317,0.391,0.79,0.0,0.03,0.0,0.119,Utilities,Utilities - Renewable
+EXPI,"eXp World Holdings, Inc.",United States,7.21,0.541,0.001,0.34,0.1709,-0.91,0.403,0.462,0.79,0.0,0.01,0.52,0.182,Real Estate,Real Estate Services

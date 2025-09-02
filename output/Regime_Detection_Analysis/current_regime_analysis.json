@@ -1,13 +1,13 @@
 {
-  "timestamp": "2025-08-31T00:24:55.656823",
+  "timestamp": "2025-08-31T23:13:46.343892",
   "regime_detection": {
     "regime": 0,
     "regime_name": "Steady Growth",
-    "confidence": 0.9999999951562684,
+    "confidence": 0.9999999951220993,
     "all_probabilities": {
-      "Steady Growth": 0.9999999951562684,
-      "Strong Bull": 6.2797917487889196e-164,
-      "Crisis/Bear": 4.843731447907522e-09
+      "Steady Growth": 0.9999999951220993,
+      "Strong Bull": 6.293094289415863e-164,
+      "Crisis/Bear": 4.877900786016442e-09
     },
     "regime_characteristics": {
       "frequency": 0.33095787046740727,
@@ -374,7 +374,7 @@
     },
     "as_of": "2025-08-29",
     "latest_features": {
-      "volatility_21d": 0.06904233113015698,
+      "volatility_21d": 0.06904233113015666,
       "momentum": 0.02708427864584828,
       "trend": 0.06572870242674175
     }

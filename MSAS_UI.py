@@ -1935,21 +1935,69 @@ class ScoreTrendAnalysisWidget(QWidget):
         return group
 
     def create_results_section(self):
-        """Create unified results display section"""
+        """Create unified results display section with proper horizontal scroll"""
         group = QGroupBox("Analysis Results")
         layout = QVBoxLayout()
+        layout.setContentsMargins(10, 10, 10, 30)  # Add bottom margin to prevent taskbar overlap
 
         # Tab-like buttons for switching views
         view_buttons_layout = QHBoxLayout()
+        view_buttons_layout.setSpacing(5)
 
         self.stability_view_btn = QPushButton("Stability Results")
         self.stability_view_btn.setCheckable(True)
         self.stability_view_btn.setChecked(True)
         self.stability_view_btn.clicked.connect(lambda: self.switch_results_view("stability"))
+        view_buttons_layout.addWidget(self.stability_view_btn)
+
+        # Technical plots button with dropdown
+        technical_button_widget = QWidget()
+        technical_button_layout = QHBoxLayout(technical_button_widget)
+        technical_button_layout.setContentsMargins(0, 0, 0, 0)
+        technical_button_layout.setSpacing(0)
 
         self.technical_view_btn = QPushButton("Technical Plots")
         self.technical_view_btn.setCheckable(True)
         self.technical_view_btn.clicked.connect(lambda: self.switch_results_view("technical"))
+        technical_button_layout.addWidget(self.technical_view_btn)
+
+        # Add dropdown for plot selection
+        self.plot_selector = QComboBox()
+        self.plot_selector.setMinimumWidth(200)
+        self.plot_selector.setMaximumWidth(300)
+        self.plot_selector.addItem("All Plots")
+        self.plot_selector.currentTextChanged.connect(self.on_plot_selection_changed)
+        self.plot_selector.setVisible(False)  # Initially hidden
+        self.plot_selector.setStyleSheet("""
+            QComboBox {
+                background-color: #3c3c3c;
+                border: 1px solid #555;
+                border-radius: 4px;
+                padding: 5px;
+                color: white;
+                margin-left: 10px;
+            }
+            QComboBox::drop-down {
+                border: none;
+            }
+            QComboBox::down-arrow {
+                image: none;
+                border-left: 4px solid transparent;
+                border-right: 4px solid transparent;
+                border-top: 6px solid #888;
+                margin-right: 5px;
+            }
+            QComboBox QAbstractItemView {
+                background-color: #2b2b2b;
+                border: 1px solid #555;
+                selection-background-color: #7c4dff;
+                color: white;
+            }
+        """)
+        technical_button_layout.addWidget(self.plot_selector)
+
+        view_buttons_layout.addWidget(technical_button_widget)
+        view_buttons_layout.addStretch()
 
         # Style the view buttons
         button_style = """
@@ -1970,38 +2018,94 @@ class ScoreTrendAnalysisWidget(QWidget):
         self.stability_view_btn.setStyleSheet(button_style)
         self.technical_view_btn.setStyleSheet(button_style)
 
-        view_buttons_layout.addWidget(self.stability_view_btn)
-        view_buttons_layout.addWidget(self.technical_view_btn)
-        view_buttons_layout.addStretch()
+        # ADD THIS LINE - IT WAS COMMENTED OUT!
         layout.addLayout(view_buttons_layout)
 
         # Results display area
         self.results_stack = QWidget()
         results_stack_layout = QVBoxLayout(self.results_stack)
 
-        # Stability results table
+        # ENHANCED: Stability results table with proper horizontal scroll
         self.stability_table = QTableWidget()
         self.stability_table.setMinimumHeight(350)
         self.stability_table.setAlternatingRowColors(True)
         self.stability_table.setSelectionBehavior(QAbstractItemView.SelectRows)
+
+        # CRITICAL: Proper horizontal scroll configuration
+        self.stability_table.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.stability_table.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.stability_table.horizontalHeader().setStretchLastSection(False)
+
+        # IMPORTANT: Hide row numbers (index column) to save space
+        self.stability_table.verticalHeader().setVisible(False)
+
+        # Configure resize modes for better scrolling
+        header = self.stability_table.horizontalHeader()
+        header.setSectionResizeMode(QHeaderView.Interactive)  # Allow manual resizing
+        header.setDefaultSectionSize(100)  # Default column width
+
+        # Enhanced table styling with proper scroll bars
         self.stability_table.setStyleSheet("""
             QTableWidget {
                 gridline-color: #444;
                 background-color: #2b2b2b;
                 alternate-background-color: #353535;
+                selection-background-color: #7c4dff;
             }
             QHeaderView::section {
                 background-color: #404040;
                 padding: 8px;
-                border: none;
+                border: 1px solid #555;
                 font-weight: bold;
+                color: #ffffff;
+                min-height: 25px;
             }
             QTableWidget::item {
-                padding: 8px;
+                padding: 6px;
                 border-bottom: 1px solid #444;
+                color: #ffffff;
             }
             QTableWidget::item:selected {
                 background-color: #7c4dff;
+                color: #ffffff;
+            }
+            QScrollBar:horizontal {
+                background-color: #3c3c3c;
+                height: 15px;
+                border-radius: 7px;
+                margin: 0px;
+            }
+            QScrollBar::handle:horizontal {
+                background-color: #7c4dff;
+                border-radius: 7px;
+                min-width: 30px;
+            }
+            QScrollBar::handle:horizontal:hover {
+                background-color: #8c5fff;
+            }
+            QScrollBar::add-line:horizontal,
+            QScrollBar::sub-line:horizontal {
+                border: none;
+                background: none;
+            }
+            QScrollBar:vertical {
+                background-color: #3c3c3c;
+                width: 15px;
+                border-radius: 7px;
+                margin: 0px;
+            }
+            QScrollBar::handle:vertical {
+                background-color: #7c4dff;
+                border-radius: 7px;
+                min-height: 30px;
+            }
+            QScrollBar::handle:vertical:hover {
+                background-color: #8c5fff;
+            }
+            QScrollBar::add-line:vertical,
+            QScrollBar::sub-line:vertical {
+                border: none;
+                background: none;
             }
         """)
 
@@ -2024,19 +2128,8 @@ class ScoreTrendAnalysisWidget(QWidget):
 
         layout.addWidget(self.results_stack)
 
-        # Action buttons
+        # SIMPLIFIED: Action area with just the summary label (NO BUTTONS)
         actions_layout = QHBoxLayout()
-
-        self.export_stability_btn = QPushButton("Export Stability Results")
-        self.export_stability_btn.clicked.connect(self.export_stability_results)
-        self.export_stability_btn.setEnabled(False)
-        actions_layout.addWidget(self.export_stability_btn)
-
-        self.open_plots_folder_btn = QPushButton("Open Plots Folder")
-        self.open_plots_folder_btn.clicked.connect(self.open_plots_folder)
-        self.open_plots_folder_btn.setEnabled(False)
-        actions_layout.addWidget(self.open_plots_folder_btn)
-
         actions_layout.addStretch()
 
         self.results_summary_label = QLabel("No analysis results available")
@@ -2045,8 +2138,94 @@ class ScoreTrendAnalysisWidget(QWidget):
 
         layout.addLayout(actions_layout)
 
+        # layout.setContentsMargins(10, 10, 10, 30)  # Add 30px bottom margin
+
         group.setLayout(layout)
         return group
+
+    def populate_plot_selector(self):
+        """Populate the plot selector dropdown with available plots"""
+        self.plot_selector.clear()
+        self.plot_selector.addItem("All Plots")
+
+        if hasattr(self, 'filtered_plot_files') and self.filtered_plot_files:
+            # Extract ticker name from first file
+            first_file = Path(self.filtered_plot_files[0]).name
+            ticker = first_file.split('_')[0]
+
+            # Add individual plot options
+            plot_names = []
+            for plot_file in self.filtered_plot_files:
+                filename = Path(plot_file).stem
+                # Format the display name nicely
+                parts = filename.replace(ticker + '_', '').split('_')
+
+                # Create readable name
+                if len(parts) >= 2:
+                    plot_number = parts[0]
+                    plot_name = ' '.join(parts[1:])
+                    display_name = f"{ticker} {plot_number} {plot_name.title()}"
+                else:
+                    display_name = filename.replace('_', ' ').title()
+
+                plot_names.append((display_name, plot_file))
+
+            # Sort by plot number
+            plot_names.sort(key=lambda x: x[0])
+
+            for display_name, plot_file in plot_names:
+                self.plot_selector.addItem(display_name, plot_file)
+
+    def on_plot_selection_changed(self, selected_text):
+        """Handle plot selection from dropdown"""
+        if selected_text == "All Plots":
+            self.load_technical_plots()
+        else:
+            # Load single plot
+            current_index = self.plot_selector.currentIndex()
+            if current_index > 0:  # Skip "All Plots"
+                plot_file = self.plot_selector.itemData(current_index)
+                if plot_file:
+                    self.load_single_plot(plot_file)
+
+    def load_single_plot(self, plot_file):
+        """Load and display a single plot"""
+        if not Path(plot_file).exists():
+            return
+
+        # Create a widget to hold the single plot
+        plot_widget = QWidget()
+        layout = QVBoxLayout(plot_widget)
+        layout.setAlignment(Qt.AlignCenter)
+
+        # Create a frame for the plot
+        frame = QFrame()
+        frame.setFrameStyle(QFrame.Box)
+        frame.setStyleSheet("QFrame { border: 2px solid #555; background-color: #2b2b2b; }")
+        frame_layout = QVBoxLayout(frame)
+
+        # Load and display the image at full resolution
+        label = QLabel()
+        pixmap = QPixmap(plot_file)
+
+        # Scale to fit the available space while maintaining aspect ratio
+        # Use larger max dimensions for single plot view
+        scaled_pixmap = pixmap.scaled(1200, 600, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        label.setPixmap(scaled_pixmap)
+        label.setAlignment(Qt.AlignCenter)
+
+        # Add filename as title
+        title = QLabel(Path(plot_file).stem.replace('_', ' ').title())
+        title.setAlignment(Qt.AlignCenter)
+        title.setStyleSheet("font-weight: bold; font-size: 14px; padding: 10px; color: #ffffff;")
+
+        frame_layout.addWidget(title)
+        frame_layout.addWidget(label)
+
+        layout.addWidget(frame)
+
+        # Set the widget in the scroll area
+        self.technical_plots_area.setWidget(plot_widget)
 
     def create_progress_bars(self):
         """Create progress bars for both analysis types"""
@@ -2089,11 +2268,17 @@ class ScoreTrendAnalysisWidget(QWidget):
             self.technical_view_btn.setChecked(False)
             self.stability_table.show()
             self.technical_plots_area.hide()
+            self.plot_selector.setVisible(False)  # Hide dropdown
         else:  # technical
             self.stability_view_btn.setChecked(False)
             self.technical_view_btn.setChecked(True)
             self.stability_table.hide()
             self.technical_plots_area.show()
+            self.plot_selector.setVisible(True)  # Show dropdown
+            # Load plots when switching to technical view
+            self.load_technical_plots()
+            # Populate the dropdown
+            self.populate_plot_selector()
 
     def set_recommended_regime(self, regime):
         """Set the recommended regime from regime detection tab"""
@@ -2124,21 +2309,21 @@ class ScoreTrendAnalysisWidget(QWidget):
             self.regime_recommendation_label.setStyleSheet("color: #ff9800; font-style: italic;")
 
     def run_stability_analysis(self):
-        """Run stability analysis for selected regime"""
+        """Run enhanced stability analysis for selected regime"""
         selected_regime = self.stability_regime_combo.currentText()
         regime_key = selected_regime.replace(" ", "_").replace("/", "_")
 
         # Show progress
         self.stability_progress_group.setVisible(True)
         self.stability_progress_bar.setValue(0)
-        self.stability_progress_status.setText("Starting stability analysis...")
+        self.stability_progress_status.setText("Starting enhanced stability analysis...")
 
         # Disable button
         self.run_stability_btn.setEnabled(False)
         self.run_stability_btn.setText("Analyzing...")
 
-        # Start thread
-        self.stability_thread = StabilityAnalysisThread(regime_key)
+        # Start enhanced thread
+        self.stability_thread = EnhancedStabilityAnalysisThread(regime_key)
         self.stability_thread.progress_update.connect(self.update_stability_progress)
         self.stability_thread.status_update.connect(self.update_stability_status)
         self.stability_thread.result_ready.connect(self.handle_stability_results)
@@ -2147,7 +2332,7 @@ class ScoreTrendAnalysisWidget(QWidget):
         self.stability_thread.start()
 
     def run_technical_analysis(self):
-        """Run technical analysis for entered ticker"""
+        """Run enhanced technical analysis for entered ticker"""
         ticker = self.ticker_input.text().strip().upper()
 
         if not ticker:
@@ -2160,14 +2345,14 @@ class ScoreTrendAnalysisWidget(QWidget):
         # Show progress
         self.technical_progress_group.setVisible(True)
         self.technical_progress_bar.setValue(0)
-        self.technical_progress_status.setText(f"Starting technical analysis for {ticker}...")
+        self.technical_progress_status.setText(f"Starting enhanced technical analysis for {ticker}...")
 
         # Disable button
         self.run_technical_btn.setEnabled(False)
         self.run_technical_btn.setText("Generating...")
 
-        # Start thread
-        self.technical_thread = TechnicalPlotsThread(ticker, regime_key)
+        # Start enhanced thread
+        self.technical_thread = EnhancedTechnicalPlotsThread(ticker, regime_key)
         self.technical_thread.progress_update.connect(self.update_technical_progress)
         self.technical_thread.status_update.connect(self.update_technical_status)
         self.technical_thread.result_ready.connect(self.handle_technical_results)
@@ -2190,7 +2375,7 @@ class ScoreTrendAnalysisWidget(QWidget):
 
     # Results handlers
     def handle_stability_results(self, results):
-        """Handle stability analysis results"""
+        """Handle stability analysis results (no export button)"""
         self.current_stability_results = results
         self.display_stability_results(results['results_df'])
 
@@ -2204,35 +2389,73 @@ class ScoreTrendAnalysisWidget(QWidget):
         self.stability_stats['strong_buy'].setText(f"Strong Buy Recommendations: {strong_buy_count}")
         self.stability_stats['avg_stability'].setText(f"Average Stability Score: {avg_stability:.2f}")
 
-        self.results_summary_label.setText(f"Stability analysis complete: {total_stocks} stocks")
-        self.export_stability_btn.setEnabled(True)
+        # Show where results are saved
+        output_path = results['output_path']
+        self.results_summary_label.setText(
+            f"Analysis complete: {total_stocks} stocks analyzed. Results saved to output directory."
+        )
+
+        print(f"✅ Stability results saved to: {output_path}")
 
     def handle_technical_results(self, results):
-        """Handle technical analysis results"""
+        """Enhanced handler for technical analysis results (no folder button)"""
         self.current_technical_results = results
 
-        # Display technical analysis text results
+        # Display enhanced technical analysis results
         ticker = results['ticker']
         recommendation = results['recommendation']
+        technical_score = results.get('technical_score', 0)
+        total_plots = results.get('total_plots', 0)
+        ranking_data = results.get('ranking_data', {})
+        plot_directory = results['plot_directory']
 
-        results_text = f"TECHNICAL ANALYSIS FOR {ticker}\n"
-        results_text += "=" * 40 + "\n"
+        results_text = f"ENHANCED TECHNICAL ANALYSIS FOR {ticker}\n"
+        results_text += "=" * 50 + "\n"
+        results_text += f"Technical Score: {technical_score:.1f}\n"
         results_text += f"Recommendation: {recommendation}\n"
         results_text += f"Regime: {results['regime']}\n"
-        results_text += f"Plots Generated: {len(results['plot_files'])}\n"
-        results_text += f"Output Directory: {results['plot_directory']}\n"
+        results_text += f"Plots Generated: {total_plots}\n"
+        results_text += f"📁 Plots Directory: {plot_directory}\n"
+
+        if results.get('ranking_file'):
+            results_text += f"📊 Ranking CSV: {Path(results['ranking_file']).name}\n"
+
+        # Add detailed breakdown if available
+        if ranking_data:
+            results_text += f"\n🔍 DETAILED INDICATOR BREAKDOWN:\n"
+            results_text += "-" * 30 + "\n"
+
+            indicators = ['Trend Direction', 'SMA Position', 'MACD Signal', 'RSI Level',
+                          'ADX Strength', 'ARIMA', 'Exp Smooth']
+
+            for indicator in indicators:
+                if indicator in ranking_data:
+                    value = ranking_data[indicator]
+                    if value == 1:
+                        status = "🟢 BULLISH"
+                    elif value >= 0.5:
+                        status = "🟡 NEUTRAL"
+                    else:
+                        status = "🔴 BEARISH"
+                    results_text += f"{indicator}: {value} {status}\n"
 
         self.technical_results_area.setText(results_text)
 
-        # Display plot files
-        plot_files_text = "\n".join([Path(p).name for p in results['plot_files']])
+        # Display plot files with directory info
+        plot_files_text = "Plot files generated:\n" + "\n".join([Path(p).name for p in results['plot_files']])
+        if not results['plot_files']:
+            plot_files_text = "No plot files generated"
         self.plots_list_widget.setText(plot_files_text)
 
         # Switch to technical view
         self.switch_results_view("technical")
 
-        self.results_summary_label.setText(f"Technical analysis complete for {ticker}")
-        self.open_plots_folder_btn.setEnabled(True)
+        # self.results_summary_label.setText(
+        #     f"Analysis complete for {ticker} - Score: {technical_score:.1f}. Check plots directory."
+        # )
+        self.results_summary_label.setText(
+            f"✓ {ticker}: Score {technical_score:.1f}, {recommendation}"
+        )
 
     def handle_stability_error(self, error_message):
         QMessageBox.critical(self, "Stability Analysis Error", f"Error occurred:\n{error_message}")
@@ -2253,55 +2476,369 @@ class ScoreTrendAnalysisWidget(QWidget):
         self.run_technical_btn.setText("Generate Technical Plots")
 
     def display_stability_results(self, df):
-        """Display stability analysis results in table"""
+        """Enhanced display of stability analysis results with proper scrolling"""
         if df is None or df.empty:
             return
 
-        # Set up table
+        # Set up table dimensions
         self.stability_table.setRowCount(len(df))
         self.stability_table.setColumnCount(len(df.columns))
         self.stability_table.setHorizontalHeaderLabels(df.columns.tolist())
 
-        # Populate table
+        # Populate table with formatted data
         for row in range(len(df)):
             for col in range(len(df.columns)):
                 value = df.iloc[row, col]
-                item = QTableWidgetItem(str(value))
+
+                # Enhanced formatting for different data types
+                if isinstance(value, float):
+                    if abs(value) < 0.0001:
+                        display_value = "0"
+                    elif abs(value) < 0.01:
+                        display_value = f"{value:.4f}"
+                    elif abs(value) < 1:
+                        display_value = f"{value:.3f}"
+                    elif abs(value) < 100:
+                        display_value = f"{value:.2f}"
+                    else:
+                        display_value = f"{value:.1f}"
+                else:
+                    display_value = str(value)
+
+                item = QTableWidgetItem(display_value)
                 item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+
+                # Add tooltips for long content
+                if len(display_value) > 20:
+                    item.setToolTip(display_value)
+
                 self.stability_table.setItem(row, col, item)
 
-        # Resize columns
-        self.stability_table.resizeColumnsToContents()
+        # Smart column sizing with better widths
+        header = self.stability_table.horizontalHeader()
+
+        # Set specific widths for different column types
+        for i, column_name in enumerate(df.columns):
+            column_lower = column_name.lower()
+
+            if column_lower == 'ticker':
+                header.resizeSection(i, 80)  # Compact ticker column
+            elif column_lower in ['companyname', 'company_name']:
+                header.resizeSection(i, 150)  # Company name
+            elif column_lower in ['sector']:
+                header.resizeSection(i, 120)  # Sector
+            elif column_lower in ['industry']:
+                header.resizeSection(i, 140)  # Industry
+            elif column_lower == 'recommendation':
+                header.resizeSection(i, 180)  # Recommendation
+            elif 'score' in column_lower:
+                header.resizeSection(i, 90)  # Score columns
+            elif column_lower in ['appearances', 'avg_rank']:
+                header.resizeSection(i, 80)  # Numeric columns
+            else:
+                header.resizeSection(i, 100)  # Default width
+
+        # Ensure horizontal scrolling is working
+        self.stability_table.horizontalHeader().setStretchLastSection(False)
+
+        print(f"📊 Stability table updated: {len(df)} rows × {len(df.columns)} columns")
+        print(f"🔄 Horizontal scroll enabled, row numbers hidden")
 
     def export_stability_results(self):
-        """Export stability results"""
-        if self.current_stability_results:
-            output_path = self.current_stability_results['output_path']
-            QMessageBox.information(self, "Export Complete",
-                                    f"Stability results saved to:\n{output_path}")
-        else:
-            QMessageBox.warning(self, "Export", "No stability results to export!")
+        """Export stability results - DISABLED (results auto-saved)"""
+        # This method can be removed or kept disabled
+        pass
 
     def open_plots_folder(self):
-        """Open the plots folder in file explorer"""
-        if self.current_technical_results:
-            plot_directory = self.current_technical_results['plot_directory']
-            import os
-            import subprocess
-            import platform
+        """Open plots folder - DISABLED (path shown in results)"""
+        # This method can be removed or kept disabled
+        pass
+
+    def load_technical_plots(self):
+        """Load and display technical plots in the plots area"""
+        if not self.current_technical_results:
+            return
+
+        # Reset dropdown to "All Plots" without triggering signal
+        if hasattr(self, 'plot_selector'):
+            self.plot_selector.blockSignals(True)
+            self.plot_selector.setCurrentIndex(0)
+            self.plot_selector.blockSignals(False)
+
+        # Create a widget to hold all plots
+        plots_widget = QWidget()
+        layout = QGridLayout(plots_widget)
+        layout.setSpacing(10)
+
+        plot_files = self.current_technical_results.get('plot_files', [])
+
+        # Filter and sort plot files (exclude overview and original subplot files)
+        excluded_patterns = [
+            '00_overview',
+            '_03_momentum.png',  # Original momentum subplot
+            '_04_bollinger_bands.png',  # Original bollinger subplot
+            '_05_trend_strength.png'  # Original trend strength subplot
+        ]
+
+        filtered_files = []
+        for f in plot_files:
+            filename = Path(f).name
+            if not any(pattern in filename for pattern in excluded_patterns):
+                filtered_files.append(f)
+
+        filtered_files.sort()
+
+        # Store filtered files for dropdown
+        self.filtered_plot_files = filtered_files
+
+        # Display plots in a grid (2 columns)
+        row, col = 0, 0
+        for plot_file in filtered_files:
+            if Path(plot_file).exists():
+                # Create a frame for each plot
+                frame = QFrame()
+                frame.setFrameStyle(QFrame.Box)
+                frame.setStyleSheet("QFrame { border: 1px solid #555; }")
+                frame_layout = QVBoxLayout(frame)
+
+                # Load and display the image
+                label = QLabel()
+                pixmap = QPixmap(plot_file)
+                # Scale to fit (max width 500px)
+                scaled_pixmap = pixmap.scaledToWidth(500, Qt.SmoothTransformation)
+                label.setPixmap(scaled_pixmap)
+                label.setAlignment(Qt.AlignCenter)
+
+                # Add filename as title
+                title = QLabel(Path(plot_file).stem.replace('_', ' ').title())
+                title.setAlignment(Qt.AlignCenter)
+                title.setStyleSheet("font-weight: bold; padding: 5px;")
+
+                frame_layout.addWidget(title)
+                frame_layout.addWidget(label)
+
+                layout.addWidget(frame, row, col)
+
+                col += 1
+                if col >= 2:
+                    col = 0
+                    row += 1
+
+        # Set the widget in the scroll area
+        self.technical_plots_area.setWidget(plots_widget)
+
+class EnhancedTechnicalPlotsThread(QThread):
+    """Enhanced thread using the ranked technical analysis approach"""
+    progress_update = pyqtSignal(int)
+    status_update = pyqtSignal(str)
+    result_ready = pyqtSignal(dict)
+    error_occurred = pyqtSignal(str)
+
+    def __init__(self, ticker, regime_name):
+        super().__init__()
+        self.ticker = ticker.upper()
+        self.regime_name = regime_name
+
+    def run(self):
+        try:
+            self.status_update.emit(f"Initializing enhanced technical analysis for {self.ticker}...")
+            self.progress_update.emit(10)
+
+            # Set up directories
+            csv_directory = PROJECT_ROOT / "output" / "Ranked_Lists" / self.regime_name
+            output_base_dir = PROJECT_ROOT / "output" / "Score_Trend_Analysis_Results"
+
+            self.progress_update.emit(30)
+            self.status_update.emit("Loading historical data...")
+
+            # Add trend analysis directory to Python path
+            trend_analysis_path = PROJECT_ROOT / 'src' / 'trend_analysis'
+            sys.path.insert(0, str(trend_analysis_path))
 
             try:
-                if platform.system() == "Windows":
-                    os.startfile(plot_directory)
-                elif platform.system() == "Darwin":  # macOS
-                    subprocess.run(["open", plot_directory])
-                else:  # Linux
-                    subprocess.run(["xdg-open", plot_directory])
+                # Import the enhanced analyzer
+                from stock_score_trend_technical_single_enhanced import EnhancedSingleTickerTechnicalAnalyzer
+
+                self.progress_update.emit(50)
+                self.status_update.emit("Running enhanced technical analysis...")
+
+                # Create enhanced analyzer instance
+                analyzer = EnhancedSingleTickerTechnicalAnalyzer(
+                    csv_directory=str(csv_directory),
+                    start_date="0601",
+                    end_date=datetime.now().strftime("%m%d"),
+                    sigmoid_sensitivity=5
+                )
+
+                # Run enhanced analysis
+                success, ranking_data = analyzer.analyze_single_ticker_with_ranking(
+                    ticker=self.ticker,
+                    output_base_dir=str(output_base_dir),
+                    min_appearances=3
+                )
+
+                if not success:
+                    self.error_occurred.emit(f"Enhanced technical analysis failed for {self.ticker}")
+                    return
+
+                self.progress_update.emit(90)
+                self.status_update.emit("Generating final results...")
+
+                # Find plot files
+                tech_plots_dir = output_base_dir / "technical_plots" / self.ticker
+                plot_files = list(tech_plots_dir.glob("*.png")) if tech_plots_dir.exists() else []
+
+                # Find ranking file
+                ranking_file = tech_plots_dir / f"{self.ticker}_technical_ranking.csv"
+
+                result = {
+                    'success': True,
+                    'ticker': self.ticker,
+                    'regime': self.regime_name,
+                    'recommendation': ranking_data['Recommendation'] if ranking_data else 'Unknown',
+                    'technical_score': ranking_data['Score'] if ranking_data else 0,
+                    'plot_directory': str(tech_plots_dir),
+                    'plot_files': [str(p) for p in plot_files],
+                    'ranking_file': str(ranking_file) if ranking_file.exists() else None,
+                    'ranking_data': ranking_data,
+                    'total_plots': len(plot_files)
+                }
+
+                self.progress_update.emit(100)
+                self.result_ready.emit(result)
+
+            except ImportError as e:
+                self.error_occurred.emit(
+                    f"Failed to import enhanced analyzer: {str(e)}\nMake sure stock_score_trend_technical_single_enhanced.py is in {trend_analysis_path}")
             except Exception as e:
-                QMessageBox.information(self, "Folder Location",
-                                        f"Plots saved to:\n{plot_directory}\n\nCouldn't auto-open: {e}")
-        else:
-            QMessageBox.warning(self, "No Plots", "No technical plots available!")
+                self.error_occurred.emit(f"Enhanced technical analysis failed: {str(e)}")
+            finally:
+                # Clean up sys.path
+                if str(trend_analysis_path) in sys.path:
+                    sys.path.remove(str(trend_analysis_path))
+
+        except Exception as e:
+            self.error_occurred.emit(f"Thread execution failed: {str(e)}")
+
+
+class EnhancedStabilityAnalysisThread(QThread):
+    """Enhanced stability analysis thread that includes sector/industry info"""
+    progress_update = pyqtSignal(int)
+    status_update = pyqtSignal(str)
+    result_ready = pyqtSignal(dict)
+    error_occurred = pyqtSignal(str)
+
+    def __init__(self, regime_name):
+        super().__init__()
+        self.regime_name = regime_name
+
+    def run(self):
+        try:
+            self.status_update.emit("Starting enhanced stability analysis...")
+            self.progress_update.emit(10)
+
+            # Find the most recent ranked stocks file to get sector/industry info
+            ranked_lists_dir = PROJECT_ROOT / "output" / "Ranked_Lists" / self.regime_name
+
+            if not ranked_lists_dir.exists():
+                self.error_occurred.emit(f"Ranked lists directory not found: {ranked_lists_dir}")
+                return
+
+            # Find the most recent CSV file
+            csv_files = sorted(ranked_lists_dir.glob("top_ranked_stocks_*.csv"))
+            if not csv_files:
+                self.error_occurred.emit(f"No ranked stocks files found in {ranked_lists_dir}")
+                return
+
+            most_recent_file = csv_files[-1]
+
+            self.progress_update.emit(30)
+            self.status_update.emit("Loading sector/industry information...")
+
+            # Load sector/industry mapping from most recent file
+            sector_industry_df = pd.read_csv(most_recent_file)[['Ticker', 'CompanyName', 'Sector', 'Industry']]
+
+            self.progress_update.emit(50)
+            self.status_update.emit("Running stability analysis...")
+
+            # Run original stability analysis
+            script_path = PROJECT_ROOT / 'src' / 'trend_analysis' / 'stock_score_trend_analyzer_04.py'
+
+            sys.path.insert(0, str(script_path.parent))
+
+            try:
+                import stock_score_trend_analyzer_04 as analyzer_module
+
+                # Create analyzer instance
+                csv_directory = PROJECT_ROOT / "output" / "Ranked_Lists" / self.regime_name
+                output_directory = PROJECT_ROOT / "output" / "Score_Trend_Analysis_Results" / self.regime_name
+                output_directory.mkdir(parents=True, exist_ok=True)
+
+                analyzer = analyzer_module.StockScoreTrendAnalyzer(
+                    csv_directory=str(csv_directory),
+                    start_date="0601",
+                    end_date=datetime.now().strftime("%m%d"),
+                    sigmoid_sensitivity=5
+                )
+
+                self.progress_update.emit(70)
+                self.status_update.emit("Analyzing stock trends...")
+
+                # Run analysis and export results
+                today = datetime.now().strftime("%m%d")
+                output_file = output_directory / f"stability_analysis_results_{today}.csv"
+                results_df = analyzer.export_results(output_path=str(output_file))
+
+                self.progress_update.emit(90)
+                self.status_update.emit("Adding sector/industry information...")
+
+                # Merge with sector/industry information
+                enhanced_df = results_df.merge(
+                    sector_industry_df,
+                    left_on='ticker',
+                    right_on='Ticker',
+                    how='left'
+                ).drop('Ticker', axis=1)  # Remove duplicate ticker column
+
+                # Reorder columns to put sector/industry info early
+                column_order = ['ticker', 'CompanyName', 'Sector', 'Industry'] + \
+                               [col for col in enhanced_df.columns if
+                                col not in ['ticker', 'CompanyName', 'Sector', 'Industry']]
+                enhanced_df = enhanced_df[column_order]
+
+                # Fill missing sector/industry info
+                enhanced_df['CompanyName'] = enhanced_df['CompanyName'].fillna('Unknown')
+                enhanced_df['Sector'] = enhanced_df['Sector'].fillna('Unknown')
+                enhanced_df['Industry'] = enhanced_df['Industry'].fillna('Unknown')
+
+                # Save enhanced results
+                enhanced_output_file = output_directory / f"stability_analysis_enhanced_{today}.csv"
+                enhanced_df.to_csv(enhanced_output_file, index=False)
+
+                self.progress_update.emit(100)
+
+                # Prepare result data
+                result = {
+                    'success': True,
+                    'output_path': str(enhanced_output_file),
+                    'original_output_path': str(output_file),
+                    'results_df': enhanced_df,
+                    'regime': self.regime_name,
+                    'total_stocks': len(enhanced_df),
+                    'analyzer': analyzer,
+                    'has_sector_info': True
+                }
+
+                self.result_ready.emit(result)
+
+            except Exception as e:
+                self.error_occurred.emit(f"Enhanced analysis failed: {str(e)}")
+            finally:
+                if str(script_path.parent) in sys.path:
+                    sys.path.remove(str(script_path.parent))
+
+        except Exception as e:
+            self.error_occurred.emit(f"Thread execution failed: {str(e)}")
 
 
 # Modified MainWindow class to use tabs
