@@ -13,7 +13,36 @@ import pickle
 from pathlib import Path
 
 class CurrentRegimeDetector:
+    # def __init__(self, model_path='regime_model.pkl'):
+    #     self.project_root = Path(__file__).parent.parent.parent
+    #     self.output_dir = self.project_root / "output" / "Regime_Detection_Analysis"
+    #     self.results_dir = self.project_root / "output" / "Regime_Detection_Results"
+    #     self.config_dir = self.project_root / "config"
+    #
+    #     # Create directories if needed
+    #     self.output_dir.mkdir(parents=True, exist_ok=True)
+    #
+    #     # Update model path to look in Analysis directory
+    #     model_path = os.path.join(self.output_dir, model_path)
+    #
+    #     """Load the trained regime model"""
+    #     with open(model_path, 'rb') as f:
+    #         self.model_data = pickle.load(f)
+    #
+    #     self.model = self.model_data['model']
+    #     self.scaler = self.model_data['scaler']
+    #     self.pca = self.model_data.get('pca', None)
+    #     self.use_pca = self.model_data.get('use_pca', False)
+    #     self.feature_columns = self.model_data['feature_columns']
+    #     self.regime_characteristics = self.model_data['regime_characteristics']
+    #
+    #     if self.use_pca and self.pca is not None:
+    #         print(f"📊 Loaded model with PCA ({self.pca.n_components} components)")
+    #     else:
+    #         print("📊 Loaded model without PCA")
+
     def __init__(self, model_path='regime_model.pkl'):
+        """Initialize and load the trained regime model"""
         # Set correct paths
         self.project_root = Path(__file__).parent.parent.parent
         self.output_dir = self.project_root / "output" / "Regime_Detection_Analysis"
@@ -22,12 +51,29 @@ class CurrentRegimeDetector:
 
         # Create directories if needed
         self.output_dir.mkdir(parents=True, exist_ok=True)
+        self.results_dir.mkdir(parents=True, exist_ok=True)
 
-        # Update model path to look in Analysis directory
-        model_path = os.path.join(self.output_dir, model_path)
+        # FIXED: Look for model in BOTH directories
+        # First try Results directory (where regime_detector.py saves it)
+        model_file = self.results_dir / model_path
 
-        """Load the trained regime model"""
-        with open(model_path, 'rb') as f:
+        # If not found, try Analysis directory as fallback
+        if not model_file.exists():
+            model_file = self.output_dir / model_path
+
+        # If still not found, raise an error
+        if not model_file.exists():
+            raise FileNotFoundError(
+                f"Model file not found in either:\n"
+                f"  - {self.results_dir / model_path}\n"
+                f"  - {self.output_dir / model_path}\n"
+                f"Please run regime detection first to generate the model."
+            )
+
+        print(f"📊 Loading model from: {model_file}")
+
+        # Load the trained regime model
+        with open(model_file, 'rb') as f:
             self.model_data = pickle.load(f)
 
         self.model = self.model_data['model']
@@ -38,9 +84,9 @@ class CurrentRegimeDetector:
         self.regime_characteristics = self.model_data['regime_characteristics']
 
         if self.use_pca and self.pca is not None:
-            print(f"📊 Loaded model with PCA ({self.pca.n_components} components)")
+            print(f"✓ Loaded model with PCA ({self.pca.n_components} components)")
         else:
-            print("📊 Loaded model without PCA")
+            print("✓ Loaded model without PCA")
 
     def fetch_recent_data(self, lookback_days=500):  # Increased for rolling calculations
         """Fetch recent market data for regime detection"""

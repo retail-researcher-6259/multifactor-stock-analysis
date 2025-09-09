@@ -331,8 +331,9 @@ class StockScoreTrendAnalyzer:
         #     plt.savefig(save_path, dpi=300, bbox_inches='tight')
         # plt.show()
 
-    def export_results(self, output_path="./results/stability_analysis_results.csv"):
-        """Export analysis results to CSV"""
+    def export_results(self, output_path="./results/stability_analysis_results.csv",
+                       ranked_file_path=None):
+        """Export analysis results to CSV with optional sector/industry info"""
         df = self.analyze_all_stocks()
 
         # Sort by stability adjusted score
@@ -341,69 +342,243 @@ class StockScoreTrendAnalyzer:
         # Add recommendation AFTER sorting
         df['recommendation'] = df.apply(self._generate_recommendation, axis=1)
 
+        # Add sector/industry information if available
+        if ranked_file_path is None:
+            # Try to find the most recent ranked file automatically
+            try:
+                # Try to detect regime name from directory path
+                regime_name = Path(self.csv_directory).name
+
+                # Try new pattern first (with regime name)
+                csv_files = sorted(Path(self.csv_directory).glob(f"top_ranked_stocks_{regime_name}*.csv"))
+
+                # Fallback to old pattern if no files found
+                if not csv_files:
+                    csv_files = sorted(Path(self.csv_directory).glob("top_ranked_stocks_*.csv"))
+
+                if csv_files:
+                    ranked_file_path = csv_files[-1]
+                    print(f"Using ranked file for sector info: {ranked_file_path.name}")
+            except Exception as e:
+                print(f"Warning: Could not find ranked file: {e}")
+                pass
+
+        if ranked_file_path and Path(ranked_file_path).exists():
+            try:
+                # Load sector/industry data
+                ranked_df = pd.read_csv(ranked_file_path)
+
+                # Check if required columns exist
+                required_cols = ['Ticker', 'CompanyName', 'Country', 'Sector', 'Industry']
+                missing_cols = [col for col in required_cols if col not in ranked_df.columns]
+
+                if missing_cols:
+                    print(f"Warning: Missing columns in ranked file: {missing_cols}")
+                    # Use only available columns
+                    available_cols = [col for col in required_cols if col in ranked_df.columns]
+                    if 'Ticker' in available_cols:  # At minimum we need Ticker
+                        sector_info = ranked_df[available_cols]
+                    else:
+                        print("Error: No 'Ticker' column in ranked file")
+                        sector_info = None
+                else:
+                    sector_info = ranked_df[required_cols]
+
+                if sector_info is not None:
+                    # Merge with our results (ticker is lowercase in stability results)
+                    df = df.merge(
+                        sector_info,
+                        left_on='ticker',
+                        right_on='Ticker',
+                        how='left'
+                    )
+
+                    # Drop the duplicate Ticker column and reorder
+                    if 'Ticker' in df.columns:
+                        df = df.drop('Ticker', axis=1)
+
+                    # Reorder columns to put company info early
+                    first_cols = ['ticker']
+                    optional_cols = ['CompanyName', 'Country', 'Sector', 'Industry']
+                    for col in optional_cols:
+                        if col in df.columns:
+                            first_cols.append(col)
+
+                    other_cols = [col for col in df.columns if col not in first_cols]
+                    df = df[first_cols + other_cols]
+
+                    # Fill missing values for any columns that exist
+                    for col in optional_cols:
+                        if col in df.columns:
+                            df[col] = df[col].fillna('Unknown')
+
+            except Exception as e:
+                print(f"Warning: Could not merge sector info: {e}")
+
         df.to_csv(output_path, index=False)
         print(f"Results exported to: {output_path}")
         return df
 
+    # def _generate_recommendation(self, row):
+    #     """Generate investment recommendation based on stability adjusted score"""
+    #     stability_adj = row['stability_adjusted_score']
+    #     avg_score = row['avg_score']
+    #     r2 = row['linear_r2']
+    #     slope = row['linear_slope']
+    #     score_std = row['score_std']
+    #
+    #     # Elite tier - Best of the best
+    #     if stability_adj >= 65 and slope > 0.5 and r2 > 0.8:
+    #         return "STRONG BUY - Elite performer"
+    #
+    #     # High conviction buys
+    #     elif stability_adj >= 55 and slope > 0.3 and r2 > 0.7:
+    #         return "STRONG BUY - High conviction"
+    #
+    #     # Quality growth
+    #     elif stability_adj >= 45 and slope > 0.2 and r2 > 0.6:
+    #         return "BUY - Quality growth"
+    #
+    #     # Stable high scorers
+    #     elif stability_adj >= 40 and score_std < 3 and avg_score > 60:
+    #         return "BUY - Stable quality"
+    #
+    #     # Good score worth some volatility
+    #     elif avg_score >= 70 and stability_adj >= 35:
+    #         return "BUY - High score acceptable risk"
+    #
+    #     # Momentum plays
+    #     elif slope > 1.0 and stability_adj >= 30:
+    #         return "SPECULATIVE BUY - Strong momentum"
+    #
+    #     # Hold positions
+    #     elif stability_adj >= 35 and abs(slope) < 0.1:
+    #         return "HOLD - Stable but flat"
+    #
+    #     elif stability_adj >= 30 and slope > 0:
+    #         return "HOLD - Modest potential"
+    #
+    #     # Deteriorating positions
+    #     elif slope < -0.5 and r2 > 0.7:
+    #         return "SELL - Reliable downtrend"
+    #
+    #     elif slope < -0.3 and stability_adj < 30:
+    #         return "REDUCE - Weakening position"
+    #
+    #     # High volatility warning
+    #     elif score_std > 10:
+    #         return "AVOID - Too volatile"
+    #
+    #     # Poor overall score
+    #     elif stability_adj < 25:
+    #         return "AVOID - Poor risk-adjusted score"
+    #
+    #     # Weak fundamentals
+    #     elif avg_score < 30:
+    #         return "AVOID - Weak fundamentals"
+    #
+    #     # Default
+    #     else:
+    #         return "WATCH - Monitor for opportunity"
+
     def _generate_recommendation(self, row):
-        """Generate investment recommendation based on stability adjusted score"""
+        """
+        Generate investment recommendation based on stability adjusted score
+        Updated with more realistic thresholds for current market conditions
+        """
         stability_adj = row['stability_adjusted_score']
         avg_score = row['avg_score']
         r2 = row['linear_r2']
         slope = row['linear_slope']
         score_std = row['score_std']
 
-        # Elite tier - Best of the best
-        if stability_adj >= 65 and slope > 0.5 and r2 > 0.8:
+        # --- STRONG BUY TIER (Top performers) ---
+        # Elite tier - Exceptional stocks (loosened from 65/0.5/0.8)
+        if stability_adj >= 50 and slope > 0.3 and r2 > 0.7:
             return "STRONG BUY - Elite performer"
 
-        # High conviction buys
-        elif stability_adj >= 55 and slope > 0.3 and r2 > 0.7:
+        # High conviction buys (loosened from 55/0.3/0.7)
+        elif stability_adj >= 45 and slope > 0.2 and r2 > 0.6:
             return "STRONG BUY - High conviction"
 
-        # Quality growth
-        elif stability_adj >= 45 and slope > 0.2 and r2 > 0.6:
+        # Strong momentum with good stability (new category)
+        elif stability_adj >= 40 and slope > 0.4 and r2 > 0.5:
+            return "STRONG BUY - Strong momentum"
+
+        # --- BUY TIER (Good opportunities) ---
+        # Quality growth (loosened from 45/0.2/0.6)
+        elif stability_adj >= 38 and slope > 0.1 and r2 > 0.5:
             return "BUY - Quality growth"
 
-        # Stable high scorers
-        elif stability_adj >= 40 and score_std < 3 and avg_score > 60:
+        # Stable high scorers (loosened from 40/3/60)
+        elif stability_adj >= 35 and score_std < 5 and avg_score > 55:
             return "BUY - Stable quality"
 
-        # Good score worth some volatility
-        elif avg_score >= 70 and stability_adj >= 35:
+        # Good score worth some volatility (loosened from 70/35)
+        elif avg_score >= 65 and stability_adj >= 32:
             return "BUY - High score acceptable risk"
 
-        # Momentum plays
-        elif slope > 1.0 and stability_adj >= 30:
+        # Consistent performers with positive trend (new category)
+        elif stability_adj >= 33 and slope > 0.05 and r2 > 0.4:
+            return "BUY - Consistent performer"
+
+        # --- SPECULATIVE BUY TIER ---
+        # Strong momentum plays (loosened from 1.0/30)
+        elif slope > 0.5 and stability_adj >= 28:
             return "SPECULATIVE BUY - Strong momentum"
 
-        # Hold positions
-        elif stability_adj >= 35 and abs(slope) < 0.1:
+        # Recovery plays (new category)
+        elif slope > 0.3 and stability_adj >= 25 and avg_score > 50:
+            return "SPECULATIVE BUY - Recovery candidate"
+
+        # --- HOLD TIER (Neutral positions) ---
+        # Stable but flat (loosened from 35)
+        elif stability_adj >= 30 and abs(slope) < 0.1:
             return "HOLD - Stable but flat"
 
-        elif stability_adj >= 30 and slope > 0:
+        # Modest potential (loosened from 30)
+        elif stability_adj >= 28 and slope > 0:
             return "HOLD - Modest potential"
 
-        # Deteriorating positions
+        # Good fundamentals but uncertain trend (new category)
+        elif avg_score >= 50 and stability_adj >= 25:
+            return "HOLD - Good fundamentals"
+
+        # Needs monitoring (new category for borderline cases)
+        elif stability_adj >= 25 and stability_adj < 28:
+            return "HOLD - Needs monitoring"
+
+        # --- REDUCE/SELL TIER ---
+        # Reliable downtrend (keep strict for safety)
         elif slope < -0.5 and r2 > 0.7:
             return "SELL - Reliable downtrend"
 
-        elif slope < -0.3 and stability_adj < 30:
+        # Deteriorating position (slightly loosened)
+        elif slope < -0.2 and stability_adj < 25:
             return "REDUCE - Weakening position"
 
-        # High volatility warning
-        elif score_std > 10:
+        # Weak momentum (new category)
+        elif slope < -0.1 and avg_score < 45:
+            return "REDUCE - Weak momentum"
+
+        # --- AVOID TIER (High risk) ---
+        # Too volatile (loosened from 10)
+        elif score_std > 15:
             return "AVOID - Too volatile"
 
-        # Poor overall score
-        elif stability_adj < 25:
+        # Poor risk-adjusted score (loosened from 25)
+        elif stability_adj < 20:
             return "AVOID - Poor risk-adjusted score"
 
-        # Weak fundamentals
-        elif avg_score < 30:
+        # Weak fundamentals (loosened from 30)
+        elif avg_score < 35:
             return "AVOID - Weak fundamentals"
 
-        # Default
+        # Very poor trend (new category)
+        elif slope < -0.3 and r2 > 0.5:
+            return "AVOID - Strong downtrend"
+
+        # --- DEFAULT ---
         else:
             return "WATCH - Monitor for opportunity"
 
@@ -463,7 +638,30 @@ if __name__ == "__main__":
     # Run analysis
     today = datetime.now().strftime("%m%d")  # e.g. 0807
     output_file = f"{OUTPUT_DIRECTORY}/stability_analysis_results_{today}.csv"
-    results_df = analyzer.export_results(output_path=output_file)
+
+    # results_df = analyzer.export_results(output_path=output_file)
+
+    # Find the latest ranked file for sector info
+    ranked_file = None
+    try:
+        # ranked_files = sorted(Path(CSV_DIRECTORY).glob("top_ranked_stocks_*.csv"))
+
+        # Extract regime from directory
+        ranked_files = sorted(Path(CSV_DIRECTORY).glob(f"top_ranked_stocks_{REGIME_NAME}*.csv"))
+
+        # Fallback to old pattern if needed
+        if not ranked_files:
+            ranked_files = sorted(Path(CSV_DIRECTORY).glob("top_ranked_stocks_*.csv"))
+
+        if ranked_files:
+            ranked_file = ranked_files[-1]
+    except:
+        pass
+
+    results_df = analyzer.export_results(
+        output_path=output_file,
+        ranked_file_path=ranked_file
+    )
 
     # Display top stable stocks
     print("\nTop 10 Most Stable Stocks with Positive Trends:")

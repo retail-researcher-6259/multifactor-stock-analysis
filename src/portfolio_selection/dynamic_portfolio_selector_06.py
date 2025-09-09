@@ -104,6 +104,23 @@ class DynamicPortfolioSelector:
         # Clean and prepare data
         self._prepare_data()
 
+    # def _detect_file_type(self) -> str:
+    #     """
+    #     Detect whether the file is a ranked stocks file or common tickers file
+    #
+    #     Returns:
+    #         'ranked' or 'common'
+    #     """
+    #     # Check for columns unique to each file type
+    #     if 'Rank_in_Ranked' in self.stocks_df.columns and 'Linear_R2' in self.stocks_df.columns:
+    #         return 'common'
+    #     elif 'Value' in self.stocks_df.columns and 'Quality' in self.stocks_df.columns:
+    #         return 'ranked'
+    #     else:
+    #         # Default to ranked if unclear
+    #         print("⚠️ Could not definitively determine file type, assuming 'ranked'")
+    #         return 'ranked'
+
     def _detect_file_type(self) -> str:
         """
         Detect whether the file is a ranked stocks file or common tickers file
@@ -112,14 +129,21 @@ class DynamicPortfolioSelector:
             'ranked' or 'common'
         """
         # Check for columns unique to each file type
-        if 'Rank_in_Ranked' in self.stocks_df.columns and 'Linear_R2' in self.stocks_df.columns:
+        columns_lower = [col.lower() for col in self.stocks_df.columns]
+
+        # Common tickers file (from stability analysis) has these columns
+        if 'linear_r2' in columns_lower or 'stability_adjusted_score' in columns_lower:
             return 'common'
-        elif 'Value' in self.stocks_df.columns and 'Quality' in self.stocks_df.columns:
+        # Ranked stocks file has factor columns
+        elif 'value' in columns_lower or 'quality' in columns_lower:
             return 'ranked'
         else:
-            # Default to ranked if unclear
-            print("⚠️ Could not definitively determine file type, assuming 'ranked'")
-            return 'ranked'
+            # Check for other indicators
+            if 'ticker' in columns_lower and 'avg_score' in columns_lower:
+                return 'common'
+            else:
+                print("⚠️ Could not definitively determine file type, assuming 'ranked'")
+                return 'ranked'
 
     def _is_real_estate_related(self, sector: str, industry: str) -> bool:
         """
@@ -157,19 +181,64 @@ class DynamicPortfolioSelector:
 
     def _prepare_data(self):
         """Clean and prepare the stocks data"""
-        # Remove rows with missing critical data
-        if self.file_type == 'common':
-            self.stocks_df = self.stocks_df.dropna(subset=['Ticker', 'Score', 'Sector'])
-        else:
-            self.stocks_df = self.stocks_df.dropna(subset=['Ticker', 'Score', 'Sector'])
+        # Standardize column names for common operations
+        if 'ticker' in self.stocks_df.columns:
+            self.stocks_df = self.stocks_df.rename(columns={'ticker': 'Ticker'})
 
-        # Filter out real estate stocks if requested
-        if self.exclude_real_estate:
+        # Standardize other common column names from stability analysis
+        column_mappings = {
+            'linear_r2': 'Linear_R2',
+            'linear_slope': 'Linear_Slope',
+            'stability_adjusted_score': 'Stability_Adjusted_Score',
+            'avg_score': 'Avg_Score',
+            'score_cv': 'Score_CV',
+            'combined_rank': 'Combined_Rank',
+            'recommendation': 'Recommendation',
+            'appearances': 'Appearances',
+            'avg_rank': 'Avg_Rank',
+            'stability_score': 'Stability_Score',
+            'r2_adjusted_score': 'R2_Adjusted_Score',
+            'slope_adjusted_score': 'Slope_Adjusted_Score',
+            'trend_consistency': 'Trend_Consistency',
+            'score_std': 'Score_Std'
+        }
+
+        # Apply column mappings
+        for old_name, new_name in column_mappings.items():
+            if old_name in self.stocks_df.columns:
+                self.stocks_df = self.stocks_df.rename(columns={old_name: new_name})
+
+        # Handle different score column names
+        if self.file_type == 'common':
+            # For stability analysis files - try multiple possible column names
+            score_columns = ['Stability_Adjusted_Score', 'stability_adjusted_score',
+                             'Avg_Score', 'avg_score']
+            for col in score_columns:
+                if col in self.stocks_df.columns:
+                    self.stocks_df['Score'] = self.stocks_df[col]
+                    break
+
+            # Check if we have the merged file with sector/industry info
+            if 'Sector' not in self.stocks_df.columns:
+                print("⚠️ Warning: No Sector/Industry information in stability file")
+                print("   Sector-based portfolio strategies will be limited")
+                # Add placeholder columns
+                self.stocks_df['Sector'] = 'Unknown'
+                self.stocks_df['Industry'] = 'Unknown'
+                self.stocks_df['CompanyName'] = self.stocks_df.get('CompanyName', self.stocks_df['Ticker'])
+                self.stocks_df['Country'] = self.stocks_df.get('Country', 'Unknown')
+
+        # Remove rows with missing critical data
+        required_columns = ['Ticker', 'Score']
+        self.stocks_df = self.stocks_df.dropna(subset=required_columns)
+
+        # Filter out real estate stocks if requested and sector info is available
+        if self.exclude_real_estate and 'Sector' in self.stocks_df.columns and self.stocks_df['Sector'].notna().any():
             initial_count = len(self.stocks_df)
 
             # Create mask for non-real estate stocks
             mask = ~self.stocks_df.apply(
-                lambda row: self._is_real_estate_related(row['Sector'], row['Industry']),
+                lambda row: self._is_real_estate_related(row.get('Sector', ''), row.get('Industry', '')),
                 axis=1
             )
 
@@ -178,18 +247,18 @@ class DynamicPortfolioSelector:
 
             excluded_count = initial_count - len(self.stocks_df)
 
-            print(f"🏠 Excluded {excluded_count} real estate/housing related stocks:")
-            if len(excluded_stocks) > 0:
-                print("Sample excluded companies:")
-                for _, stock in excluded_stocks.head(10).iterrows():
-                    print(f"  {stock['Ticker']} - {stock['CompanyName']} ({stock['Sector']}/{stock['Industry']})")
-                if len(excluded_stocks) > 10:
-                    print(f"  ... and {len(excluded_stocks) - 10} more")
+            if excluded_count > 0:
+                print(f"🏠 Excluded {excluded_count} real estate/housing related stocks")
 
         # Sort and create rank based on file type
         if self.file_type == 'common':
-            # For common tickers, sort by Combined_Rank (lower is better)
-            self.stocks_df = self.stocks_df.sort_values('Combined_Rank').reset_index(drop=True)
+            # For common tickers, sort by Score (higher is better for stability adjusted score)
+            if 'Combined_Rank' in self.stocks_df.columns:
+                # If we have combined rank from the comparison script
+                self.stocks_df = self.stocks_df.sort_values('Combined_Rank').reset_index(drop=True)
+            else:
+                # Otherwise sort by score
+                self.stocks_df = self.stocks_df.sort_values('Score', ascending=False).reset_index(drop=True)
             self.stocks_df['Rank'] = range(1, len(self.stocks_df) + 1)
         else:
             # For ranked stocks, sort by Score (higher is better)
@@ -198,14 +267,16 @@ class DynamicPortfolioSelector:
 
         print(f"\n📊 Final dataset: {len(self.stocks_df)} stocks")
         if self.file_type == 'common':
-            print(f"Best combined rank: {self.stocks_df['Combined_Rank'].min()}")
-            print(f"Worst combined rank: {self.stocks_df['Combined_Rank'].max()}")
-            print(f"Average Linear R²: {self.stocks_df['Linear_R2'].mean():.3f}")
+            if 'Linear_R2' in self.stocks_df.columns:
+                print(f"Average Linear R²: {self.stocks_df['Linear_R2'].mean():.3f}")
+            print(f"Top score: {self.stocks_df['Score'].max():.3f}")
         else:
             print(f"Top score: {self.stocks_df['Score'].max():.3f}")
             print(f"Bottom score: {self.stocks_df['Score'].min():.3f}")
-        print(f"Unique sectors: {self.stocks_df['Sector'].nunique()}")
-        print(f"Unique industries: {self.stocks_df['Industry'].nunique()}")
+
+        if 'Sector' in self.stocks_df.columns and self.stocks_df['Sector'].notna().any():
+            unique_sectors = self.stocks_df[self.stocks_df['Sector'] != 'Unknown']['Sector'].nunique()
+            print(f"Unique sectors: {unique_sectors}")
 
     def get_top_stocks(self, n: int = 100) -> pd.DataFrame:
         """Get top N stocks (already sorted by best metric)"""
@@ -360,10 +431,47 @@ class DynamicPortfolioSelector:
         selected = momentum_stocks.head(portfolio_size)
         return selected['Ticker'].tolist()
 
+    # def create_recommendation_based_portfolio(self,
+    #                                         portfolio_size: int = 20,
+    #                                         top_pool: int = 100,
+    #                                         recommendations: List[str] = None) -> List[str]:
+    #     """
+    #     Create portfolio based on recommendation categories
+    #     Only works with common tickers file
+    #
+    #     Args:
+    #         portfolio_size: Target number of stocks
+    #         top_pool: Pool to select from
+    #         recommendations: List of recommendations to include
+    #
+    #     Returns:
+    #         List of selected ticker symbols
+    #     """
+    #     if self.file_type != 'common':
+    #         print("⚠️ Recommendation-based portfolio requires common tickers file, falling back to top rank")
+    #         return self.create_portfolio_by_top_rank(portfolio_size, top_pool)
+    #
+    #     if recommendations is None:
+    #         recommendations = ['STRONG BUY - Elite performer', 'STRONG BUY - High conviction',
+    #                          'BUY - Quality growth', 'BUY - High score acceptable risk']
+    #
+    #     top_stocks = self.get_top_stocks(top_pool).copy()
+    #
+    #     # Filter by recommendations
+    #     recommended_stocks = top_stocks[top_stocks['Recommendation'].isin(recommendations)]
+    #
+    #     if len(recommended_stocks) < portfolio_size:
+    #         print(f"⚠️ Only {len(recommended_stocks)} stocks meet recommendation criteria")
+    #         # Add more recommendations if needed
+    #         recommended_stocks = top_stocks
+    #
+    #     selected = recommended_stocks.head(portfolio_size)
+    #     return selected['Ticker'].tolist()
+
     def create_recommendation_based_portfolio(self,
-                                            portfolio_size: int = 20,
-                                            top_pool: int = 100,
-                                            recommendations: List[str] = None) -> List[str]:
+                                              portfolio_size: int = 20,
+                                              top_pool: int = 100,
+                                              recommendations: List[str] = None) -> List[str]:
         """
         Create portfolio based on recommendation categories
         Only works with common tickers file
@@ -381,8 +489,17 @@ class DynamicPortfolioSelector:
             return self.create_portfolio_by_top_rank(portfolio_size, top_pool)
 
         if recommendations is None:
-            recommendations = ['STRONG BUY - Elite performer', 'STRONG BUY - High conviction',
-                             'BUY - Quality growth', 'BUY - High score acceptable risk']
+            # Updated to include HOLD recommendations
+            recommendations = [
+                'STRONG BUY - Elite performer',
+                'STRONG BUY - High conviction',
+                'BUY - Quality growth',
+                'BUY - Stable quality',
+                'BUY - High score acceptable risk',
+                'SPECULATIVE BUY - Strong momentum',
+                'HOLD - Stable but flat',  # Add HOLD recommendations
+                'HOLD - Needs monitoring'  # Add more HOLD categories
+            ]
 
         top_stocks = self.get_top_stocks(top_pool).copy()
 
@@ -391,8 +508,14 @@ class DynamicPortfolioSelector:
 
         if len(recommended_stocks) < portfolio_size:
             print(f"⚠️ Only {len(recommended_stocks)} stocks meet recommendation criteria")
-            # Add more recommendations if needed
-            recommended_stocks = top_stocks
+            # If not enough stocks, add the next best stocks by score
+            if len(recommended_stocks) < portfolio_size:
+                # Get stocks not in recommended_stocks
+                remaining_stocks = top_stocks[~top_stocks['Ticker'].isin(recommended_stocks['Ticker'])]
+                # Add the best remaining stocks
+                additional_needed = portfolio_size - len(recommended_stocks)
+                additional_stocks = remaining_stocks.head(additional_needed)
+                recommended_stocks = pd.concat([recommended_stocks, additional_stocks])
 
         selected = recommended_stocks.head(portfolio_size)
         return selected['Ticker'].tolist()
@@ -426,9 +549,15 @@ class DynamicPortfolioSelector:
         r2_norm = (top_stocks['Linear_R2'] - top_stocks['Linear_R2'].min()) / \
                   (top_stocks['Linear_R2'].max() - top_stocks['Linear_R2'].min())
 
-        # For combined rank, lower is better, so invert
-        rank_norm = 1 - ((top_stocks['Combined_Rank'] - top_stocks['Combined_Rank'].min()) / \
-                        (top_stocks['Combined_Rank'].max() - top_stocks['Combined_Rank'].min()))
+        # Check if Combined_Rank exists, otherwise use regular Rank
+        if 'Combined_Rank' in top_stocks.columns:
+            # For combined rank, lower is better, so invert
+            rank_norm = 1 - ((top_stocks['Combined_Rank'] - top_stocks['Combined_Rank'].min()) / \
+                             (top_stocks['Combined_Rank'].max() - top_stocks['Combined_Rank'].min()))
+        else:
+            # Use regular Rank column instead
+            rank_norm = 1 - ((top_stocks['Rank'] - top_stocks['Rank'].min()) / \
+                             (top_stocks['Rank'].max() - top_stocks['Rank'].min()))
 
         top_stocks['Composite_Score'] = (stability_weight * r2_norm) + ((1 - stability_weight) * rank_norm)
 
@@ -676,9 +805,21 @@ class DynamicPortfolioSelector:
         }
 
         if self.file_type == 'common':
-            results['avg_linear_r2'] = portfolio_data['Linear_R2'].mean()
-            results['avg_linear_slope'] = portfolio_data['Linear_Slope'].mean()
-            results['avg_stability_score'] = portfolio_data['Stability_Adjusted_Score'].mean()
+            # Check for both uppercase and lowercase versions
+            if 'Linear_R2' in portfolio_data.columns:
+                results['avg_linear_r2'] = portfolio_data['Linear_R2'].mean()
+            elif 'linear_r2' in portfolio_data.columns:
+                results['avg_linear_r2'] = portfolio_data['linear_r2'].mean()
+
+            if 'Linear_Slope' in portfolio_data.columns:
+                results['avg_linear_slope'] = portfolio_data['Linear_Slope'].mean()
+            elif 'linear_slope' in portfolio_data.columns:
+                results['avg_linear_slope'] = portfolio_data['linear_slope'].mean()
+
+            if 'Stability_Adjusted_Score' in portfolio_data.columns:
+                results['avg_stability_score'] = portfolio_data['Stability_Adjusted_Score'].mean()
+            elif 'stability_adjusted_score' in portfolio_data.columns:
+                results['avg_stability_score'] = portfolio_data['stability_adjusted_score'].mean()
 
         return results
 

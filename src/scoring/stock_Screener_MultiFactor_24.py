@@ -66,7 +66,7 @@ FRED_SERIES_ID = "GDP"  # U.S. Real GDP, quarterly
 # Get project root directory
 PROJECT_ROOT = Path(__file__).parent.parent.parent if '__file__' in globals() else Path.cwd().parent.parent.parent
 # PROJECT_ROOT = Path(__file__).parent.parent  # Go up two levels from src/scoring/
-TICKER_FILE = PROJECT_ROOT / "config" / "Buyable_stocks_test.txt"
+TICKER_FILE = PROJECT_ROOT / "config" / "Buyable_stocks.txt"
 
 INSIDER_LOOKBACK_DAYS = 90
 TOP_N = 20

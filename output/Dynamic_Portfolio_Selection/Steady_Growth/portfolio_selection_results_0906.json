@@ -1,0 +1,4575 @@
+{
+  "timestamp": "2025-09-06T20:47:53.118956",
+  "real_estate_excluded": true,
+  "summary": {
+    "total_portfolios_tested": 22,
+    "best_portfolio_by_sharpe": "PosMomentum_S10_P150",
+    "best_portfolio_by_return": "PosMomentum_S20_P150",
+    "best_portfolio_by_drawdown": "HybridStability_S20_P150"
+  },
+  "portfolios": {
+    "TopRank_S10_P150": {
+      "tickers": [
+        "IDXX",
+        "QLYS",
+        "RMBS",
+        "CRM",
+        "WDAY",
+        "PCTY",
+        "MTD",
+        "DDOG",
+        "LSCC",
+        "MANH"
+      ],
+      "composition": [
+        {
+          "ticker": "IDXX",
+          "company": "IDEXX Laboratories, Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 1,
+          "score": 40.01
+        },
+        {
+          "ticker": "QLYS",
+          "company": "Qualys, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Infrastructure",
+          "rank": 2,
+          "score": 39.04
+        },
+        {
+          "ticker": "RMBS",
+          "company": "Rambus Inc.",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 3,
+          "score": 37.41
+        },
+        {
+          "ticker": "CRM",
+          "company": "Salesforce, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 4,
+          "score": 37.0
+        },
+        {
+          "ticker": "WDAY",
+          "company": "Workday, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 5,
+          "score": 36.66
+        },
+        {
+          "ticker": "PCTY",
+          "company": "Paylocity Holding Corporation",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 6,
+          "score": 36.41
+        },
+        {
+          "ticker": "MTD",
+          "company": "Mettler-Toledo International Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 7,
+          "score": 36.41
+        },
+        {
+          "ticker": "DDOG",
+          "company": "Datadog, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 8,
+          "score": 35.73
+        },
+        {
+          "ticker": "LSCC",
+          "company": "Lattice Semiconductor Corporation",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 9,
+          "score": 33.92
+        },
+        {
+          "ticker": "MANH",
+          "company": "Manhattan Associates, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 10,
+          "score": 33.26
+        }
+      ]
+    },
+    "SectorBal2_S10_P150": {
+      "tickers": [
+        "IDXX",
+        "QLYS",
+        "RMBS",
+        "MTD",
+        "PINS",
+        "CPRT",
+        "B",
+        "FIZZ",
+        "ELF",
+        "AMZN"
+      ],
+      "composition": [
+        {
+          "ticker": "IDXX",
+          "company": "IDEXX Laboratories, Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 1,
+          "score": 40.01
+        },
+        {
+          "ticker": "QLYS",
+          "company": "Qualys, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Infrastructure",
+          "rank": 2,
+          "score": 39.04
+        },
+        {
+          "ticker": "RMBS",
+          "company": "Rambus Inc.",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 3,
+          "score": 37.41
+        },
+        {
+          "ticker": "MTD",
+          "company": "Mettler-Toledo International Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 7,
+          "score": 36.41
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 11,
+          "score": 32.35
+        },
+        {
+          "ticker": "CPRT",
+          "company": "Copart, Inc.",
+          "sector": "Industrials",
+          "industry": "Specialty Business Services",
+          "rank": 12,
+          "score": 31.75
+        },
+        {
+          "ticker": "B",
+          "company": "Barrick Mining Corporation",
+          "sector": "Basic Materials",
+          "industry": "Gold",
+          "rank": 17,
+          "score": 29.79
+        },
+        {
+          "ticker": "FIZZ",
+          "company": "National Beverage Corp.",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 18,
+          "score": 28.95
+        },
+        {
+          "ticker": "ELF",
+          "company": "e.l.f. Beauty, Inc.",
+          "sector": "Consumer Defensive",
+          "industry": "Household & Personal Products",
+          "rank": 21,
+          "score": 28.35
+        },
+        {
+          "ticker": "AMZN",
+          "company": "Amazon.com, Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Internet Retail",
+          "rank": 25,
+          "score": 27.06
+        }
+      ]
+    },
+    "SectorBal3_S10_P150": {
+      "tickers": [
+        "IDXX",
+        "QLYS",
+        "RMBS",
+        "CRM",
+        "MTD",
+        "PINS",
+        "CPRT",
+        "VEEV",
+        "B",
+        "FIZZ"
+      ],
+      "composition": [
+        {
+          "ticker": "IDXX",
+          "company": "IDEXX Laboratories, Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 1,
+          "score": 40.01
+        },
+        {
+          "ticker": "QLYS",
+          "company": "Qualys, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Infrastructure",
+          "rank": 2,
+          "score": 39.04
+        },
+        {
+          "ticker": "RMBS",
+          "company": "Rambus Inc.",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 3,
+          "score": 37.41
+        },
+        {
+          "ticker": "CRM",
+          "company": "Salesforce, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 4,
+          "score": 37.0
+        },
+        {
+          "ticker": "MTD",
+          "company": "Mettler-Toledo International Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 7,
+          "score": 36.41
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 11,
+          "score": 32.35
+        },
+        {
+          "ticker": "CPRT",
+          "company": "Copart, Inc.",
+          "sector": "Industrials",
+          "industry": "Specialty Business Services",
+          "rank": 12,
+          "score": 31.75
+        },
+        {
+          "ticker": "VEEV",
+          "company": "Veeva Systems Inc.",
+          "sector": "Healthcare",
+          "industry": "Health Information Services",
+          "rank": 14,
+          "score": 31.61
+        },
+        {
+          "ticker": "B",
+          "company": "Barrick Mining Corporation",
+          "sector": "Basic Materials",
+          "industry": "Gold",
+          "rank": 17,
+          "score": 29.79
+        },
+        {
+          "ticker": "FIZZ",
+          "company": "National Beverage Corp.",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 18,
+          "score": 28.95
+        }
+      ]
+    },
+    "IndustryBal_S10_P150": {
+      "tickers": [
+        "IDXX",
+        "QLYS",
+        "RMBS",
+        "CRM",
+        "WDAY",
+        "MTD",
+        "LSCC",
+        "PINS",
+        "CPRT",
+        "VEEV"
+      ],
+      "composition": [
+        {
+          "ticker": "IDXX",
+          "company": "IDEXX Laboratories, Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 1,
+          "score": 40.01
+        },
+        {
+          "ticker": "QLYS",
+          "company": "Qualys, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Infrastructure",
+          "rank": 2,
+          "score": 39.04
+        },
+        {
+          "ticker": "RMBS",
+          "company": "Rambus Inc.",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 3,
+          "score": 37.41
+        },
+        {
+          "ticker": "CRM",
+          "company": "Salesforce, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 4,
+          "score": 37.0
+        },
+        {
+          "ticker": "WDAY",
+          "company": "Workday, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 5,
+          "score": 36.66
+        },
+        {
+          "ticker": "MTD",
+          "company": "Mettler-Toledo International Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 7,
+          "score": 36.41
+        },
+        {
+          "ticker": "LSCC",
+          "company": "Lattice Semiconductor Corporation",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 9,
+          "score": 33.92
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 11,
+          "score": 32.35
+        },
+        {
+          "ticker": "CPRT",
+          "company": "Copart, Inc.",
+          "sector": "Industrials",
+          "industry": "Specialty Business Services",
+          "rank": 12,
+          "score": 31.75
+        },
+        {
+          "ticker": "VEEV",
+          "company": "Veeva Systems Inc.",
+          "sector": "Healthcare",
+          "industry": "Health Information Services",
+          "rank": 14,
+          "score": 31.61
+        }
+      ]
+    },
+    "Stability_S10_P150": {
+      "tickers": [
+        "IDXX",
+        "QLYS",
+        "RMBS",
+        "CRM",
+        "WDAY",
+        "PCTY",
+        "MTD",
+        "DDOG",
+        "LSCC",
+        "MANH"
+      ],
+      "composition": [
+        {
+          "ticker": "IDXX",
+          "company": "IDEXX Laboratories, Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 1,
+          "score": 40.01
+        },
+        {
+          "ticker": "QLYS",
+          "company": "Qualys, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Infrastructure",
+          "rank": 2,
+          "score": 39.04
+        },
+        {
+          "ticker": "RMBS",
+          "company": "Rambus Inc.",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 3,
+          "score": 37.41
+        },
+        {
+          "ticker": "CRM",
+          "company": "Salesforce, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 4,
+          "score": 37.0
+        },
+        {
+          "ticker": "WDAY",
+          "company": "Workday, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 5,
+          "score": 36.66
+        },
+        {
+          "ticker": "PCTY",
+          "company": "Paylocity Holding Corporation",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 6,
+          "score": 36.41
+        },
+        {
+          "ticker": "MTD",
+          "company": "Mettler-Toledo International Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 7,
+          "score": 36.41
+        },
+        {
+          "ticker": "DDOG",
+          "company": "Datadog, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 8,
+          "score": 35.73
+        },
+        {
+          "ticker": "LSCC",
+          "company": "Lattice Semiconductor Corporation",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 9,
+          "score": 33.92
+        },
+        {
+          "ticker": "MANH",
+          "company": "Manhattan Associates, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 10,
+          "score": 33.26
+        }
+      ]
+    },
+    "PosMomentum_S10_P150": {
+      "tickers": [
+        "IDXX",
+        "RMBS",
+        "MTD",
+        "DDOG",
+        "LSCC",
+        "MANH",
+        "PINS",
+        "SHOP",
+        "B",
+        "ELF"
+      ],
+      "composition": [
+        {
+          "ticker": "IDXX",
+          "company": "IDEXX Laboratories, Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 1,
+          "score": 40.01
+        },
+        {
+          "ticker": "RMBS",
+          "company": "Rambus Inc.",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 3,
+          "score": 37.41
+        },
+        {
+          "ticker": "MTD",
+          "company": "Mettler-Toledo International Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 7,
+          "score": 36.41
+        },
+        {
+          "ticker": "DDOG",
+          "company": "Datadog, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 8,
+          "score": 35.73
+        },
+        {
+          "ticker": "LSCC",
+          "company": "Lattice Semiconductor Corporation",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 9,
+          "score": 33.92
+        },
+        {
+          "ticker": "MANH",
+          "company": "Manhattan Associates, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 10,
+          "score": 33.26
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 11,
+          "score": 32.35
+        },
+        {
+          "ticker": "SHOP",
+          "company": "Shopify Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 13,
+          "score": 31.61
+        },
+        {
+          "ticker": "B",
+          "company": "Barrick Mining Corporation",
+          "sector": "Basic Materials",
+          "industry": "Gold",
+          "rank": 17,
+          "score": 29.79
+        },
+        {
+          "ticker": "ELF",
+          "company": "e.l.f. Beauty, Inc.",
+          "sector": "Consumer Defensive",
+          "industry": "Household & Personal Products",
+          "rank": 21,
+          "score": 28.35
+        }
+      ]
+    },
+    "Recommended_S10_P150": {
+      "tickers": [
+        "IDXX",
+        "QLYS",
+        "RMBS",
+        "CRM",
+        "WDAY",
+        "PCTY",
+        "MTD",
+        "DDOG",
+        "LSCC",
+        "MANH"
+      ],
+      "composition": [
+        {
+          "ticker": "IDXX",
+          "company": "IDEXX Laboratories, Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 1,
+          "score": 40.01
+        },
+        {
+          "ticker": "QLYS",
+          "company": "Qualys, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Infrastructure",
+          "rank": 2,
+          "score": 39.04
+        },
+        {
+          "ticker": "RMBS",
+          "company": "Rambus Inc.",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 3,
+          "score": 37.41
+        },
+        {
+          "ticker": "CRM",
+          "company": "Salesforce, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 4,
+          "score": 37.0
+        },
+        {
+          "ticker": "WDAY",
+          "company": "Workday, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 5,
+          "score": 36.66
+        },
+        {
+          "ticker": "PCTY",
+          "company": "Paylocity Holding Corporation",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 6,
+          "score": 36.41
+        },
+        {
+          "ticker": "MTD",
+          "company": "Mettler-Toledo International Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 7,
+          "score": 36.41
+        },
+        {
+          "ticker": "DDOG",
+          "company": "Datadog, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 8,
+          "score": 35.73
+        },
+        {
+          "ticker": "LSCC",
+          "company": "Lattice Semiconductor Corporation",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 9,
+          "score": 33.92
+        },
+        {
+          "ticker": "MANH",
+          "company": "Manhattan Associates, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 10,
+          "score": 33.26
+        }
+      ]
+    },
+    "TopRank_S20_P150": {
+      "tickers": [
+        "IDXX",
+        "QLYS",
+        "RMBS",
+        "CRM",
+        "WDAY",
+        "PCTY",
+        "MTD",
+        "DDOG",
+        "LSCC",
+        "MANH",
+        "PINS",
+        "CPRT",
+        "SHOP",
+        "VEEV",
+        "DOCU",
+        "NICE",
+        "B",
+        "FIZZ",
+        "ADBE",
+        "DT"
+      ],
+      "composition": [
+        {
+          "ticker": "IDXX",
+          "company": "IDEXX Laboratories, Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 1,
+          "score": 40.01
+        },
+        {
+          "ticker": "QLYS",
+          "company": "Qualys, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Infrastructure",
+          "rank": 2,
+          "score": 39.04
+        },
+        {
+          "ticker": "RMBS",
+          "company": "Rambus Inc.",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 3,
+          "score": 37.41
+        },
+        {
+          "ticker": "CRM",
+          "company": "Salesforce, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 4,
+          "score": 37.0
+        },
+        {
+          "ticker": "WDAY",
+          "company": "Workday, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 5,
+          "score": 36.66
+        },
+        {
+          "ticker": "PCTY",
+          "company": "Paylocity Holding Corporation",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 6,
+          "score": 36.41
+        },
+        {
+          "ticker": "MTD",
+          "company": "Mettler-Toledo International Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 7,
+          "score": 36.41
+        },
+        {
+          "ticker": "DDOG",
+          "company": "Datadog, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 8,
+          "score": 35.73
+        },
+        {
+          "ticker": "LSCC",
+          "company": "Lattice Semiconductor Corporation",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 9,
+          "score": 33.92
+        },
+        {
+          "ticker": "MANH",
+          "company": "Manhattan Associates, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 10,
+          "score": 33.26
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 11,
+          "score": 32.35
+        },
+        {
+          "ticker": "CPRT",
+          "company": "Copart, Inc.",
+          "sector": "Industrials",
+          "industry": "Specialty Business Services",
+          "rank": 12,
+          "score": 31.75
+        },
+        {
+          "ticker": "SHOP",
+          "company": "Shopify Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 13,
+          "score": 31.61
+        },
+        {
+          "ticker": "VEEV",
+          "company": "Veeva Systems Inc.",
+          "sector": "Healthcare",
+          "industry": "Health Information Services",
+          "rank": 14,
+          "score": 31.61
+        },
+        {
+          "ticker": "DOCU",
+          "company": "DocuSign, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 15,
+          "score": 31.34
+        },
+        {
+          "ticker": "NICE",
+          "company": "NICE Ltd.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 16,
+          "score": 29.91
+        },
+        {
+          "ticker": "B",
+          "company": "Barrick Mining Corporation",
+          "sector": "Basic Materials",
+          "industry": "Gold",
+          "rank": 17,
+          "score": 29.79
+        },
+        {
+          "ticker": "FIZZ",
+          "company": "National Beverage Corp.",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 18,
+          "score": 28.95
+        },
+        {
+          "ticker": "ADBE",
+          "company": "Adobe Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 19,
+          "score": 28.59
+        },
+        {
+          "ticker": "DT",
+          "company": "Dynatrace, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 20,
+          "score": 28.47
+        }
+      ]
+    },
+    "SectorBal2_S20_P150": {
+      "tickers": [
+        "IDXX",
+        "QLYS",
+        "RMBS",
+        "MTD",
+        "PINS",
+        "CPRT",
+        "B",
+        "FIZZ",
+        "ELF",
+        "AMZN",
+        "BKNG",
+        "JWN",
+        "AEIS",
+        "META",
+        "FCX",
+        "DFS",
+        "WMB",
+        "BLK",
+        "CCJ",
+        "FUTU"
+      ],
+      "composition": [
+        {
+          "ticker": "IDXX",
+          "company": "IDEXX Laboratories, Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 1,
+          "score": 40.01
+        },
+        {
+          "ticker": "QLYS",
+          "company": "Qualys, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Infrastructure",
+          "rank": 2,
+          "score": 39.04
+        },
+        {
+          "ticker": "RMBS",
+          "company": "Rambus Inc.",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 3,
+          "score": 37.41
+        },
+        {
+          "ticker": "MTD",
+          "company": "Mettler-Toledo International Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 7,
+          "score": 36.41
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 11,
+          "score": 32.35
+        },
+        {
+          "ticker": "CPRT",
+          "company": "Copart, Inc.",
+          "sector": "Industrials",
+          "industry": "Specialty Business Services",
+          "rank": 12,
+          "score": 31.75
+        },
+        {
+          "ticker": "B",
+          "company": "Barrick Mining Corporation",
+          "sector": "Basic Materials",
+          "industry": "Gold",
+          "rank": 17,
+          "score": 29.79
+        },
+        {
+          "ticker": "FIZZ",
+          "company": "National Beverage Corp.",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 18,
+          "score": 28.95
+        },
+        {
+          "ticker": "ELF",
+          "company": "e.l.f. Beauty, Inc.",
+          "sector": "Consumer Defensive",
+          "industry": "Household & Personal Products",
+          "rank": 21,
+          "score": 28.35
+        },
+        {
+          "ticker": "AMZN",
+          "company": "Amazon.com, Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Internet Retail",
+          "rank": 25,
+          "score": 27.06
+        },
+        {
+          "ticker": "BKNG",
+          "company": "Booking Holdings Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Travel Services",
+          "rank": 31,
+          "score": 25.82
+        },
+        {
+          "ticker": "JWN",
+          "company": "Unknown",
+          "sector": "Unknown",
+          "industry": "Unknown",
+          "rank": 33,
+          "score": 25.76
+        },
+        {
+          "ticker": "AEIS",
+          "company": "Advanced Energy Industries, Inc.",
+          "sector": "Industrials",
+          "industry": "Electrical Equipment & Parts",
+          "rank": 40,
+          "score": 23.49
+        },
+        {
+          "ticker": "META",
+          "company": "Meta Platforms, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 42,
+          "score": 23.27
+        },
+        {
+          "ticker": "FCX",
+          "company": "Freeport-McMoRan Inc.",
+          "sector": "Basic Materials",
+          "industry": "Copper",
+          "rank": 50,
+          "score": 22.24
+        },
+        {
+          "ticker": "DFS",
+          "company": "Unknown",
+          "sector": "Unknown",
+          "industry": "Unknown",
+          "rank": 53,
+          "score": 21.78
+        },
+        {
+          "ticker": "WMB",
+          "company": "The Williams Companies, Inc.",
+          "sector": "Energy",
+          "industry": "Oil & Gas Midstream",
+          "rank": 58,
+          "score": 21.01
+        },
+        {
+          "ticker": "BLK",
+          "company": "BlackRock, Inc.",
+          "sector": "Financial Services",
+          "industry": "Asset Management",
+          "rank": 80,
+          "score": 19.34
+        },
+        {
+          "ticker": "CCJ",
+          "company": "Cameco Corporation",
+          "sector": "Energy",
+          "industry": "Uranium",
+          "rank": 89,
+          "score": 18.99
+        },
+        {
+          "ticker": "FUTU",
+          "company": "Futu Holdings Limited",
+          "sector": "Financial Services",
+          "industry": "Capital Markets",
+          "rank": 101,
+          "score": 18.1
+        }
+      ]
+    },
+    "SectorBal3_S20_P150": {
+      "tickers": [
+        "IDXX",
+        "QLYS",
+        "RMBS",
+        "CRM",
+        "MTD",
+        "PINS",
+        "CPRT",
+        "VEEV",
+        "B",
+        "FIZZ",
+        "ELF",
+        "AMZN",
+        "BKNG",
+        "RL",
+        "JWN",
+        "AEIS",
+        "META",
+        "SKYW",
+        "FCX",
+        "DFS"
+      ],
+      "composition": [
+        {
+          "ticker": "IDXX",
+          "company": "IDEXX Laboratories, Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 1,
+          "score": 40.01
+        },
+        {
+          "ticker": "QLYS",
+          "company": "Qualys, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Infrastructure",
+          "rank": 2,
+          "score": 39.04
+        },
+        {
+          "ticker": "RMBS",
+          "company": "Rambus Inc.",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 3,
+          "score": 37.41
+        },
+        {
+          "ticker": "CRM",
+          "company": "Salesforce, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 4,
+          "score": 37.0
+        },
+        {
+          "ticker": "MTD",
+          "company": "Mettler-Toledo International Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 7,
+          "score": 36.41
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 11,
+          "score": 32.35
+        },
+        {
+          "ticker": "CPRT",
+          "company": "Copart, Inc.",
+          "sector": "Industrials",
+          "industry": "Specialty Business Services",
+          "rank": 12,
+          "score": 31.75
+        },
+        {
+          "ticker": "VEEV",
+          "company": "Veeva Systems Inc.",
+          "sector": "Healthcare",
+          "industry": "Health Information Services",
+          "rank": 14,
+          "score": 31.61
+        },
+        {
+          "ticker": "B",
+          "company": "Barrick Mining Corporation",
+          "sector": "Basic Materials",
+          "industry": "Gold",
+          "rank": 17,
+          "score": 29.79
+        },
+        {
+          "ticker": "FIZZ",
+          "company": "National Beverage Corp.",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 18,
+          "score": 28.95
+        },
+        {
+          "ticker": "ELF",
+          "company": "e.l.f. Beauty, Inc.",
+          "sector": "Consumer Defensive",
+          "industry": "Household & Personal Products",
+          "rank": 21,
+          "score": 28.35
+        },
+        {
+          "ticker": "AMZN",
+          "company": "Amazon.com, Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Internet Retail",
+          "rank": 25,
+          "score": 27.06
+        },
+        {
+          "ticker": "BKNG",
+          "company": "Booking Holdings Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Travel Services",
+          "rank": 31,
+          "score": 25.82
+        },
+        {
+          "ticker": "RL",
+          "company": "Ralph Lauren Corporation",
+          "sector": "Consumer Cyclical",
+          "industry": "Apparel Manufacturing",
+          "rank": 32,
+          "score": 25.79
+        },
+        {
+          "ticker": "JWN",
+          "company": "Unknown",
+          "sector": "Unknown",
+          "industry": "Unknown",
+          "rank": 33,
+          "score": 25.76
+        },
+        {
+          "ticker": "AEIS",
+          "company": "Advanced Energy Industries, Inc.",
+          "sector": "Industrials",
+          "industry": "Electrical Equipment & Parts",
+          "rank": 40,
+          "score": 23.49
+        },
+        {
+          "ticker": "META",
+          "company": "Meta Platforms, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 42,
+          "score": 23.27
+        },
+        {
+          "ticker": "SKYW",
+          "company": "SkyWest, Inc.",
+          "sector": "Industrials",
+          "industry": "Airlines",
+          "rank": 45,
+          "score": 22.8
+        },
+        {
+          "ticker": "FCX",
+          "company": "Freeport-McMoRan Inc.",
+          "sector": "Basic Materials",
+          "industry": "Copper",
+          "rank": 50,
+          "score": 22.24
+        },
+        {
+          "ticker": "DFS",
+          "company": "Unknown",
+          "sector": "Unknown",
+          "industry": "Unknown",
+          "rank": 53,
+          "score": 21.78
+        }
+      ]
+    },
+    "IndustryBal_S20_P150": {
+      "tickers": [
+        "IDXX",
+        "QLYS",
+        "RMBS",
+        "CRM",
+        "WDAY",
+        "MTD",
+        "LSCC",
+        "PINS",
+        "CPRT",
+        "VEEV",
+        "B",
+        "FIZZ",
+        "ELF",
+        "AZTA",
+        "GRMN",
+        "HOLX",
+        "AMZN",
+        "VICR",
+        "VRSN",
+        "BKNG"
+      ],
+      "composition": [
+        {
+          "ticker": "IDXX",
+          "company": "IDEXX Laboratories, Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 1,
+          "score": 40.01
+        },
+        {
+          "ticker": "QLYS",
+          "company": "Qualys, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Infrastructure",
+          "rank": 2,
+          "score": 39.04
+        },
+        {
+          "ticker": "RMBS",
+          "company": "Rambus Inc.",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 3,
+          "score": 37.41
+        },
+        {
+          "ticker": "CRM",
+          "company": "Salesforce, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 4,
+          "score": 37.0
+        },
+        {
+          "ticker": "WDAY",
+          "company": "Workday, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 5,
+          "score": 36.66
+        },
+        {
+          "ticker": "MTD",
+          "company": "Mettler-Toledo International Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 7,
+          "score": 36.41
+        },
+        {
+          "ticker": "LSCC",
+          "company": "Lattice Semiconductor Corporation",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 9,
+          "score": 33.92
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 11,
+          "score": 32.35
+        },
+        {
+          "ticker": "CPRT",
+          "company": "Copart, Inc.",
+          "sector": "Industrials",
+          "industry": "Specialty Business Services",
+          "rank": 12,
+          "score": 31.75
+        },
+        {
+          "ticker": "VEEV",
+          "company": "Veeva Systems Inc.",
+          "sector": "Healthcare",
+          "industry": "Health Information Services",
+          "rank": 14,
+          "score": 31.61
+        },
+        {
+          "ticker": "B",
+          "company": "Barrick Mining Corporation",
+          "sector": "Basic Materials",
+          "industry": "Gold",
+          "rank": 17,
+          "score": 29.79
+        },
+        {
+          "ticker": "FIZZ",
+          "company": "National Beverage Corp.",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 18,
+          "score": 28.95
+        },
+        {
+          "ticker": "ELF",
+          "company": "e.l.f. Beauty, Inc.",
+          "sector": "Consumer Defensive",
+          "industry": "Household & Personal Products",
+          "rank": 21,
+          "score": 28.35
+        },
+        {
+          "ticker": "AZTA",
+          "company": "Azenta, Inc.",
+          "sector": "Healthcare",
+          "industry": "Medical Instruments & Supplies",
+          "rank": 22,
+          "score": 28.23
+        },
+        {
+          "ticker": "GRMN",
+          "company": "Garmin Ltd.",
+          "sector": "Technology",
+          "industry": "Scientific & Technical Instruments",
+          "rank": 23,
+          "score": 27.76
+        },
+        {
+          "ticker": "HOLX",
+          "company": "Hologic, Inc.",
+          "sector": "Healthcare",
+          "industry": "Medical Instruments & Supplies",
+          "rank": 24,
+          "score": 27.57
+        },
+        {
+          "ticker": "AMZN",
+          "company": "Amazon.com, Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Internet Retail",
+          "rank": 25,
+          "score": 27.06
+        },
+        {
+          "ticker": "VICR",
+          "company": "Vicor Corporation",
+          "sector": "Technology",
+          "industry": "Electronic Components",
+          "rank": 27,
+          "score": 26.74
+        },
+        {
+          "ticker": "VRSN",
+          "company": "VeriSign, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Infrastructure",
+          "rank": 28,
+          "score": 26.52
+        },
+        {
+          "ticker": "BKNG",
+          "company": "Booking Holdings Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Travel Services",
+          "rank": 31,
+          "score": 25.82
+        }
+      ]
+    },
+    "Stability_S20_P150": {
+      "tickers": [
+        "IDXX",
+        "QLYS",
+        "RMBS",
+        "CRM",
+        "WDAY",
+        "PCTY",
+        "MTD",
+        "DDOG",
+        "LSCC",
+        "MANH",
+        "PINS",
+        "CPRT",
+        "SHOP",
+        "VEEV",
+        "DOCU",
+        "NICE",
+        "B",
+        "FIZZ",
+        "ADBE",
+        "DT"
+      ],
+      "composition": [
+        {
+          "ticker": "IDXX",
+          "company": "IDEXX Laboratories, Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 1,
+          "score": 40.01
+        },
+        {
+          "ticker": "QLYS",
+          "company": "Qualys, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Infrastructure",
+          "rank": 2,
+          "score": 39.04
+        },
+        {
+          "ticker": "RMBS",
+          "company": "Rambus Inc.",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 3,
+          "score": 37.41
+        },
+        {
+          "ticker": "CRM",
+          "company": "Salesforce, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 4,
+          "score": 37.0
+        },
+        {
+          "ticker": "WDAY",
+          "company": "Workday, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 5,
+          "score": 36.66
+        },
+        {
+          "ticker": "PCTY",
+          "company": "Paylocity Holding Corporation",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 6,
+          "score": 36.41
+        },
+        {
+          "ticker": "MTD",
+          "company": "Mettler-Toledo International Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 7,
+          "score": 36.41
+        },
+        {
+          "ticker": "DDOG",
+          "company": "Datadog, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 8,
+          "score": 35.73
+        },
+        {
+          "ticker": "LSCC",
+          "company": "Lattice Semiconductor Corporation",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 9,
+          "score": 33.92
+        },
+        {
+          "ticker": "MANH",
+          "company": "Manhattan Associates, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 10,
+          "score": 33.26
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 11,
+          "score": 32.35
+        },
+        {
+          "ticker": "CPRT",
+          "company": "Copart, Inc.",
+          "sector": "Industrials",
+          "industry": "Specialty Business Services",
+          "rank": 12,
+          "score": 31.75
+        },
+        {
+          "ticker": "SHOP",
+          "company": "Shopify Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 13,
+          "score": 31.61
+        },
+        {
+          "ticker": "VEEV",
+          "company": "Veeva Systems Inc.",
+          "sector": "Healthcare",
+          "industry": "Health Information Services",
+          "rank": 14,
+          "score": 31.61
+        },
+        {
+          "ticker": "DOCU",
+          "company": "DocuSign, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 15,
+          "score": 31.34
+        },
+        {
+          "ticker": "NICE",
+          "company": "NICE Ltd.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 16,
+          "score": 29.91
+        },
+        {
+          "ticker": "B",
+          "company": "Barrick Mining Corporation",
+          "sector": "Basic Materials",
+          "industry": "Gold",
+          "rank": 17,
+          "score": 29.79
+        },
+        {
+          "ticker": "FIZZ",
+          "company": "National Beverage Corp.",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 18,
+          "score": 28.95
+        },
+        {
+          "ticker": "ADBE",
+          "company": "Adobe Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 19,
+          "score": 28.59
+        },
+        {
+          "ticker": "DT",
+          "company": "Dynatrace, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 20,
+          "score": 28.47
+        }
+      ]
+    },
+    "PosMomentum_S20_P150": {
+      "tickers": [
+        "IDXX",
+        "RMBS",
+        "MTD",
+        "DDOG",
+        "LSCC",
+        "MANH",
+        "PINS",
+        "SHOP",
+        "B",
+        "ELF",
+        "AZTA",
+        "GRMN",
+        "HOLX",
+        "AMZN",
+        "ANSS",
+        "VICR",
+        "UBER",
+        "BKNG",
+        "RL",
+        "CLS"
+      ],
+      "composition": [
+        {
+          "ticker": "IDXX",
+          "company": "IDEXX Laboratories, Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 1,
+          "score": 40.01
+        },
+        {
+          "ticker": "RMBS",
+          "company": "Rambus Inc.",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 3,
+          "score": 37.41
+        },
+        {
+          "ticker": "MTD",
+          "company": "Mettler-Toledo International Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 7,
+          "score": 36.41
+        },
+        {
+          "ticker": "DDOG",
+          "company": "Datadog, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 8,
+          "score": 35.73
+        },
+        {
+          "ticker": "LSCC",
+          "company": "Lattice Semiconductor Corporation",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 9,
+          "score": 33.92
+        },
+        {
+          "ticker": "MANH",
+          "company": "Manhattan Associates, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 10,
+          "score": 33.26
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 11,
+          "score": 32.35
+        },
+        {
+          "ticker": "SHOP",
+          "company": "Shopify Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 13,
+          "score": 31.61
+        },
+        {
+          "ticker": "B",
+          "company": "Barrick Mining Corporation",
+          "sector": "Basic Materials",
+          "industry": "Gold",
+          "rank": 17,
+          "score": 29.79
+        },
+        {
+          "ticker": "ELF",
+          "company": "e.l.f. Beauty, Inc.",
+          "sector": "Consumer Defensive",
+          "industry": "Household & Personal Products",
+          "rank": 21,
+          "score": 28.35
+        },
+        {
+          "ticker": "AZTA",
+          "company": "Azenta, Inc.",
+          "sector": "Healthcare",
+          "industry": "Medical Instruments & Supplies",
+          "rank": 22,
+          "score": 28.23
+        },
+        {
+          "ticker": "GRMN",
+          "company": "Garmin Ltd.",
+          "sector": "Technology",
+          "industry": "Scientific & Technical Instruments",
+          "rank": 23,
+          "score": 27.76
+        },
+        {
+          "ticker": "HOLX",
+          "company": "Hologic, Inc.",
+          "sector": "Healthcare",
+          "industry": "Medical Instruments & Supplies",
+          "rank": 24,
+          "score": 27.57
+        },
+        {
+          "ticker": "AMZN",
+          "company": "Amazon.com, Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Internet Retail",
+          "rank": 25,
+          "score": 27.06
+        },
+        {
+          "ticker": "ANSS",
+          "company": "ANSYS, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 26,
+          "score": 27.01
+        },
+        {
+          "ticker": "VICR",
+          "company": "Vicor Corporation",
+          "sector": "Technology",
+          "industry": "Electronic Components",
+          "rank": 27,
+          "score": 26.74
+        },
+        {
+          "ticker": "UBER",
+          "company": "Uber Technologies, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 29,
+          "score": 26.39
+        },
+        {
+          "ticker": "BKNG",
+          "company": "Booking Holdings Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Travel Services",
+          "rank": 31,
+          "score": 25.82
+        },
+        {
+          "ticker": "RL",
+          "company": "Ralph Lauren Corporation",
+          "sector": "Consumer Cyclical",
+          "industry": "Apparel Manufacturing",
+          "rank": 32,
+          "score": 25.79
+        },
+        {
+          "ticker": "CLS",
+          "company": "Celestica Inc.",
+          "sector": "Technology",
+          "industry": "Electronic Components",
+          "rank": 34,
+          "score": 25.69
+        }
+      ]
+    },
+    "Recommended_S20_P150": {
+      "tickers": [
+        "IDXX",
+        "QLYS",
+        "RMBS",
+        "CRM",
+        "WDAY",
+        "PCTY",
+        "MTD",
+        "DDOG",
+        "LSCC",
+        "MANH",
+        "PINS",
+        "CPRT",
+        "SHOP",
+        "VEEV",
+        "DOCU",
+        "JWN",
+        "NICE",
+        "B",
+        "FIZZ",
+        "ADBE"
+      ],
+      "composition": [
+        {
+          "ticker": "IDXX",
+          "company": "IDEXX Laboratories, Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 1,
+          "score": 40.01
+        },
+        {
+          "ticker": "QLYS",
+          "company": "Qualys, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Infrastructure",
+          "rank": 2,
+          "score": 39.04
+        },
+        {
+          "ticker": "RMBS",
+          "company": "Rambus Inc.",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 3,
+          "score": 37.41
+        },
+        {
+          "ticker": "CRM",
+          "company": "Salesforce, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 4,
+          "score": 37.0
+        },
+        {
+          "ticker": "WDAY",
+          "company": "Workday, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 5,
+          "score": 36.66
+        },
+        {
+          "ticker": "PCTY",
+          "company": "Paylocity Holding Corporation",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 6,
+          "score": 36.41
+        },
+        {
+          "ticker": "MTD",
+          "company": "Mettler-Toledo International Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 7,
+          "score": 36.41
+        },
+        {
+          "ticker": "DDOG",
+          "company": "Datadog, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 8,
+          "score": 35.73
+        },
+        {
+          "ticker": "LSCC",
+          "company": "Lattice Semiconductor Corporation",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 9,
+          "score": 33.92
+        },
+        {
+          "ticker": "MANH",
+          "company": "Manhattan Associates, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 10,
+          "score": 33.26
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 11,
+          "score": 32.35
+        },
+        {
+          "ticker": "CPRT",
+          "company": "Copart, Inc.",
+          "sector": "Industrials",
+          "industry": "Specialty Business Services",
+          "rank": 12,
+          "score": 31.75
+        },
+        {
+          "ticker": "SHOP",
+          "company": "Shopify Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 13,
+          "score": 31.61
+        },
+        {
+          "ticker": "VEEV",
+          "company": "Veeva Systems Inc.",
+          "sector": "Healthcare",
+          "industry": "Health Information Services",
+          "rank": 14,
+          "score": 31.61
+        },
+        {
+          "ticker": "DOCU",
+          "company": "DocuSign, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 15,
+          "score": 31.34
+        },
+        {
+          "ticker": "NICE",
+          "company": "NICE Ltd.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 16,
+          "score": 29.91
+        },
+        {
+          "ticker": "B",
+          "company": "Barrick Mining Corporation",
+          "sector": "Basic Materials",
+          "industry": "Gold",
+          "rank": 17,
+          "score": 29.79
+        },
+        {
+          "ticker": "FIZZ",
+          "company": "National Beverage Corp.",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 18,
+          "score": 28.95
+        },
+        {
+          "ticker": "ADBE",
+          "company": "Adobe Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 19,
+          "score": 28.59
+        },
+        {
+          "ticker": "JWN",
+          "company": "Unknown",
+          "sector": "Unknown",
+          "industry": "Unknown",
+          "rank": 33,
+          "score": 25.76
+        }
+      ]
+    },
+    "HybridStability_S20_P150": {
+      "tickers": [
+        "MTD",
+        "WDAY",
+        "PCTY",
+        "SHOP",
+        "ELF",
+        "B",
+        "IDXX",
+        "PINS",
+        "SKYW",
+        "VRSK",
+        "HOLX",
+        "JWN",
+        "DFS",
+        "RL",
+        "RCL",
+        "WMB",
+        "NUE",
+        "FCX",
+        "BKNG",
+        "WMG"
+      ],
+      "composition": [
+        {
+          "ticker": "IDXX",
+          "company": "IDEXX Laboratories, Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 1,
+          "score": 40.01
+        },
+        {
+          "ticker": "WDAY",
+          "company": "Workday, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 5,
+          "score": 36.66
+        },
+        {
+          "ticker": "PCTY",
+          "company": "Paylocity Holding Corporation",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 6,
+          "score": 36.41
+        },
+        {
+          "ticker": "MTD",
+          "company": "Mettler-Toledo International Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 7,
+          "score": 36.41
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 11,
+          "score": 32.35
+        },
+        {
+          "ticker": "SHOP",
+          "company": "Shopify Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 13,
+          "score": 31.61
+        },
+        {
+          "ticker": "B",
+          "company": "Barrick Mining Corporation",
+          "sector": "Basic Materials",
+          "industry": "Gold",
+          "rank": 17,
+          "score": 29.79
+        },
+        {
+          "ticker": "ELF",
+          "company": "e.l.f. Beauty, Inc.",
+          "sector": "Consumer Defensive",
+          "industry": "Household & Personal Products",
+          "rank": 21,
+          "score": 28.35
+        },
+        {
+          "ticker": "HOLX",
+          "company": "Hologic, Inc.",
+          "sector": "Healthcare",
+          "industry": "Medical Instruments & Supplies",
+          "rank": 24,
+          "score": 27.57
+        },
+        {
+          "ticker": "BKNG",
+          "company": "Booking Holdings Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Travel Services",
+          "rank": 31,
+          "score": 25.82
+        },
+        {
+          "ticker": "RL",
+          "company": "Ralph Lauren Corporation",
+          "sector": "Consumer Cyclical",
+          "industry": "Apparel Manufacturing",
+          "rank": 32,
+          "score": 25.79
+        },
+        {
+          "ticker": "JWN",
+          "company": "Unknown",
+          "sector": "Unknown",
+          "industry": "Unknown",
+          "rank": 33,
+          "score": 25.76
+        },
+        {
+          "ticker": "SKYW",
+          "company": "SkyWest, Inc.",
+          "sector": "Industrials",
+          "industry": "Airlines",
+          "rank": 45,
+          "score": 22.8
+        },
+        {
+          "ticker": "VRSK",
+          "company": "Verisk Analytics, Inc.",
+          "sector": "Industrials",
+          "industry": "Consulting Services",
+          "rank": 49,
+          "score": 22.28
+        },
+        {
+          "ticker": "FCX",
+          "company": "Freeport-McMoRan Inc.",
+          "sector": "Basic Materials",
+          "industry": "Copper",
+          "rank": 50,
+          "score": 22.24
+        },
+        {
+          "ticker": "DFS",
+          "company": "Unknown",
+          "sector": "Unknown",
+          "industry": "Unknown",
+          "rank": 53,
+          "score": 21.78
+        },
+        {
+          "ticker": "WMB",
+          "company": "The Williams Companies, Inc.",
+          "sector": "Energy",
+          "industry": "Oil & Gas Midstream",
+          "rank": 58,
+          "score": 21.01
+        },
+        {
+          "ticker": "RCL",
+          "company": "Royal Caribbean Cruises Ltd.",
+          "sector": "Consumer Cyclical",
+          "industry": "Travel Services",
+          "rank": 63,
+          "score": 20.78
+        },
+        {
+          "ticker": "WMG",
+          "company": "Warner Music Group Corp.",
+          "sector": "Communication Services",
+          "industry": "Entertainment",
+          "rank": 74,
+          "score": 19.63
+        },
+        {
+          "ticker": "NUE",
+          "company": "Nucor Corporation",
+          "sector": "Basic Materials",
+          "industry": "Steel",
+          "rank": 103,
+          "score": 18.04
+        }
+      ]
+    },
+    "TopRank_S30_P150": {
+      "tickers": [
+        "IDXX",
+        "QLYS",
+        "RMBS",
+        "CRM",
+        "WDAY",
+        "PCTY",
+        "MTD",
+        "DDOG",
+        "LSCC",
+        "MANH",
+        "PINS",
+        "CPRT",
+        "SHOP",
+        "VEEV",
+        "DOCU",
+        "NICE",
+        "B",
+        "FIZZ",
+        "ADBE",
+        "DT",
+        "ELF",
+        "AZTA",
+        "GRMN",
+        "HOLX",
+        "AMZN",
+        "ANSS",
+        "VICR",
+        "VRSN",
+        "UBER",
+        "PAYC"
+      ],
+      "composition": [
+        {
+          "ticker": "IDXX",
+          "company": "IDEXX Laboratories, Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 1,
+          "score": 40.01
+        },
+        {
+          "ticker": "QLYS",
+          "company": "Qualys, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Infrastructure",
+          "rank": 2,
+          "score": 39.04
+        },
+        {
+          "ticker": "RMBS",
+          "company": "Rambus Inc.",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 3,
+          "score": 37.41
+        },
+        {
+          "ticker": "CRM",
+          "company": "Salesforce, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 4,
+          "score": 37.0
+        },
+        {
+          "ticker": "WDAY",
+          "company": "Workday, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 5,
+          "score": 36.66
+        },
+        {
+          "ticker": "PCTY",
+          "company": "Paylocity Holding Corporation",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 6,
+          "score": 36.41
+        },
+        {
+          "ticker": "MTD",
+          "company": "Mettler-Toledo International Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 7,
+          "score": 36.41
+        },
+        {
+          "ticker": "DDOG",
+          "company": "Datadog, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 8,
+          "score": 35.73
+        },
+        {
+          "ticker": "LSCC",
+          "company": "Lattice Semiconductor Corporation",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 9,
+          "score": 33.92
+        },
+        {
+          "ticker": "MANH",
+          "company": "Manhattan Associates, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 10,
+          "score": 33.26
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 11,
+          "score": 32.35
+        },
+        {
+          "ticker": "CPRT",
+          "company": "Copart, Inc.",
+          "sector": "Industrials",
+          "industry": "Specialty Business Services",
+          "rank": 12,
+          "score": 31.75
+        },
+        {
+          "ticker": "SHOP",
+          "company": "Shopify Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 13,
+          "score": 31.61
+        },
+        {
+          "ticker": "VEEV",
+          "company": "Veeva Systems Inc.",
+          "sector": "Healthcare",
+          "industry": "Health Information Services",
+          "rank": 14,
+          "score": 31.61
+        },
+        {
+          "ticker": "DOCU",
+          "company": "DocuSign, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 15,
+          "score": 31.34
+        },
+        {
+          "ticker": "NICE",
+          "company": "NICE Ltd.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 16,
+          "score": 29.91
+        },
+        {
+          "ticker": "B",
+          "company": "Barrick Mining Corporation",
+          "sector": "Basic Materials",
+          "industry": "Gold",
+          "rank": 17,
+          "score": 29.79
+        },
+        {
+          "ticker": "FIZZ",
+          "company": "National Beverage Corp.",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 18,
+          "score": 28.95
+        },
+        {
+          "ticker": "ADBE",
+          "company": "Adobe Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 19,
+          "score": 28.59
+        },
+        {
+          "ticker": "DT",
+          "company": "Dynatrace, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 20,
+          "score": 28.47
+        },
+        {
+          "ticker": "ELF",
+          "company": "e.l.f. Beauty, Inc.",
+          "sector": "Consumer Defensive",
+          "industry": "Household & Personal Products",
+          "rank": 21,
+          "score": 28.35
+        },
+        {
+          "ticker": "AZTA",
+          "company": "Azenta, Inc.",
+          "sector": "Healthcare",
+          "industry": "Medical Instruments & Supplies",
+          "rank": 22,
+          "score": 28.23
+        },
+        {
+          "ticker": "GRMN",
+          "company": "Garmin Ltd.",
+          "sector": "Technology",
+          "industry": "Scientific & Technical Instruments",
+          "rank": 23,
+          "score": 27.76
+        },
+        {
+          "ticker": "HOLX",
+          "company": "Hologic, Inc.",
+          "sector": "Healthcare",
+          "industry": "Medical Instruments & Supplies",
+          "rank": 24,
+          "score": 27.57
+        },
+        {
+          "ticker": "AMZN",
+          "company": "Amazon.com, Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Internet Retail",
+          "rank": 25,
+          "score": 27.06
+        },
+        {
+          "ticker": "ANSS",
+          "company": "ANSYS, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 26,
+          "score": 27.01
+        },
+        {
+          "ticker": "VICR",
+          "company": "Vicor Corporation",
+          "sector": "Technology",
+          "industry": "Electronic Components",
+          "rank": 27,
+          "score": 26.74
+        },
+        {
+          "ticker": "VRSN",
+          "company": "VeriSign, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Infrastructure",
+          "rank": 28,
+          "score": 26.52
+        },
+        {
+          "ticker": "UBER",
+          "company": "Uber Technologies, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 29,
+          "score": 26.39
+        },
+        {
+          "ticker": "PAYC",
+          "company": "Paycom Software, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 30,
+          "score": 26.17
+        }
+      ]
+    },
+    "SectorBal2_S30_P150": {
+      "tickers": [
+        "IDXX",
+        "QLYS",
+        "RMBS",
+        "MTD",
+        "PINS",
+        "CPRT",
+        "B",
+        "FIZZ",
+        "ELF",
+        "AMZN",
+        "BKNG",
+        "JWN",
+        "AEIS",
+        "META",
+        "FCX",
+        "DFS",
+        "WMB",
+        "BLK",
+        "CCJ",
+        "FUTU",
+        "TLN"
+      ],
+      "composition": [
+        {
+          "ticker": "IDXX",
+          "company": "IDEXX Laboratories, Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 1,
+          "score": 40.01
+        },
+        {
+          "ticker": "QLYS",
+          "company": "Qualys, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Infrastructure",
+          "rank": 2,
+          "score": 39.04
+        },
+        {
+          "ticker": "RMBS",
+          "company": "Rambus Inc.",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 3,
+          "score": 37.41
+        },
+        {
+          "ticker": "MTD",
+          "company": "Mettler-Toledo International Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 7,
+          "score": 36.41
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 11,
+          "score": 32.35
+        },
+        {
+          "ticker": "CPRT",
+          "company": "Copart, Inc.",
+          "sector": "Industrials",
+          "industry": "Specialty Business Services",
+          "rank": 12,
+          "score": 31.75
+        },
+        {
+          "ticker": "B",
+          "company": "Barrick Mining Corporation",
+          "sector": "Basic Materials",
+          "industry": "Gold",
+          "rank": 17,
+          "score": 29.79
+        },
+        {
+          "ticker": "FIZZ",
+          "company": "National Beverage Corp.",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 18,
+          "score": 28.95
+        },
+        {
+          "ticker": "ELF",
+          "company": "e.l.f. Beauty, Inc.",
+          "sector": "Consumer Defensive",
+          "industry": "Household & Personal Products",
+          "rank": 21,
+          "score": 28.35
+        },
+        {
+          "ticker": "AMZN",
+          "company": "Amazon.com, Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Internet Retail",
+          "rank": 25,
+          "score": 27.06
+        },
+        {
+          "ticker": "BKNG",
+          "company": "Booking Holdings Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Travel Services",
+          "rank": 31,
+          "score": 25.82
+        },
+        {
+          "ticker": "JWN",
+          "company": "Unknown",
+          "sector": "Unknown",
+          "industry": "Unknown",
+          "rank": 33,
+          "score": 25.76
+        },
+        {
+          "ticker": "AEIS",
+          "company": "Advanced Energy Industries, Inc.",
+          "sector": "Industrials",
+          "industry": "Electrical Equipment & Parts",
+          "rank": 40,
+          "score": 23.49
+        },
+        {
+          "ticker": "META",
+          "company": "Meta Platforms, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 42,
+          "score": 23.27
+        },
+        {
+          "ticker": "FCX",
+          "company": "Freeport-McMoRan Inc.",
+          "sector": "Basic Materials",
+          "industry": "Copper",
+          "rank": 50,
+          "score": 22.24
+        },
+        {
+          "ticker": "DFS",
+          "company": "Unknown",
+          "sector": "Unknown",
+          "industry": "Unknown",
+          "rank": 53,
+          "score": 21.78
+        },
+        {
+          "ticker": "WMB",
+          "company": "The Williams Companies, Inc.",
+          "sector": "Energy",
+          "industry": "Oil & Gas Midstream",
+          "rank": 58,
+          "score": 21.01
+        },
+        {
+          "ticker": "BLK",
+          "company": "BlackRock, Inc.",
+          "sector": "Financial Services",
+          "industry": "Asset Management",
+          "rank": 80,
+          "score": 19.34
+        },
+        {
+          "ticker": "CCJ",
+          "company": "Cameco Corporation",
+          "sector": "Energy",
+          "industry": "Uranium",
+          "rank": 89,
+          "score": 18.99
+        },
+        {
+          "ticker": "FUTU",
+          "company": "Futu Holdings Limited",
+          "sector": "Financial Services",
+          "industry": "Capital Markets",
+          "rank": 101,
+          "score": 18.1
+        },
+        {
+          "ticker": "TLN",
+          "company": "Talen Energy Corporation",
+          "sector": "Utilities",
+          "industry": "Utilities - Independent Power Producers",
+          "rank": 109,
+          "score": 17.85
+        }
+      ]
+    },
+    "SectorBal3_S30_P150": {
+      "tickers": [
+        "IDXX",
+        "QLYS",
+        "RMBS",
+        "CRM",
+        "MTD",
+        "PINS",
+        "CPRT",
+        "VEEV",
+        "B",
+        "FIZZ",
+        "ELF",
+        "AMZN",
+        "BKNG",
+        "RL",
+        "JWN",
+        "AEIS",
+        "META",
+        "SKYW",
+        "FCX",
+        "DFS",
+        "YELP",
+        "NEM",
+        "WMB",
+        "BLK",
+        "CCJ",
+        "SHEL",
+        "UL",
+        "FUTU",
+        "SEIC",
+        "TLN"
+      ],
+      "composition": [
+        {
+          "ticker": "IDXX",
+          "company": "IDEXX Laboratories, Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 1,
+          "score": 40.01
+        },
+        {
+          "ticker": "QLYS",
+          "company": "Qualys, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Infrastructure",
+          "rank": 2,
+          "score": 39.04
+        },
+        {
+          "ticker": "RMBS",
+          "company": "Rambus Inc.",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 3,
+          "score": 37.41
+        },
+        {
+          "ticker": "CRM",
+          "company": "Salesforce, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 4,
+          "score": 37.0
+        },
+        {
+          "ticker": "MTD",
+          "company": "Mettler-Toledo International Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 7,
+          "score": 36.41
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 11,
+          "score": 32.35
+        },
+        {
+          "ticker": "CPRT",
+          "company": "Copart, Inc.",
+          "sector": "Industrials",
+          "industry": "Specialty Business Services",
+          "rank": 12,
+          "score": 31.75
+        },
+        {
+          "ticker": "VEEV",
+          "company": "Veeva Systems Inc.",
+          "sector": "Healthcare",
+          "industry": "Health Information Services",
+          "rank": 14,
+          "score": 31.61
+        },
+        {
+          "ticker": "B",
+          "company": "Barrick Mining Corporation",
+          "sector": "Basic Materials",
+          "industry": "Gold",
+          "rank": 17,
+          "score": 29.79
+        },
+        {
+          "ticker": "FIZZ",
+          "company": "National Beverage Corp.",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 18,
+          "score": 28.95
+        },
+        {
+          "ticker": "ELF",
+          "company": "e.l.f. Beauty, Inc.",
+          "sector": "Consumer Defensive",
+          "industry": "Household & Personal Products",
+          "rank": 21,
+          "score": 28.35
+        },
+        {
+          "ticker": "AMZN",
+          "company": "Amazon.com, Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Internet Retail",
+          "rank": 25,
+          "score": 27.06
+        },
+        {
+          "ticker": "BKNG",
+          "company": "Booking Holdings Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Travel Services",
+          "rank": 31,
+          "score": 25.82
+        },
+        {
+          "ticker": "RL",
+          "company": "Ralph Lauren Corporation",
+          "sector": "Consumer Cyclical",
+          "industry": "Apparel Manufacturing",
+          "rank": 32,
+          "score": 25.79
+        },
+        {
+          "ticker": "JWN",
+          "company": "Unknown",
+          "sector": "Unknown",
+          "industry": "Unknown",
+          "rank": 33,
+          "score": 25.76
+        },
+        {
+          "ticker": "AEIS",
+          "company": "Advanced Energy Industries, Inc.",
+          "sector": "Industrials",
+          "industry": "Electrical Equipment & Parts",
+          "rank": 40,
+          "score": 23.49
+        },
+        {
+          "ticker": "META",
+          "company": "Meta Platforms, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 42,
+          "score": 23.27
+        },
+        {
+          "ticker": "SKYW",
+          "company": "SkyWest, Inc.",
+          "sector": "Industrials",
+          "industry": "Airlines",
+          "rank": 45,
+          "score": 22.8
+        },
+        {
+          "ticker": "FCX",
+          "company": "Freeport-McMoRan Inc.",
+          "sector": "Basic Materials",
+          "industry": "Copper",
+          "rank": 50,
+          "score": 22.24
+        },
+        {
+          "ticker": "DFS",
+          "company": "Unknown",
+          "sector": "Unknown",
+          "industry": "Unknown",
+          "rank": 53,
+          "score": 21.78
+        },
+        {
+          "ticker": "YELP",
+          "company": "Yelp Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 55,
+          "score": 21.49
+        },
+        {
+          "ticker": "NEM",
+          "company": "Newmont Corporation",
+          "sector": "Basic Materials",
+          "industry": "Gold",
+          "rank": 57,
+          "score": 21.3
+        },
+        {
+          "ticker": "WMB",
+          "company": "The Williams Companies, Inc.",
+          "sector": "Energy",
+          "industry": "Oil & Gas Midstream",
+          "rank": 58,
+          "score": 21.01
+        },
+        {
+          "ticker": "BLK",
+          "company": "BlackRock, Inc.",
+          "sector": "Financial Services",
+          "industry": "Asset Management",
+          "rank": 80,
+          "score": 19.34
+        },
+        {
+          "ticker": "CCJ",
+          "company": "Cameco Corporation",
+          "sector": "Energy",
+          "industry": "Uranium",
+          "rank": 89,
+          "score": 18.99
+        },
+        {
+          "ticker": "SHEL",
+          "company": "Shell plc",
+          "sector": "Energy",
+          "industry": "Oil & Gas Integrated",
+          "rank": 95,
+          "score": 18.29
+        },
+        {
+          "ticker": "UL",
+          "company": "Unilever PLC",
+          "sector": "Consumer Defensive",
+          "industry": "Household & Personal Products",
+          "rank": 97,
+          "score": 18.24
+        },
+        {
+          "ticker": "FUTU",
+          "company": "Futu Holdings Limited",
+          "sector": "Financial Services",
+          "industry": "Capital Markets",
+          "rank": 101,
+          "score": 18.1
+        },
+        {
+          "ticker": "SEIC",
+          "company": "SEI Investments Company",
+          "sector": "Financial Services",
+          "industry": "Asset Management",
+          "rank": 108,
+          "score": 17.86
+        },
+        {
+          "ticker": "TLN",
+          "company": "Talen Energy Corporation",
+          "sector": "Utilities",
+          "industry": "Utilities - Independent Power Producers",
+          "rank": 109,
+          "score": 17.85
+        }
+      ]
+    },
+    "IndustryBal_S30_P150": {
+      "tickers": [
+        "IDXX",
+        "QLYS",
+        "RMBS",
+        "CRM",
+        "WDAY",
+        "MTD",
+        "LSCC",
+        "PINS",
+        "CPRT",
+        "VEEV",
+        "B",
+        "FIZZ",
+        "ELF",
+        "AZTA",
+        "GRMN",
+        "HOLX",
+        "AMZN",
+        "VICR",
+        "VRSN",
+        "BKNG",
+        "RL",
+        "JWN",
+        "CLS",
+        "BIO",
+        "ABNB",
+        "CTSH",
+        "FSLR",
+        "AEIS",
+        "META",
+        "KLIC"
+      ],
+      "composition": [
+        {
+          "ticker": "IDXX",
+          "company": "IDEXX Laboratories, Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 1,
+          "score": 40.01
+        },
+        {
+          "ticker": "QLYS",
+          "company": "Qualys, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Infrastructure",
+          "rank": 2,
+          "score": 39.04
+        },
+        {
+          "ticker": "RMBS",
+          "company": "Rambus Inc.",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 3,
+          "score": 37.41
+        },
+        {
+          "ticker": "CRM",
+          "company": "Salesforce, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 4,
+          "score": 37.0
+        },
+        {
+          "ticker": "WDAY",
+          "company": "Workday, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 5,
+          "score": 36.66
+        },
+        {
+          "ticker": "MTD",
+          "company": "Mettler-Toledo International Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 7,
+          "score": 36.41
+        },
+        {
+          "ticker": "LSCC",
+          "company": "Lattice Semiconductor Corporation",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 9,
+          "score": 33.92
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 11,
+          "score": 32.35
+        },
+        {
+          "ticker": "CPRT",
+          "company": "Copart, Inc.",
+          "sector": "Industrials",
+          "industry": "Specialty Business Services",
+          "rank": 12,
+          "score": 31.75
+        },
+        {
+          "ticker": "VEEV",
+          "company": "Veeva Systems Inc.",
+          "sector": "Healthcare",
+          "industry": "Health Information Services",
+          "rank": 14,
+          "score": 31.61
+        },
+        {
+          "ticker": "B",
+          "company": "Barrick Mining Corporation",
+          "sector": "Basic Materials",
+          "industry": "Gold",
+          "rank": 17,
+          "score": 29.79
+        },
+        {
+          "ticker": "FIZZ",
+          "company": "National Beverage Corp.",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 18,
+          "score": 28.95
+        },
+        {
+          "ticker": "ELF",
+          "company": "e.l.f. Beauty, Inc.",
+          "sector": "Consumer Defensive",
+          "industry": "Household & Personal Products",
+          "rank": 21,
+          "score": 28.35
+        },
+        {
+          "ticker": "AZTA",
+          "company": "Azenta, Inc.",
+          "sector": "Healthcare",
+          "industry": "Medical Instruments & Supplies",
+          "rank": 22,
+          "score": 28.23
+        },
+        {
+          "ticker": "GRMN",
+          "company": "Garmin Ltd.",
+          "sector": "Technology",
+          "industry": "Scientific & Technical Instruments",
+          "rank": 23,
+          "score": 27.76
+        },
+        {
+          "ticker": "HOLX",
+          "company": "Hologic, Inc.",
+          "sector": "Healthcare",
+          "industry": "Medical Instruments & Supplies",
+          "rank": 24,
+          "score": 27.57
+        },
+        {
+          "ticker": "AMZN",
+          "company": "Amazon.com, Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Internet Retail",
+          "rank": 25,
+          "score": 27.06
+        },
+        {
+          "ticker": "VICR",
+          "company": "Vicor Corporation",
+          "sector": "Technology",
+          "industry": "Electronic Components",
+          "rank": 27,
+          "score": 26.74
+        },
+        {
+          "ticker": "VRSN",
+          "company": "VeriSign, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Infrastructure",
+          "rank": 28,
+          "score": 26.52
+        },
+        {
+          "ticker": "BKNG",
+          "company": "Booking Holdings Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Travel Services",
+          "rank": 31,
+          "score": 25.82
+        },
+        {
+          "ticker": "RL",
+          "company": "Ralph Lauren Corporation",
+          "sector": "Consumer Cyclical",
+          "industry": "Apparel Manufacturing",
+          "rank": 32,
+          "score": 25.79
+        },
+        {
+          "ticker": "JWN",
+          "company": "Unknown",
+          "sector": "Unknown",
+          "industry": "Unknown",
+          "rank": 33,
+          "score": 25.76
+        },
+        {
+          "ticker": "CLS",
+          "company": "Celestica Inc.",
+          "sector": "Technology",
+          "industry": "Electronic Components",
+          "rank": 34,
+          "score": 25.69
+        },
+        {
+          "ticker": "BIO",
+          "company": "Bio-Rad Laboratories, Inc.",
+          "sector": "Healthcare",
+          "industry": "Medical Devices",
+          "rank": 35,
+          "score": 25.41
+        },
+        {
+          "ticker": "ABNB",
+          "company": "Airbnb, Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Travel Services",
+          "rank": 36,
+          "score": 24.64
+        },
+        {
+          "ticker": "CTSH",
+          "company": "Cognizant Technology Solutions Corporation",
+          "sector": "Technology",
+          "industry": "Information Technology Services",
+          "rank": 38,
+          "score": 23.58
+        },
+        {
+          "ticker": "FSLR",
+          "company": "First Solar, Inc.",
+          "sector": "Technology",
+          "industry": "Solar",
+          "rank": 39,
+          "score": 23.52
+        },
+        {
+          "ticker": "AEIS",
+          "company": "Advanced Energy Industries, Inc.",
+          "sector": "Industrials",
+          "industry": "Electrical Equipment & Parts",
+          "rank": 40,
+          "score": 23.49
+        },
+        {
+          "ticker": "META",
+          "company": "Meta Platforms, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 42,
+          "score": 23.27
+        },
+        {
+          "ticker": "KLIC",
+          "company": "Kulicke and Soffa Industries, Inc.",
+          "sector": "Technology",
+          "industry": "Semiconductor Equipment & Materials",
+          "rank": 44,
+          "score": 22.96
+        }
+      ]
+    },
+    "Stability_S30_P150": {
+      "tickers": [
+        "IDXX",
+        "QLYS",
+        "RMBS",
+        "CRM",
+        "WDAY",
+        "PCTY",
+        "MTD",
+        "DDOG",
+        "LSCC",
+        "MANH",
+        "PINS",
+        "CPRT",
+        "SHOP",
+        "VEEV",
+        "DOCU",
+        "NICE",
+        "B",
+        "FIZZ",
+        "ADBE",
+        "DT",
+        "ELF",
+        "AZTA",
+        "GRMN",
+        "HOLX",
+        "VICR",
+        "VRSN",
+        "UBER",
+        "PAYC",
+        "BKNG",
+        "RL"
+      ],
+      "composition": [
+        {
+          "ticker": "IDXX",
+          "company": "IDEXX Laboratories, Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 1,
+          "score": 40.01
+        },
+        {
+          "ticker": "QLYS",
+          "company": "Qualys, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Infrastructure",
+          "rank": 2,
+          "score": 39.04
+        },
+        {
+          "ticker": "RMBS",
+          "company": "Rambus Inc.",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 3,
+          "score": 37.41
+        },
+        {
+          "ticker": "CRM",
+          "company": "Salesforce, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 4,
+          "score": 37.0
+        },
+        {
+          "ticker": "WDAY",
+          "company": "Workday, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 5,
+          "score": 36.66
+        },
+        {
+          "ticker": "PCTY",
+          "company": "Paylocity Holding Corporation",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 6,
+          "score": 36.41
+        },
+        {
+          "ticker": "MTD",
+          "company": "Mettler-Toledo International Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 7,
+          "score": 36.41
+        },
+        {
+          "ticker": "DDOG",
+          "company": "Datadog, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 8,
+          "score": 35.73
+        },
+        {
+          "ticker": "LSCC",
+          "company": "Lattice Semiconductor Corporation",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 9,
+          "score": 33.92
+        },
+        {
+          "ticker": "MANH",
+          "company": "Manhattan Associates, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 10,
+          "score": 33.26
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 11,
+          "score": 32.35
+        },
+        {
+          "ticker": "CPRT",
+          "company": "Copart, Inc.",
+          "sector": "Industrials",
+          "industry": "Specialty Business Services",
+          "rank": 12,
+          "score": 31.75
+        },
+        {
+          "ticker": "SHOP",
+          "company": "Shopify Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 13,
+          "score": 31.61
+        },
+        {
+          "ticker": "VEEV",
+          "company": "Veeva Systems Inc.",
+          "sector": "Healthcare",
+          "industry": "Health Information Services",
+          "rank": 14,
+          "score": 31.61
+        },
+        {
+          "ticker": "DOCU",
+          "company": "DocuSign, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 15,
+          "score": 31.34
+        },
+        {
+          "ticker": "NICE",
+          "company": "NICE Ltd.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 16,
+          "score": 29.91
+        },
+        {
+          "ticker": "B",
+          "company": "Barrick Mining Corporation",
+          "sector": "Basic Materials",
+          "industry": "Gold",
+          "rank": 17,
+          "score": 29.79
+        },
+        {
+          "ticker": "FIZZ",
+          "company": "National Beverage Corp.",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 18,
+          "score": 28.95
+        },
+        {
+          "ticker": "ADBE",
+          "company": "Adobe Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 19,
+          "score": 28.59
+        },
+        {
+          "ticker": "DT",
+          "company": "Dynatrace, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 20,
+          "score": 28.47
+        },
+        {
+          "ticker": "ELF",
+          "company": "e.l.f. Beauty, Inc.",
+          "sector": "Consumer Defensive",
+          "industry": "Household & Personal Products",
+          "rank": 21,
+          "score": 28.35
+        },
+        {
+          "ticker": "AZTA",
+          "company": "Azenta, Inc.",
+          "sector": "Healthcare",
+          "industry": "Medical Instruments & Supplies",
+          "rank": 22,
+          "score": 28.23
+        },
+        {
+          "ticker": "GRMN",
+          "company": "Garmin Ltd.",
+          "sector": "Technology",
+          "industry": "Scientific & Technical Instruments",
+          "rank": 23,
+          "score": 27.76
+        },
+        {
+          "ticker": "HOLX",
+          "company": "Hologic, Inc.",
+          "sector": "Healthcare",
+          "industry": "Medical Instruments & Supplies",
+          "rank": 24,
+          "score": 27.57
+        },
+        {
+          "ticker": "VICR",
+          "company": "Vicor Corporation",
+          "sector": "Technology",
+          "industry": "Electronic Components",
+          "rank": 27,
+          "score": 26.74
+        },
+        {
+          "ticker": "VRSN",
+          "company": "VeriSign, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Infrastructure",
+          "rank": 28,
+          "score": 26.52
+        },
+        {
+          "ticker": "UBER",
+          "company": "Uber Technologies, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 29,
+          "score": 26.39
+        },
+        {
+          "ticker": "PAYC",
+          "company": "Paycom Software, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 30,
+          "score": 26.17
+        },
+        {
+          "ticker": "BKNG",
+          "company": "Booking Holdings Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Travel Services",
+          "rank": 31,
+          "score": 25.82
+        },
+        {
+          "ticker": "RL",
+          "company": "Ralph Lauren Corporation",
+          "sector": "Consumer Cyclical",
+          "industry": "Apparel Manufacturing",
+          "rank": 32,
+          "score": 25.79
+        }
+      ]
+    },
+    "PosMomentum_S30_P150": {
+      "tickers": [
+        "IDXX",
+        "RMBS",
+        "MTD",
+        "DDOG",
+        "LSCC",
+        "MANH",
+        "PINS",
+        "SHOP",
+        "B",
+        "ELF",
+        "AZTA",
+        "GRMN",
+        "HOLX",
+        "AMZN",
+        "ANSS",
+        "VICR",
+        "UBER",
+        "BKNG",
+        "RL",
+        "CLS",
+        "BIO",
+        "ABNB",
+        "FFIV",
+        "FSLR",
+        "AEIS",
+        "AFRM",
+        "ON",
+        "KLIC",
+        "SKYW",
+        "GE"
+      ],
+      "composition": [
+        {
+          "ticker": "IDXX",
+          "company": "IDEXX Laboratories, Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 1,
+          "score": 40.01
+        },
+        {
+          "ticker": "RMBS",
+          "company": "Rambus Inc.",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 3,
+          "score": 37.41
+        },
+        {
+          "ticker": "MTD",
+          "company": "Mettler-Toledo International Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 7,
+          "score": 36.41
+        },
+        {
+          "ticker": "DDOG",
+          "company": "Datadog, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 8,
+          "score": 35.73
+        },
+        {
+          "ticker": "LSCC",
+          "company": "Lattice Semiconductor Corporation",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 9,
+          "score": 33.92
+        },
+        {
+          "ticker": "MANH",
+          "company": "Manhattan Associates, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 10,
+          "score": 33.26
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 11,
+          "score": 32.35
+        },
+        {
+          "ticker": "SHOP",
+          "company": "Shopify Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 13,
+          "score": 31.61
+        },
+        {
+          "ticker": "B",
+          "company": "Barrick Mining Corporation",
+          "sector": "Basic Materials",
+          "industry": "Gold",
+          "rank": 17,
+          "score": 29.79
+        },
+        {
+          "ticker": "ELF",
+          "company": "e.l.f. Beauty, Inc.",
+          "sector": "Consumer Defensive",
+          "industry": "Household & Personal Products",
+          "rank": 21,
+          "score": 28.35
+        },
+        {
+          "ticker": "AZTA",
+          "company": "Azenta, Inc.",
+          "sector": "Healthcare",
+          "industry": "Medical Instruments & Supplies",
+          "rank": 22,
+          "score": 28.23
+        },
+        {
+          "ticker": "GRMN",
+          "company": "Garmin Ltd.",
+          "sector": "Technology",
+          "industry": "Scientific & Technical Instruments",
+          "rank": 23,
+          "score": 27.76
+        },
+        {
+          "ticker": "HOLX",
+          "company": "Hologic, Inc.",
+          "sector": "Healthcare",
+          "industry": "Medical Instruments & Supplies",
+          "rank": 24,
+          "score": 27.57
+        },
+        {
+          "ticker": "AMZN",
+          "company": "Amazon.com, Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Internet Retail",
+          "rank": 25,
+          "score": 27.06
+        },
+        {
+          "ticker": "ANSS",
+          "company": "ANSYS, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 26,
+          "score": 27.01
+        },
+        {
+          "ticker": "VICR",
+          "company": "Vicor Corporation",
+          "sector": "Technology",
+          "industry": "Electronic Components",
+          "rank": 27,
+          "score": 26.74
+        },
+        {
+          "ticker": "UBER",
+          "company": "Uber Technologies, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 29,
+          "score": 26.39
+        },
+        {
+          "ticker": "BKNG",
+          "company": "Booking Holdings Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Travel Services",
+          "rank": 31,
+          "score": 25.82
+        },
+        {
+          "ticker": "RL",
+          "company": "Ralph Lauren Corporation",
+          "sector": "Consumer Cyclical",
+          "industry": "Apparel Manufacturing",
+          "rank": 32,
+          "score": 25.79
+        },
+        {
+          "ticker": "CLS",
+          "company": "Celestica Inc.",
+          "sector": "Technology",
+          "industry": "Electronic Components",
+          "rank": 34,
+          "score": 25.69
+        },
+        {
+          "ticker": "BIO",
+          "company": "Bio-Rad Laboratories, Inc.",
+          "sector": "Healthcare",
+          "industry": "Medical Devices",
+          "rank": 35,
+          "score": 25.41
+        },
+        {
+          "ticker": "ABNB",
+          "company": "Airbnb, Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Travel Services",
+          "rank": 36,
+          "score": 24.64
+        },
+        {
+          "ticker": "FFIV",
+          "company": "F5, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Infrastructure",
+          "rank": 37,
+          "score": 24.02
+        },
+        {
+          "ticker": "FSLR",
+          "company": "First Solar, Inc.",
+          "sector": "Technology",
+          "industry": "Solar",
+          "rank": 39,
+          "score": 23.52
+        },
+        {
+          "ticker": "AEIS",
+          "company": "Advanced Energy Industries, Inc.",
+          "sector": "Industrials",
+          "industry": "Electrical Equipment & Parts",
+          "rank": 40,
+          "score": 23.49
+        },
+        {
+          "ticker": "AFRM",
+          "company": "Affirm Holdings, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Infrastructure",
+          "rank": 41,
+          "score": 23.37
+        },
+        {
+          "ticker": "ON",
+          "company": "ON Semiconductor Corporation",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 43,
+          "score": 22.99
+        },
+        {
+          "ticker": "KLIC",
+          "company": "Kulicke and Soffa Industries, Inc.",
+          "sector": "Technology",
+          "industry": "Semiconductor Equipment & Materials",
+          "rank": 44,
+          "score": 22.96
+        },
+        {
+          "ticker": "SKYW",
+          "company": "SkyWest, Inc.",
+          "sector": "Industrials",
+          "industry": "Airlines",
+          "rank": 45,
+          "score": 22.8
+        },
+        {
+          "ticker": "GE",
+          "company": "GE Aerospace",
+          "sector": "Industrials",
+          "industry": "Aerospace & Defense",
+          "rank": 48,
+          "score": 22.45
+        }
+      ]
+    },
+    "Recommended_S30_P150": {
+      "tickers": [
+        "IDXX",
+        "QLYS",
+        "RMBS",
+        "CRM",
+        "WDAY",
+        "PCTY",
+        "MTD",
+        "DDOG",
+        "LSCC",
+        "MANH",
+        "PINS",
+        "CPRT",
+        "SHOP",
+        "VEEV",
+        "DOCU",
+        "JWN",
+        "NICE",
+        "B",
+        "FIZZ",
+        "ADBE",
+        "DT",
+        "ELF",
+        "AZTA",
+        "GRMN",
+        "HOLX",
+        "AMZN",
+        "ANSS",
+        "VICR",
+        "VRSN",
+        "UBER"
+      ],
+      "composition": [
+        {
+          "ticker": "IDXX",
+          "company": "IDEXX Laboratories, Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 1,
+          "score": 40.01
+        },
+        {
+          "ticker": "QLYS",
+          "company": "Qualys, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Infrastructure",
+          "rank": 2,
+          "score": 39.04
+        },
+        {
+          "ticker": "RMBS",
+          "company": "Rambus Inc.",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 3,
+          "score": 37.41
+        },
+        {
+          "ticker": "CRM",
+          "company": "Salesforce, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 4,
+          "score": 37.0
+        },
+        {
+          "ticker": "WDAY",
+          "company": "Workday, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 5,
+          "score": 36.66
+        },
+        {
+          "ticker": "PCTY",
+          "company": "Paylocity Holding Corporation",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 6,
+          "score": 36.41
+        },
+        {
+          "ticker": "MTD",
+          "company": "Mettler-Toledo International Inc.",
+          "sector": "Healthcare",
+          "industry": "Diagnostics & Research",
+          "rank": 7,
+          "score": 36.41
+        },
+        {
+          "ticker": "DDOG",
+          "company": "Datadog, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 8,
+          "score": 35.73
+        },
+        {
+          "ticker": "LSCC",
+          "company": "Lattice Semiconductor Corporation",
+          "sector": "Technology",
+          "industry": "Semiconductors",
+          "rank": 9,
+          "score": 33.92
+        },
+        {
+          "ticker": "MANH",
+          "company": "Manhattan Associates, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 10,
+          "score": 33.26
+        },
+        {
+          "ticker": "PINS",
+          "company": "Pinterest, Inc.",
+          "sector": "Communication Services",
+          "industry": "Internet Content & Information",
+          "rank": 11,
+          "score": 32.35
+        },
+        {
+          "ticker": "CPRT",
+          "company": "Copart, Inc.",
+          "sector": "Industrials",
+          "industry": "Specialty Business Services",
+          "rank": 12,
+          "score": 31.75
+        },
+        {
+          "ticker": "SHOP",
+          "company": "Shopify Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 13,
+          "score": 31.61
+        },
+        {
+          "ticker": "VEEV",
+          "company": "Veeva Systems Inc.",
+          "sector": "Healthcare",
+          "industry": "Health Information Services",
+          "rank": 14,
+          "score": 31.61
+        },
+        {
+          "ticker": "DOCU",
+          "company": "DocuSign, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 15,
+          "score": 31.34
+        },
+        {
+          "ticker": "NICE",
+          "company": "NICE Ltd.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 16,
+          "score": 29.91
+        },
+        {
+          "ticker": "B",
+          "company": "Barrick Mining Corporation",
+          "sector": "Basic Materials",
+          "industry": "Gold",
+          "rank": 17,
+          "score": 29.79
+        },
+        {
+          "ticker": "FIZZ",
+          "company": "National Beverage Corp.",
+          "sector": "Consumer Defensive",
+          "industry": "Beverages - Non-Alcoholic",
+          "rank": 18,
+          "score": 28.95
+        },
+        {
+          "ticker": "ADBE",
+          "company": "Adobe Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 19,
+          "score": 28.59
+        },
+        {
+          "ticker": "DT",
+          "company": "Dynatrace, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 20,
+          "score": 28.47
+        },
+        {
+          "ticker": "ELF",
+          "company": "e.l.f. Beauty, Inc.",
+          "sector": "Consumer Defensive",
+          "industry": "Household & Personal Products",
+          "rank": 21,
+          "score": 28.35
+        },
+        {
+          "ticker": "AZTA",
+          "company": "Azenta, Inc.",
+          "sector": "Healthcare",
+          "industry": "Medical Instruments & Supplies",
+          "rank": 22,
+          "score": 28.23
+        },
+        {
+          "ticker": "GRMN",
+          "company": "Garmin Ltd.",
+          "sector": "Technology",
+          "industry": "Scientific & Technical Instruments",
+          "rank": 23,
+          "score": 27.76
+        },
+        {
+          "ticker": "HOLX",
+          "company": "Hologic, Inc.",
+          "sector": "Healthcare",
+          "industry": "Medical Instruments & Supplies",
+          "rank": 24,
+          "score": 27.57
+        },
+        {
+          "ticker": "AMZN",
+          "company": "Amazon.com, Inc.",
+          "sector": "Consumer Cyclical",
+          "industry": "Internet Retail",
+          "rank": 25,
+          "score": 27.06
+        },
+        {
+          "ticker": "ANSS",
+          "company": "ANSYS, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 26,
+          "score": 27.01
+        },
+        {
+          "ticker": "VICR",
+          "company": "Vicor Corporation",
+          "sector": "Technology",
+          "industry": "Electronic Components",
+          "rank": 27,
+          "score": 26.74
+        },
+        {
+          "ticker": "VRSN",
+          "company": "VeriSign, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Infrastructure",
+          "rank": 28,
+          "score": 26.52
+        },
+        {
+          "ticker": "UBER",
+          "company": "Uber Technologies, Inc.",
+          "sector": "Technology",
+          "industry": "Software - Application",
+          "rank": 29,
+          "score": 26.39
+        },
+        {
+          "ticker": "JWN",
+          "company": "Unknown",
+          "sector": "Unknown",
+          "industry": "Unknown",
+          "rank": 33,
+          "score": 25.76
+        }
+      ]
+    }
+  },
+  "performance_metrics": {
+    "TopRank_S10_P150": {
+      "portfolio_name": "TopRank_S10_P150",
+      "total_return": 1.9028764708798565,
+      "annual_return": 0.1383159090119348,
+      "volatility": 0.3075444493923664,
+      "sharpe_ratio": 0.7656648230373111,
+      "max_drawdown": -0.40186307746067707,
+      "calmar_ratio": 0.3441866565247444,
+      "sortino_ratio": 1.1198995226581414,
+      "rebalance_count": 41.0,
+      "final_value": 877011.2220249932,
+      "num_stocks": 10.0,
+      "num_sectors": 2.0,
+      "num_industries": 4.0,
+      "sector_diversity": 0.7219280948873623,
+      "industry_diversity": 0.8804820237218406,
+      "avg_rank": 5.5,
+      "avg_score": 36.584999999999994,
+      "score_std": 2.0430437532705406,
+      "max_sector_concentration": 0.8,
+      "max_industry_concentration": 0.5,
+      "avg_linear_r2": 0.8112999999999999,
+      "avg_linear_slope": 0.0157,
+      "avg_stability_score": 36.584999999999994
+    },
+    "SectorBal2_S10_P150": {
+      "portfolio_name": "SectorBal2_S10_P150",
+      "total_return": 1.32042637003882,
+      "annual_return": 0.10774423895531382,
+      "volatility": 0.25993303114342936,
+      "sharpe_ratio": 0.7021514849518175,
+      "max_drawdown": -0.33695762629215764,
+      "calmar_ratio": 0.3197560480850926,
+      "sortino_ratio": 1.0053197956580433,
+      "rebalance_count": 44.0,
+      "final_value": 561944.417817908,
+      "num_stocks": 10.0,
+      "num_sectors": 7.0,
+      "num_industries": 9.0,
+      "sector_diversity": 0.9695703501901249,
+      "industry_diversity": 0.9848586617875466,
+      "avg_rank": 11.7,
+      "avg_score": 33.112,
+      "score_std": 4.7395517837777765,
+      "max_sector_concentration": 0.2,
+      "max_industry_concentration": 0.2,
+      "avg_linear_r2": 0.7411,
+      "avg_linear_slope": 0.0382,
+      "avg_stability_score": 33.112
+    },
+    "SectorBal3_S10_P150": {
+      "portfolio_name": "SectorBal3_S10_P150",
+      "total_return": 0.8784244494931495,
+      "annual_return": 0.07965046069668213,
+      "volatility": 0.2663793632727768,
+      "sharpe_ratio": 0.5513406024658292,
+      "max_drawdown": -0.34144820822327837,
+      "calmar_ratio": 0.2332724518050405,
+      "sortino_ratio": 0.7877729014200262,
+      "rebalance_count": 37.0,
+      "final_value": 365727.13591315306,
+      "num_stocks": 10.0,
+      "num_sectors": 6.0,
+      "num_industries": 9.0,
+      "sector_diversity": 0.9172088932791936,
+      "industry_diversity": 0.9848586617875466,
+      "avg_rank": 8.9,
+      "avg_score": 34.432,
+      "score_std": 3.9835126877334446,
+      "max_sector_concentration": 0.3,
+      "max_industry_concentration": 0.2,
+      "avg_linear_r2": 0.7542,
+      "avg_linear_slope": 0.019899999999999998,
+      "avg_stability_score": 34.432
+    },
+    "IndustryBal_S10_P150": {
+      "portfolio_name": "IndustryBal_S10_P150",
+      "total_return": 1.3665579285396476,
+      "annual_return": 0.11039828915466843,
+      "volatility": 0.2955262615597827,
+      "sharpe_ratio": 0.6624856483286046,
+      "max_drawdown": -0.3816509586963166,
+      "calmar_ratio": 0.28926506442373023,
+      "sortino_ratio": 0.9647796468478804,
+      "rebalance_count": 35.0,
+      "final_value": 579376.0582453007,
+      "num_stocks": 10.0,
+      "num_sectors": 4.0,
+      "num_industries": 7.0,
+      "sector_diversity": 0.8427376486136672,
+      "industry_diversity": 0.9695703501901249,
+      "avg_rank": 6.8,
+      "avg_score": 35.616,
+      "score_std": 3.026226840289551,
+      "max_sector_concentration": 0.5,
+      "max_industry_concentration": 0.2,
+      "avg_linear_r2": 0.779,
+      "avg_linear_slope": 0.010500000000000002,
+      "avg_stability_score": 35.616
+    },
+    "Stability_S10_P150": {
+      "portfolio_name": "Stability_S10_P150",
+      "total_return": 1.9028764708798565,
+      "annual_return": 0.1383159090119348,
+      "volatility": 0.3075444493923664,
+      "sharpe_ratio": 0.7656648230373111,
+      "max_drawdown": -0.40186307746067707,
+      "calmar_ratio": 0.3441866565247444,
+      "sortino_ratio": 1.1198995226581414,
+      "rebalance_count": 41.0,
+      "final_value": 877011.2220249932,
+      "num_stocks": 10.0,
+      "num_sectors": 2.0,
+      "num_industries": 4.0,
+      "sector_diversity": 0.7219280948873623,
+      "industry_diversity": 0.8804820237218406,
+      "avg_rank": 5.5,
+      "avg_score": 36.584999999999994,
+      "score_std": 2.0430437532705406,
+      "max_sector_concentration": 0.8,
+      "max_industry_concentration": 0.5,
+      "avg_linear_r2": 0.8112999999999999,
+      "avg_linear_slope": 0.0157,
+      "avg_stability_score": 36.584999999999994
+    },
+    "PosMomentum_S10_P150": {
+      "portfolio_name": "PosMomentum_S10_P150",
+      "total_return": 2.6899823441679573,
+      "annual_return": 0.17200414180796697,
+      "volatility": 0.3124384886446787,
+      "sharpe_ratio": 0.8948549836350168,
+      "max_drawdown": -0.39674728831139405,
+      "calmar_ratio": 0.433535771700011,
+      "sortino_ratio": 1.2919261097646257,
+      "rebalance_count": 34.0,
+      "final_value": 1406974.624352416,
+      "num_stocks": 10.0,
+      "num_sectors": 5.0,
+      "num_industries": 6.0,
+      "sector_diversity": 0.8445412464587144,
+      "industry_diversity": 0.9464119282150146,
+      "avg_rank": 10.0,
+      "avg_score": 33.884,
+      "score_std": 3.575376281673797,
+      "max_sector_concentration": 0.5,
+      "max_industry_concentration": 0.3,
+      "avg_linear_r2": 0.8307,
+      "avg_linear_slope": 0.07139999999999999,
+      "avg_stability_score": 33.884
+    },
+    "Recommended_S10_P150": {
+      "portfolio_name": "Recommended_S10_P150",
+      "total_return": 1.9028764708798565,
+      "annual_return": 0.1383159090119348,
+      "volatility": 0.3075444493923664,
+      "sharpe_ratio": 0.7656648230373111,
+      "max_drawdown": -0.40186307746067707,
+      "calmar_ratio": 0.3441866565247444,
+      "sortino_ratio": 1.1198995226581414,
+      "rebalance_count": 41.0,
+      "final_value": 877011.2220249932,
+      "num_stocks": 10.0,
+      "num_sectors": 2.0,
+      "num_industries": 4.0,
+      "sector_diversity": 0.7219280948873623,
+      "industry_diversity": 0.8804820237218406,
+      "avg_rank": 5.5,
+      "avg_score": 36.584999999999994,
+      "score_std": 2.0430437532705406,
+      "max_sector_concentration": 0.8,
+      "max_industry_concentration": 0.5,
+      "avg_linear_r2": 0.8112999999999999,
+      "avg_linear_slope": 0.0157,
+      "avg_stability_score": 36.584999999999994
+    },
+    "TopRank_S20_P150": {
+      "portfolio_name": "TopRank_S20_P150",
+      "total_return": 0.871665481222017,
+      "annual_return": 0.0791774636227689,
+      "volatility": 0.2913985252983722,
+      "sharpe_ratio": 0.5254639930525555,
+      "max_drawdown": -0.4402164518693015,
+      "calmar_ratio": 0.17986030119173368,
+      "sortino_ratio": 0.7496159692776553,
+      "rebalance_count": 9.0,
+      "final_value": 353093.3640006791,
+      "num_stocks": 20.0,
+      "num_sectors": 6.0,
+      "num_industries": 9.0,
+      "sector_diversity": 0.6494863668308913,
+      "industry_diversity": 0.776347720000929,
+      "avg_rank": 10.5,
+      "avg_score": 33.511,
+      "score_std": 3.5960108014591006,
+      "max_sector_concentration": 0.65,
+      "max_industry_concentration": 0.5,
+      "avg_linear_r2": 0.7656500000000002,
+      "avg_linear_slope": 0.010500000000000002,
+      "avg_stability_score": 33.511
+    },
+    "SectorBal2_S20_P150": {
+      "portfolio_name": "SectorBal2_S20_P150",
+      "total_return": 133.07959511027306,
+      "annual_return": 0.8138797360634711,
+      "volatility": 18.57519203834059,
+      "sharpe_ratio": 0.4324839895635384,
+      "max_drawdown": -0.39492624413815425,
+      "calmar_ratio": 2.060839835649811,
+      "sortino_ratio": 42.75450388923847,
+      "rebalance_count": 4.0,
+      "final_value": 1803119664.8186176,
+      "num_stocks": 20.0,
+      "num_sectors": 10.0,
+      "num_industries": 17.0,
+      "sector_diversity": 0.9999999999999998,
+      "industry_diversity": 0.9839668887747173,
+      "avg_rank": 34.7,
+      "avg_score": 27.546000000000003,
+      "score_std": 6.831691167677759,
+      "max_sector_concentration": 0.1,
+      "max_industry_concentration": 0.1,
+      "avg_linear_r2": 0.7309499999999999,
+      "avg_linear_slope": 0.0351,
+      "avg_stability_score": 27.546000000000003
+    },
+    "SectorBal3_S20_P150": {
+      "portfolio_name": "SectorBal3_S20_P150",
+      "total_return": 175.87991657540746,
+      "annual_return": 0.876006924918904,
+      "volatility": 30.089046365772802,
+      "sharpe_ratio": 0.426678132863544,
+      "max_drawdown": -0.3781904222853254,
+      "calmar_ratio": 2.316311765975928,
+      "sortino_ratio": 67.20128553868982,
+      "rebalance_count": 6.0,
+      "final_value": 3144345090.7277913,
+      "num_stocks": 20.0,
+      "num_sectors": 8.0,
+      "num_industries": 17.0,
+      "sector_diversity": 0.9903168648182229,
+      "industry_diversity": 0.9839668887747173,
+      "avg_rank": 23.05,
+      "avg_score": 29.534,
+      "score_std": 5.923804254202299,
+      "max_sector_concentration": 0.15,
+      "max_industry_concentration": 0.1,
+      "avg_linear_r2": 0.7387999999999999,
+      "avg_linear_slope": 0.027049999999999998,
+      "avg_stability_score": 29.534
+    },
+    "IndustryBal_S20_P150": {
+      "portfolio_name": "IndustryBal_S20_P150",
+      "total_return": 83.87675196993035,
+      "annual_return": 0.715810238196767,
+      "volatility": 16.25668907341968,
+      "sharpe_ratio": 0.43041762735798966,
+      "max_drawdown": -0.3501823875527842,
+      "calmar_ratio": 2.0441069101137206,
+      "sortino_ratio": 39.78022718257376,
+      "rebalance_count": 4.0,
+      "final_value": 722585886.0378298,
+      "num_stocks": 20.0,
+      "num_sectors": 7.0,
+      "num_industries": 15.0,
+      "sector_diversity": 0.8340399187750003,
+      "industry_diversity": 0.9782531661325102,
+      "avg_rank": 15.2,
+      "avg_score": 31.647499999999997,
+      "score_std": 4.647072508013711,
+      "max_sector_concentration": 0.4,
+      "max_industry_concentration": 0.1,
+      "avg_linear_r2": 0.7502,
+      "avg_linear_slope": 0.03035,
+      "avg_stability_score": 31.647499999999997
+    },
+    "Stability_S20_P150": {
+      "portfolio_name": "Stability_S20_P150",
+      "total_return": 0.871665481222017,
+      "annual_return": 0.0791774636227689,
+      "volatility": 0.2913985252983722,
+      "sharpe_ratio": 0.5254639930525555,
+      "max_drawdown": -0.4402164518693015,
+      "calmar_ratio": 0.17986030119173368,
+      "sortino_ratio": 0.7496159692776553,
+      "rebalance_count": 9.0,
+      "final_value": 353093.3640006791,
+      "num_stocks": 20.0,
+      "num_sectors": 6.0,
+      "num_industries": 9.0,
+      "sector_diversity": 0.6494863668308913,
+      "industry_diversity": 0.776347720000929,
+      "avg_rank": 10.5,
+      "avg_score": 33.511,
+      "score_std": 3.5960108014591006,
+      "max_sector_concentration": 0.65,
+      "max_industry_concentration": 0.5,
+      "avg_linear_r2": 0.7656500000000002,
+      "avg_linear_slope": 0.010500000000000002,
+      "avg_stability_score": 33.511
+    },
+    "PosMomentum_S20_P150": {
+      "portfolio_name": "PosMomentum_S20_P150",
+      "total_return": 206.97010970621776,
+      "annual_return": 0.9132998402638905,
+      "volatility": 27.705218655431377,
+      "sharpe_ratio": 0.4288864482237252,
+      "max_drawdown": -0.3845549711922811,
+      "calmar_ratio": 2.3749526301331625,
+      "sortino_ratio": 59.975271633235124,
+      "rebalance_count": 6.0,
+      "final_value": 4346546164.100364,
+      "num_stocks": 20.0,
+      "num_sectors": 6.0,
+      "num_industries": 12.0,
+      "sector_diversity": 0.7826882098951405,
+      "industry_diversity": 0.9320728098253055,
+      "avg_rank": 18.65,
+      "avg_score": 30.345000000000006,
+      "score_std": 4.428349460845249,
+      "max_sector_concentration": 0.5,
+      "max_industry_concentration": 0.25,
+      "avg_linear_r2": 0.7521,
+      "avg_linear_slope": 0.06305,
+      "avg_stability_score": 30.345000000000006
+    },
+    "Recommended_S20_P150": {
+      "portfolio_name": "Recommended_S20_P150",
+      "total_return": 1.0246158160801038,
+      "annual_return": 0.08953180868276966,
+      "volatility": 0.2869224694643714,
+      "sharpe_ratio": 0.5775736481322952,
+      "max_drawdown": -0.4356520630246199,
+      "calmar_ratio": 0.20551218800887436,
+      "sortino_ratio": 0.8326012302787119,
+      "rebalance_count": 7.0,
+      "final_value": 412368.88030622626,
+      "num_stocks": 20.0,
+      "num_sectors": 7.0,
+      "num_industries": 10.0,
+      "sector_diversity": 0.6886219494931491,
+      "industry_diversity": 0.8114148672834887,
+      "avg_rank": 11.15,
+      "avg_score": 33.3755,
+      "score_std": 3.8388162580615766,
+      "max_sector_concentration": 0.6,
+      "max_industry_concentration": 0.45,
+      "avg_linear_r2": 0.7786000000000001,
+      "avg_linear_slope": 0.009900000000000003,
+      "avg_stability_score": 33.3755
+    },
+    "HybridStability_S20_P150": {
+      "portfolio_name": "HybridStability_S20_P150",
+      "total_return": 155.40358950016784,
+      "annual_return": 0.8481580519682261,
+      "volatility": 25.57173025185458,
+      "sharpe_ratio": 0.42808899423961566,
+      "max_drawdown": -0.47845268072203984,
+      "calmar_ratio": 1.7727104186944016,
+      "sortino_ratio": 56.20910516473756,
+      "rebalance_count": 8.0,
+      "final_value": 2463220448.596748,
+      "num_stocks": 20.0,
+      "num_sectors": 9.0,
+      "num_industries": 15.0,
+      "sector_diversity": 0.9687770508947022,
+      "industry_diversity": 0.9685921904321414,
+      "avg_rank": 34.8,
+      "avg_score": 27.254499999999997,
+      "score_std": 6.495213196938511,
+      "max_sector_concentration": 0.15,
+      "max_industry_concentration": 0.15,
+      "avg_linear_r2": 0.8294500000000001,
+      "avg_linear_slope": 0.041749999999999995,
+      "avg_stability_score": 27.254499999999997
+    },
+    "TopRank_S30_P150": {
+      "portfolio_name": "TopRank_S30_P150",
+      "total_return": 1.1280477108626545,
+      "annual_return": 0.09615099516256831,
+      "volatility": 0.27480191765701156,
+      "sharpe_ratio": 0.6225425572391656,
+      "max_drawdown": -0.4159408490563209,
+      "calmar_ratio": 0.23116506921768792,
+      "sortino_ratio": 0.8929721277992589,
+      "rebalance_count": 6.0,
+      "final_value": 455135.0220908856,
+      "num_stocks": 30.0,
+      "num_sectors": 7.0,
+      "num_industries": 14.0,
+      "sector_diversity": 0.6279511747619044,
+      "industry_diversity": 0.7975878564637708,
+      "avg_rank": 15.5,
+      "avg_score": 31.400666666666663,
+      "score_std": 4.227094814966023,
+      "max_sector_concentration": 0.6333333333333333,
+      "max_industry_concentration": 0.43333333333333335,
+      "avg_linear_r2": 0.7356333333333335,
+      "avg_linear_slope": 0.017566666666666668,
+      "avg_stability_score": 31.400666666666663
+    },
+    "SectorBal2_S30_P150": {
+      "portfolio_name": "SectorBal2_S30_P150",
+      "total_return": 139.36141463507394,
+      "annual_return": 0.8240039482072969,
+      "volatility": 16.98864155403391,
+      "sharpe_ratio": 0.4350249966147325,
+      "max_drawdown": -0.38243635867616044,
+      "calmar_ratio": 2.154617178815488,
+      "sortino_ratio": 39.25898489554306,
+      "rebalance_count": 3.0,
+      "final_value": 1973976311.2165728,
+      "num_stocks": 21.0,
+      "num_sectors": 11.0,
+      "num_industries": 18.0,
+      "sector_diversity": 0.9943646383601104,
+      "industry_diversity": 0.984814627515858,
+      "avg_rank": 38.23809523809524,
+      "avg_score": 27.08428571428572,
+      "score_std": 6.98678650842329,
+      "max_sector_concentration": 0.09523809523809523,
+      "max_industry_concentration": 0.09523809523809523,
+      "avg_linear_r2": 0.7393809523809522,
+      "avg_linear_slope": 0.04033333333333333,
+      "avg_stability_score": 27.08428571428572
+    },
+    "SectorBal3_S30_P150": {
+      "portfolio_name": "SectorBal3_S30_P150",
+      "total_return": 96.36807873772929,
+      "annual_return": 0.7446880733849772,
+      "volatility": 13.993976033087163,
+      "sharpe_ratio": 0.435356470885032,
+      "max_drawdown": -0.3542323462525101,
+      "calmar_ratio": 2.102258817590124,
+      "sortino_ratio": 35.49230856688613,
+      "rebalance_count": 4.0,
+      "final_value": 950936681.3504506,
+      "num_stocks": 30.0,
+      "num_sectors": 11.0,
+      "num_industries": 23.0,
+      "sector_diversity": 0.9867972703670674,
+      "industry_diversity": 0.9760142682010441,
+      "avg_rank": 43.666666666666664,
+      "avg_score": 26.105,
+      "score_std": 6.9276302113224535,
+      "max_sector_concentration": 0.1,
+      "max_industry_concentration": 0.1,
+      "avg_linear_r2": 0.7349,
+      "avg_linear_slope": 0.028833333333333332,
+      "avg_stability_score": 26.105
+    },
+    "IndustryBal_S30_P150": {
+      "portfolio_name": "IndustryBal_S30_P150",
+      "total_return": 66.47098480321958,
+      "annual_return": 0.6686024176168806,
+      "volatility": 12.662595871798748,
+      "sharpe_ratio": 0.43362698494857865,
+      "max_drawdown": -0.35561624433610506,
+      "calmar_ratio": 1.8801233865598153,
+      "sortino_ratio": 30.184797539518147,
+      "rebalance_count": 7.0,
+      "final_value": 457965954.7733621,
+      "num_stocks": 30.0,
+      "num_sectors": 8.0,
+      "num_industries": 22.0,
+      "sector_diversity": 0.8297488095030529,
+      "industry_diversity": 0.9807432059271368,
+      "avg_rank": 22.566666666666666,
+      "avg_score": 29.235333333333333,
+      "score_std": 5.158090219513776,
+      "max_sector_concentration": 0.4,
+      "max_industry_concentration": 0.06666666666666667,
+      "avg_linear_r2": 0.741,
+      "avg_linear_slope": 0.03133333333333333,
+      "avg_stability_score": 29.235333333333333
+    },
+    "Stability_S30_P150": {
+      "portfolio_name": "Stability_S30_P150",
+      "total_return": 82.40232321951656,
+      "annual_return": 0.7121589780599507,
+      "volatility": 15.423449618435852,
+      "sharpe_ratio": 0.43155801185353376,
+      "max_drawdown": -0.4063581636324133,
+      "calmar_ratio": 1.7525401032773666,
+      "sortino_ratio": 34.83873274327945,
+      "rebalance_count": 6.0,
+      "final_value": 699100499.1646442,
+      "num_stocks": 30.0,
+      "num_sectors": 7.0,
+      "num_industries": 15.0,
+      "sector_diversity": 0.6713131392071867,
+      "industry_diversity": 0.8206625832464602,
+      "avg_rank": 15.9,
+      "avg_score": 31.318666666666665,
+      "score_std": 4.3250830036550445,
+      "max_sector_concentration": 0.6,
+      "max_industry_concentration": 0.4,
+      "avg_linear_r2": 0.7523333333333334,
+      "avg_linear_slope": 0.021133333333333334,
+      "avg_stability_score": 31.318666666666665
+    },
+    "PosMomentum_S30_P150": {
+      "portfolio_name": "PosMomentum_S30_P150",
+      "total_return": 127.8026576846975,
+      "annual_return": 0.8050477317264646,
+      "volatility": 14.599384583965948,
+      "sharpe_ratio": 0.4388404355980472,
+      "max_drawdown": -0.4037250465143394,
+      "calmar_ratio": 1.9940495113618648,
+      "sortino_ratio": 31.609186230075274,
+      "rebalance_count": 7.0,
+      "final_value": 1668971474.1756263,
+      "num_stocks": 30.0,
+      "num_sectors": 7.0,
+      "num_industries": 19.0,
+      "sector_diversity": 0.7627444426162867,
+      "industry_diversity": 0.9482442870413175,
+      "avg_rank": 26.033333333333335,
+      "avg_score": 28.085,
+      "score_std": 4.86503623688528,
+      "max_sector_concentration": 0.5,
+      "max_industry_concentration": 0.16666666666666666,
+      "avg_linear_r2": 0.7435333333333333,
+      "avg_linear_slope": 0.06553333333333333,
+      "avg_stability_score": 28.085
+    },
+    "Recommended_S30_P150": {
+      "portfolio_name": "Recommended_S30_P150",
+      "total_return": 1.095306825330872,
+      "annual_return": 0.09408687975204999,
+      "volatility": 0.2669195866604153,
+      "sharpe_ratio": 0.6226421808000486,
+      "max_drawdown": -0.40611070224591617,
+      "calmar_ratio": 0.23167791252907352,
+      "sortino_ratio": 0.894664309508927,
+      "rebalance_count": 4.0,
+      "final_value": 440329.33931042964,
+      "num_stocks": 30.0,
+      "num_sectors": 8.0,
+      "num_industries": 15.0,
+      "sector_diversity": 0.650426970753968,
+      "industry_diversity": 0.8206625832464602,
+      "avg_rank": 15.6,
+      "avg_score": 31.386999999999997,
+      "score_std": 4.245213247557933,
+      "max_sector_concentration": 0.6,
+      "max_industry_concentration": 0.4,
+      "avg_linear_r2": 0.7406000000000001,
+      "avg_linear_slope": 0.01806666666666667,
+      "avg_stability_score": 31.386999999999997
+    }
+  }
+}

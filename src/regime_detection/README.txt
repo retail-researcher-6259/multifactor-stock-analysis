@@ -1,5 +1,3 @@
-Of course! I'm glad the fix worked. You remember correctly—the process does indeed use PCA and a Hidden Markov Model (HMM). They aren't "ensembled" in the sense of combining two separate predictions, but rather used in a sequential pipeline where the output of one becomes the input for the next.
-
 Here is a step-by-step summary of how the `regime_detector.py` script identifies market regimes based on its code.
 
 ### The Regime Detection Process: A 4-Step Pipeline
