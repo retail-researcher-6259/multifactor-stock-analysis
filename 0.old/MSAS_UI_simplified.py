@@ -20,7 +20,7 @@ from src.classes.score_trend_analysis_widget import (
     EnhancedStabilityAnalysisThread
 )
 from src.classes.dynamic_portfolio_selection_widget import DynamicPortfolioThread, DynamicPortfolioSelectionWidget
-from src.classes.portfolio_optimizer_widget import PortfolioOptimizerThread, PortfolioOptimizerWidget
+
 
 class MainWindow(QMainWindow):
     """Main application window with tabs for each analysis system"""
@@ -85,10 +85,6 @@ class MainWindow(QMainWindow):
         # Add new Dynamic Portfolio Selection tab
         self.portfolio_widget = DynamicPortfolioSelectionWidget()
         self.tab_widget.addTab(self.portfolio_widget, "💼 Portfolio Selection")
-
-        # Add new Portfolio Optimization tab
-        self.optimizer_widget = PortfolioOptimizerWidget()
-        self.tab_widget.addTab(self.optimizer_widget, "💼 Portfolio Optimization")
 
         # Connect signals between widgets
         self.connect_widget_signals()
@@ -263,12 +259,6 @@ class MainWindow(QMainWindow):
             else:
                 QMessageBox.warning(self, "Export", "No portfolio selection results to export.")
 
-        elif current_tab == 4:  # Portfolio Optimization
-            if hasattr(self.optimizer_widget, 'current_results') and self.optimizer_widget.current_results:
-                QMessageBox.information(self, "Export", "Portfolio optimization results exported successfully!")
-            else:
-                QMessageBox.warning(self, "Export", "No optimization results to export.")
-
     def show_about(self):
         """Show about dialog"""
         about_text = """
@@ -310,19 +300,14 @@ class MainWindow(QMainWindow):
         <p><b>4. Portfolio Selection:</b><br>
         Create optimized portfolios based on stability analysis and backtest performance.</p>
 
-        <p><b>5. Portfolio Optimization:</b><br>
-        Optimize portfolio weights using hierarchical risk parity methods (HRP, HERC, MHRP, NCO).</p>
-
-
         <p><b>Workflow:</b><br>
         1. Start with Regime Detection (Tab 1)<br>
         2. Run Multifactor Scoring for the detected regime (Tab 2)<br>
         3. Analyze score trends and stability (Tab 3)<br>
         4. Generate optimized portfolios (Tab 4)</p>
-        5. Fine-tune allocation with Portfolio Optimization (Tab 5)</p>
 
         <p><b>Keyboard Shortcuts:</b><br>
-        Ctrl+1-5: Switch between tabs<br>
+        Ctrl+1-4: Switch between tabs<br>
         F5: Run regime detection<br>
         Ctrl+R: Run scoring process<br>
         Ctrl+T: Run stability analysis<br>

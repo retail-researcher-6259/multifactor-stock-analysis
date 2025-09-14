@@ -712,29 +712,111 @@ class MarketRegimeDetector:
 
         return self.features
 
+    # def fit_hmm_with_multiple_attempts(self, n_attempts=10, n_iter=200):
+    #     """
+    #     Fit HMM with multiple random initializations to find best model
+    #     """
+    #     print(f"\n🤖 Training {self.n_regimes}-regime Gaussian HMM...")
+    #
+    #     # Use reduced features if available
+    #     X = self.features_reduced.values if self.features_reduced is not None else self.features.values
+    #
+    #     best_model = None
+    #     best_score = -np.inf
+    #     convergence_count = 0
+    #
+    #     for attempt in range(n_attempts):
+    #         try:
+    #             # Try with different random states
+    #             model = GaussianHMM(
+    #                 n_components=self.n_regimes,
+    #                 covariance_type="diag",  # More stable than "full"
+    #                 n_iter=n_iter,
+    #                 random_state=42 + attempt,
+    #                 tol=0.01,  # Convergence tolerance
+    #                 verbose=False
+    #             )
+    #
+    #             # Fit model
+    #             model.fit(X)
+    #
+    #             # Check if converged
+    #             if model.monitor_.converged:
+    #                 convergence_count += 1
+    #                 score = model.score(X)
+    #
+    #                 if score > best_score:
+    #                     best_score = score
+    #                     best_model = model
+    #
+    #                 print(f"  Attempt {attempt + 1}: Converged ✓ (Score: {score:.2f})")
+    #             else:
+    #                 print(f"  Attempt {attempt + 1}: Not converged ✗")
+    #
+    #         except Exception as e:
+    #             print(f"  Attempt {attempt + 1}: Failed - {str(e)[:50]}")
+    #
+    #     if best_model is None:
+    #         raise ValueError("Failed to train any converged model")
+    #
+    #     print(f"\n✓ Best model score: {best_score:.2f}")
+    #     print(f"✓ Converged models: {convergence_count}/{n_attempts}")
+    #
+    #     self.model = best_model
+    #
+    #     # Get regime predictions
+    #     self.regime_history = pd.Series(
+    #         self.model.predict(X),
+    #         index=self.features_reduced.index if self.features_reduced is not None else self.features.index
+    #     )
+    #
+    #     return self.model
+
     def fit_hmm_with_multiple_attempts(self, n_attempts=10, n_iter=200):
         """
         Fit HMM with multiple random initializations to find best model
+        Improved version with better stability
         """
         print(f"\n🤖 Training {self.n_regimes}-regime Gaussian HMM...")
+        print(f"  Using {n_attempts} random initializations")
 
-        # Use reduced features if available
-        X = self.features_reduced.values if self.features_reduced is not None else self.features.values
+        # Use reduced features if available, otherwise scaled features
+        if self.features_reduced is not None:
+            if hasattr(self.features_reduced, 'values'):
+                X = self.features_reduced.values  # DataFrame to numpy
+            else:
+                X = self.features_reduced  # Already numpy
+            print(f"  Using PCA features: {X.shape}")
+        elif hasattr(self, 'features_scaled'):
+            X = self.features_scaled
+            print(f"  Using scaled features: {X.shape}")
+        else:
+            X = self.features.values
+            print(f"  Using raw features: {X.shape}")
 
         best_model = None
         best_score = -np.inf
         convergence_count = 0
+        scores = []
 
         for attempt in range(n_attempts):
             try:
-                # Try with different random states
+                # Use different random states but allow randomness
+                # This helps find different local optima
+                random_state = None if attempt % 2 == 0 else (42 + attempt * 10)
+
+                # Alternate between covariance types for robustness
+                cov_type = "diag" if attempt < n_attempts // 2 else "spherical"
+
                 model = GaussianHMM(
                     n_components=self.n_regimes,
-                    covariance_type="diag",  # More stable than "full"
+                    covariance_type=cov_type,
                     n_iter=n_iter,
-                    random_state=42 + attempt,
-                    tol=0.01,  # Convergence tolerance
-                    verbose=False
+                    random_state=random_state,
+                    tol=0.01,
+                    verbose=False,
+                    init_params='stmc',  # Initialize all parameters
+                    params='stmc'  # Update all parameters
                 )
 
                 # Fit model
@@ -744,31 +826,64 @@ class MarketRegimeDetector:
                 if model.monitor_.converged:
                     convergence_count += 1
                     score = model.score(X)
+                    scores.append(score)
 
                     if score > best_score:
                         best_score = score
                         best_model = model
 
-                    print(f"  Attempt {attempt + 1}: Converged ✓ (Score: {score:.2f})")
+                    print(f"  Attempt {attempt + 1}: Converged ✓ (Score: {score:.2f}, Cov: {cov_type})")
                 else:
-                    print(f"  Attempt {attempt + 1}: Not converged ✗")
+                    print(f"  Attempt {attempt + 1}: Not converged ✗ (Cov: {cov_type})")
 
             except Exception as e:
                 print(f"  Attempt {attempt + 1}: Failed - {str(e)[:50]}")
 
         if best_model is None:
-            raise ValueError("Failed to train any converged model")
+            # If no model converged, try one more time with very relaxed settings
+            print("\n⚠️ No converged models found, trying with relaxed settings...")
+            try:
+                model = GaussianHMM(
+                    n_components=self.n_regimes,
+                    covariance_type="spherical",  # Most stable
+                    n_iter=500,  # More iterations
+                    random_state=42,
+                    tol=0.1,  # More tolerant
+                    verbose=False
+                )
+                model.fit(X)
+                best_model = model
+                best_score = model.score(X)
+                print(f"  ✓ Fallback model created (Score: {best_score:.2f})")
+            except:
+                raise ValueError("Failed to train any model even with relaxed settings")
 
         print(f"\n✓ Best model score: {best_score:.2f}")
         print(f"✓ Converged models: {convergence_count}/{n_attempts}")
 
+        if scores:
+            print(f"✓ Score range: {min(scores):.2f} to {max(scores):.2f}")
+            print(f"✓ Average score: {np.mean(scores):.2f}")
+
         self.model = best_model
 
-        # Get regime predictions
+        # Get regime predictions - handle both DataFrame and numpy array
+        if hasattr(self, 'features_reduced') and self.features_reduced is not None:
+            index = self.features_reduced.index if hasattr(self.features_reduced, 'index') else self.features.index
+        else:
+            index = self.features.index
+
         self.regime_history = pd.Series(
             self.model.predict(X),
-            index=self.features_reduced.index if self.features_reduced is not None else self.features.index
+            index=index
         )
+
+        # Print regime distribution
+        regime_counts = self.regime_history.value_counts().sort_index()
+        print("\nRegime distribution:")
+        for regime, count in regime_counts.items():
+            pct = count / len(self.regime_history) * 100
+            print(f"  Regime {regime}: {count} days ({pct:.1f}%)")
 
         return self.model
 
@@ -807,72 +922,151 @@ class MarketRegimeDetector:
 
         return avg_distance
 
-    def fit_hmm(self, use_pca=True, n_components=5, max_iter=500):  # Increased max_iter
+    # def fit_hmm(self, use_pca=True, n_components=5, max_iter=500):  # Increased max_iter
+    #     """
+    #     Fit Hidden Markov Model with better convergence
+    #     """
+    #     from hmmlearn.hmm import GaussianHMM
+    #     from sklearn.decomposition import PCA
+    #     import warnings
+    #
+    #     print("\n🤖 FITTING HIDDEN MARKOV MODEL")
+    #     print("-" * 40)
+    #
+    #     if not hasattr(self, 'features_scaled') or self.features_scaled is None:
+    #         raise ValueError("No features prepared. Call prepare_features or engineer_features first.")
+    #
+    #     X = self.features_scaled
+    #
+    #     # Apply PCA if requested
+    #     if use_pca and X.shape[1] > n_components:
+    #         print(f"Applying PCA: {X.shape[1]} features → {n_components} components")
+    #         self.pca = PCA(n_components=n_components, random_state=42)
+    #         X = self.pca.fit_transform(X)
+    #         self.features_reduced = X  # Store as numpy array
+    #
+    #         explained_var = self.pca.explained_variance_ratio_.sum()
+    #         print(f"✓ PCA explains {explained_var:.1%} of variance")
+    #     else:
+    #         print(f"Using all {X.shape[1]} features (no PCA)")
+    #         self.features_reduced = X
+    #
+    #     # Try multiple random initializations to find best model
+    #     best_score = -np.inf
+    #     best_model = None
+    #     n_tries = 3
+    #
+    #     print(f"Trying {n_tries} random initializations...")
+    #
+    #     for attempt in range(n_tries):
+    #         try:
+    #             # Suppress convergence warnings for individual attempts
+    #             with warnings.catch_warnings():
+    #                 warnings.simplefilter("ignore")
+    #
+    #                 # Initialize HMM with different random seed
+    #                 model = GaussianHMM(
+    #                     n_components=self.n_regimes,
+    #                     covariance_type="diag",  # Use diagonal for better convergence
+    #                     n_iter=max_iter,
+    #                     tol=1e-2,  # Slightly more tolerant convergence
+    #                     random_state=42 + attempt,
+    #                     init_params="stmc",
+    #                     params="stmc",
+    #                     verbose=False
+    #                 )
+    #
+    #                 # Fit the model
+    #                 model.fit(X)
+    #
+    #                 # Calculate score
+    #                 score = model.score(X)
+    #
+    #                 print(f"  Attempt {attempt + 1}: score = {score:.2f}, converged = {model.monitor_.converged}")
+    #
+    #                 # Keep best model
+    #                 if score > best_score:
+    #                     best_score = score
+    #                     best_model = model
+    #
+    #         except Exception as e:
+    #             print(f"  Attempt {attempt + 1} failed: {e}")
+    #             continue
+    #
+    #     if best_model is None:
+    #         raise ValueError("Failed to fit HMM after multiple attempts")
+    #
+    #     # Use best model
+    #     self.model = best_model
+    #
+    #     print(f"\n✓ Best model: score = {best_score:.2f}")
+    #     print(f"✓ Converged: {self.model.monitor_.converged}")
+    #     print(f"✓ Iterations: {self.model.monitor_.iter}")
+    #
+    #     # Predict regimes
+    #     self.regime_history = pd.Series(
+    #         self.model.predict(X),
+    #         index=self.features.index
+    #     )
+    #
+    #     print(f"✓ Identified {self.n_regimes} market regimes")
+    #
+    #     # Print regime distribution
+    #     regime_counts = self.regime_history.value_counts().sort_index()
+    #     print("\nRegime distribution:")
+    #     for regime, count in regime_counts.items():
+    #         pct = count / len(self.regime_history) * 100
+    #         print(f"  Regime {regime}: {count} days ({pct:.1f}%)")
+    #
+    #     return self.model
+
+    def fit_hmm(self, use_pca=True, n_components=5):
         """
-        Fit Hidden Markov Model with better convergence
+        Fit Hidden Markov Model with FIXED random seed for consistency
         """
-        from hmmlearn.hmm import GaussianHMM
-        from sklearn.decomposition import PCA
-        import warnings
+        if self.features is None:
+            raise ValueError("No features available. Run prepare_features first.")
 
-        print("\n🤖 FITTING HIDDEN MARKOV MODEL")
-        print("-" * 40)
+        print("\n🔍 Fitting Hidden Markov Model...")
+        print(f"  Number of regimes: {self.n_regimes}")
 
-        if not hasattr(self, 'features_scaled') or self.features_scaled is None:
-            raise ValueError("No features prepared. Call prepare_features or engineer_features first.")
-
-        X = self.features_scaled
-
-        # Apply PCA if requested
-        if use_pca and X.shape[1] > n_components:
-            print(f"Applying PCA: {X.shape[1]} features → {n_components} components")
-            self.pca = PCA(n_components=n_components, random_state=42)
-            X = self.pca.fit_transform(X)
-            self.features_reduced = X  # Store as numpy array
-
-            explained_var = self.pca.explained_variance_ratio_.sum()
-            print(f"✓ PCA explains {explained_var:.1%} of variance")
+        # Prepare features
+        if use_pca and n_components < self.features.shape[1]:
+            X = self.features_reduced.values if self.features_reduced is not None else self.features_scaled
         else:
-            print(f"Using all {X.shape[1]} features (no PCA)")
-            self.features_reduced = X
+            X = self.features_scaled
 
-        # Try multiple random initializations to find best model
-        best_score = -np.inf
+        print(f"  Feature dimensions: {X.shape}")
+
+        # Try multiple times with FIXED seeds for consistency
         best_model = None
-        n_tries = 3
+        best_score = -np.inf
 
-        print(f"Trying {n_tries} random initializations...")
+        # Use fixed seeds instead of random
+        seeds = [42, 123, 456, 789, 1001]
 
-        for attempt in range(n_tries):
+        for attempt, seed in enumerate(seeds):
             try:
-                # Suppress convergence warnings for individual attempts
-                with warnings.catch_warnings():
-                    warnings.simplefilter("ignore")
+                print(f"\n  Attempt {attempt + 1}/5 with seed {seed}...")
 
-                    # Initialize HMM with different random seed
-                    model = GaussianHMM(
-                        n_components=self.n_regimes,
-                        covariance_type="diag",  # Use diagonal for better convergence
-                        n_iter=max_iter,
-                        tol=1e-2,  # Slightly more tolerant convergence
-                        random_state=42 + attempt,
-                        init_params="stmc",
-                        params="stmc",
-                        verbose=False
-                    )
+                # Initialize model with FIXED random state
+                model = GaussianHMM(
+                    n_components=self.n_regimes,
+                    covariance_type="full",
+                    n_iter=200,
+                    random_state=seed,  # FIXED seed for reproducibility
+                    verbose=False
+                )
 
-                    # Fit the model
-                    model.fit(X)
+                # Fit model
+                model.fit(X)
+                score = model.score(X)
+                print(f"    Score: {score:.2f}")
 
-                    # Calculate score
-                    score = model.score(X)
-
-                    print(f"  Attempt {attempt + 1}: score = {score:.2f}, converged = {model.monitor_.converged}")
-
-                    # Keep best model
-                    if score > best_score:
-                        best_score = score
-                        best_model = model
+                if score > best_score:
+                    best_score = score
+                    best_model = model
+                    print(f"    ✓ New best model!")
 
             except Exception as e:
                 print(f"  Attempt {attempt + 1} failed: {e}")
@@ -1355,22 +1549,64 @@ class MarketRegimeDetector:
 
         return df
 
+    # def get_current_regime(self):
+    #     """
+    #     Get the current market regime
+    #     """
+    #     current_regime = self.regime_history.iloc[-1]
+    #
+    #     # Fix: Handle cases where features_reduced is a numpy array (no .values)
+    #     if self.features_reduced is not None:
+    #         X = self.features_reduced  # Already a numpy array
+    #     else:
+    #         X = self.features.values  # Convert DataFrame to numpy array
+    #
+    #     regime_proba = self.model.predict_proba(X)[-1]
+    #
+    #     print("\n🎯 CURRENT MARKET REGIME")
+    #     print("-" * 40)
+    #     print(f"Regime: {self.regime_characteristics[current_regime]['name']}")
+    #     print(f"Confidence: {regime_proba[current_regime]:.1%}")
+    #     print("\nAll Regime Probabilities:")
+    #     for regime in range(self.n_regimes):
+    #         print(f"  {self.regime_characteristics[regime]['name']}: {regime_proba[regime]:.1%}")
+    #
+    #     return current_regime, regime_proba
+
     def get_current_regime(self):
         """
-        Get the current market regime
+        Get the current market regime - FIXED to use only the last data point
         """
+        if self.regime_history is None or len(self.regime_history) == 0:
+            raise ValueError("No regime history available")
+
+        # Get the last regime from history
         current_regime = self.regime_history.iloc[-1]
 
-        # Fix: Handle cases where features_reduced is a numpy array (no .values)
+        # Get features for probability calculation
         if self.features_reduced is not None:
-            X = self.features_reduced  # Already a numpy array
+            # If using PCA, use reduced features
+            if hasattr(self.features_reduced, 'values'):
+                X = self.features_reduced.values  # DataFrame to numpy
+            else:
+                X = self.features_reduced  # Already numpy array
         else:
-            X = self.features.values  # Convert DataFrame to numpy array
+            # Use scaled features
+            if hasattr(self.features_scaled, 'shape'):
+                X = self.features_scaled  # Already numpy array
+            else:
+                X = self.features.values  # DataFrame to numpy
 
-        regime_proba = self.model.predict_proba(X)[-1]
+        # CRITICAL FIX: Only use the LAST observation for probability
+        # The original code was using all data points, which gives wrong probabilities
+        last_observation = X[-1:, :]  # Keep 2D shape for predict_proba
 
-        print("\n🎯 CURRENT MARKET REGIME")
+        # Get probability for the current (last) observation only
+        regime_proba = self.model.predict_proba(last_observation)[0]
+
+        print("\n🎯 CURRENT MARKET REGIME (as of last data point)")
         print("-" * 40)
+        print(f"Date: {self.regime_history.index[-1].strftime('%Y-%m-%d')}")
         print(f"Regime: {self.regime_characteristics[current_regime]['name']}")
         print(f"Confidence: {regime_proba[current_regime]:.1%}")
         print("\nAll Regime Probabilities:")
@@ -1914,12 +2150,76 @@ class MarketRegimeDetector:
         return vix_alignment
 
 
-def main(use_marketstack=False):  # Add parameter
+# def main(use_marketstack=False):  # Add parameter
+#     """
+#     Run the complete regime detection analysis
+#
+#     Args:
+#         use_marketstack: If True, use Marketstack API; if False, use yfinance
+#     """
+#     # Initialize detector
+#     detector = MarketRegimeDetector(n_regimes=3, lookback_years=10)
+#
+#     # Fetch data with chosen source
+#     detector.fetch_market_data(
+#         symbols=['SPY', '^VIX', '^TNX', 'GLD'],
+#         use_marketstack=use_marketstack
+#     )
+#
+#     # IMPORTANT: Prepare features before fitting HMM
+#     # Check which method exists and use it
+#     if hasattr(detector, 'prepare_features'):
+#         detector.prepare_features()
+#     elif hasattr(detector, 'engineer_features'):
+#         detector.engineer_features()
+#     else:
+#         raise ValueError("No feature preparation method found!")
+#
+#     # Fit HMM with PCA for better convergence
+#     detector.fit_hmm(use_pca=True, n_components=5)
+#
+#     # Characterize regimes
+#     detector.characterize_regimes()
+#
+#     # Generate visualizations
+#     detector.plot_regimes()
+#
+#     # Generate report
+#     detector.generate_report()
+#
+#     # Export regime periods for optimizer
+#     regime_periods = detector.export_regime_periods()
+#
+#     # Get current regime
+#     current_regime, proba = detector.get_current_regime()
+#
+#     # Save model for future use
+#     detector.save_model()
+#
+#     # Additional analysis: Create date ranges for optimizer
+#     print("\n📅 SUGGESTED OPTIMIZER RUNS")
+#     print("-"*40)
+#     for regime in range(detector.n_regimes):
+#         chars = detector.regime_characteristics[regime]
+#         print(f"\n{chars['name']} Regime:")
+#
+#         # Find longest continuous period for each regime
+#         if 'periods' in chars:
+#             longest_period = max(chars['periods'], key=lambda x: x['days'])
+#             print(f"  Best period: {longest_period['start']} to {longest_period['end']}")
+#             print(f"  Run optimizer with: --start {longest_period['start']} --end {longest_period['end']}")
+#
+#     # Add validation
+#     detector.validate_against_known_events()
+#     detector.compare_with_vix_regimes()
+#
+#     return detector
+
+
+def main(use_marketstack=False):
     """
     Run the complete regime detection analysis
-
-    Args:
-        use_marketstack: If True, use Marketstack API; if False, use yfinance
+    Updated to use fit_hmm_with_multiple_attempts for better stability
     """
     # Initialize detector
     detector = MarketRegimeDetector(n_regimes=3, lookback_years=10)
@@ -1931,7 +2231,6 @@ def main(use_marketstack=False):  # Add parameter
     )
 
     # IMPORTANT: Prepare features before fitting HMM
-    # Check which method exists and use it
     if hasattr(detector, 'prepare_features'):
         detector.prepare_features()
     elif hasattr(detector, 'engineer_features'):
@@ -1939,8 +2238,34 @@ def main(use_marketstack=False):  # Add parameter
     else:
         raise ValueError("No feature preparation method found!")
 
-    # Fit HMM with PCA for better convergence
-    detector.fit_hmm(use_pca=True, n_components=5)
+    # UPDATED: Use the more robust fitting method
+    # First check if PCA should be applied
+    if hasattr(detector, 'features') and detector.features.shape[1] > 5:
+        # Apply PCA to reduce features
+        from sklearn.decomposition import PCA
+        print("\n📊 Applying PCA for dimensionality reduction...")
+        detector.pca = PCA(n_components=5, random_state=42)
+        features_pca = detector.pca.fit_transform(detector.features_scaled)
+
+        # Store as DataFrame for compatibility
+        detector.features_reduced = pd.DataFrame(
+            features_pca,
+            index=detector.features.index,
+            columns=[f'PC{i + 1}' for i in range(5)]
+        )
+
+        # Print explained variance
+        explained_var = detector.pca.explained_variance_ratio_
+        print(f"✓ PCA explains {explained_var.sum():.1%} of variance")
+    else:
+        detector.features_reduced = None
+
+    # Use the multiple attempts method for better stability
+    detector.fit_hmm_with_multiple_attempts(n_attempts=10, n_iter=200)
+
+    # Validate regime separation (optional but useful)
+    if hasattr(detector, 'validate_regimes'):
+        detector.validate_regimes()
 
     # Characterize regimes
     detector.characterize_regimes()
@@ -1960,9 +2285,9 @@ def main(use_marketstack=False):  # Add parameter
     # Save model for future use
     detector.save_model()
 
-    # Additional analysis: Create date ranges for optimizer
+    # Additional analysis
     print("\n📅 SUGGESTED OPTIMIZER RUNS")
-    print("-"*40)
+    print("-" * 40)
     for regime in range(detector.n_regimes):
         chars = detector.regime_characteristics[regime]
         print(f"\n{chars['name']} Regime:")

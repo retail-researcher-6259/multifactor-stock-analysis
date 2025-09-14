@@ -1,0 +1,600 @@
+"""
+Real-time market regime detection using trained model
+"""
+import os
+import pickle
+import pandas as pd
+import numpy as np
+import yfinance as yf
+from datetime import datetime, timedelta
+import json
+from sklearn.decomposition import PCA
+import pickle
+from pathlib import Path
+
+class CurrentRegimeDetector:
+    # def __init__(self, model_path='regime_model.pkl'):
+    #     self.project_root = Path(__file__).parent.parent.parent
+    #     self.output_dir = self.project_root / "output" / "Regime_Detection_Analysis"
+    #     self.results_dir = self.project_root / "output" / "Regime_Detection_Results"
+    #     self.config_dir = self.project_root / "config"
+    #
+    #     # Create directories if needed
+    #     self.output_dir.mkdir(parents=True, exist_ok=True)
+    #
+    #     # Update model path to look in Analysis directory
+    #     model_path = os.path.join(self.output_dir, model_path)
+    #
+    #     """Load the trained regime model"""
+    #     with open(model_path, 'rb') as f:
+    #         self.model_data = pickle.load(f)
+    #
+    #     self.model = self.model_data['model']
+    #     self.scaler = self.model_data['scaler']
+    #     self.pca = self.model_data.get('pca', None)
+    #     self.use_pca = self.model_data.get('use_pca', False)
+    #     self.feature_columns = self.model_data['feature_columns']
+    #     self.regime_characteristics = self.model_data['regime_characteristics']
+    #
+    #     if self.use_pca and self.pca is not None:
+    #         print(f"📊 Loaded model with PCA ({self.pca.n_components} components)")
+    #     else:
+    #         print("📊 Loaded model without PCA")
+
+    def __init__(self, model_path='regime_model.pkl'):
+        """Initialize and load the trained regime model with debug output"""
+        # Set correct paths
+        self.project_root = Path(__file__).parent.parent.parent
+        self.output_dir = self.project_root / "output" / "Regime_Detection_Analysis"
+        self.results_dir = self.project_root / "output" / "Regime_Detection_Results"
+        self.config_dir = self.project_root / "config"
+
+        # Create directories if needed
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+        self.results_dir.mkdir(parents=True, exist_ok=True)
+
+        # FIXED: Look for model in BOTH directories
+        # First try Results directory (where regime_detector.py saves it)
+        model_file = self.results_dir / model_path
+
+        # If not found, try Analysis directory as fallback
+        if not model_file.exists():
+            model_file = self.output_dir / model_path
+
+        # If still not found, raise an error
+        if not model_file.exists():
+            raise FileNotFoundError(
+                f"Model file not found in either:\n"
+                f"  - {self.results_dir / model_path}\n"
+                f"  - {self.output_dir / model_path}\n"
+                f"Please run regime detection first to generate the model."
+            )
+
+        print(f"📊 Loading model from: {model_file}")
+
+        # Load the trained regime model
+        with open(model_file, 'rb') as f:
+            self.model_data = pickle.load(f)
+
+        self.model = self.model_data['model']
+        self.scaler = self.model_data['scaler']
+        self.pca = self.model_data.get('pca', None)
+        self.use_pca = self.model_data.get('use_pca', False)
+        self.feature_columns = self.model_data['feature_columns']
+        self.regime_characteristics = self.model_data['regime_characteristics']
+
+        # DEBUG: Print what features the model expects
+        print(f"\n📋 Model expects {len(self.feature_columns)} features:")
+        for i, col in enumerate(self.feature_columns):
+            print(f"  {i + 1}. {col}")
+
+        if self.use_pca and self.pca is not None:
+            print(f"\n✓ Loaded model with PCA ({self.pca.n_components} components)")
+            print(f"  PCA input features: {len(self.feature_columns)}")
+        else:
+            print("\n✓ Loaded model without PCA")
+
+    def fetch_recent_data(self, lookback_days=500):  # Increased for rolling calculations
+        """Fetch recent market data for regime detection"""
+        end_date = datetime.now()
+        start_date = end_date - timedelta(days=lookback_days)
+
+        symbols = ['SPY', '^VIX', '^TNX', 'GLD']  # Match training data
+        data = {}
+
+        print("📊 Fetching market data...")
+        for symbol in symbols:
+            try:
+                ticker = yf.Ticker(symbol)
+                hist = ticker.history(start=start_date, end=end_date)
+                if not hist.empty:
+                    data[symbol] = hist['Close']
+                    print(f"✓ Downloaded {symbol} ({len(hist)} days)")
+            except Exception as e:
+                print(f"✗ Failed to download {symbol}: {e}")
+
+        df = pd.DataFrame(data)
+        # Forward fill then backward fill
+        df = df.ffill().bfill()
+        return df
+
+    # def engineer_current_features(self, data):
+    #     """Create features matching the training process"""
+    #     features = pd.DataFrame(index=data.index)
+    #
+    #     # Use SPY as base (matching training)
+    #     base_col = 'SPY' if 'SPY' in data.columns else data.columns[0]
+    #
+    #     # Core return features - fix the warning
+    #     returns = data[base_col].pct_change(fill_method=None)
+    #     features['return_1d'] = returns
+    #     features['return_5d'] = returns.rolling(5).mean()
+    #     features['return_21d'] = returns.rolling(21).mean()
+    #
+    #     # Volatility features
+    #     features['volatility_21d'] = returns.rolling(21).std() * np.sqrt(252)
+    #     features['volatility_63d'] = returns.rolling(63).std() * np.sqrt(252)
+    #
+    #     # Volatility change
+    #     features['vol_change'] = features['volatility_21d'].pct_change(21, fill_method=None)
+    #
+    #     # VIX normalization if available
+    #     if '^VIX' in data.columns:
+    #         vix_mean = data['^VIX'].rolling(252).mean()
+    #         vix_std = data['^VIX'].rolling(252).std()
+    #         features['vix_norm'] = (data['^VIX'] - vix_mean) / vix_std
+    #
+    #     # Trend
+    #     sma_50 = data[base_col].rolling(50).mean()
+    #     sma_200 = data[base_col].rolling(200).mean()
+    #     features['trend'] = (sma_50 - sma_200) / sma_200
+    #
+    #     # Momentum
+    #     features['momentum'] = data[base_col] / data[base_col].shift(63) - 1
+    #
+    #     # Drop NaN values
+    #     features = features.dropna()
+    #
+    #     print(f"✓ Created {len(features.columns)} features")
+    #     print(f"✓ Available data points: {len(features)}")
+    #
+    #     if len(features) == 0:
+    #         raise ValueError("No valid features after cleaning. Try increasing lookback period.")
+    #
+    #     return features
+
+    def engineer_current_features(self, data):
+        """Create features matching the ACTUAL training process (prepare_features)"""
+        print("🔧 Engineering features to match training...")
+
+        # Calculate returns with proper handling
+        returns = data.pct_change(fill_method=None)
+
+        # Replace any infinite values with NaN first
+        returns = returns.replace([np.inf, -np.inf], np.nan)
+
+        # Forward fill then backward fill NaN values
+        returns = returns.ffill().bfill()
+
+        # If still NaN, fill with 0
+        returns = returns.fillna(0)
+
+        # Create feature DataFrame
+        features = pd.DataFrame(index=returns.index)
+
+        # 1. Returns (clipped to avoid extreme values) - MATCHING prepare_features
+        for col in data.columns:
+            # Clip returns to reasonable range (-50% to +50% daily)
+            features[f'{col}_return'] = returns[col].clip(-0.5, 0.5)
+
+        # 2. Rolling volatility with proper window - MATCHING prepare_features
+        for col in data.columns:
+            # Use 20-day rolling window, but handle edge cases
+            vol = returns[col].rolling(window=20, min_periods=5).std()
+            # Fill initial NaN values with expanding window std
+            vol = vol.fillna(returns[col].expanding(min_periods=2).std())
+            # Clip volatility to reasonable range
+            features[f'{col}_vol'] = vol.clip(0, 1)
+
+        # 3. Moving average ratios - MATCHING prepare_features
+        for col in data.columns:
+            ma_20 = data[col].rolling(window=20, min_periods=5).mean()
+            ma_20 = ma_20.fillna(data[col].expanding(min_periods=2).mean())
+            # Ratio of current price to moving average
+            features[f'{col}_ma_ratio'] = (data[col] / ma_20).clip(0.5, 2)
+
+        # Drop NaN values
+        features = features.dropna()
+
+        print(f"✓ Created {len(features.columns)} features matching training")
+        print(f"✓ Feature names: {list(features.columns)}")
+        print(f"✓ Available data points: {len(features)}")
+
+        if len(features) == 0:
+            raise ValueError("No valid features after cleaning. Try increasing lookback period.")
+
+        return features
+
+    def detect_current_regime(self):
+        """Detect the current market regime - FIXED VERSION"""
+        # Fetch recent data
+        data = self.fetch_recent_data()
+
+        # Engineer features
+        features_raw = self.engineer_current_features(data)
+
+        # Keep a copy of raw features for the output
+        features_for_output = features_raw.copy()
+
+        # Ensure we have the same features as training
+        # Reorder columns to match training if needed
+        if hasattr(self, 'feature_columns') and self.feature_columns:
+            # Make sure we have all required columns
+            for col in self.feature_columns:
+                if col not in features_raw.columns:
+                    print(f"Warning: Missing feature {col}, setting to 0")
+                    features_raw[col] = 0
+
+            # Select only the columns used in training
+            features = features_raw[self.feature_columns]
+        else:
+            features = features_raw
+
+        # Scale features
+        features_scaled = pd.DataFrame(
+            self.scaler.transform(features),
+            index=features.index,
+            columns=features.columns
+        )
+
+        # Apply PCA if needed
+        if self.use_pca and self.pca is not None:
+            print("📊 Applying PCA transformation...")
+
+            # Transform features using the trained PCA
+            features_pca = self.pca.transform(features_scaled)
+
+            # Get latest observation
+            current_features = features_pca[-1:, :]
+
+            print(f"✓ PCA features shape: {current_features.shape}")
+        else:
+            # No PCA - use scaled features directly
+            current_features = features_scaled.iloc[-1:].values
+            print(f"✓ Features shape: {current_features.shape}")
+
+        # Predict regime
+        current_regime = self.model.predict(current_features)[0]
+        regime_proba = self.model.predict_proba(current_features)[0]
+
+        # Get regime characteristics
+        regime_info = self.regime_characteristics[current_regime]
+
+        # Prepare output with safe feature access
+        output = {
+            'regime': current_regime,
+            'regime_name': regime_info['name'],
+            'confidence': regime_proba[current_regime],
+            'all_probabilities': {
+                self.regime_characteristics[i]['name']: regime_proba[i]
+                for i in range(len(regime_proba))
+            },
+            'regime_characteristics': regime_info,
+            'as_of': features_for_output.index[-1].strftime('%Y-%m-%d'),
+            'latest_features': {}
+        }
+
+        # Safely add latest features if they exist
+        feature_list = ['volatility_21d', 'momentum', 'trend']
+        for feat in feature_list:
+            if feat in features_for_output.columns:
+                output['latest_features'][feat] = float(features_for_output[feat].iloc[-1])
+            else:
+                print(f"Warning: Feature '{feat}' not available for output")
+                output['latest_features'][feat] = 0.0
+
+        return output
+
+    def get_recommended_weights(self, current_regime_name):
+        """Get recommended factor weights for current regime"""
+
+        # Define regime-specific weights based on your optimization results
+        # These should be updated after you run the optimizer on each regime
+        REGIME_WEIGHTS = {
+            'Strong Bull': {
+                "momentum": 60.0,
+                "growth": 15.0,
+                "technical": 15.0,
+                "quality": 10.0,
+                "credit": 5.0,
+                "financial_health": 5.0,
+                "value": -5.0,
+                "size": -5.0,
+                "volatility_penalty": -3.0,
+                "carry": -2.0,
+                "liquidity": 5.0,
+                "insider": 0.0
+            },
+            'Steady Growth': {
+                "momentum": 45.0,
+                "quality": 20.0,
+                "growth": 10.0,
+                "technical": 10.0,
+                "credit": 10.0,
+                "financial_health": 10.0,
+                "value": 5.0,
+                "size": -5.0,
+                "volatility_penalty": -5.0,
+                "carry": 0.0,
+                "liquidity": 3.0,
+                "insider": -3.0
+            },
+            'Crisis/Bear': {
+                "quality": 30.0,
+                "financial_health": 25.0,
+                "credit": 20.0,
+                "value": 15.0,
+                "carry": 5.0,
+                "liquidity": 10.0,
+                "momentum": 10.0,
+                "growth": 0.0,
+                "technical": 0.0,
+                "volatility_penalty": -15.0,
+                "size": -5.0,
+                "insider": 5.0
+            }
+        }
+
+        return REGIME_WEIGHTS.get(current_regime_name, REGIME_WEIGHTS['Steady Growth'])
+
+    def get_current_regime_for_api(self):
+        """
+        Function to get current regime in API-friendly format
+        Add this to your current_regime_detector.py
+        """
+        try:
+            # Run your existing current regime detection
+            # current_regime = your_existing_detection_function()
+
+            # Format for API
+            result = {
+                "current_regime": "Steady Growth",  # Replace with actual
+                "probabilities": {
+                    "Steady Growth": 0.68,
+                    "Strong Bull": 0.22,
+                    "Crisis/Bear": 0.10
+                },
+                "last_updated": datetime.now().isoformat(),
+                "confidence_score": 0.85
+            }
+
+            # Save to JSON for API access
+            with open("Analysis/current_regime_analysis.json", 'w') as f:
+                json.dump(result, f, indent=2)
+
+            return result
+
+        except Exception as e:
+            return {"error": str(e)}
+
+# def main():
+#     try:
+#         """Main function with corrected paths"""
+#         project_root = Path(__file__).parent.parent.parent
+#         output_dir = project_root / "output" / "Regime_Detection_Analysis"
+#         output_dir.mkdir(parents=True, exist_ok=True)
+#
+#         # Initialize detector
+#         detector = CurrentRegimeDetector()
+#
+#         # Detect current regime
+#         print("\n🔍 Detecting current market regime...")
+#         result = detector.detect_current_regime()
+#
+#         print(f"\n{'='*60}")
+#         print("🎯 CURRENT MARKET REGIME ANALYSIS")
+#         print(f"{'='*60}")
+#         print(f"Date: {result['as_of']}")
+#         print(f"Regime: {result['regime_name']}")
+#         print(f"Confidence: {result['confidence']:.1%}")
+#
+#         print("\nAll Regime Probabilities:")
+#         for regime, prob in result['all_probabilities'].items():
+#             print(f"  {regime}: {prob:.1%}")
+#
+#         print("\nRegime Characteristics:")
+#         chars = result['regime_characteristics']
+#         print(f"  Expected Return: {chars['mean_return']:.1%}")
+#         print(f"  Expected Volatility: {chars['volatility']:.1%}")
+#         print(f"  Sharpe Ratio: {chars['sharpe']:.2f}")
+#
+#         print("\nCurrent Market Conditions:")
+#         features = result['latest_features']
+#         print(f"  21-day Volatility: {features['volatility_21d']:.1%}")
+#         print(f"  63-day Momentum: {features['momentum']:.1%}")
+#         print(f"  Trend Strength: {features['trend']:.3f}")
+#
+#         # Get recommended weights
+#         weights = detector.get_recommended_weights(result['regime_name'])
+#         print(f"\n📊 RECOMMENDED FACTOR WEIGHTS FOR {result['regime_name'].upper()}")
+#         print("-"*40)
+#
+#         sorted_weights = sorted(weights.items(), key=lambda x: abs(x[1]), reverse=True)
+#         for factor, weight in sorted_weights:
+#             if weight != 0:
+#                 print(f"  {factor:<20} {weight:>6.1f}%")
+#
+#         # Convert numpy types to Python native types
+#         def convert_numpy_types(obj):
+#             """Convert numpy types to Python native types for JSON serialization"""
+#             if isinstance(obj, np.integer):
+#                 return int(obj)
+#             elif isinstance(obj, np.floating):
+#                 return float(obj)
+#             elif isinstance(obj, np.ndarray):
+#                 return obj.tolist()
+#             elif isinstance(obj, dict):
+#                 return {key: convert_numpy_types(value) for key, value in obj.items()}
+#             elif isinstance(obj, list):
+#                 return [convert_numpy_types(item) for item in obj]
+#             else:
+#                 return obj
+#
+#         # Save results
+#         output = {
+#             'timestamp': datetime.now().isoformat(),
+#             'regime_detection': convert_numpy_types(result),
+#             'recommended_weights': convert_numpy_types(weights)
+#         }
+#
+#         # When saving, use absolute path:
+#         output_path = output_dir / "current_regime_analysis.json"
+#         with open(output_path, 'w') as f:
+#             json.dump(output, f, indent=2)
+#
+#         print(f"✅ Analysis saved to {output_path}")
+#
+#         return result, weights
+#
+#     except Exception as e:
+#         print(f"\n❌ Error: {e}")
+#         import traceback
+#         traceback.print_exc()
+
+
+def main():
+    """Main function with proper error handling and exit codes"""
+    try:
+        project_root = Path(__file__).parent.parent.parent
+        output_dir = project_root / "output" / "Regime_Detection_Analysis"
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        print(f"Starting current regime detection...")
+        print(f"Output directory: {output_dir}")
+
+        # Initialize detector
+        detector = CurrentRegimeDetector()
+
+        # Detect current regime
+        print("\n🔍 Detecting current market regime...")
+        result = detector.detect_current_regime()
+
+        print(f"\n{'=' * 60}")
+        print("🎯 CURRENT MARKET REGIME ANALYSIS")
+        print(f"{'=' * 60}")
+        print(f"Current Regime: {result['regime_name']}")
+        print(f"Confidence: {result['confidence']:.1%}")
+        print("\nRegime Probabilities:")
+        for regime, prob in result['all_probabilities'].items():
+            print(f"  {regime}: {prob:.1%}")
+
+        # Get recommended weights
+        weights = detector.get_recommended_weights(result['regime_name'])
+
+        print(f"\n{'=' * 60}")
+        print("📊 RECOMMENDED FACTOR WEIGHTS")
+        print(f"{'=' * 60}")
+        for factor, weight in weights.items():
+            print(f"  {factor}: {weight:.1f}%")
+
+        # Helper function to convert numpy types
+        def convert_numpy_types(obj):
+            if isinstance(obj, np.ndarray):
+                return obj.tolist()
+            elif isinstance(obj, (np.int64, np.int32)):
+                return int(obj)
+            elif isinstance(obj, (np.float64, np.float32)):
+                return float(obj)
+            elif isinstance(obj, dict):
+                return {key: convert_numpy_types(value) for key, value in obj.items()}
+            elif isinstance(obj, list):
+                return [convert_numpy_types(item) for item in obj]
+            else:
+                return obj
+
+        # Save results
+        output = {
+            'timestamp': datetime.now().isoformat(),
+            'regime_detection': convert_numpy_types(result),
+            'recommended_weights': convert_numpy_types(weights)
+        }
+
+        # Save to file
+        output_path = output_dir / "current_regime_analysis.json"
+        with open(output_path, 'w') as f:
+            json.dump(output, f, indent=2)
+
+        print(f"\n✅ Analysis saved to {output_path}")
+
+        # Verify file was created
+        if not output_path.exists():
+            raise FileNotFoundError(f"Failed to create output file: {output_path}")
+
+        print(f"✅ File size: {output_path.stat().st_size} bytes")
+
+        return result, weights
+
+    except FileNotFoundError as e:
+        print(f"\n❌ File Error: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)  # Exit with error code
+
+    except Exception as e:
+        print(f"\n❌ Error: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)  # Exit with error code
+
+def load_config():
+    """Load configuration from the correct path"""
+    project_root = Path(__file__).parent.parent.parent
+    config_file = project_root / "config" / "marketstack_config.json"
+
+    if config_file.exists():
+        with open(config_file, 'r') as f:
+            return json.load(f)
+    else:
+        print(f"Config file not found: {config_file}")
+        return {"api_key": "your_api_key_here"}
+
+def get_current_regime_api():
+    """API wrapper to get current regime"""
+    project_root = Path(__file__).parent.parent.parent
+    analysis_file = project_root / "output" / "Regime_Detection_Analysis" / "current_regime_analysis.json"
+
+    if analysis_file.exists():
+        with open(analysis_file, 'r') as f:
+            return json.load(f)
+    else:
+        # Run the analysis
+        main()
+        with open(analysis_file, 'r') as f:
+            return json.load(f)
+
+# if __name__ == "__main__":
+#     import sys
+#
+#     # Check if script is being called with API flag
+#     if "--api" in sys.argv:
+#         # Run in API mode (returns JSON-friendly output)
+#         detector = RegimeDetectorAPI()
+#         result = detector.run_detection()
+#         print(json.dumps(result))
+#     else:
+#         # Run your existing code normally
+#         # your_existing_main_function()
+#         pass
+#
+#     main()
+
+if __name__ == "__main__":
+    import sys
+
+    # Run main and handle any uncaught exceptions
+    try:
+        main()
+        sys.exit(0)  # Success
+    except Exception as e:
+        print(f"Fatal error: {e}")
+        sys.exit(1)  # Failure

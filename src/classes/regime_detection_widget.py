@@ -46,8 +46,50 @@ class RegimeDetectorThread(QThread):
         except Exception as e:
             self.error_occurred.emit(str(e))
 
+    # def run_current_detection(self):
+    #     """Run current regime detection"""
+    #     self.status_update.emit("Starting current regime detection...")
+    #     self.progress_update.emit(20)
+    #
+    #     # Path to current regime detector script
+    #     script_path = PROJECT_ROOT / 'src' / 'regime_detection' / 'current_regime_detector.py'
+    #
+    #     if not script_path.exists():
+    #         self.error_occurred.emit(f"Script not found: {script_path}")
+    #         return
+    #
+    #     self.status_update.emit("Running detection script...")
+    #     self.progress_update.emit(40)
+    #
+    #     result = subprocess.run(
+    #         [sys.executable, str(script_path)],
+    #         capture_output=True,
+    #         text=True,
+    #         encoding='utf-8',  # Add this line
+    #         cwd=str(PROJECT_ROOT)
+    #     )
+    #
+    #     if result.returncode != 0 and result.stderr:
+    #         self.error_occurred.emit(f"Script error: {result.stderr}")
+    #         return
+    #
+    #     self.progress_update.emit(80)
+    #
+    #     # Read the output file
+    #     output_file = PROJECT_ROOT / 'output' / 'Regime_Detection_Analysis' / 'current_regime_analysis.json'
+    #
+    #     if output_file.exists():
+    #         with open(output_file, 'r') as f:
+    #             data = json.load(f)
+    #
+    #         self.progress_update.emit(100)
+    #         self.status_update.emit("Detection complete!")
+    #         self.result_ready.emit({'type': 'current', 'data': data})
+    #     else:
+    #         self.error_occurred.emit("Output file not generated")
+
     def run_current_detection(self):
-        """Run current regime detection"""
+        """Run current regime detection with improved error handling"""
         self.status_update.emit("Starting current regime detection...")
         self.progress_update.emit(20)
 
@@ -61,32 +103,79 @@ class RegimeDetectorThread(QThread):
         self.status_update.emit("Running detection script...")
         self.progress_update.emit(40)
 
+        # Run the script and capture output
         result = subprocess.run(
             [sys.executable, str(script_path)],
             capture_output=True,
             text=True,
-            encoding='utf-8',  # Add this line
+            encoding='utf-8',
             cwd=str(PROJECT_ROOT)
         )
 
-        if result.returncode != 0 and result.stderr:
-            self.error_occurred.emit(f"Script error: {result.stderr}")
+        # Check for errors in stdout or stderr
+        if result.stdout:
+            print(f"Script output: {result.stdout}")  # Debug output
+
+        if result.stderr:
+            print(f"Script stderr: {result.stderr}")  # Debug output
+            # Check if it's a real error or just warnings
+            if "Error:" in result.stderr or "Traceback" in result.stderr:
+                self.error_occurred.emit(f"Script error: {result.stderr}")
+                return
+
+        # Also check if the script returned a non-zero code
+        if result.returncode != 0:
+            error_msg = f"Script failed with return code {result.returncode}"
+            if result.stderr:
+                error_msg += f"\nError: {result.stderr}"
+            if result.stdout and "Error" in result.stdout:
+                error_msg += f"\nOutput: {result.stdout}"
+            self.error_occurred.emit(error_msg)
             return
 
-        self.progress_update.emit(80)
+        self.progress_update.emit(60)
+        self.status_update.emit("Processing detection results...")
 
-        # Read the output file
-        output_file = PROJECT_ROOT / 'output' / 'Regime_Detection_Analysis' / 'current_regime_analysis.json'
+        # Wait a moment for file to be written
+        import time
+        time.sleep(0.5)
 
-        if output_file.exists():
-            with open(output_file, 'r') as f:
-                data = json.load(f)
+        # Check multiple possible locations for the output file
+        possible_paths = [
+            PROJECT_ROOT / 'output' / 'Regime_Detection_Analysis' / 'current_regime_analysis.json',
+            PROJECT_ROOT / 'output' / 'Regime_Detection_Results' / 'current_regime_analysis.json',
+        ]
 
-            self.progress_update.emit(100)
-            self.status_update.emit("Detection complete!")
-            self.result_ready.emit({'type': 'current', 'data': data})
+        output_file = None
+        for path in possible_paths:
+            if path.exists():
+                output_file = path
+                print(f"Found output file at: {path}")  # Debug output
+                break
+
+        if output_file and output_file.exists():
+            try:
+                with open(output_file, 'r') as f:
+                    data = json.load(f)
+
+                self.progress_update.emit(100)
+                self.status_update.emit("Detection complete!")
+                self.result_ready.emit({'type': 'current', 'data': data})
+            except json.JSONDecodeError as e:
+                self.error_occurred.emit(f"Error reading output file: {e}")
+            except Exception as e:
+                self.error_occurred.emit(f"Error processing results: {e}")
         else:
-            self.error_occurred.emit("Output file not generated")
+            # Provide more detailed error message
+            error_msg = "Output file not generated. Checked locations:\n"
+            for path in possible_paths:
+                error_msg += f"  - {path} (exists: {path.exists()})\n"
+
+            # Check if there were any errors in the output
+            if result.stdout and ("Error" in result.stdout or "Traceback" in result.stdout):
+                error_msg += f"\nScript output indicates an error:\n{result.stdout[-500:]}"
+
+            self.error_occurred.emit(error_msg)
 
     def fetch_historical_data(self):
         """Fetch historical regime data"""
