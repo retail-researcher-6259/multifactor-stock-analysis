@@ -15,6 +15,8 @@ Date: 2024
 
 import numpy as np
 import pandas as pd
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import yfinance as yf
 import riskfolio as rp
@@ -77,6 +79,9 @@ class PortfolioOptimizer:
         print(f"Portfolio Optimization - {method}")
         print(f"{'='*60}\n")
 
+        # STORE ORIGINAL TICKER ORDER AS INSTANCE VARIABLE
+        self.original_tickers = tickers.copy()
+
         # Fetch and prepare data
         print("📊 Fetching price data...")
         prices, dropped_tickers = self._fetch_prices(tickers, lookback_days)
@@ -111,6 +116,11 @@ class PortfolioOptimizer:
             self.weights = self._optimize_nco()
         else:
             raise ValueError(f"Unknown optimization method: {method}")
+
+        # FORCE REINDEX TO ORIGINAL TICKER ORDER (exactly like the old script)
+        # This ensures ticker order is preserved regardless of optimization method
+        valid_tickers = [t for t in tickers if t in self.weights.index]
+        self.weights = self.weights.reindex(valid_tickers).fillna(0)
 
         # Calculate metrics
         self.metrics = self._calculate_metrics()
@@ -147,6 +157,9 @@ class PortfolioOptimizer:
 
                 # Print rebalancing suggestions
                 self._print_rebalance_suggestions(current_weights, rebalance_info)
+
+        # After optimization, reindex to original order
+        self.weights = self.weights.reindex(self.original_tickers).fillna(0)
 
         # Prepare return dictionary
         results = {
@@ -223,9 +236,15 @@ class PortfolioOptimizer:
         # Recursive bisection
         weights = self._recursive_bisection_hrp(sorted_tickers)
 
-        # Normalize and reindex
+        # Normalize
         weights = weights / weights.sum()
-        weights = weights.reindex(self.returns.columns).fillna(0)
+
+        # Reindex to original ticker order
+        if hasattr(self, 'original_tickers'):
+            valid_tickers = [t for t in self.original_tickers if t in weights.index]
+            weights = weights.reindex(valid_tickers).fillna(0)
+        else:
+            weights = weights.reindex(self.returns.columns).fillna(0)
 
         return weights
 
@@ -244,7 +263,14 @@ class PortfolioOptimizer:
             max_k=10  # Maximum number of clusters
         )
 
-        return weights.squeeze()
+        weights = weights.squeeze()
+
+        # Reindex to original ticker order
+        if hasattr(self, 'original_tickers'):
+            valid_tickers = [t for t in self.original_tickers if t in weights.index]
+            weights = pd.Series([weights.get(t, 0) for t in valid_tickers], index=valid_tickers)
+
+        return weights
 
     def _optimize_mhrp(self) -> pd.Series:
         """
@@ -264,7 +290,14 @@ class PortfolioOptimizer:
 
         # Normalize and reindex
         weights = weights / weights.sum()
-        weights = weights.reindex(self.returns.columns).fillna(0)
+
+        # CRITICAL: Reindex to original ticker order (like the old script)
+        if hasattr(self, 'original_tickers'):
+            # Only keep tickers that are in our current data (some might have been dropped)
+            valid_tickers = [t for t in self.original_tickers if t in weights.index]
+            weights = weights.reindex(valid_tickers).fillna(0)
+        else:
+            weights = weights.reindex(self.returns.columns).fillna(0)
 
         return weights
 
@@ -335,7 +368,16 @@ class PortfolioOptimizer:
                 final_weights[asset] = (cluster_weights[asset] *
                                        inter_cluster_weights[i])
 
-        return pd.Series(final_weights).reindex(self.returns.columns).fillna(0)
+        # Convert to Series and reindex to original order
+        weights = pd.Series(final_weights)
+
+        if hasattr(self, 'original_tickers'):
+            valid_tickers = [t for t in self.original_tickers if t in weights.index]
+            weights = weights.reindex(valid_tickers).fillna(0)
+        else:
+            weights = weights.reindex(self.returns.columns).fillna(0)
+
+        return weights
 
     def _recursive_bisection_hrp(self, sorted_tickers: List[str]) -> pd.Series:
         """
@@ -483,10 +525,16 @@ class PortfolioOptimizer:
         values = {t: shares.get(t, 0) * prices.get(t, 100) for t in tickers}
         total_value = sum(values.values())
 
+        # if total_value > 0:
+        #     current_weights = pd.Series({t: values[t] / total_value for t in tickers})
+        # else:
+        #     current_weights = pd.Series({t: 1.0 / len(tickers) for t in tickers})
+
         if total_value > 0:
-            current_weights = pd.Series({t: values[t] / total_value for t in tickers})
+            # Create Series with explicit index order to preserve ticker order
+            current_weights = pd.Series([values[t] / total_value for t in tickers], index=tickers)
         else:
-            current_weights = pd.Series({t: 1.0 / len(tickers) for t in tickers})
+            current_weights = pd.Series([1.0 / len(tickers) for t in tickers], index=tickers)
 
         # Calculate rebalancing needs
         rebalance_info = self._calculate_rebalance_info(current_weights)
@@ -531,20 +579,29 @@ class PortfolioOptimizer:
 
     def _plot_donut_chart(self, weights: pd.Series, title: str, filepath: Path):
         """
-        Create and save a donut chart visualization.
+        Create and save a donut chart visualization with fixed 600x600 size.
         """
-        # Sort weights for better visualization
-        weights_sorted = weights[weights > 1e-4].sort_values(ascending=False)
+        import matplotlib
+        matplotlib.use('Agg')
+        import matplotlib.pyplot as plt
 
-        # Prepare labels with percentages
-        labels = [f"{t} {w*100:.1f}%" for t, w in weights_sorted.items()]
-        sizes = weights_sorted.values
+        # IMPORTANT: Don't filter or reorder - preserve exact input order
+        weights_to_plot = weights.copy()
 
-        # Create figure
-        fig, ax = plt.subplots(figsize=(8, 8))
+        # Prepare labels with percentages - preserve order exactly
+        labels = []
+        sizes = []
+        for ticker in weights_to_plot.index:
+            if weights_to_plot[ticker] > 1e-4:  # Only show if weight > 0.01%
+                labels.append(f"{ticker} {weights_to_plot[ticker] * 100:.1f}%")
+                sizes.append(weights_to_plot[ticker])
 
-        # Use a nice color palette
-        colors = plt.cm.Set3(np.linspace(0, 1, len(weights_sorted)))
+        # Create figure with EXACT size
+        fig = plt.figure(figsize=(6, 6), dpi=100, facecolor='white')
+        ax = fig.add_subplot(111)
+
+        # Use consistent color palette
+        colors = plt.cm.Set3(np.linspace(0, 1, len(sizes)))
 
         # Create donut chart
         wedges, texts = ax.pie(
@@ -552,55 +609,75 @@ class PortfolioOptimizer:
             labels=labels,
             colors=colors,
             startangle=90,
-            wedgeprops=dict(width=0.5, edgecolor='white', linewidth=2)
+            wedgeprops=dict(width=0.35, edgecolor='white'),
+            textprops=dict(color='black', weight='bold', size=9)  # EXPLICITLY SET TEXT COLOR
         )
 
-        # Improve text appearance
-        plt.setp(texts, size=10, weight="bold")
+        # Text appearance
+        # plt.setp(texts, size=9, weight="bold")
 
-        # Add center circle for donut effect
-        centre_circle = plt.Circle((0, 0), 0.50, fc='white', linewidth=2, edgecolor='#cccccc')
+        # Add white center circle
+        centre_circle = plt.Circle((0, 0), 0.70, fc='white', linewidth=0)
         ax.add_artist(centre_circle)
 
-        # Add title
-        ax.set_title(title, fontsize=14, fontweight='bold', pad=20)
+        # Title
+        # ax.set_title(title, fontsize=12, fontweight='bold', pad=10)
 
-        # Equal aspect ratio ensures circular donut
+        # Title with explicit color
+        ax.set_title(title, fontsize=12, fontweight='bold', pad=10, color='black')
+
+        # Set background
+        ax.set_facecolor('white')
+        fig.patch.set_facecolor('white')
+
+        # Equal aspect ratio
         ax.axis('equal')
 
+        # Save with exact size - no bbox_inches='tight' which changes dimensions
         plt.tight_layout()
-        plt.savefig(filepath, dpi=150, bbox_inches='tight', facecolor='white')
-        plt.close()
+        # fig.savefig(filepath, dpi=100, facecolor='white')
+        fig.savefig(filepath, dpi=100, facecolor='white', edgecolor='none')
+        plt.close(fig)
 
     def _merge_images(self, img1_path: Path, img2_path: Path, output_path: Path):
         """
-        Merge two images side by side.
+        Merge two 600x600 images with a 5-pixel black divider.
         """
-        img1 = Image.open(img1_path)
-        img2 = Image.open(img2_path)
+        from PIL import Image
 
-        # Get dimensions
-        width1, height1 = img1.size
-        width2, height2 = img2.size
+        TARGET_SIZE = (600, 600)
+        DIVIDER_W = 5
+        DIVIDER_COLOR = (0, 0, 0)  # Black
 
-        # Create new image with black separator
-        separator_width = 10
-        total_width = width1 + separator_width + width2
-        max_height = max(height1, height2)
+        # Open and convert images
+        left = Image.open(img1_path).convert("RGB")
+        right = Image.open(img2_path).convert("RGB")
 
-        # Create white background
-        new_img = Image.new('RGB', (total_width, max_height), 'white')
+        # Resize to exact target size if needed
+        if left.size != TARGET_SIZE:
+            left = left.resize(TARGET_SIZE, Image.LANCZOS)
+        if right.size != TARGET_SIZE:
+            right = right.resize(TARGET_SIZE, Image.LANCZOS)
 
-        # Add black separator
-        for x in range(width1, width1 + separator_width):
-            for y in range(max_height):
-                new_img.putpixel((x, y), (0, 0, 0))
+        # Create canvas with white background
+        w, h = TARGET_SIZE
+        total_width = 2 * w + DIVIDER_W
+        canvas = Image.new("RGB", (total_width, h), (255, 255, 255))  # White background
 
-        # Paste images
-        new_img.paste(img1, (0, (max_height - height1) // 2))
-        new_img.paste(img2, (width1 + separator_width, (max_height - height2) // 2))
+        # Paste left image
+        canvas.paste(left, (0, 0))
 
-        new_img.save(output_path)
+        # Create and paste black divider
+        for x in range(w, w + DIVIDER_W):
+            for y in range(h):
+                canvas.putpixel((x, y), DIVIDER_COLOR)
+
+        # Paste right image
+        canvas.paste(right, (w + DIVIDER_W, 0))
+
+        # Save
+        canvas.save(output_path)
+        print(f"✅ Saved merged image: {output_path.name}")
 
     def _print_results(self, method: str):
         """
@@ -612,7 +689,9 @@ class PortfolioOptimizer:
 
         print("\nOptimized Weights:")
         print("-" * 30)
-        for ticker, weight in self.weights.sort_values(ascending=False).items():
+        # Don't sort - preserve original ticker order
+        for ticker in self.weights.index:
+            weight = self.weights[ticker]
             if weight > 1e-4:
                 print(f"{ticker:<8} {weight*100:>6.2f}%")
 

@@ -7,7 +7,6 @@ from datetime import datetime
 from typing import Dict, List, Optional, Tuple
 import numpy as np
 import pandas as pd
-
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
@@ -41,8 +40,11 @@ class PortfolioOptimizerThread(QThread):
             from scipy.cluster.hierarchy import linkage
             from scipy.spatial.distance import squareform
             from scipy.optimize import minimize
-            import matplotlib.pyplot as plt
+            # import matplotlib.pyplot as plt
             from PIL import Image
+
+            # STORE ORIGINAL TICKER ORDER AS INSTANCE VARIABLE
+            self.original_tickers = self.tickers.copy()
 
             self.progress_update.emit(10)
             self.status_update.emit("Fetching price data...")
@@ -180,7 +182,16 @@ class PortfolioOptimizerThread(QThread):
             linkage='ward'
         )
 
-        return weights.squeeze()
+        weights = weights.squeeze()
+
+        # Reindex to original ticker order
+        if hasattr(self, 'original_tickers'):
+            valid_tickers = [t for t in self.original_tickers if t in weights.index]
+            weights = weights.reindex(valid_tickers).fillna(0)
+        else:
+            weights = weights.reindex(self.returns.columns).fillna(0)
+
+        return weights
 
     def optimize_herc(self, returns, cov):
         """HERC optimization"""
@@ -196,7 +207,16 @@ class PortfolioOptimizerThread(QThread):
             max_k=10
         )
 
-        return weights.squeeze()
+        weights = weights.squeeze()
+
+        # Reindex to original ticker order
+        if hasattr(self, 'original_tickers'):
+            valid_tickers = [t for t in self.original_tickers if t in weights.index]
+            weights = weights.reindex(valid_tickers).fillna(0)
+        else:
+            weights = weights.reindex(self.returns.columns).fillna(0)
+
+        return weights
 
     def optimize_mhrp(self, returns, cov):
         """Modified HRP with equal volatility weighting"""
@@ -215,6 +235,14 @@ class PortfolioOptimizerThread(QThread):
         # Apply equal volatility recursive bisection
         weights = self.recursive_bisection_equal_volatility(cov, sorted_tickers)
         weights = weights / weights.sum()
+
+        # CRITICAL: Reindex to original ticker order (like the old script)
+        if hasattr(self, 'original_tickers'):
+            # Only keep tickers that are in our current data (some might have been dropped)
+            valid_tickers = [t for t in self.original_tickers if t in weights.index]
+            weights = weights.reindex(valid_tickers).fillna(0)
+        else:
+            weights = weights.reindex(self.returns.columns).fillna(0)
 
         return weights
 
@@ -259,7 +287,16 @@ class PortfolioOptimizerThread(QThread):
                     for asset in cluster_assets:
                         cluster_weights[asset] = 1.0 / (n * n_clusters)
 
-        return pd.Series(cluster_weights)
+        # Convert to Series and reindex to original order
+        weights = pd.Series(cluster_weights)
+
+        if hasattr(self, 'original_tickers'):
+            valid_tickers = [t for t in self.original_tickers if t in weights.index]
+            weights = weights.reindex(valid_tickers).fillna(0)
+        else:
+            weights = weights.reindex(self.returns.columns).fillna(0)
+
+        return weights
 
     def get_quasi_diag(self, link):
         """Get quasi-diagonal ordering from linkage matrix"""
@@ -338,10 +375,16 @@ class PortfolioOptimizerThread(QThread):
         values = {t: shares.get(t, 0) * prices.get(t, 100) for t in tickers}
         total_value = sum(values.values())
 
+        # if total_value > 0:
+        #     current_weights = pd.Series({t: values[t] / total_value for t in tickers})
+        # else:
+        #     current_weights = pd.Series({t: 1.0 / len(tickers) for t in tickers})
+
         if total_value > 0:
-            current_weights = pd.Series({t: values[t] / total_value for t in tickers})
+            # Create Series with explicit index order to preserve ticker order
+            current_weights = pd.Series([values[t] / total_value for t in tickers], index=tickers)
         else:
-            current_weights = pd.Series({t: 1.0 / len(tickers) for t in tickers})
+            current_weights = pd.Series([1.0 / len(tickers) for t in tickers], index=tickers)
 
         # Calculate rebalancing needs
         rebalance_info = self.calculate_rebalance_info(current_weights, optimal_weights)
@@ -391,21 +434,29 @@ class PortfolioOptimizerThread(QThread):
         }
 
     def plot_donut_chart(self, weights, title, filepath):
-        """Create donut chart visualization"""
+        """Create donut chart visualization with fixed 600x600 size"""
+        import matplotlib
+        matplotlib.use('Agg')
         import matplotlib.pyplot as plt
 
-        # Sort weights for better visualization
-        weights_sorted = weights.sort_values(ascending=False)
+        # IMPORTANT: Don't filter or reorder - preserve exact input order
+        weights_to_plot = weights.copy()
 
-        # Prepare labels with percentages
-        labels = [f"{t} {w * 100:.1f}%" for t, w in weights_sorted.items()]
-        sizes = weights_sorted.values
+        # Prepare labels and sizes - preserve order
+        labels = []
+        sizes = []
+        for ticker in weights_to_plot.index:
+            if weights_to_plot[ticker] > 1e-4:  # Only show if weight > 0.01%
+                labels.append(f"{ticker} {weights_to_plot[ticker] * 100:.1f}%")
+                sizes.append(weights_to_plot[ticker])
 
-        # Create figure
-        fig, ax = plt.subplots(figsize=(8, 8))
+        # Create figure with EXACT size
+        # fig = plt.figure(figsize=(6, 6), dpi=100)
+        fig = plt.figure(figsize=(6, 6), dpi=100, facecolor='white')
+        ax = fig.add_subplot(111)
 
-        # Use a nice color palette
-        colors = plt.cm.Set3(np.linspace(0, 1, len(weights_sorted)))
+        # Use consistent color palette
+        colors = plt.cm.Set3(np.linspace(0, 1, len(sizes)))
 
         # Create donut chart
         wedges, texts = ax.pie(
@@ -413,45 +464,70 @@ class PortfolioOptimizerThread(QThread):
             labels=labels,
             colors=colors,
             startangle=90,
-            wedgeprops=dict(width=0.5, edgecolor='white')
+            wedgeprops=dict(width=0.35, edgecolor='white'),
+            textprops=dict(color='black', weight='bold', size=9)  # EXPLICITLY SET TEXT COLOR
         )
 
-        # Improve text appearance
-        plt.setp(texts, size=9, weight="bold")
+        # Text appearance
+        # plt.setp(texts, size=9, weight="bold")
 
-        # Add title
-        ax.set_title(title, fontsize=14, fontweight='bold', pad=20)
+        # Add white center circle
+        centre_circle = plt.Circle((0, 0), 0.70, fc='white', linewidth=0)
+        ax.add_artist(centre_circle)
 
-        # Equal aspect ratio ensures circular donut
+        # Title
+        # ax.set_title(title, fontsize=12, fontweight='bold', pad=10)
+        ax.set_title(title, fontsize=12, fontweight='bold', pad=10, color='black')
+
+        # Set background
+        ax.set_facecolor('white')
+        fig.patch.set_facecolor('white')
+
+        # Equal aspect ratio
         ax.axis('equal')
 
+        # Save with exact size
         plt.tight_layout()
-        plt.savefig(filepath, dpi=100, bbox_inches='tight')
-        plt.close()
+        # fig.savefig(filepath, dpi=100, facecolor='white')
+        fig.savefig(filepath, dpi=100, facecolor='white', edgecolor='none')
+        plt.close(fig)
 
     def merge_images(self, img1_path, img2_path, output_path):
-        """Merge two images side by side"""
+        """Merge two 600x600 images with a 5-pixel black divider"""
         from PIL import Image
 
-        img1 = Image.open(img1_path)
-        img2 = Image.open(img2_path)
+        TARGET_SIZE = (600, 600)
+        DIVIDER_W = 5
+        DIVIDER_COLOR = (0, 0, 0)  # Black
 
-        # Get dimensions
-        width1, height1 = img1.size
-        width2, height2 = img2.size
+        # Open and convert images
+        left = Image.open(img1_path).convert("RGB")
+        right = Image.open(img2_path).convert("RGB")
 
-        # Create new image
-        total_width = width1 + width2 + 20  # 20px gap
-        max_height = max(height1, height2)
+        # Resize to exact target size if needed
+        if left.size != TARGET_SIZE:
+            left = left.resize(TARGET_SIZE, Image.LANCZOS)
+        if right.size != TARGET_SIZE:
+            right = right.resize(TARGET_SIZE, Image.LANCZOS)
 
-        new_img = Image.new('RGB', (total_width, max_height), 'white')
+        # Create canvas with white background
+        w, h = TARGET_SIZE
+        total_width = 2 * w + DIVIDER_W
+        canvas = Image.new("RGB", (total_width, h), (255, 255, 255))  # White background
 
-        # Paste images
-        new_img.paste(img1, (0, (max_height - height1) // 2))
-        new_img.paste(img2, (width1 + 20, (max_height - height2) // 2))
+        # Paste left image
+        canvas.paste(left, (0, 0))
 
-        new_img.save(output_path)
+        # Create and paste black divider
+        for x in range(w, w + DIVIDER_W):
+            for y in range(h):
+                canvas.putpixel((x, y), DIVIDER_COLOR)
 
+        # Paste right image
+        canvas.paste(right, (w + DIVIDER_W, 0))
+
+        # Save
+        canvas.save(output_path)
 
 class PortfolioOptimizerWidget(QWidget):
     """Widget for portfolio optimization"""
@@ -886,8 +962,12 @@ class PortfolioOptimizerWidget(QWidget):
             weights_text += "Optimized Weights:\n"
             weights_text += "-" * 30 + "\n"
 
-            for ticker, weight in sorted(results['weights'].items(), key=lambda x: x[1], reverse=True):
-                weights_text += f"{ticker:<8} {weight * 100:>6.2f}%\n"
+            # Show weights in original ticker order (from results['tickers'])
+            for ticker in results['tickers']:
+                if ticker in results['weights']:
+                    weight = results['weights'][ticker]
+                    if weight > 0.0001:  # Only show non-zero weights
+                        weights_text += f"{ticker:<8} {weight * 100:>6.2f}%\n"
 
             # Add metrics
             metrics = results['metrics']
@@ -901,14 +981,17 @@ class PortfolioOptimizerWidget(QWidget):
             weights_text += f"Min Weight:       {metrics['min_weight'] * 100:>6.2f}%\n"
             weights_text += f"Effective N:      {metrics['effective_n']:>6.1f}\n"
 
-            # Display current weights if available
-            if results['current_weights']:
+            # Display current weights if available (also in original order)
+            if results.get('current_weights'):
                 weights_text += "\n" + "=" * 30 + "\n"
                 weights_text += "Current Weights:\n"
                 weights_text += "-" * 30 + "\n"
 
-                for ticker, weight in sorted(results['current_weights'].items(), key=lambda x: x[1], reverse=True):
-                    weights_text += f"{ticker:<8} {weight * 100:>6.2f}%\n"
+                for ticker in results['tickers']:
+                    if ticker in results['current_weights']:
+                        weight = results['current_weights'][ticker]
+                        if weight > 0.0001:
+                            weights_text += f"{ticker:<8} {weight * 100:>6.2f}%\n"
 
             self.results_text.setText(weights_text)
 
