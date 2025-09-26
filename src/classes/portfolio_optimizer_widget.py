@@ -545,7 +545,7 @@ class PortfolioOptimizerWidget(QWidget):
         main_layout.setSpacing(15)
 
         # Title
-        title_label = QLabel("Portfolio Optimization")
+        title_label = QLabel("Portfolio Optimization System")
         title_label.setAlignment(Qt.AlignCenter)
         title_font = QFont("Arial", 18, QFont.Bold)
         title_label.setFont(title_font)

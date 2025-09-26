@@ -1,0 +1,31 @@
+{
+  "tickers": [
+    "PLTR",
+    "NVDA",
+    "RMBS",
+    "EXEL",
+    "VEEV",
+    "RDDT",
+    "MNST",
+    "META",
+    "WPM",
+    "GOOGL",
+    "HIMS",
+    "AXON",
+    "SEIC",
+    "ONON",
+    "AEM",
+    "KGC",
+    "CPRT",
+    "DASH",
+    "SE",
+    "CELH"
+  ],
+  "date_saved": "2025-09-19T12:43:14.452223",
+  "has_shares": false,
+  "portfolio_name": "SectorBal3_S20_P50",
+  "sharpe_ratio": 4.627,
+  "regime": "Steady Growth",
+  "data_source": "yfinance",
+  "selection_method": "dynamic_portfolio_selection"
+}

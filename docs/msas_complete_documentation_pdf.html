@@ -1,0 +1,3473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MSAS - Complete System Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .document {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            /* Force a solid white background */
+            background: #ffffff !important;
+            background-image: none !important;
+            /* retain your existing layout rules */
+            color: #1a1a1a !important;
+            padding: 60px 40px;
+            text-align: center;
+            page-break-after: always;
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            /* optional subtle bottom border */
+            border-bottom: 1px solid #e5e5e5 !important;
+        }
+
+        .header h1 {
+            /* Force black heading text */
+            color: #000000 !important;
+            font-size: 2.8em;
+            margin-bottom: 20px;
+            text-shadow: none !important;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            font-size: 1.3em;
+            color: #333333; /* Dark gray for subtitle */
+            margin-bottom: 15px;
+        }
+
+        .version-info {
+            font-size: 0.9em;
+            color: #666666; /* Medium gray for less emphasis */
+            margin-top: 30px;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        h2 {
+            color: #2c3e50;
+            font-size: 2em;
+            margin: 40px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #3498db;
+        }
+        
+        h3 {
+            color: #34495e;
+            font-size: 1.5em;
+            margin: 30px 0 15px 0;
+        }
+        
+        h4 {
+            color: #34495e;
+            font-size: 1.2em;
+            margin: 20px 0 10px 0;
+            font-weight: 600;
+        }
+        
+        p {
+            margin: 15px 0;
+            text-align: justify;
+        }
+        
+        ul, ol {
+            margin: 15px 0 15px 30px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        .toc {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .toc h2 {
+            margin-top: 0;
+            border: none;
+            color: #2c3e50;
+        }
+        
+        .toc ul {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        .toc li {
+            padding: 5px 0;
+        }
+        
+        .toc a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        
+        .algorithm-box {
+            background: #f0f7ff;
+            border-left: 4px solid #3498db;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .formula {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+        }
+        
+        .formula-label {
+            font-weight: bold;
+            color: #856404;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        .note {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .important {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .feature-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-name {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+        
+        .regime-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .regime-table th {
+            background: #3498db;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        .regime-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .regime-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .validation-results {
+            background: #fff;
+            border: 2px solid #28a745;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .validation-header {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #28a745;
+            margin-bottom: 15px;
+        }
+        
+        .code-block {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            margin: 20px 0;
+        }
+        
+        .pipeline-diagram {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 10px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .pipeline-step {
+            display: inline-block;
+            background: white;
+            padding: 15px 25px;
+            margin: 10px;
+            border-radius: 50px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .arrow {
+            display: inline-block;
+            margin: 0 10px;
+            color: #3498db;
+            font-size: 1.5em;
+        }
+        
+        .page-break {
+            page-break-after: always;
+            margin: 40px 0;
+        }
+
+        @media print {
+            .part-divider {
+                page-break-before: always;
+            }
+        }
+
+        .part-divider {
+            text-align: center;
+            margin: 60px 0;
+            padding: 40px;
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border-radius: 15px;
+        }
+        
+        .part-divider h1 {
+            color: #1a1a1a;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .part-divider p {
+            color: #333333;
+            font-size: 1.1em;
+            text-align: center;
+        }
+        
+        /* Styles for Multifactor Scoring System */
+        .factor-section {
+            background: white;
+            border: 2px solid #3498db;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .factor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+        
+        .factor-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .factor-weight {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #27ae60;
+        }
+        
+        .factor-weight.negative {
+            color: #e74c3c;
+        }
+        
+        .subfactor {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 3px solid #3498db;
+            border-radius: 5px;
+        }
+        
+        .subfactor-name {
+            font-weight: bold;
+            color: #34495e;
+            margin-bottom: 10px;
+        }
+        
+        .regime-weights {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .regime-card {
+            background: white;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .regime-title {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .weight-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        
+        .weight-value {
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .weight-value.negative {
+            color: #e74c3c;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 40px;
+            background: #f8f9fa;
+            border-top: 2px solid #e9ecef;
+            margin-top: 60px;
+        }
+    </style>
+</head>
+<body>
+    <div class="document">
+        <div class="header">
+            <h1>Multifactor Stock Analysis System (MSAS)</h1>
+            <div class="subtitle">Complete System Documentation</div>
+            <div class="version-info">Version 3.0 | September 2025</div>
+        </div>
+
+        <div class="content">
+            <div class="toc">
+                <h2>Table of Contents</h2>
+                <ul>
+                    <li><strong>PART I: MARKET REGIME DETECTION SYSTEM</strong>
+                        <ul>
+                            <li><a href="#regime-overview">1.1 Regime Detection System Overview</a></li>
+                            <li><a href="#regime-algorithm">1.2 Core Algorithm</a>
+                                <ul>
+                                    <li><a href="#feature-engineering">1.2.1 Feature Engineering</a></li>
+                                    <li><a href="#pca">1.2.2 PCA Dimensionality Reduction</a></li>
+                                    <li><a href="#hmm">1.2.3 Hidden Markov Models</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="#regime-types">1.3 Market Regime Types</a></li>
+                            <li><a href="#validation">1.4 Validation Framework</a>
+                                <ul>
+                                    <li><a href="#known-events">1.4.1 Known Events Validation</a></li>
+                                    <li><a href="#vix-comparison">1.4.2 VIX Regime Comparison</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="#regime-implementation">1.5 Technical Implementation</a></li>
+                            <li><a href="#regime-integration">1.6 System Integration</a></li>
+                        </ul>
+                    </li>
+                    <li><strong>PART II: MULTIFACTOR STOCK SCORING SYSTEM</strong>
+                        <ul>
+                            <li><a href="#scoring-overview">2.1 Multifactor Stock Scoring System Overview</a></li>
+                            <li><a href="#methodology">2.2 Scoring Methodology</a></li>
+                            <li><a href="#factors">2.3 The 12 Factors - Detailed Analysis</a>
+                                <ul>
+                                    <li><a href="#value">2.3.1 Value Factor</a></li>
+                                    <li><a href="#quality">2.3.2 Quality Factor</a></li>
+                                    <li><a href="#financial-health">2.3.3 Financial Health Factor</a></li>
+                                    <li><a href="#momentum">2.3.4 Momentum Factor</a></li>
+                                    <li><a href="#growth">2.3.5 Growth Factor</a></li>
+                                    <li><a href="#technical">2.3.6 Technical Factor</a></li>
+                                    <li><a href="#stability">2.3.7 Stability Factor</a></li>
+                                    <li><a href="#size">2.3.8 Size Factor</a></li>
+                                    <li><a href="#credit">2.3.9 Credit Factor</a></li>
+                                    <li><a href="#liquidity">2.3.10 Liquidity Factor</a></li>
+                                    <li><a href="#carry">2.3.11 Carry Factor</a></li>
+                                    <li><a href="#insider">2.3.12 Insider Factor</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="#regimes">2.4 Market Regime Weights</a></li>
+                            <li><a href="#modes">2.5 Operating Modes</a></li>
+                            <li><a href="#scoring-implementation">2.6 Technical Implementation</a></li>
+                        </ul>
+                    </li>
+                    <li><strong>PART III: SCORE TREND ANALYSIS SYSTEM</strong>
+                        <ul>
+                            <li><a href="#trend-analysis">3.1 Score Trend Analysis System Overview</a>
+                            <li><a href="#trend-analysis">3.2 Core Algorithm: Stability-Adjusted Score</a></li>
+                            <li><a href="#trend-analysis">3.3 Regression Analysis Components</a></li>
+                            <li><a href="#trend-analysis">3.4 Composite Stability Score</a></li>
+                            <li><a href="#trend-analysis">3.5 Technical Indicator Integration</a></li>
+                            <li><a href="#trend-analysis">3.6 Technical Scoring System</a></li>
+                            <li><a href="#trend-analysis">3.7 Investment Recommendation Engine</a></li>
+                            <li><a href="#trend-analysis">3.8 Visualization and Reporting</a></li>
+                            <li><a href="#trend-analysis">3.9 Implementation Details</a></li>
+                            </li>
+                        </ul>
+                    </li>
+                    <li><strong>PART IV: DYNAMIC PORTFOLIO SELECTION SYSTEM</strong>
+                        <ul>
+                            <li><a href="#portfolio-selection">4.1 Dynamic Portfolio Selection System Overview</a>
+                            <li><a href="#portfolio-selection">4.2 Core Selection Algorithm</a></li>
+                            <li><a href="#portfolio-selection">4.3 Key Configuration Parameters</a></li>
+                            <li><a href="#portfolio-selection">4.4 Portfolio Construction Strategies</a></li>
+                            <li><a href="#portfolio-selection">4.5 Sector-Balanced Selection Algorithm</a></li>
+                            <li><a href="#portfolio-selection">4.6 Hybrid Stability-Sector Portfolio</a></li>
+                            <li><a href="#portfolio-selection">4.7 Industry and Sector Exclusions</a></li>
+                            <li><a href="#portfolio-selection">4.8 Backtesting Engine</a></li>
+                            <li><a href="#portfolio-selection">4.9 Risk and Performance Metrics</a></li>
+                            <li><a href="#portfolio-selection">4.10 Portfolio Optimization Process</a></li>
+                            <li><a href="#portfolio-selection">4.11 Advanced Features</a></li>
+                            <li><a href="#portfolio-selection">4.12 Performance Characteristics</a></li>
+                            </li>
+                        </ul>
+                    </li>
+                    <li><strong>PART V: PORTFOLIO OPTIMIZATION SYSTEM</strong>
+                        <ul>
+                            <li><a href="#portfolio-optimization">5.1 Portfolio Optimization System Overview</a>
+                            <li><a href="#portfolio-optimization">5.2 Theoretical Foundation: HRP</a></li>
+                            <li><a href="#portfolio-optimization">5.3 Mathematical Framework of HRP</a></li>
+                            <li><a href="#portfolio-optimization">5.4 Covariance Estimation: Ledoit-Wolf</a></li>
+                            <li><a href="#portfolio-optimization">5.5 HERC: Hierarchical Equal Risk Contribution</a></li>
+                            <li><a href="#portfolio-optimization">5.6 MHRP: Modified HRP</a></li>
+                            <li><a href="#portfolio-optimization">5.7 NCO: Nested Clustered Optimization</a></li>
+                            <li><a href="#portfolio-optimization">5.8 Method Comparison Guide</a></li>
+                            <li><a href="#portfolio-optimization">5.9 Implementation Architecture</a></li>
+                            <li><a href="#portfolio-optimization">5.10 Risk Metrics & Performance</a></li>
+                            <li><a href="#portfolio-optimization">5.11 Practical Considerations</a></li>
+                            <li><a href="#portfolio-optimization">5.12 Academic References</a></li>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- PART I: MARKET REGIME DETECTION -->
+            <div class="part-divider">
+                <h1>PART I: Market Regime Detection System</h1>
+                <p>Hidden Markov Model-Based Market State Classification</p>
+            </div>
+
+            <h2 id="regime-overview">1.1 Regime Detection System Overview</h2>
+            
+            <p>The Market Regime Detection System is a sophisticated quantitative framework that identifies and classifies market conditions using Hidden Markov Models (HMM). This system serves as the foundation for adaptive portfolio management, enabling regime-specific factor weighting and risk management strategies.</p>
+            
+            <div class="note">
+                <strong>Key Capabilities:</strong>
+                <ul>
+                    <li>Real-time market regime identification across three distinct states</li>
+                    <li>10-year historical regime analysis and characterization</li>
+                    <li>Validation accuracy of 80-90% against known market events</li>
+                    <li>Integration with multifactor scoring for adaptive weighting</li>
+                    <li>Probabilistic regime transition predictions</li>
+                </ul>
+            </div>
+
+            <div class="pipeline-diagram">
+                <div class="pipeline-step">Data Collection</div>
+                <span class="arrow">→</span>
+                <div class="pipeline-step">Feature Engineering</div>
+                <span class="arrow">→</span>
+                <div class="pipeline-step">PCA Reduction</div>
+                <span class="arrow">→</span>
+                <div class="pipeline-step">HMM Training</div>
+                <span class="arrow">→</span>
+                <div class="pipeline-step">Regime Classification</div>
+            </div>
+
+            <div class="page-break"></div>
+
+            <h2 id="regime-algorithm">1.2 Core Algorithm</h2>
+            
+            <h3 id="feature-engineering">1.2.1 Feature Engineering</h3>
+            
+            <p>The system constructs a comprehensive feature set capturing multiple dimensions of market behavior. These features are designed to capture regime-specific characteristics that distinguish between different market states.</p>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-name">Return Features</div>
+                    <ul>
+                        <li><strong>1-day returns:</strong> Immediate price movements</li>
+                        <li><strong>5-day returns:</strong> Weekly momentum</li>
+                        <li><strong>21-day returns:</strong> Monthly trend</li>
+                    </ul>
+                    <div class="formula">
+                        <span class="formula-label">Rolling Return:</span>
+                        r_n = mean(returns[t:t-n])
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-name">Volatility Metrics</div>
+                    <ul>
+                        <li><strong>21-day volatility:</strong> Short-term risk</li>
+                        <li><strong>63-day volatility:</strong> Quarterly stability</li>
+                        <li><strong>Volatility change:</strong> Risk regime transitions</li>
+                    </ul>
+                    <div class="formula">
+                        <span class="formula-label">Annualized Volatility:</span>
+                        σ = std(returns) × √252
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-name">Market Stress Indicators</div>
+                    <ul>
+                        <li><strong>VIX normalization:</strong> Fear gauge z-score</li>
+                        <li><strong>Drawdown depth:</strong> Peak-to-trough decline</li>
+                        <li><strong>Recovery time:</strong> Drawdown duration</li>
+                    </ul>
+                    <div class="formula">
+                        <span class="formula-label">VIX Z-Score:</span>
+                        z = (VIX - μ_252) / σ_252
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-name">Trend Indicators</div>
+                    <ul>
+                        <li><strong>SMA crossover:</strong> 50/200 day signal</li>
+                        <li><strong>Price momentum:</strong> Rate of change</li>
+                        <li><strong>Trend strength:</strong> ADX indicator</li>
+                    </ul>
+                    <div class="formula">
+                        <span class="formula-label">Trend Signal:</span>
+                        trend = (SMA_50 - SMA_200) / SMA_200
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-name">Cross-Asset Signals</div>
+                    <ul>
+                        <li><strong>Bond correlation:</strong> Flight-to-quality</li>
+                        <li><strong>Gold correlation:</strong> Safe haven demand</li>
+                        <li><strong>Dollar strength:</strong> Risk-off indicator</li>
+                    </ul>
+                    <div class="formula">
+                        <span class="formula-label">Rolling Correlation:</span>
+                        ρ = corr(SPY, Asset)[60d]
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-name">Market Microstructure</div>
+                    <ul>
+                        <li><strong>Volume patterns:</strong> Participation levels</li>
+                        <li><strong>Volatility term structure:</strong> Forward-looking risk</li>
+                        <li><strong>Skewness:</strong> Tail risk asymmetry</li>
+                    </ul>
+                    <div class="formula">
+                        <span class="formula-label">Volume Ratio:</span>
+                        v_ratio = Volume / SMA(Volume, 50)
+                    </div>
+                </div>
+            </div>
+
+            <h3 id="pca">1.2.2 PCA Dimensionality Reduction</h3>
+            
+            <p>Principal Component Analysis (PCA) is employed to reduce the dimensionality of the feature space while preserving the maximum amount of variance. This step is crucial for improving HMM convergence and preventing overfitting.</p>
+
+            <div class="algorithm-box">
+                <h4>PCA Implementation Process:</h4>
+                <ol>
+                    <li><strong>Standardization:</strong> Features are standardized to zero mean and unit variance using StandardScaler</li>
+                    <li><strong>Component Selection:</strong> Retain 5 principal components capturing ~85-90% of total variance</li>
+                    <li><strong>Transformation:</strong> Project original features onto principal component space</li>
+                    <li><strong>Interpretation:</strong> Analyze component loadings to understand regime drivers</li>
+                </ol>
+            </div>
+
+            <table class="regime-table">
+                <tr>
+                    <th>Principal Component</th>
+                    <th>Variance Explained</th>
+                    <th>Cumulative Variance</th>
+                    <th>Primary Loadings</th>
+                </tr>
+                <tr>
+                    <td>PC1</td>
+                    <td>42.3%</td>
+                    <td>42.3%</td>
+                    <td>Volatility, VIX, Drawdown</td>
+                </tr>
+                <tr>
+                    <td>PC2</td>
+                    <td>23.7%</td>
+                    <td>66.0%</td>
+                    <td>Trend, Momentum, Returns</td>
+                </tr>
+                <tr>
+                    <td>PC3</td>
+                    <td>12.4%</td>
+                    <td>78.4%</td>
+                    <td>Cross-asset correlations</td>
+                </tr>
+                <tr>
+                    <td>PC4</td>
+                    <td>7.8%</td>
+                    <td>86.2%</td>
+                    <td>Volume, Microstructure</td>
+                </tr>
+                <tr>
+                    <td>PC5</td>
+                    <td>5.2%</td>
+                    <td>91.4%</td>
+                    <td>Skewness, Tail risk</td>
+                </tr>
+            </table>
+
+            <h3 id="hmm">1.2.3 Hidden Markov Models</h3>
+            
+            <p>The HMM framework models market regimes as hidden states that generate observable market features through Gaussian emissions. The system uses a 3-state model optimized through extensive backtesting.</p>
+
+            <div class="algorithm-box">
+                <h4>HMM Architecture:</h4>
+                <ul>
+                    <li><strong>Number of States:</strong> 3 (Crisis/Bear, Steady Growth, Strong Bull)</li>
+                    <li><strong>Emission Type:</strong> Multivariate Gaussian with full covariance</li>
+                    <li><strong>Training Algorithm:</strong> Baum-Welch (Expectation-Maximization)</li>
+                    <li><strong>Initialization:</strong> K-means clustering for robust starting points</li>
+                    <li><strong>Convergence Criteria:</strong> Log-likelihood improvement < 0.01 or 200 iterations</li>
+                </ul>
+            </div>
+
+            <div class="note">
+                <strong>Stability Enhancement:</strong> The system employs multiple random initializations (5 attempts with different seeds) to ensure convergence to the global optimum. The model with the highest log-likelihood is selected.
+            </div>
+
+            <div class="page-break"></div>
+
+            <h2 id="regime-types">1.3 Market Regime Types</h2>
+
+            <div class="feature-grid">
+                <div class="feature-card" style="border-color: #dc3545;">
+                    <div class="feature-name" style="color: #dc3545;">Crisis/Bear Regime</div>
+                    <p><strong>Frequency:</strong> 5-10% of historical periods</p>
+                    <p><strong>Characteristics:</strong></p>
+                    <ul>
+                        <li>VIX > 30 (often > 40)</li>
+                        <li>Annualized volatility > 25%</li>
+                        <li>Negative returns: -20% to -40% annualized</li>
+                        <li>High correlation across assets</li>
+                        <li>Elevated drawdowns > 10%</li>
+                    </ul>
+                    <p><strong>Examples:</strong> COVID crash (2020), Volmageddon (2018), Financial Crisis (2008)</p>
+                </div>
+
+                <div class="feature-card" style="border-color: #28a745;">
+                    <div class="feature-name" style="color: #28a745;">Steady Growth Regime</div>
+                    <p><strong>Frequency:</strong> 60-70% of historical periods</p>
+                    <p><strong>Characteristics:</strong></p>
+                    <ul>
+                        <li>VIX: 12-20</li>
+                        <li>Moderate volatility: 10-18%</li>
+                        <li>Positive returns: 8-15% annualized</li>
+                        <li>Normal correlations</li>
+                        <li>Shallow drawdowns < 5%</li>
+                    </ul>
+                    <p><strong>Examples:</strong> 2023 recovery, 2016-2017 expansion, 2013-2014 growth</p>
+                </div>
+
+                <div class="feature-card" style="border-color: #3498db;">
+                    <div class="feature-name" style="color: #3498db;">Strong Bull Regime</div>
+                    <p><strong>Frequency:</strong> 20-30% of historical periods</p>
+                    <p><strong>Characteristics:</strong></p>
+                    <ul>
+                        <li>VIX < 12</li>
+                        <li>Low volatility: 8-12%</li>
+                        <li>Strong returns: 15-25% annualized</li>
+                        <li>Momentum persistence</li>
+                        <li>Minimal drawdowns < 3%</li>
+                    </ul>
+                    <p><strong>Examples:</strong> 2017 melt-up, 2021 bull run, 2019 Fed pivot rally</p>
+                </div>
+            </div>
+
+            <div class="page-break"></div>
+
+            <h2 id="validation">1.4 Validation Framework</h2>
+            
+            <h3 id="known-events">1.4.1 Known Events Validation</h3>
+            
+            <p>The system validates regime detection accuracy against a comprehensive database of known market events, achieving 80-90% classification accuracy on historical data.</p>
+
+            <div class="validation-results">
+                <div class="validation-header">Historical Event Classification Results</div>
+                <table class="regime-table">
+                    <tr>
+                        <th>Event</th>
+                        <th>Period</th>
+                        <th>Expected Regime</th>
+                        <th>Detected Regime</th>
+                        <th>Match</th>
+                    </tr>
+                    <tr>
+                        <td>COVID Crash</td>
+                        <td>2020-02-19 to 2020-03-23</td>
+                        <td>Crisis/Bear</td>
+                        <td>Crisis/Bear</td>
+                        <td>✓</td>
+                    </tr>
+                    <tr>
+                        <td>2017 Melt-Up</td>
+                        <td>2017-01-01 to 2017-12-31</td>
+                        <td>Strong Bull</td>
+                        <td>Strong Bull</td>
+                        <td>✓</td>
+                    </tr>
+                    <tr>
+                        <td>2023 Recovery</td>
+                        <td>2023-03-01 to 2023-12-31</td>
+                        <td>Steady Growth</td>
+                        <td>Steady Growth</td>
+                        <td>✓</td>
+                    </tr>
+				</table>
+                <p style="margin-top: 15px;"><strong>Overall Accuracy: 90.0% (9/10 correct classifications)</strong></p>
+            </div>
+
+            <h3 id="vix-comparison">1.4.2 VIX Regime Comparison</h3>
+            
+            <p>The system's regime classifications are cross-validated against VIX-based regime definitions to ensure consistency with market-implied volatility expectations.</p>
+
+            <table class="regime-table">
+                <tr>
+                    <th>VIX Level</th>
+                    <th>VIX Regime</th>
+                    <th>Typical HMM Regime</th>
+                    <th>Alignment Rate</th>
+                </tr>
+                <tr>
+                    <td>&lt; 12</td>
+                    <td>Low Volatility</td>
+                    <td>Strong Bull</td>
+                    <td>92%</td>
+                </tr>
+                <tr>
+                    <td>12-20</td>
+                    <td>Normal</td>
+                    <td>Steady Growth</td>
+                    <td>85%</td>
+                </tr>
+                <tr>
+                    <td>20-30</td>
+                    <td>Elevated</td>
+                    <td>Steady Growth / Transition</td>
+                    <td>78%</td>
+                </tr>
+                <tr>
+                    <td>&gt; 30</td>
+                    <td>High Volatility</td>
+                    <td>Crisis/Bear</td>
+                    <td>95%</td>
+                </tr>
+            </table>
+
+            <div class="success">
+                <strong>Validation Success:</strong> The HMM-based regime detection shows strong alignment with both historical events (90% accuracy) and VIX-based classifications (87% average alignment), confirming the model's reliability for market regime identification.
+            </div>
+
+            <div class="page-break"></div>
+
+            <h2 id="regime-implementation">1.5 Technical Implementation</h2>
+
+            <div class="algorithm-box">
+                <h4>Core Python Dependencies:</h4>
+                <ul>
+                    <li><strong>hmmlearn 0.3.0:</strong> Hidden Markov Model implementation</li>
+                    <li><strong>scikit-learn 1.3.0:</strong> PCA and preprocessing</li>
+                    <li><strong>pandas 2.0.3:</strong> Data manipulation and time series</li>
+                    <li><strong>numpy 1.24.3:</strong> Numerical computations</li>
+                    <li><strong>yfinance 0.2.28:</strong> Market data retrieval</li>
+                    <li><strong>matplotlib 3.7.2:</strong> Visualization</li>
+                    <li><strong>PyQt5 5.15.9:</strong> GUI framework</li>
+                </ul>
+            </div>
+
+            <div class="note">
+                <strong>File Structure:</strong>
+                <ul>
+                    <li><code>regime_detector.py</code> - Core HMM implementation</li>
+                    <li><code>current_regime_detector.py</code> - Real-time detection</li>
+                    <li><code>regime_detection_widget.py</code> - PyQt5 GUI component</li>
+                    <li><code>output/regime_periods.csv</code> - Historical regime classifications</li>
+                    <li><code>output/regime_model.pkl</code> - Trained HMM model</li>
+                </ul>
+            </div>
+
+            <div class="page-break"></div>
+
+            <h2 id="regime-integration">1.6 System Integration</h2>
+            
+            <p>The Market Regime Detection system seamlessly integrates with other MSAS components to provide adaptive, regime-aware investment strategies.</p>
+
+            <div class="algorithm-box">
+                <h4>Integration Points:</h4>
+                
+                <p><strong>1. Multifactor Scoring System:</strong></p>
+                <ul>
+                    <li>Regime detection triggers automatic weight adjustment</li>
+                    <li>Crisis/Bear: Defensive factors (Quality, Size) emphasized</li>
+                    <li>Strong Bull: Growth and Momentum factors prioritized</li>
+                    <li>Steady Growth: Balanced factor weighting</li>
+                </ul>
+                
+                <p><strong>2. Portfolio Optimization:</strong></p>
+                <ul>
+                    <li>Risk parameters adjusted based on detected regime</li>
+                    <li>Position sizing modified for regime-specific volatility</li>
+                    <li>Rebalancing frequency adapted to market conditions</li>
+                </ul>
+                
+                <p><strong>3. Score Trend Analysis:</strong></p>
+                <ul>
+                    <li>Technical indicators calibrated for regime volatility</li>
+                    <li>Lookback periods adjusted for regime characteristics</li>
+                    <li>Signal thresholds modified based on market state</li>
+                </ul>
+            </div>
+
+            <!-- PART II: MULTIFACTOR STOCK SCORING -->
+            <div class="page-break"></div>
+            
+            <div class="part-divider">
+                <h1>PART II: Multifactor Stock Scoring System</h1>
+                <p>Adaptive Factor-Based Security Ranking and Selection</p>
+            </div>
+
+            <h2 id="scoring-overview">2.1 Multifactor Stock Scoring System Overview</h2>
+            
+            <p>The Multifactor Scoring Analysis System (MSAS) is a sophisticated quantitative stock screening and ranking system that evaluates securities across 12 distinct factors, each composed of multiple subfactors. The system employs regime-specific weighting schemes optimized through historical backtesting to adapt to varying market conditions.</p>
+            
+            <div class="note">
+                <strong>Key Features:</strong>
+                <ul>
+                    <li>12 primary factors with 50+ subfactors</li>
+                    <li>Continuous scoring (0-1 scale) for all metrics</li>
+                    <li>Industry and sector-relative adjustments</li>
+                    <li>Three market regime configurations</li>
+                    <li>Multiple operational modes for current and historical analysis</li>
+                </ul>
+            </div>
+
+            <div class="page-break"></div>
+
+            <h2 id="methodology">2.2 Scoring Methodology</h2>
+            
+            <h3>Score Calculation Pipeline</h3>
+            <p>The scoring process follows a sophisticated multi-stage pipeline:</p>
+            
+            <ol>
+                <li><strong>Data Collection:</strong> Retrieve fundamental, technical, and alternative data from multiple sources (Yahoo Finance, Marketstack, SEC filings)</li>
+                <li><strong>Factor Calculation:</strong> Compute individual factor scores using continuous functions</li>
+                <li><strong>Normalization:</strong> Apply cross-sectional normalization and sector/industry adjustments</li>
+                <li><strong>Weighting:</strong> Apply regime-specific weights to calculate composite scores</li>
+                <li><strong>Ranking:</strong> Sort securities by final composite score</li>
+            </ol>
+
+            <div class="formula">
+                <span class="formula-label">Composite Score:</span>
+                Score = Σ(Factor_i × Weight_i) for i = 1 to 12
+            </div>
+
+            <h3>Continuous Scoring Functions</h3>
+            <p>All factors utilize continuous scoring functions that map raw metrics to a [0,1] range, ensuring smooth transitions and avoiding binary thresholds:</p>
+            
+            <div class="formula">
+                <span class="formula-label">General Scoring Function:</span>
+                Score = max(0, min(1, (Value - Poor) / (Excellent - Poor)))
+            </div>
+
+            <h3>Cross-Sectional Normalization</h3>
+            <p>Momentum and volatility metrics undergo z-score normalization followed by sigmoid transformation:</p>
+            
+            <div class="formula">
+                <span class="formula-label">Z-Score Normalization:</span>
+                z = (x - μ) / σ<br>
+                <span class="formula-label">Sigmoid Transform:</span>
+                score = 1 / (1 + exp(-z))
+            </div>
+
+            <div class="page-break"></div>
+
+            <h2 id="factors">2.3 The 12 Factors - Detailed Analysis</h2>
+
+            <!-- Factor 1: Value -->
+            <div class="factor-section" id="value">
+                <div class="factor-header">
+                    <span class="factor-name">2.3.1 Value Factor</span>
+                    <span class="factor-weight negative">Variable (-18.7 to -7.3)</span>
+                </div>
+                
+                <p><strong>Purpose:</strong> Identifies undervalued securities relative to fundamentals. Uses industry-relative adjustments to account for sector-specific valuation norms.</p>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">Earnings Yield (Weight: 25%)</div>
+                    <p>Inverse of P/E ratio, measuring earnings return on investment</p>
+                    <div class="formula">Earnings Yield = 1 / P/E Ratio</div>
+                    <p>Threshold: P/E < 20 (excellent), > 30 (poor)</p>
+                </div>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">Free Cash Flow Yield (Weight: 25%)</div>
+                    <p>Cash generation relative to market capitalization</p>
+                    <div class="formula">FCF Yield = Free Cash Flow / Market Cap</div>
+                    <p>Threshold: > 5% (excellent), < 2% (poor)</p>
+                </div>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">EV/EBITDA (Weight: 20%)</div>
+                    <p>Enterprise value relative to operating earnings</p>
+                    <div class="formula">Score = 1 - tanh((EV/EBITDA - 12) / 8)</div>
+                    <p>Threshold: < 8 (excellent), > 16 (poor)</p>
+                </div>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">Price-to-Book (Weight: 15%)</div>
+                    <p>Market value relative to book value</p>
+                    <div class="formula">Score = 1 - tanh((P/B - 2.5) / 2)</div>
+                    <p>Threshold: < 1.5 (excellent), > 4 (poor)</p>
+                </div>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">EV/Sales (Weight: 15%)</div>
+                    <p>Enterprise value relative to revenue</p>
+                    <p>Threshold: < 1 (excellent), > 3 (poor)</p>
+                </div>
+                
+                <div class="important">
+                    <strong>Industry Adjustment:</strong> All value metrics undergo industry-relative z-score normalization to account for sector-specific valuation differences.
+                </div>
+            </div>
+
+            <!-- Factor 2: Quality -->
+            <div class="factor-section" id="quality">
+                <div class="factor-header">
+                    <span class="factor-name">2.3.2 Quality Factor</span>
+                    <span class="factor-weight">Variable (-13.3 to 18.1)</span>
+                </div>
+                
+                <p><strong>Purpose:</strong> Measures operational excellence and profitability metrics.</p>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">Return on Equity (ROE) (Weight: 20%)</div>
+                    <p>Profitability relative to shareholder equity</p>
+                    <div class="formula">Score = (ROE - 6%) / 24%</div>
+                    <p>Threshold: > 30% (excellent), < 6% (poor)</p>
+                </div>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">Return on Invested Capital (ROIC) (Weight: 20%)</div>
+                    <p>Efficiency of capital deployment</p>
+                    <div class="formula">ROIC = EBIT / (Total Assets - Current Liabilities)</div>
+                    <p>Threshold: > 20% (excellent), < 5% (poor)</p>
+                </div>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">Gross Margin (Weight: 15%)</div>
+                    <p>Pricing power and cost efficiency</p>
+                    <p>Threshold: > 50% (excellent), < 20% (poor)</p>
+                </div>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">FCF Margin (Weight: 15%)</div>
+                    <p>Cash generation efficiency</p>
+                    <div class="formula">FCF Margin = Free Cash Flow / Revenue</div>
+                    <p>Threshold: > 15% (excellent), < 3% (poor)</p>
+                </div>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">Asset Turnover (Weight: 10%)</div>
+                    <p>Revenue generation efficiency</p>
+                    <div class="formula">Asset Turnover = Revenue / Total Assets</div>
+                    <p>Threshold: > 1.5 (excellent), < 0.3 (poor)</p>
+                </div>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">Operating Margin (Weight: 10%)</div>
+                    <p>Operational efficiency</p>
+                    <p>Threshold: > 20% (excellent), < 5% (poor)</p>
+                </div>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">Revenue Stability (Weight: 10%)</div>
+                    <p>Consistency of revenue generation</p>
+                    <p>Calculated using 3-year revenue volatility</p>
+                </div>
+            </div>
+
+            <!-- Factor 3: Financial Health -->
+            <div class="factor-section" id="financial-health">
+                <div class="factor-header">
+                    <span class="factor-name">2.3.3 Financial Health Factor</span>
+                    <span class="factor-weight">14.4 to 64.0</span>
+                </div>
+                
+                <p><strong>Purpose:</strong> Assesses balance sheet strength and solvency.</p>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">Cash/Debt Ratio (Weight: 25%)</div>
+                    <p>Liquidity relative to debt obligations</p>
+                    <div class="formula">Cash/Debt = Total Cash / Total Debt</div>
+                    <p>Threshold: > 60% (excellent), < 10% (poor)</p>
+                </div>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">Current Ratio (Weight: 25%)</div>
+                    <p>Short-term liquidity</p>
+                    <div class="formula">Current Ratio = Current Assets / Current Liabilities</div>
+                    <p>Threshold: > 2.5 (excellent), < 1.0 (poor)</p>
+                </div>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">Debt-to-Equity (Weight: 25%)</div>
+                    <p>Leverage assessment (lower is better)</p>
+                    <p>Threshold: < 50 (excellent), > 150 (poor)</p>
+                </div>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">Interest Coverage (Weight: 25%)</div>
+                    <p>Ability to service debt</p>
+                    <div class="formula">Interest Coverage = EBIT / Interest Expense</div>
+                    <p>Threshold: > 10 (excellent), < 2 (poor)</p>
+                </div>
+            </div>
+
+            <!-- Factor 4: Momentum -->
+            <div class="factor-section" id="momentum">
+                <div class="factor-header">
+                    <span class="factor-name">2.3.4 Momentum Factor</span>
+                    <span class="factor-weight">18.1 to 72.0</span>
+                </div>
+                
+                <p><strong>Purpose:</strong> Captures price and earnings momentum trends.</p>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">Price Momentum (Weight: 60%)</div>
+                    <p>252-day (12-month minus 1-month) price return</p>
+                    <div class="formula">PM = (Price_current / Price_252d_ago) - 1</div>
+                    <p>Cross-sectional z-score normalization applied</p>
+                </div>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">Earnings Momentum (Weight: 40%)</div>
+                    <p>Combination of estimate revisions and earnings surprises</p>
+                    <div class="formula">EM = 0.5 × Revision% + 0.5 × Surprise%</div>
+                    <p>90-day estimate changes and trailing 4-quarter surprises</p>
+                </div>
+                
+                <div class="note">
+                    <strong>Normalization:</strong> Both components undergo z-score normalization followed by sigmoid transformation for final score.
+                </div>
+            </div>
+
+            <!-- Factor 5: Growth -->
+            <div class="factor-section" id="growth">
+                <div class="factor-header">
+                    <span class="factor-name">2.3.5 Growth Factor</span>
+                    <span class="factor-weight">5.0 to 15.0</span>
+                </div>
+                
+                <p><strong>Purpose:</strong> Forward-looking growth assessment with sector adjustments.</p>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">Revenue Growth (Weight: 0.8)</div>
+                    <p>Year-over-year revenue growth rate</p>
+                    <p>Threshold: > 30% (excellent), < 5% (poor)</p>
+                </div>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">PEG Ratio (Weight: 0.9)</div>
+                    <p>Price/Earnings relative to growth (inverted)</p>
+                    <div class="formula">Score = max(0, min(1, (2 - PEG) / 1.5))</div>
+                    <p>Threshold: < 1 (excellent), > 2 (poor)</p>
+                </div>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">Earnings Growth Estimate (Weight: 1.0)</div>
+                    <p>Analyst consensus forward growth</p>
+                    <p>Based on next 12 months estimates</p>
+                </div>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">Price Target Upside (Weight: 0.7)</div>
+                    <p>Analyst price target relative to current price</p>
+                    <div class="formula">Upside = (Target Price / Current Price) - 1</div>
+                </div>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">Operating Leverage (Weight: 0.6)</div>
+                    <p>Margin expansion potential</p>
+                    <p>Measured by operating margin trends</p>
+                </div>
+                
+                <div class="important">
+                    <strong>Sector Adjustment:</strong> Growth scores undergo sector-relative z-score normalization to account for industry-specific growth expectations.
+                </div>
+            </div>
+
+            <!-- Factor 6: Technical -->
+            <div class="factor-section" id="technical">
+                <div class="factor-header">
+                    <span class="factor-name">2.3.6 Technical Factor</span>
+                    <span class="factor-weight">-5.0 to 8.0</span>
+                </div>
+                
+                <p><strong>Purpose:</strong> Technical analysis indicators for trend and momentum.</p>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">Breakout Score (Weight: 35%)</div>
+                    <p>52-week high proximity and volume confirmation</p>
+                    <div class="formula">Breakout = Price_proximity × Volume_ratio</div>
+                </div>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">Trend Score (Weight: 40%)</div>
+                    <p>Multiple trend indicators combined</p>
+                    <ul>
+                        <li>ADX strength (> 25 for strong trend)</li>
+                        <li>MACD signal alignment</li>
+                        <li>RSI momentum (30-70 optimal range)</li>
+                    </ul>
+                </div>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">Moving Average Score (Weight: 25%)</div>
+                    <p>Price position relative to key moving averages</p>
+                    <ul>
+                        <li>50-day SMA position</li>
+                        <li>200-day SMA position</li>
+                        <li>Golden/Death cross signals</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Factor 7: Stability -->
+            <div class="factor-section" id="stability">
+                <div class="factor-header">
+                    <span class="factor-name">2.3.7 Stability Factor</span>
+                    <span class="factor-weight negative">-10.0 to -3.0</span>
+                </div>
+                
+                <p><strong>Purpose:</strong> Risk assessment through volatility and drawdown metrics. Higher stability = lower risk = better score.</p>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">Volatility Score (Weight: 30%)</div>
+                    <p>Annualized standard deviation of returns</p>
+                    <div class="formula">Vol Score = 1 - tanh(σ_annual × 2)</div>
+                    <p>Lower volatility results in higher score</p>
+                </div>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">Tail Risk Score (Weight: 30%)</div>
+                    <p>Downside risk measures</p>
+                    <ul>
+                        <li>Conditional Value at Risk (CVaR 95%)</li>
+                        <li>Conditional Drawdown at Risk (CDaR)</li>
+                    </ul>
+                </div>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">Recovery Speed (Weight: 20%)</div>
+                    <p>Speed of recovery from drawdowns</p>
+                    <p>Weighted average recovery time from 5%+ drawdowns</p>
+                </div>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">Beta Score (Weight: 20%)</div>
+                    <p>Market sensitivity</p>
+                    <div class="formula">Beta Score = 1 - tanh(max(0, β - 1) × 2)</div>
+                    <p>Lower beta (< 1) preferred</p>
+                </div>
+            </div>
+
+            <!-- Factor 8: Size -->
+            <div class="factor-section" id="size">
+                <div class="factor-header">
+                    <span class="factor-name">2.3.8 Size Factor</span>
+                    <span class="factor-weight">-2.2 to 20.0</span>
+                </div>
+                
+                <p><strong>Purpose:</strong> Size premium capture with liquidity considerations.</p>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">Market Cap Score (Weight: 80%)</div>
+                    <p>Preference for smaller capitalization</p>
+                    <div class="formula">MC Score = 1 - (log(MC) - log(MC_min)) / (log(MC_80th) - log(MC_min))</div>
+                    <p>Uses 80th percentile as upper threshold</p>
+                </div>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">Price Level Score (Weight: 20%)</div>
+                    <p>Optimal price range assessment</p>
+                    <p>Penalizes extreme prices (< $2 or > $500)</p>
+                    <p>Optimal range: $10-$100</p>
+                </div>
+            </div>
+
+            <!-- Factor 9: Credit -->
+            <div class="factor-section" id="credit">
+                <div class="factor-header">
+                    <span class="factor-name">2.3.9 Credit Factor</span>
+                    <span class="factor-weight">0.0 to 48.6</span>
+                </div>
+                
+                <p><strong>Purpose:</strong> Credit quality and default risk assessment.</p>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">Altman Z-Score Components</div>
+                    <p>Bankruptcy prediction model</p>
+                    <div class="formula">Z = 1.2×WC/TA + 1.4×RE/TA + 3.3×EBIT/TA + 0.6×MC/TL + 1.0×S/TA</div>
+                    <ul>
+                        <li>Working Capital / Total Assets</li>
+                        <li>Retained Earnings / Total Assets</li>
+                        <li>EBIT / Total Assets</li>
+                        <li>Market Cap / Total Liabilities</li>
+                        <li>Sales / Total Assets</li>
+                    </ul>
+                    <p>Score > 3.0 (safe), 1.8-3.0 (gray zone), < 1.8 (distress)</p>
+                </div>
+            </div>
+
+            <!-- Factor 10: Liquidity -->
+            <div class="factor-section" id="liquidity">
+                <div class="factor-header">
+                    <span class="factor-name">2.3.10 Liquidity Factor</span>
+                    <span class="factor-weight">1.9 to 5.0</span>
+                </div>
+                
+                <p><strong>Purpose:</strong> Trading liquidity assessment.</p>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">Volume Score</div>
+                    <p>10-day average volume relative to peers</p>
+                    <div class="formula">Liquidity = (Vol - Vol_min) / (Vol_max - Vol_min)</div>
+                    <p>Cross-sectional normalization across universe</p>
+                </div>
+            </div>
+
+            <!-- Factor 11: Carry -->
+            <div class="factor-section" id="carry">
+                <div class="factor-header">
+                    <span class="factor-name">2.3.11 Carry Factor</span>
+                    <span class="factor-weight negative">-5.0 to -0.9</span>
+                </div>
+                
+                <p><strong>Purpose:</strong> Dividend yield and sustainability assessment.</p>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">Dividend Yield (Weight: 60%)</div>
+                    <p>Current dividend return</p>
+                    <div class="formula">Base Score = 0.25 + min(max((Yield - 3%) / 5%, 0), 0.75)</div>
+                    <p>Threshold: 3-8% optimal range</p>
+                </div>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">Payout Ratio (Weight: 20%)</div>
+                    <p>Dividend sustainability</p>
+                    <p>Threshold: < 70% (sustainable), > 100% (unsustainable)</p>
+                </div>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">Dividend Growth (Weight: 20%)</div>
+                    <p>5-year dividend growth rate</p>
+                    <p>Positive growth adds to score</p>
+                </div>
+            </div>
+
+            <!-- Factor 12: Insider -->
+            <div class="factor-section" id="insider">
+                <div class="factor-header">
+                    <span class="factor-name">2.3.12 Insider Factor</span>
+                    <span class="factor-weight">-2.0 to 5.0</span>
+                </div>
+                
+                <p><strong>Purpose:</strong> Insider trading sentiment analysis.</p>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">Net Insider Activity</div>
+                    <p>90-day insider transaction analysis</p>
+                    <div class="formula">Score = (Buys - Sells) / (Buys + Sells + 1)</div>
+                    <ul>
+                        <li>Purchase transactions: +1</li>
+                        <li>Sale transactions: -1</li>
+                        <li>Weighted by transaction value</li>
+                    </ul>
+                </div>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">Unique Insider Count</div>
+                    <p>Number of distinct insiders transacting</p>
+                    <p>Higher participation indicates stronger signal</p>
+                </div>
+                
+                <div class="subfactor">
+                    <div class="subfactor-name">Transaction Recency</div>
+                    <p>Time-decay weighting for transactions</p>
+                    <p>More recent transactions receive higher weight</p>
+                </div>
+            </div>
+
+            <div class="page-break"></div>
+
+            <h2 id="regimes">2.4 Market Regime Weights</h2>
+            
+            <p>The system employs three distinct weight configurations optimized for different market regimes. These weights are derived from extensive backtesting and correlation analysis across historical periods.</p>
+
+            <div class="regime-weights">
+                <div class="regime-card">
+                    <div class="regime-title">Steady Growth Regime</div>
+                    <div class="weight-item">
+                        <span>Credit</span>
+                        <span class="weight-value">48.6</span>
+                    </div>
+                    <div class="weight-item">
+                        <span>Quality</span>
+                        <span class="weight-value">18.1</span>
+                    </div>
+                    <div class="weight-item">
+                        <span>Momentum</span>
+                        <span class="weight-value">18.1</span>
+                    </div>
+                    <div class="weight-item">
+                        <span>Financial Health</span>
+                        <span class="weight-value">14.4</span>
+                    </div>
+                    <div class="weight-item">
+                        <span>Growth</span>
+                        <span class="weight-value">10.9</span>
+                    </div>
+                    <div class="weight-item">
+                        <span>Technical</span>
+                        <span class="weight-value">3.8</span>
+                    </div>
+                    <div class="weight-item">
+                        <span>Liquidity</span>
+                        <span class="weight-value">3.6</span>
+                    </div>
+                    <div class="weight-item">
+                        <span>Insider</span>
+                        <span class="weight-value negative">-1.4</span>
+                    </div>
+                    <div class="weight-item">
+                        <span>Size</span>
+                        <span class="weight-value negative">-2.2</span>
+                    </div>
+                    <div class="weight-item">
+                        <span>Stability</span>
+                        <span class="weight-value negative">-3.0</span>
+                    </div>
+                    <div class="weight-item">
+                        <span>Carry</span>
+                        <span class="weight-value negative">-3.6</span>
+                    </div>
+                    <div class="weight-item">
+                        <span>Value</span>
+                        <span class="weight-value negative">-7.3</span>
+                    </div>
+                </div>
+
+                <div class="regime-card">
+                    <div class="regime-title">Strong Bull Regime</div>
+                    <div class="weight-item">
+                        <span>Credit</span>
+                        <span class="weight-value">40.0</span>
+                    </div>
+                    <div class="weight-item">
+                        <span>Momentum</span>
+                        <span class="weight-value">25.0</span>
+                    </div>
+                    <div class="weight-item">
+                        <span>Quality</span>
+                        <span class="weight-value">20.0</span>
+                    </div>
+                    <div class="weight-item">
+                        <span>Financial Health</span>
+                        <span class="weight-value">15.0</span>
+                    </div>
+                    <div class="weight-item">
+                        <span>Growth</span>
+                        <span class="weight-value">15.0</span>
+                    </div>
+                    <div class="weight-item">
+                        <span>Technical</span>
+                        <span class="weight-value">8.0</span>
+                    </div>
+                    <div class="weight-item">
+                        <span>Liquidity</span>
+                        <span class="weight-value">5.0</span>
+                    </div>
+                    <div class="weight-item">
+                        <span>Insider</span>
+                        <span class="weight-value">2.0</span>
+                    </div>
+                    <div class="weight-item">
+                        <span>Size</span>
+                        <span class="weight-value">0.0</span>
+                    </div>
+                    <div class="weight-item">
+                        <span>Carry</span>
+                        <span class="weight-value negative">-2.0</span>
+                    </div>
+                    <div class="weight-item">
+                        <span>Value</span>
+                        <span class="weight-value negative">-5.0</span>
+                    </div>
+                    <div class="weight-item">
+                        <span>Stability</span>
+                        <span class="weight-value negative">-5.0</span>
+                    </div>
+                </div>
+
+                <div class="regime-card">
+                    <div class="regime-title">Crisis/Bear Regime</div>
+                    <div class="weight-item">
+                        <span>Momentum</span>
+                        <span class="weight-value">72.0</span>
+                    </div>
+                    <div class="weight-item">
+                        <span>Size</span>
+                        <span class="weight-value">20.0</span>
+                    </div>
+                    <div class="weight-item">
+                        <span>Financial Health</span>
+                        <span class="weight-value">13.0</span>
+                    </div>
+                    <div class="weight-item">
+                        <span>Insider</span>
+                        <span class="weight-value">5.0</span>
+                    </div>
+                    <div class="weight-item">
+                        <span>Growth</span>
+                        <span class="weight-value">5.0</span>
+                    </div>
+                    <div class="weight-item">
+                        <span>Liquidity</span>
+                        <span class="weight-value">5.0</span>
+                    </div>
+                    <div class="weight-item">
+                        <span>Credit</span>
+                        <span class="weight-value">0.0</span>
+                    </div>
+                    <div class="weight-item">
+                        <span>Quality</span>
+                        <span class="weight-value">0.0</span>
+                    </div>
+                    <div class="weight-item">
+                        <span>Value</span>
+                        <span class="weight-value">0.0</span>
+                    </div>
+                    <div class="weight-item">
+                        <span>Technical</span>
+                        <span class="weight-value negative">-5.0</span>
+                    </div>
+                    <div class="weight-item">
+                        <span>Carry</span>
+                        <span class="weight-value negative">-5.0</span>
+                    </div>
+                    <div class="weight-item">
+                        <span>Stability</span>
+                        <span class="weight-value negative">-10.0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="important">
+                <strong>Weight Interpretation:</strong>
+                <ul>
+                    <li>Positive weights indicate factors that contribute positively to expected returns in that regime</li>
+                    <li>Negative weights represent contrarian factors or risk penalties</li>
+                    <li>Zero weights indicate factors with no predictive power in that regime</li>
+                    <li>Weights are normalized to sum to approximately 100 for interpretability</li>
+                </ul>
+            </div>
+
+            <div class="page-break"></div>
+
+            <h2 id="modes">2.5 Operating Modes</h2>
+            
+            <p>The system supports multiple operational modes to accommodate different analysis requirements:</p>
+
+            <div class="algorithm-box">
+                <h4>Available Modes:</h4>
+                
+                <p><strong>1. Daily Current Mode (Default)</strong></p>
+                <ul>
+                    <li>Real-time analysis using current market data</li>
+                    <li>Automatic regime detection integration</li>
+                    <li>Output: top_ranked_stocks_[regime]_[date].csv</li>
+                </ul>
+                
+                <p><strong>2. Historical Backtesting Mode</strong></p>
+                <ul>
+                    <li>Point-in-time analysis for specific dates</li>
+                    <li>Used for strategy validation and optimization</li>
+                    <li>Supports date range: 2015-present</li>
+                </ul>
+                
+                <p><strong>3. Batch Processing Mode</strong></p>
+                <ul>
+                    <li>Multiple date analysis for trend identification</li>
+                    <li>Generates time series of factor scores</li>
+                    <li>Used for stability analysis and factor research</li>
+                </ul>
+                
+                <p><strong>4. Research Mode</strong></p>
+                <ul>
+                    <li>Full factor decomposition output</li>
+                    <li>Individual subfactor scores exported</li>
+                    <li>Used for factor development and optimization</li>
+                </ul>
+            </div>
+
+            <div class="page-break"></div>
+
+            <h2 id="scoring-implementation">2.6 Technical Implementation</h2>
+            
+            <div class="algorithm-box">
+                <h4>System Architecture:</h4>
+                <ul>
+                    <li><strong>Data Layer:</strong> Yahoo Finance, Marketstack, SEC EDGAR integration</li>
+                    <li><strong>Calculation Engine:</strong> Vectorized NumPy/Pandas operations</li>
+                    <li><strong>Caching System:</strong> Redis-based for API call optimization</li>
+                    <li><strong>Output Format:</strong> CSV with full factor decomposition</li>
+                    <li><strong>Performance:</strong> ~900-1000 stocks processed in 5-10 minutes</li>
+                </ul>
+            </div>
+
+            <div class="note">
+                <strong>Output File Structure:</strong>
+                <ul>
+                    <li>Ticker: Stock symbol</li>
+                    <li>CompanyName: Full company name</li>
+                    <li>Country: Headquarters location</li>
+                    <li>Score: Final composite score</li>
+                    <li>Value, Quality, FinancialHealth, etc.: Individual factor scores</li>
+                    <li>Sector: GICS sector classification</li>
+                    <li>Industry: GICS industry classification</li>
+                </ul>
+            </div>
+
+            <div class="important">
+                <strong>Important Notes:</strong>
+                <ul>
+                    <li>Factor weights are based on extensive backtesting across multiple market cycles</li>
+                    <li>Negative weights indicate contrarian factors in specific regimes</li>
+                    <li>The system processes approximately 900-1000 stocks per run</li>
+                    <li>Industry and sector adjustments are critical for value and growth factors</li>
+                    <li>All scores are normalized to [0,1] range for comparability</li>
+                </ul>
+            </div>
+
+            <!-- PART III: SCORE TREND ANALYSIS SYSTEM -->
+            <div class="page-break"></div>
+
+            <div class="part-divider">
+                <h1>PART III: Score Trend Analysis System</h1>
+                <p>Stability Assessment and Technical Analysis for Stock Score Trends</p>
+            </div>
+
+            <h2 id="trend-analysis">3.1 Score Trend Analysis System Overview</h2>
+
+            <p>The Score Trend Analysis System provides comprehensive stability assessment and technical analysis for stocks that have appeared in multiple ranking periods. It combines regression analysis, stability metrics, and technical indicators to identify stocks with consistent performance and positive momentum.</p>
+
+            <div class="note">
+                <strong>Key Capabilities:</strong>
+                <ul>
+                    <li>Time series analysis of factor scores across multiple periods</li>
+                    <li>Linear and polynomial regression for trend identification</li>
+                    <li>Stability-adjusted scoring with multiple adjustment layers</li>
+                    <li>14 technical indicators across 5 categories</li>
+                    <li>Investment recommendations based on composite metrics</li>
+                    <li>Visual analysis with multi-panel technical charts</li>
+                </ul>
+            </div>
+
+            <div class="page-break"></div>
+
+            <h3>3.2 Core Algorithm: Stability-Adjusted Score</h3>
+
+            <p>The system employs a sophisticated multi-stage adjustment process to calculate the final stability-adjusted score, which represents both the quality and consistency of a stock's performance.</p>
+
+            <div class="algorithm-box">
+                <h4>Score Adjustment Pipeline:</h4>
+
+                <p>The final stability-adjusted score is calculated through four progressive adjustments:</p>
+
+                <ol>
+                    <li><strong>Base Score:</strong> Average score across all appearances</li>
+                    <li><strong>R² Adjustment:</strong> Quality of linear trend</li>
+                    <li><strong>Slope Adjustment:</strong> Direction and strength of trend</li>
+                    <li><strong>Stability Adjustment:</strong> Consistency and volatility penalty</li>
+                </ol>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-name">Step 1: Average Score Calculation</div>
+                    <p>The foundation metric representing overall quality:</p>
+                    <div class="formula">
+                        <span class="formula-label">Average Score:</span>
+                        avg_score = Σ(scores) / n_appearances
+                    </div>
+                    <p><strong>Range:</strong> 0-100</p>
+                    <p><strong>Purpose:</strong> Baseline quality measure</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-name">Step 2: R² Adjusted Score</div>
+                    <p>Adjusts for trend reliability using coefficient of determination:</p>
+                    <div class="formula">
+                        <span class="formula-label">R² Adjusted Score:</span>
+                        r2_adjusted = avg_score × linear_r2
+                    </div>
+                    <p><strong>Linear R²:</strong> Measures how well a linear model fits the data</p>
+                    <p><strong>Impact:</strong> Penalizes erratic score patterns</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-name">Step 3: Slope Adjusted Score</div>
+                    <p>Incorporates trend direction using sigmoid weighting:</p>
+                    <div class="formula">
+                        <span class="formula-label">Sigmoid Factor:</span>
+                        sigmoid = 1 / (1 + e^(-k × slope))
+                        <br><br>
+                        <span class="formula-label">Slope Adjusted:</span>
+                        slope_adjusted = r2_adjusted × (0.5 + sigmoid)
+                    </div>
+                    <p><strong>k (sensitivity):</strong> Default 5.0</p>
+                    <p><strong>Range:</strong> 0.5× to 1.5× multiplier</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-name">Step 4: Stability Adjusted Score</div>
+                    <p>Final adjustment for consistency using standard deviation:</p>
+                    <div class="formula">
+                        <span class="formula-label">Stability Factor:</span>
+                        stability = 1 / (1 + score_std)
+                        <br><br>
+                        <span class="formula-label">Final Score:</span>
+                        stability_adjusted = slope_adjusted × stability
+                    </div>
+                    <p><strong>Purpose:</strong> Penalizes volatile performers</p>
+                    <p><strong>Result:</strong> Risk-adjusted performance metric</p>
+                </div>
+            </div>
+
+            <h3>3.3 Regression Analysis Components</h3>
+
+            <div class="algorithm-box">
+                <h4>Linear Regression Analysis:</h4>
+
+                <p>The system performs linear regression on the time series of scores to identify trends:</p>
+
+                <div class="formula">
+                    <span class="formula-label">Linear Model:</span>
+                    Score = β₀ + β₁ × Time_Index + ε
+                </div>
+
+                <p><strong>Key Metrics Extracted:</strong></p>
+                <ul>
+                    <li><strong>Slope (β₁):</strong> Rate of score change per period</li>
+                    <li><strong>Intercept (β₀):</strong> Initial score estimate</li>
+                    <li><strong>R² Score:</strong> Goodness of fit (0-1 scale)</li>
+                    <li><strong>Predictions:</strong> Fitted values for visualization</li>
+                </ul>
+            </div>
+
+            <table class="regime-table">
+                <tr>
+                    <th>Metric</th>
+                    <th>Calculation</th>
+                    <th>Interpretation</th>
+                    <th>Ideal Range</th>
+                </tr>
+                <tr>
+                    <td>Linear Slope</td>
+                    <td>Δscore/Δtime</td>
+                    <td>Trend direction and strength</td>
+                    <td>> 0.5 (strong uptrend)</td>
+                </tr>
+                <tr>
+                    <td>R² Score</td>
+                    <td>1 - (SS_res/SS_tot)</td>
+                    <td>Trend consistency</td>
+                    <td>> 0.7 (high reliability)</td>
+                </tr>
+                <tr>
+                    <td>Score Std Dev</td>
+                    <td>σ(scores)</td>
+                    <td>Volatility measure</td>
+                    <td>< 5.0 (low volatility)</td>
+                </tr>
+                <tr>
+                    <td>Coefficient of Variation</td>
+                    <td>σ/μ</td>
+                    <td>Normalized volatility</td>
+                    <td>< 0.1 (stable)</td>
+                </tr>
+                <tr>
+                    <td>Trend Consistency</td>
+                    <td>% periods with positive Δ</td>
+                    <td>Directional consistency</td>
+                    <td>> 0.7 (consistent growth)</td>
+                </tr>
+            </table>
+
+            <h3>3.4 Composite Stability Score</h3>
+
+            <p>In addition to the stability-adjusted score, the system calculates a composite stability score (0-100) that provides a holistic assessment of reliability:</p>
+
+            <div class="algorithm-box">
+                <h4>Composite Stability Score Components:</h4>
+
+                <div class="formula">
+                    <span class="formula-label">Stability Score = </span>
+                    R²_score + CV_score + Consistency_score + Slope_bonus
+                </div>
+
+                <p><strong>Component Breakdown:</strong></p>
+                <ul>
+                    <li><strong>R² Score:</strong> linear_r2 × 30 (max 30 points)</li>
+                    <li><strong>CV Score:</strong> max(0, 30 - CV × 100) (max 30 points)</li>
+                    <li><strong>Consistency Score:</strong> trend_consistency × 20 (max 20 points)</li>
+                    <li><strong>Slope Bonus:</strong> min(20, slope × 1000) if slope > 0 and R² > 0.5 (max 20 points)</li>
+                </ul>
+
+                <p><strong>Total Range:</strong> 0-100 points (capped)</p>
+            </div>
+
+            <h3>3.5 Technical Indicator Integration</h3>
+
+            <p>The system calculates 14 technical indicators grouped into 5 categories, each contributing to a comprehensive technical score:</p>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-name">Trend Analysis Indicators</div>
+                    <ul>
+                        <li><strong>Trend Direction:</strong> Linear regression slope classification</li>
+                        <li><strong>Trend Quality:</strong> R² score thresholds</li>
+                        <li><strong>ADX Strength:</strong> Average Directional Index (> 25 = strong)</li>
+                        <li><strong>DI Direction:</strong> +DI/-DI crossover signals</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-name">Moving Average Indicators</div>
+                    <ul>
+                        <li><strong>SMA Position:</strong> Price vs 5/10/20-day SMAs</li>
+                        <li><strong>Recent Crossover:</strong> Bullish/bearish MA crossovers</li>
+                        <li><strong>EMA Signals:</strong> Exponential moving average trends</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-name">Momentum Indicators</div>
+                    <ul>
+                        <li><strong>MACD Signal:</strong> MACD vs signal line position</li>
+                        <li><strong>MACD Histogram:</strong> Momentum acceleration</li>
+                        <li><strong>RSI Level:</strong> Overbought/oversold conditions</li>
+                        <li><strong>RSI Trend:</strong> RSI directional movement</li>
+                        <li><strong>Rate of Change:</strong> Momentum velocity</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-name">Volatility Indicators</div>
+                    <ul>
+                        <li><strong>Bollinger %B:</strong> Position within bands</li>
+                        <li><strong>Band Width:</strong> Volatility expansion/contraction</li>
+                        <li><strong>ATR:</strong> Average True Range for volatility</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-name">Forecasting Models</div>
+                    <ul>
+                        <li><strong>ARIMA Forecast:</strong> Time series prediction</li>
+                        <li><strong>Exponential Smoothing:</strong> Trend projection</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>3.6 Technical Scoring System</h3>
+
+            <div class="algorithm-box">
+                <h4>Technical Score Calculation:</h4>
+
+                <p>Each indicator contributes 0-1 points based on signal strength:</p>
+
+                <table class="regime-table">
+                    <tr>
+                        <th>Indicator</th>
+                        <th>Bullish Signal (+1)</th>
+                        <th>Neutral Signal (+0.5)</th>
+                        <th>Bearish Signal (0)</th>
+                    </tr>
+                    <tr>
+                        <td>Trend Direction</td>
+                        <td>Slope > 0.5</td>
+                        <td>0 < Slope < 0.5</td>
+                        <td>Slope < 0</td>
+                    </tr>
+                    <tr>
+                        <td>Trend Quality</td>
+                        <td>R² > 0.7</td>
+                        <td>0.4 < R² < 0.7</td>
+                        <td>R² < 0.4</td>
+                    </tr>
+                    <tr>
+                        <td>RSI Level</td>
+                        <td>60 < RSI < 70</td>
+                        <td>40 < RSI < 60</td>
+                        <td>RSI < 30 or > 70</td>
+                    </tr>
+                    <tr>
+                        <td>MACD Signal</td>
+                        <td>MACD > Signal</td>
+                        <td>Convergence zone</td>
+                        <td>MACD < Signal</td>
+                    </tr>
+                    <tr>
+                        <td>MA Position</td>
+                        <td>Price > SMA5 > SMA10</td>
+                        <td>Mixed alignment</td>
+                        <td>Price < both MAs</td>
+                    </tr>
+                    <tr>
+                        <td>ADX Strength</td>
+                        <td>ADX > 25 with +DI > -DI</td>
+                        <td>20 < ADX < 25</td>
+                        <td>ADX < 20 or -DI > +DI</td>
+                    </tr>
+                </table>
+
+                <div class="formula">
+                    <span class="formula-label">Technical Score:</span>
+                    Score = (Σ indicator_points / max_possible) × 100
+                </div>
+            </div>
+
+            <h3>3.7 Investment Recommendation Engine</h3>
+
+            <p>The system generates investment recommendations based on the combination of stability-adjusted scores and technical indicators:</p>
+
+            <div class="algorithm-box">
+                <h4>Recommendation Thresholds:</h4>
+
+                <table class="regime-table">
+                    <tr>
+                        <th>Recommendation</th>
+                        <th>Stability Adjusted Score</th>
+                        <th>Additional Criteria</th>
+                    </tr>
+                    <tr style="background: #d4edda;">
+                        <td><strong>STRONG BUY - Elite</strong></td>
+                        <td>≥ 40</td>
+                        <td>Slope > 0.3 AND R² > 0.7</td>
+                    </tr>
+                    <tr style="background: #d4edda;">
+                        <td><strong>STRONG BUY</strong></td>
+                        <td>≥ 35</td>
+                        <td>Slope > 0.2 AND R² > 0.6</td>
+                    </tr>
+                    <tr style="background: #d1ecf1;">
+                        <td><strong>BUY</strong></td>
+                        <td>≥ 30</td>
+                        <td>Slope > 0.1 OR Avg Score > 60</td>
+                    </tr>
+                    <tr>
+                        <td><strong>HOLD</strong></td>
+                        <td>≥ 25</td>
+                        <td>|Slope| < 0.1</td>
+                    </tr>
+                    <tr style="background: #fff3cd;">
+                        <td><strong>WATCH</strong></td>
+                        <td>20-25</td>
+                        <td>Monitor for opportunity</td>
+                    </tr>
+                    <tr style="background: #f8d7da;">
+                        <td><strong>REDUCE</strong></td>
+                        <td>< 20</td>
+                        <td>Slope < -0.2</td>
+                    </tr>
+                    <tr style="background: #f8d7da;">
+                        <td><strong>SELL</strong></td>
+                        <td>< 15</td>
+                        <td>Slope < -0.3 AND R² > 0.6</td>
+                    </tr>
+                </table>
+
+                <p><strong>Special Conditions:</strong></p>
+                <ul>
+                    <li><strong>Volatility Override:</strong> "AVOID" if CV > 0.15 (too volatile)</li>
+                    <li><strong>Momentum Play:</strong> "SPECULATIVE BUY" if slope > 0.5 despite lower stability</li>
+                    <li><strong>Quality Hold:</strong> "HOLD - Quality" if avg_score > 70 but flat trend</li>
+                </ul>
+            </div>
+
+            <h3>3.8 Visualization and Reporting</h3>
+
+            <p>The system generates comprehensive visual reports including:</p>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-name">Multi-Panel Technical Charts</div>
+                    <ul>
+                        <li>Score trend with regression lines</li>
+                        <li>Moving averages with crossover signals</li>
+                        <li>RSI with overbought/oversold zones</li>
+                        <li>MACD with signal and histogram</li>
+                        <li>Bollinger Bands with %B indicator</li>
+                        <li>ADX trend strength indicator</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-name">Output Reports</div>
+                    <ul>
+                        <li>CSV rankings with all metrics</li>
+                        <li>Individual stock technical reports</li>
+                        <li>Sector/industry analysis</li>
+                        <li>Top stable performers summary</li>
+                        <li>High volatility warnings</li>
+                        <li>Trend comparison matrices</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>3.9 Implementation Details</h3>
+
+            <div class="algorithm-box">
+                <h4>System Configuration:</h4>
+
+                <p><strong>Data Requirements:</strong></p>
+                <ul>
+                    <li>Minimum 3 appearances for analysis</li>
+                    <li>Ideal: 10+ periods for reliable trends</li>
+                    <li>Input: Historical ranking CSV files</li>
+                    <li>Lookback: Configurable (default 90 days)</li>
+                </ul>
+
+                <p><strong>Technical Stack:</strong></p>
+                <ul>
+                    <li><strong>NumPy:</strong> Numerical computations</li>
+                    <li><strong>Pandas:</strong> Data manipulation</li>
+                    <li><strong>Scikit-learn:</strong> Regression analysis</li>
+                    <li><strong>Matplotlib:</strong> Visualization</li>
+                    <li><strong>Statsmodels:</strong> ARIMA forecasting</li>
+                </ul>
+
+                <p><strong>Performance Metrics:</strong></p>
+                <ul>
+                    <li>Processing time: ~1-2 seconds per stock</li>
+                    <li>Typical analysis: 100-200 stocks</li>
+                    <li>Output files: 5-10 MB typical</li>
+                </ul>
+            </div>
+
+            <div class="success">
+                <strong>Key Innovation:</strong> The multi-layered adjustment approach (R² → Slope → Stability) provides a sophisticated risk-adjusted performance metric that balances quality, trend, and consistency - crucial for identifying stocks with sustainable competitive advantages.
+            </div>
+
+            <div class="important">
+                <strong>Usage Notes:</strong>
+                <ul>
+                    <li>Best suited for stocks with consistent ranking appearances</li>
+                    <li>Technical indicators require sufficient data points (minimum 20)</li>
+                    <li>Recommendations should be combined with fundamental analysis</li>
+                    <li>Stability scores are relative within the analyzed universe</li>
+                </ul>
+            </div>
+
+            <!-- PART IV: DYNAMIC PORTFOLIO SELECTION SYSTEM -->
+            <div class="page-break"></div>
+
+            <div class="part-divider">
+                <h1>PART IV: Dynamic Portfolio Selection System</h1>
+                <p>Intelligent Portfolio Construction from Stability-Ranked Securities</p>
+            </div>
+
+            <h2 id="portfolio-selection">4.1 Dynamic Portfolio Selection System Overview</h2>
+
+            <p>The Dynamic Portfolio Selection System creates optimized portfolios from stability-analyzed stocks using multiple construction strategies, diversification constraints, and sophisticated backtesting algorithms. The system adapts its selection methodology based on market regime and employs various optimization criteria to balance risk, return, and diversification.</p>
+
+            <div class="note">
+                <strong>Key Capabilities:</strong>
+                <ul>
+                    <li>Multiple portfolio construction strategies (9+ methods)</li>
+                    <li>Configurable pool sizes and portfolio dimensions</li>
+                    <li>Sector and industry diversification constraints</li>
+                    <li>Multi-period backtesting with rebalancing strategies</li>
+                    <li>Risk-adjusted performance optimization</li>
+                    <li>Real estate and industry-specific exclusions</li>
+                </ul>
+            </div>
+
+            <div class="page-break"></div>
+
+            <h3>4.2 Core Selection Algorithm</h3>
+
+            <p>The system employs a hierarchical selection process that filters and ranks stocks through multiple stages:</p>
+
+            <div class="pipeline-diagram">
+                <div class="pipeline-step">Stability Analysis Results</div>
+                <span class="arrow">→</span>
+                <div class="pipeline-step">Top Pool Selection</div>
+                <span class="arrow">→</span>
+                <div class="pipeline-step">Strategy Application</div>
+                <span class="arrow">→</span>
+                <div class="pipeline-step">Constraint Enforcement</div>
+                <span class="arrow">→</span>
+                <div class="pipeline-step">Portfolio Construction</div>
+            </div>
+
+            <h3>4.3 Key Configuration Parameters</h3>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-name">Top Pools</div>
+                    <p><strong>Definition:</strong> Number of top-ranked stocks to consider as selection universe</p>
+                    <p><strong>Common Values:</strong> [50, 75, 100, 150]</p>
+                    <p><strong>Purpose:</strong> Controls quality threshold</p>
+                    <div class="formula">
+                        <span class="formula-label">Pool Selection:</span>
+                        Pool = Top N stocks by stability_adjusted_score
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-name">Portfolio Sizes</div>
+                    <p><strong>Definition:</strong> Target number of stocks in final portfolio</p>
+                    <p><strong>Common Values:</strong> [10, 15, 20, 25]</p>
+                    <p><strong>Purpose:</strong> Balance diversification vs concentration</p>
+                    <div class="formula">
+                        <span class="formula-label">Size Constraint:</span>
+                        10 ≤ Portfolio_Size ≤ min(Pool_Size, 30)
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-name">Max Stocks Per Sector</div>
+                    <p><strong>Definition:</strong> Maximum concentration allowed per sector</p>
+                    <p><strong>Common Values:</strong> 2-3 stocks</p>
+                    <p><strong>Purpose:</strong> Enforce sector diversification</p>
+                    <div class="formula">
+                        <span class="formula-label">Sector Constraint:</span>
+                        Count(Sector_i) ≤ Max_Per_Sector
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-name">Lookback Periods</div>
+                    <p><strong>Definition:</strong> Historical days for backtesting</p>
+                    <p><strong>Common Values:</strong> [252, 504, 756] days</p>
+                    <p><strong>Purpose:</strong> Performance validation window</p>
+                    <div class="formula">
+                        <span class="formula-label">Lookback Window:</span>
+                        T_start = T_current - Lookback_Days
+                    </div>
+                </div>
+            </div>
+
+            <h3>4.4 Portfolio Construction Strategies</h3>
+
+            <p>The system implements nine distinct portfolio construction strategies, each optimized for different objectives:</p>
+
+            <div class="algorithm-box">
+                <h4>Strategy Implementation Matrix:</h4>
+
+                <table class="regime-table">
+                    <tr>
+                        <th>Strategy</th>
+                        <th>Selection Criteria</th>
+                        <th>Optimization Goal</th>
+                        <th>Best For</th>
+                    </tr>
+                    <tr>
+                        <td><strong>TopRank</strong></td>
+                        <td>Highest stability_adjusted_score</td>
+                        <td>Quality maximization</td>
+                        <td>Core holdings</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SectorBal2/3</strong></td>
+                        <td>Top scores with max 2-3 per sector</td>
+                        <td>Sector diversification</td>
+                        <td>Risk reduction</td>
+                    </tr>
+                    <tr>
+                        <td><strong>IndustryBal</strong></td>
+                        <td>Top scores with max 2 per industry</td>
+                        <td>Industry diversification</td>
+                        <td>Granular diversification</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Stability</strong></td>
+                        <td>Highest R² values (≥ 0.5)</td>
+                        <td>Consistency maximization</td>
+                        <td>Low volatility</td>
+                    </tr>
+                    <tr>
+                        <td><strong>PosMomentum</strong></td>
+                        <td>Positive linear_slope only</td>
+                        <td>Growth capture</td>
+                        <td>Trending markets</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Recommended</strong></td>
+                        <td>BUY recommendations only</td>
+                        <td>Signal strength</td>
+                        <td>High conviction</td>
+                    </tr>
+                    <tr>
+                        <td><strong>HybridStability</strong></td>
+                        <td>Weighted R² and rank composite</td>
+                        <td>Balanced optimization</td>
+                        <td>All-weather</td>
+                    </tr>
+                    <tr>
+                        <td><strong>FactorBal</strong></td>
+                        <td>Balanced factor exposures</td>
+                        <td>Factor diversification</td>
+                        <td>Multi-factor</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Diversified</strong></td>
+                        <td>Top 5 sectors, 4 stocks each</td>
+                        <td>Maximum diversification</td>
+                        <td>Conservative</td>
+                    </tr>
+                </table>
+            </div>
+
+            <h3>4.5 Sector-Balanced Selection Algorithm</h3>
+
+            <p>The sector-balanced strategy ensures diversification while maintaining quality through a constraint-based selection process:</p>
+
+            <div class="algorithm-box">
+                <h4>Algorithm Logic:</h4>
+
+                <ol>
+                    <li><strong>Initialize:</strong>
+                        <ul>
+                            <li>Create empty portfolio list</li>
+                            <li>Initialize sector counter dictionary</li>
+                            <li>Set target portfolio size and max stocks per sector</li>
+                        </ul>
+                    </li>
+
+                    <li><strong>Sort Candidates:</strong>
+                        <ul>
+                            <li>Order all stocks by stability_adjusted_score (descending)</li>
+                            <li>This ensures highest quality stocks are considered first</li>
+                        </ul>
+                    </li>
+
+                    <li><strong>Iterative Selection:</strong>
+                        <ul>
+                            <li>For each stock in sorted order:</li>
+                            <li class="algorithm-indent">→ Check if portfolio size reached (exit if true)</li>
+                            <li class="algorithm-indent">→ Get stock's sector classification</li>
+                            <li class="algorithm-indent">→ Check sector count against max_per_sector limit</li>
+                            <li class="algorithm-indent">→ If under limit: add stock and increment sector count</li>
+                            <li class="algorithm-indent">→ Otherwise: skip to next stock</li>
+                        </ul>
+                    </li>
+
+                    <li><strong>Termination:</strong>
+                        <ul>
+                            <li>Stop when target portfolio size is reached</li>
+                            <li>Or when candidate pool is exhausted</li>
+                        </ul>
+                    </li>
+                </ol>
+
+                <div class="formula">
+                    <span class="formula-label">Constraint Function:</span>
+                    Accept(stock) = (Portfolio_Size < Target) AND (Sector_Count[stock.sector] < Max_Per_Sector)
+                </div>
+
+                <p><strong>Key Properties:</strong></p>
+                <ul>
+                    <li><strong>Complexity:</strong> O(n) where n = pool size</li>
+                    <li><strong>Optimality:</strong> Greedy selection ensures best available stocks within constraints</li>
+                    <li><strong>Guarantee:</strong> Hard limit on sector concentration is always enforced</li>
+                    <li><strong>Flexibility:</strong> Works with any scoring metric (stability_adjusted_score, R², etc.)</li>
+                </ul>
+
+                <div class="note">
+                    <strong>Example:</strong> With portfolio_size=20 and max_per_sector=3, the algorithm might select stocks from 7-10 different sectors, ensuring no single sector dominates the portfolio while maintaining high average quality scores.
+                </div>
+            </div>
+
+            <h3>4.6 Hybrid Stability-Sector Portfolio</h3>
+
+            <p>The most sophisticated strategy combines stability metrics with diversification constraints:</p>
+
+            <div class="algorithm-box">
+                <h4>Hybrid Composite Score Calculation:</h4>
+
+                <div class="formula">
+                    <span class="formula-label">Step 1 - Normalize R²:</span>
+                    R²_norm = (R² - R²_min) / (R²_max - R²_min)
+                    <br><br>
+                    <span class="formula-label">Step 2 - Normalize Rank (inverted):</span>
+                    Rank_norm = 1 - ((Rank - Rank_min) / (Rank_max - Rank_min))
+                    <br><br>
+                    <span class="formula-label">Step 3 - Composite Score:</span>
+                    Score = w × R²_norm + (1-w) × Rank_norm
+                    <br><br>
+                    where w = stability_weight (default: 0.6)
+                </div>
+
+                <p>This approach balances trend reliability (R²) with overall quality (rank), then applies sector constraints.</p>
+            </div>
+
+            <h3>4.7 Industry and Sector Exclusions</h3>
+
+            <p>The system provides sophisticated filtering mechanisms for risk management:</p>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-name">Real Estate Exclusion</div>
+                    <p><strong>Identified by:</strong></p>
+                    <ul>
+                        <li>Sector: "Real Estate"</li>
+                        <li>Industry: Contains "REIT"</li>
+                        <li>Keywords: "property", "mortgage", "homebuilding"</li>
+                    </ul>
+                    <p><strong>Purpose:</strong> Avoid interest rate sensitive sectors</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-name">Custom Industry Exclusions</div>
+                    <p><strong>Common Exclusions:</strong></p>
+                    <ul>
+                        <li>Airlines (cyclical risk)</li>
+                        <li>Biotechnology (binary events)</li>
+                        <li>Energy (commodity dependence)</li>
+                        <li>Regional Banks (regulatory risk)</li>
+                    </ul>
+                    <p><strong>Implementation:</strong> Pre-filtering before portfolio construction</p>
+                </div>
+            </div>
+
+            <h3>4.8 Backtesting Engine</h3>
+
+            <p>The system employs a sophisticated backtesting framework with multiple rebalancing strategies:</p>
+
+            <div class="algorithm-box">
+                <h4>Backtesting Architecture:</h4>
+
+                <p><strong>1. Data Preparation:</strong></p>
+                <ul>
+                    <li>Fetch historical prices for lookback period</li>
+                    <li>Handle delisted tickers and missing data</li>
+                    <li>Align time series across all assets</li>
+                </ul>
+
+                <p><strong>2. Rebalancing Strategies:</strong></p>
+
+                <table class="regime-table">
+                    <tr>
+                        <th>Strategy</th>
+                        <th>Trigger</th>
+                        <th>Frequency</th>
+                        <th>Transaction Costs</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Monthly</strong></td>
+                        <td>Calendar-based</td>
+                        <td>Every 21 trading days</td>
+                        <td>~0.1% per rebalance</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Drift</strong></td>
+                        <td>Weight deviation > 5%</td>
+                        <td>Variable</td>
+                        <td>Lower (fewer rebalances)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Volatility</strong></td>
+                        <td>Vol regime change</td>
+                        <td>Event-driven</td>
+                        <td>Adaptive</td>
+                    </tr>
+                </table>
+
+                <p><strong>3. Performance Calculation:</strong></p>
+                <div class="formula">
+                    <span class="formula-label">Portfolio Return:</span>
+                    R_p(t) = Σ w_i(t) × R_i(t) - Costs(t)
+                    <br><br>
+                    where Costs(t) = fees × I_rebalance(t) + slippage
+                </div>
+            </div>
+
+            <h3>4.9 Risk and Performance Metrics</h3>
+
+            <p>The system calculates comprehensive risk-adjusted performance metrics:</p>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-name">Return Metrics</div>
+                    <ul>
+                        <li><strong>Total Return:</strong> (Final/Initial - 1)</li>
+                        <li><strong>Annual Return:</strong> CAGR calculation</li>
+                        <li><strong>Monthly Returns:</strong> Time series analysis</li>
+                        <li><strong>Win Rate:</strong> % positive periods</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-name">Risk Metrics</div>
+                    <ul>
+                        <li><strong>Volatility:</strong> Annualized std deviation</li>
+                        <li><strong>Max Drawdown:</strong> Peak-to-trough</li>
+                        <li><strong>Drawdown Duration:</strong> Recovery time</li>
+                        <li><strong>Beta:</strong> Market sensitivity</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-name">Risk-Adjusted Metrics</div>
+                    <ul>
+                        <li><strong>Sharpe Ratio:</strong> (R - Rf) / σ</li>
+                        <li><strong>Sortino Ratio:</strong> Downside focus</li>
+                        <li><strong>Calmar Ratio:</strong> Return / Max DD</li>
+                        <li><strong>Information Ratio:</strong> Active return / TE</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-name">Diversification Metrics</div>
+                    <ul>
+                        <li><strong>Sector Count:</strong> Unique sectors</li>
+                        <li><strong>Industry Count:</strong> Unique industries</li>
+                        <li><strong>Concentration:</strong> HHI index</li>
+                        <li><strong>Correlation:</strong> Average pairwise</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>4.10 Portfolio Optimization Process</h3>
+
+            <p>The complete portfolio selection and optimization workflow:</p>
+
+            <div class="algorithm-box">
+                <h4>Selection Pipeline:</h4>
+
+                <ol>
+                    <li><strong>Input Processing:</strong>
+                        <ul>
+                            <li>Load stability analysis results (CSV)</li>
+                            <li>Parse configuration parameters</li>
+                            <li>Apply exclusion filters</li>
+                        </ul>
+                    </li>
+
+                    <li><strong>Portfolio Generation:</strong>
+                        <ul>
+                            <li>For each (pool_size, portfolio_size) combination:</li>
+                            <li>Generate all 9 strategy variants</li>
+                            <li>Total portfolios = |pools| × |sizes| × |strategies|</li>
+                        </ul>
+                    </li>
+
+                    <li><strong>Backtesting:</strong>
+                        <ul>
+                            <li>Fetch historical data (YFinance/Marketstack)</li>
+                            <li>Apply rebalancing strategy</li>
+                            <li>Calculate performance metrics</li>
+                        </ul>
+                    </li>
+
+                    <li><strong>Ranking and Selection:</strong>
+                        <ul>
+                            <li>Sort by primary metric (Sharpe ratio)</li>
+                            <li>Apply secondary filters (min return, max DD)</li>
+                            <li>Select top N portfolios</li>
+                        </ul>
+                    </li>
+
+                    <li><strong>Output Generation:</strong>
+                        <ul>
+                            <li>Performance comparison matrix</li>
+                            <li>Risk-return scatter plots</li>
+                            <li>Portfolio composition details</li>
+                            <li>JSON export for further analysis</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+
+            <h3>4.11 Advanced Features</h3>
+
+            <div class="algorithm-box">
+                <h4>Walk-Forward Analysis:</h4>
+
+                <p>The system supports walk-forward optimization for out-of-sample validation:</p>
+
+                <div class="formula">
+                    <span class="formula-label">Walk-Forward Window:</span>
+                    In-Sample: [T-lookback, T-forward]
+                    <br>
+                    Out-of-Sample: [T-forward, T]
+                    <br><br>
+                    <span class="formula-label">Sharpe Degradation:</span>
+                    Degradation = (Sharpe_in - Sharpe_out) / Sharpe_in
+                </div>
+
+                <p><strong>Purpose:</strong> Detect overfitting and validate strategy robustness</p>
+            </div>
+
+            <h3>4.12 Performance Characteristics</h3>
+
+            <div class="algorithm-box">
+                <h4>System Performance:</h4>
+
+                <table class="regime-table">
+                    <tr>
+                        <th>Operation</th>
+                        <th>Time Complexity</th>
+                        <th>Typical Duration</th>
+                    </tr>
+                    <tr>
+                        <td>Portfolio Generation</td>
+                        <td>O(pools × sizes × n)</td>
+                        <td>< 1 second</td>
+                    </tr>
+                    <tr>
+                        <td>Single Backtest</td>
+                        <td>O(T × n)</td>
+                        <td>2-5 seconds</td>
+                    </tr>
+                    <tr>
+                        <td>Complete Analysis (100 portfolios)</td>
+                        <td>O(P × T × n)</td>
+                        <td>3-5 minutes</td>
+                    </tr>
+                    <tr>
+                        <td>Walk-Forward (3-month windows)</td>
+                        <td>O(W × P × T × n)</td>
+                        <td>10-15 minutes</td>
+                    </tr>
+                </table>
+
+                <p>where: n = stocks, T = time periods, P = portfolios, W = windows</p>
+            </div>
+
+            <div class="success">
+                <strong>Key Innovation:</strong> The multi-strategy approach with configurable constraints allows the system to adapt to different market conditions and investor preferences while maintaining robust risk management through diversification requirements and comprehensive backtesting.
+            </div>
+
+            <div class="important">
+                <strong>Best Practices:</strong>
+                <ul>
+                    <li>Use multiple pool sizes to test quality thresholds</li>
+                    <li>Maintain sector limits at 2-3 stocks for true diversification</li>
+                    <li>Prefer drift-based rebalancing to reduce transaction costs</li>
+                    <li>Validate with at least 2 years of historical data</li>
+                    <li>Consider regime-specific portfolio construction</li>
+                    <li>Export results for post-hoc analysis and reporting</li>
+                </ul>
+            </div>
+
+            <!-- PART V: PORTFOLIO OPTIMIZATION SYSTEM -->
+            <div class="page-break"></div>
+
+            <div class="part-divider">
+                <h1>PART V: Portfolio Optimization System</h1>
+                <p>Hierarchical Risk Parity and Advanced Allocation Methods</p>
+            </div>
+
+            <h2 id="portfolio-optimization">5.1 Portfolio Optimization System</h2>
+
+            <p>The Portfolio Optimization System implements state-of-the-art hierarchical portfolio allocation methods that address the fundamental limitations of traditional mean-variance optimization. Building upon the pioneering work of Marcos López de Prado and subsequent researchers, this system provides robust, out-of-sample portfolio allocations through machine learning-inspired clustering techniques.</p>
+
+            <div class="note">
+                <strong>Key Methods Implemented:</strong>
+                <ul>
+                    <li><strong>HRP:</strong> Hierarchical Risk Parity (López de Prado, 2016)</li>
+                    <li><strong>HERC:</strong> Hierarchical Equal Risk Contribution (Raffinot, 2017)</li>
+                    <li><strong>MHRP:</strong> Modified HRP with Equal Volatility Weighting</li>
+                    <li><strong>NCO:</strong> Nested Clustered Optimization (López de Prado, 2020)</li>
+                </ul>
+            </div>
+
+            <div class="page-break"></div>
+
+            <h3>5.2 Theoretical Foundation: Hierarchical Risk Parity (HRP)</h3>
+
+            <p>HRP revolutionized portfolio optimization by replacing the unstable matrix inversion of traditional methods with a hierarchical clustering approach inspired by machine learning. The method addresses three critical problems of mean-variance optimization: instability, concentration, and underperformance out-of-sample.</p>
+
+            <div class="algorithm-box">
+                <h4>The HRP Algorithm - Three Stage Process:</h4>
+
+                <p><strong>Stage 1: Tree Clustering</strong></p>
+                <ul>
+                    <li>Transform correlation matrix into a distance matrix</li>
+                    <li>Apply hierarchical clustering to group similar assets</li>
+                    <li>Build a dendrogram representing asset relationships</li>
+                </ul>
+
+                <p><strong>Stage 2: Quasi-Diagonalization</strong></p>
+                <ul>
+                    <li>Reorder the covariance matrix to place similar assets together</li>
+                    <li>Creates a quasi-diagonal structure</li>
+                    <li>Preserves the hierarchical information from clustering</li>
+                </ul>
+
+                <p><strong>Stage 3: Recursive Bisection</strong></p>
+                <ul>
+                    <li>Allocate weights through top-down recursive splitting</li>
+                    <li>At each split, allocate between clusters based on inverse variance</li>
+                    <li>Continue until individual asset weights are determined</li>
+                </ul>
+            </div>
+
+            <h3>5.3 Mathematical Framework of HRP</h3>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-name">Distance Matrix Calculation</div>
+                    <p>Convert correlation to distance metric:</p>
+                    <div class="formula">
+                        <span class="formula-label">Correlation Distance:</span>
+                        d_ij = √(0.5 × (1 - ρ_ij))
+                    </div>
+                    <p>This ensures that perfectly correlated assets (ρ=1) have distance 0, while perfectly anti-correlated assets (ρ=-1) have distance 1.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-name">Hierarchical Clustering</div>
+                    <p>Ward's linkage method minimizes within-cluster variance:</p>
+                    <div class="formula">
+                        <span class="formula-label">Ward Distance:</span>
+                        d(u,v) = √(2 × |u| × |v| / (|u| + |v|) × ||c_u - c_v||²)
+                    </div>
+                    <p>where c_u and c_v are cluster centroids</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-name">Quasi-Diagonalization</div>
+                    <p>Recursive algorithm to order leaves of dendrogram:</p>
+                    <ol>
+                        <li>Start with root cluster pair</li>
+                        <li>Recursively expand clusters</li>
+                        <li>Maintain order that preserves hierarchy</li>
+                    </ol>
+                    <p>Result: Similar assets are adjacent in matrix</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-name">Recursive Bisection Allocation</div>
+                    <p>Weight allocation based on inverse variance:</p>
+                    <div class="formula">
+                        <span class="formula-label">Allocation Ratio:</span>
+                        α = 1 - σ²_L / (σ²_L + σ²_R)
+                    </div>
+                    <p>Left cluster gets weight α, right gets (1-α)</p>
+                </div>
+            </div>
+
+            <h3>5.4 Covariance Estimation: Ledoit-Wolf Shrinkage</h3>
+
+            <p>All methods employ Ledoit-Wolf shrinkage to improve covariance matrix estimation, particularly crucial for high-dimensional portfolios or limited historical data:</p>
+
+            <div class="algorithm-box">
+                <h4>Shrinkage Estimator:</h4>
+
+                <div class="formula">
+                    <span class="formula-label">Shrunk Covariance:</span>
+                    Σ* = δF + (1-δ)S
+                </div>
+
+                <p>where:</p>
+                <ul>
+                    <li><strong>S:</strong> Sample covariance matrix (empirical)</li>
+                    <li><strong>F:</strong> Shrinkage target (often diagonal with average variance)</li>
+                    <li><strong>δ:</strong> Optimal shrinkage intensity (0 ≤ δ ≤ 1)</li>
+                </ul>
+
+                <p><strong>Benefits:</strong></p>
+                <ul>
+                    <li>Reduces estimation error, especially with limited data</li>
+                    <li>Improves condition number of covariance matrix</li>
+                    <li>Better out-of-sample performance</li>
+                    <li>More stable weight allocations</li>
+                </ul>
+            </div>
+
+            <h3>5.5 HERC: Hierarchical Equal Risk Contribution</h3>
+
+            <p>HERC enhances HRP by enforcing equal risk contribution at each hierarchical level, providing better diversification:</p>
+
+            <div class="algorithm-box">
+                <h4>Key Differences from HRP:</h4>
+
+                <table class="regime-table">
+                    <tr>
+                        <th>Aspect</th>
+                        <th>HRP</th>
+                        <th>HERC</th>
+                    </tr>
+                    <tr>
+                        <td>Risk Allocation</td>
+                        <td>Inverse variance bisection</td>
+                        <td>Equal risk contribution</td>
+                    </tr>
+                    <tr>
+                        <td>Cluster Treatment</td>
+                        <td>Simple splitting</td>
+                        <td>Risk parity across clusters</td>
+                    </tr>
+                    <tr>
+                        <td>Within-Cluster</td>
+                        <td>Minimum variance</td>
+                        <td>Equal risk contribution</td>
+                    </tr>
+                    <tr>
+                        <td>Diversification</td>
+                        <td>Good</td>
+                        <td>Better (enforced equality)</td>
+                    </tr>
+                    <tr>
+                        <td>Tail Risk</td>
+                        <td>Moderate control</td>
+                        <td>Superior control</td>
+                    </tr>
+                </table>
+
+                <p><strong>Mathematical Foundation:</strong></p>
+                <div class="formula">
+                    <span class="formula-label">Risk Contribution:</span>
+                    RC_i = w_i × (Σw)_i / σ_p
+                    <br><br>
+                    <span class="formula-label">HERC Constraint:</span>
+                    RC_i = RC_j for all i, j in same cluster
+                </div>
+            </div>
+
+            <h3>5.6 MHRP: Modified HRP with Equal Volatility</h3>
+
+            <p>MHRP modifies the original HRP by using equal volatility weighting instead of inverse variance, providing more balanced allocations:</p>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-name">Core Modification</div>
+                    <p><strong>Original HRP:</strong> Weights ∝ 1/σ²</p>
+                    <p><strong>MHRP:</strong> Weights ∝ 1/σ</p>
+                    <div class="formula">
+                        <span class="formula-label">MHRP Weight:</span>
+                        w_i = (1/σ_i) / Σ(1/σ_j)
+                    </div>
+                    <p>Results in less extreme weight differences</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-name">Advantages</div>
+                    <ul>
+                        <li>More balanced allocations</li>
+                        <li>Reduced concentration in low-volatility assets</li>
+                        <li>Better performance in volatile markets</li>
+                        <li>Lower portfolio turnover</li>
+                        <li>More intuitive risk distribution</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-name">Cluster Volatility</div>
+                    <p>For recursive bisection:</p>
+                    <div class="formula">
+                        <span class="formula-label">Cluster Vol:</span>
+                        σ_c = √(w'_c Σ_c w_c)
+                    </div>
+                    <p>where w_c uses equal volatility weights within cluster</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-name">Robustness Features</div>
+                    <ul>
+                        <li>Spearman correlation for outlier resistance</li>
+                        <li>Ledoit-Wolf shrinkage covariance</li>
+                        <li>Optional volatility targeting</li>
+                        <li>Rebalancing frequency optimization</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>5.7 NCO: Nested Clustered Optimization</h3>
+
+            <p>NCO represents the most sophisticated evolution, combining clustering with convex optimization within and across clusters:</p>
+
+            <div class="algorithm-box">
+                <h4>NCO Architecture:</h4>
+
+                <p><strong>Two-Level Optimization:</strong></p>
+
+                <ol>
+                    <li><strong>Intra-Cluster Optimization:</strong>
+                        <ul>
+                            <li>Within each cluster, solve a convex optimization problem</li>
+                            <li>Options: min_variance, equal_weight, equal_vol, risk_parity</li>
+                            <li>Can apply position limits and constraints</li>
+                        </ul>
+                    </li>
+
+                    <li><strong>Inter-Cluster Optimization:</strong>
+                        <ul>
+                            <li>Allocate across clusters as meta-assets</li>
+                            <li>Options: min_variance, risk_parity, equal_weight</li>
+                            <li>Treats each cluster as a single asset with aggregated properties</li>
+                        </ul>
+                    </li>
+                </ol>
+
+                <div class="formula">
+                    <span class="formula-label">NCO Objective:</span>
+                    min w'Σw subject to:
+                    <br>Σw_i = 1 (within cluster)
+                    <br>w_min ≤ w_i ≤ w_max
+                    <br>Additional constraints...
+                </div>
+
+                <p><strong>Advantages over HRP/HERC/MHRP:</strong></p>
+                <ul>
+                    <li>Flexibility in optimization objectives</li>
+                    <li>Explicit constraint handling</li>
+                    <li>Better for specific risk/return targets</li>
+                    <li>Can incorporate views and predictions</li>
+                </ul>
+            </div>
+
+            <h3>5.8 Method Comparison and Selection Guide</h3>
+
+            <div class="algorithm-box">
+                <h4>Method Selection Matrix:</h4>
+
+                <table class="regime-table">
+                    <tr>
+                        <th>Method</th>
+                        <th>Best For</th>
+                        <th>Strengths</th>
+                        <th>Limitations</th>
+                        <th>Typical Concentration</th>
+                    </tr>
+                    <tr>
+                        <td><strong>HRP</strong></td>
+                        <td>General diversification</td>
+                        <td>Stable, no parameters</td>
+                        <td>Can over-allocate to low-vol assets</td>
+                        <td>Moderate</td>
+                    </tr>
+                    <tr>
+                        <td><strong>HERC</strong></td>
+                        <td>Risk parity goals</td>
+                        <td>Equal risk contribution</td>
+                        <td>Complex implementation</td>
+                        <td>Well-distributed</td>
+                    </tr>
+                    <tr>
+                        <td><strong>MHRP</strong></td>
+                        <td>Volatile markets</td>
+                        <td>Balanced allocations</td>
+                        <td>Less aggressive risk reduction</td>
+                        <td>Balanced</td>
+                    </tr>
+                    <tr>
+                        <td><strong>NCO</strong></td>
+                        <td>Constrained optimization</td>
+                        <td>Flexible, handles constraints</td>
+                        <td>Parameter sensitivity</td>
+                        <td>Variable</td>
+                    </tr>
+                </table>
+            </div>
+
+            <h3>5.9 Implementation Architecture</h3>
+
+            <div class="algorithm-box">
+                <h4>System Workflow:</h4>
+
+                <ol>
+                    <li><strong>Data Preparation:</strong>
+                        <ul>
+                            <li>Fetch historical prices (configurable lookback)</li>
+                            <li>Calculate returns matrix</li>
+                            <li>Handle missing data and outliers</li>
+                        </ul>
+                    </li>
+
+                    <li><strong>Covariance Estimation:</strong>
+                        <ul>
+                            <li>Apply Ledoit-Wolf shrinkage</li>
+                            <li>Calculate correlation matrix (Pearson or Spearman)</li>
+                            <li>Convert to distance matrix</li>
+                        </ul>
+                    </li>
+
+                    <li><strong>Hierarchical Clustering:</strong>
+                        <ul>
+                            <li>Apply linkage method (Ward, single, complete)</li>
+                            <li>Generate dendrogram</li>
+                            <li>Perform quasi-diagonalization</li>
+                        </ul>
+                    </li>
+
+                    <li><strong>Weight Optimization:</strong>
+                        <ul>
+                            <li>Apply selected method (HRP/HERC/MHRP/NCO)</li>
+                            <li>Enforce constraints if applicable</li>
+                            <li>Normalize weights to sum to 1</li>
+                        </ul>
+                    </li>
+
+                    <li><strong>Risk Analytics:</strong>
+                        <ul>
+                            <li>Calculate expected return and volatility</li>
+                            <li>Compute Sharpe ratio</li>
+                            <li>Measure diversification metrics (HHI, effective N)</li>
+                            <li>Generate risk contribution analysis</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+
+            <h3>5.10 Risk Metrics and Performance Analysis</h3>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-name">Portfolio Metrics</div>
+                    <ul>
+                        <li><strong>Expected Return:</strong> μ_p = w'μ</li>
+                        <li><strong>Volatility:</strong> σ_p = √(w'Σw)</li>
+                        <li><strong>Sharpe Ratio:</strong> SR = μ_p / σ_p</li>
+                        <li><strong>Max Weight:</strong> max(w_i)</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-name">Diversification Metrics</div>
+                    <ul>
+                        <li><strong>HHI:</strong> Σw_i² (concentration)</li>
+                        <li><strong>Effective N:</strong> 1/HHI</li>
+                        <li><strong>Diversification Ratio:</strong> Σw_iσ_i / σ_p</li>
+                        <li><strong>Risk Parity Distance:</strong> Deviation from equal RC</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-name">Visualization Outputs</div>
+                    <ul>
+                        <li>Donut charts of allocations</li>
+                        <li>Dendrograms of clustering</li>
+                        <li>Correlation heatmaps</li>
+                        <li>Risk contribution plots</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>5.11 Practical Considerations</h3>
+
+            <div class="algorithm-box">
+                <h4>Implementation Best Practices:</h4>
+
+                <p><strong>Data Requirements:</strong></p>
+                <ul>
+                    <li>Minimum 60 days of returns for reliable estimation</li>
+                    <li>Ideal: 180-252 days (6-12 months)</li>
+                    <li>Daily returns preferred over weekly/monthly</li>
+                </ul>
+
+                <p><strong>Parameter Guidelines:</strong></p>
+                <ul>
+                    <li><strong>Correlation Method:</strong> Spearman for robustness, Pearson for linearity</li>
+                    <li><strong>Linkage Method:</strong> Ward for balanced clusters, Single for chaining</li>
+                    <li><strong>Max Clusters (HERC/NCO):</strong> √N where N = number of assets</li>
+                    <li><strong>Position Limits:</strong> Min 2%, Max 20% for institutional portfolios</li>
+                </ul>
+
+                <p><strong>Rebalancing Considerations:</strong></p>
+                <ul>
+                    <li>Monthly rebalancing typical for stable portfolios</li>
+                    <li>Trigger-based for volatile markets (5-10% drift threshold)</li>
+                    <li>Consider transaction costs in rebalancing frequency</li>
+                </ul>
+            </div>
+
+            <h3>5.12 Academic References and Attribution</h3>
+
+            <div class="note">
+                <strong>Original Research Papers:</strong>
+                <ul>
+                    <li><strong>HRP:</strong> López de Prado, M. (2016). "Building Diversified Portfolios that Outperform Out of Sample." Journal of Portfolio Management.</li>
+                    <li><strong>HERC:</strong> Raffinot, T. (2017). "Hierarchical Clustering-Based Asset Allocation." Journal of Portfolio Management.</li>
+                    <li><strong>NCO:</strong> López de Prado, M. (2020). "Machine Learning for Asset Managers." Cambridge University Press.</li>
+                    <li><strong>Shrinkage:</strong> Ledoit, O. & Wolf, M. (2004). "A Well-Conditioned Estimator for Large-Dimensional Covariance Matrices." JMVA.</li>
+                </ul>
+            </div>
+
+            <div class="success">
+                <strong>Key Innovation:</strong> These hierarchical methods represent a paradigm shift from traditional optimization by replacing unstable matrix inversion with robust machine learning techniques, providing superior out-of-sample performance and intuitive portfolio structures that align with economic relationships between assets.
+            </div>
+
+            <div class="important">
+                <strong>Implementation Notes:</strong>
+                <ul>
+                    <li>All methods are parameter-free in their basic form (except NCO)</li>
+                    <li>Computational complexity is O(N² log N) vs O(N³) for traditional methods</li>
+                    <li>No need for return predictions - only covariance estimation required</li>
+                    <li>Methods are deterministic - same inputs always produce same outputs</li>
+                    <li>Can be combined with factor models and other enhancements</li>
+                </ul>
+            </div>
+        </div>
+
+
+
+        <div class="footer">
+            <div class="page-break"></div>
+            <p><strong>© 2025 Multifactor Stock Analysis System (MSAS)</strong></p>
+            <p>Complete System Documentation v3.0</p>
+            <p style="color: #7f8c8d; margin-top: 10px;">
+                This documentation covers all components of MSAS including Market Regime Detection,<br>
+                Multifactor Stock Scoring, Score Trend Analysis, Portfolio Selection, and Portfolio Optimization.
+            </p>
+        </div>
+    </div>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MSAS - Complete System Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .document {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: #1e3a8a; /* Deep navy blue - solid color for PDF compatibility */
+            color: #ffffff;
+            padding: 60px 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.8em;
+            margin-bottom: 10px;
+            color: #ffffff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        
+        .subtitle {
+            font-size: 1.3em;
+            opacity: 0.95;
+            margin-bottom: 10px;
+        }
+        
+        .version-info {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        h2 {
+            color: #2c3e50;
+            font-size: 2em;
+            margin: 40px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #3498db;
+        }
+        
+        h3 {
+            color: #34495e;
+            font-size: 1.5em;
+            margin: 30px 0 15px 0;
+        }
+        
+        h4 {
+            color: #34495e;
+            font-size: 1.2em;
+            margin: 20px 0 10px 0;
+            font-weight: 600;
+        }
+        
+        p {
+            margin: 15px 0;
+            text-align: justify;
+        }
+        
+        ul, ol {
+            margin: 15px 0 15px 30px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        .toc {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+
+        .toc h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            border: none;
+            color: #2c3e50;
+        }
+
+        .toc ul {
+            list-style: none;
+            margin-left: 0;
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        .toc > ul > li {
+            margin-bottom: 15px;  /* Consistent spacing between main sections */
+        }
+
+        .toc > ul > li > strong {
+            display: block;
+            margin-bottom: 8px;  /* Space after part titles */
+        }
+
+        .toc > ul > li > ul {
+            margin-left: 20px;  /* Indent for main sections */
+        }
+
+        .toc > ul > li > ul > li {
+            margin-bottom: 6px;  /* Consistent spacing between sections */
+            line-height: 1.4;
+        }
+
+        .toc > ul > li > ul > li > ul {
+            margin-left: 20px;  /* Further indent for subsections */
+            margin-top: 4px;
+            margin-bottom: 4px;
+        }
+
+        .toc > ul > li > ul > li > ul > li {
+            margin-bottom: 3px;  /* Smaller spacing for subsections */
+            font-size: 0.95em;  /* Slightly smaller font for subsections */
+            line-height: 1.3;
+        }
+
+        .toc a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .toc a:hover {
+            text-decoration: underline;
+        }
+
+        /* Special styling for PART titles */
+        .toc li strong {
+            color: #2c3e50;
+            font-size: 1.05em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .algorithm-box {
+            background: #f0f7ff;
+            border-left: 4px solid #3498db;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .formula {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+        }
+        
+        .formula-label {
+            font-weight: bold;
+            color: #856404;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        .note {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .important {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .feature-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-name {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+        
+        .regime-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .regime-table th {
+            background: #3498db;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        .regime-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .regime-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .validation-results {
+            background: #fff;
+            border: 2px solid #28a745;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .validation-header {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #28a745;
+            margin-bottom: 15px;
+        }
+        
+        .code-block {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            margin: 20px 0;
+        }
+        
+        .pipeline-diagram {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 10px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .pipeline-step {
+            display: inline-block;
+            background: white;
+            padding: 15px 25px;
+            margin: 10px;
+            border-radius: 50px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .arrow {
+            display: inline-block;
+            margin: 0 10px;
+            color: #3498db;
+            font-size: 1.5em;
+        }
+        
+        .page-break {
+            page-break-after: always;
+            margin: 40px 0;
+        }
+
+<!--        @media print {-->
+<!--            .page-break {-->
+<!--                page-break-before: always;-->
+<!--                clear: both;-->
+<!--                display: block;-->
+<!--                height: 1px;-->
+<!--                visibility: hidden;-->
+<!--            }-->
+<!--        }-->
+        
+        .part-divider {
+            text-align: center;
+            margin: 60px 0;
+            padding: 40px;
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border-radius: 15px;
+        }
+        
+        .part-divider h1 {
+            color: #1a1a1a;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .part-divider p {
+            color: #333333;
+            font-size: 1.1em;
+            text-align: center;
+        }
+        
+        /* Styles for Multifactor Scoring System */
+        .factor-section {
+            background: white;
+            border: 2px solid #3498db;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .factor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+        
+        .factor-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .factor-weight {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #27ae60;
+        }
+        
+        .factor-weight.negative {
+            color: #e74c3c;
+        }
+        
+        .subfactor {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 3px solid #3498db;
+            border-radius: 5px;
+        }
+        
+        .subfactor-name {
+            font-weight: bold;
+            color: #34495e;
+            margin-bottom: 10px;
+        }
+        
+        .regime-weights {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .regime-card {
+            background: white;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .regime-title {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .weight-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        
+        .weight-value {
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .weight-value.negative {
+            color: #e74c3c;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 40px;
+            background: #f8f9fa;
+            border-top: 2px solid #e9ecef;
+            margin-top: 60px;
+        }
+
+        .algorithm-indent {
+            margin-left: 20px;
+            list-style-type: none;
+        }
+
+        .algorithm-indent:before {
+            content: "→ ";
+            color: #3498db;
+            font-weight: bold;
+        }
+    </style>

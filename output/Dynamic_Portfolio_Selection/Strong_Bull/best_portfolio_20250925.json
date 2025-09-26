@@ -1,0 +1,21 @@
+{
+  "tickers": [
+    "DAVE",
+    "QBTS",
+    "SMR",
+    "RKLB",
+    "HSAI",
+    "OKLO",
+    "RDDT",
+    "SSRM",
+    "CELH",
+    "MP"
+  ],
+  "date_saved": "2025-09-25T14:33:21.599109",
+  "has_shares": false,
+  "portfolio_name": "SectorBal2_S10_P50",
+  "sharpe_ratio": 14.004,
+  "regime": "Strong Bull",
+  "data_source": "yfinance",
+  "selection_method": "dynamic_portfolio_selection"
+}

@@ -19,7 +19,8 @@ import shutil
 warnings.filterwarnings('ignore')
 
 # Import the ranked analyzer class
-from stock_score_trend_technical_02 import StockScoreTrendAnalyzerTechnical
+# from stock_score_trend_technical_02 import StockScoreTrendAnalyzerTechnical
+from stock_score_trend_technical_03 import StockScoreTrendAnalyzerTechnical
 
 
 class EnhancedSingleTickerTechnicalAnalyzer(StockScoreTrendAnalyzerTechnical):

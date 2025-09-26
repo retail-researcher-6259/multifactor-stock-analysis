@@ -1,7 +1,7 @@
 {
-  "accuracy": 0.7272727272727273,
-  "accuracy_percentage": "72.7%",
-  "correct_predictions": 8,
+  "accuracy": 0.8181818181818182,
+  "accuracy_percentage": "81.8%",
+  "correct_predictions": 9,
   "total_events": 11,
   "events": [
     {
@@ -40,9 +40,9 @@
       "Event": "2021 Bull Run",
       "Period": "2021-01-01 to 2021-11-30",
       "Expected": "Strong Bull",
-      "Dominant": "Steady Growth",
-      "All Regimes": "Steady Growth, Strong Bull, Crisis/Bear",
-      "Match": false
+      "Dominant": "Strong Bull",
+      "All Regimes": "Strong Bull, Steady Growth, Crisis/Bear",
+      "Match": true
     },
     {
       "Event": "2019 Rally",
@@ -93,5 +93,5 @@
       "Match": true
     }
   ],
-  "validation_date": "2025-09-13T09:46:54.788776"
+  "validation_date": "2025-09-26T09:50:03.598695"
 }

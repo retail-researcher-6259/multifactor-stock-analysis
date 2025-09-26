@@ -11,7 +11,7 @@ sys.path.append(str(PROJECT_ROOT))
 
 # Import widget classes
 from src.classes.regime_detection_widget import RegimeDetectorThread, RegimeDetectionWidget
-from src.classes.multifactor_scoring_widget import MultifactorScoringThread, MultifactorScoringWidget
+from src.classes.multifactor_scoring_widget_new import MultifactorScoringThread, MultifactorScoringWidget
 from src.classes.score_trend_analysis_widget import (
     StabilityAnalysisThread,
     TechnicalPlotsThread,
@@ -19,7 +19,7 @@ from src.classes.score_trend_analysis_widget import (
     EnhancedTechnicalPlotsThread,
     EnhancedStabilityAnalysisThread
 )
-from src.classes.dynamic_portfolio_selection_widget import DynamicPortfolioThread, DynamicPortfolioSelectionWidget
+from src.classes.dynamic_portfolio_selection_widget_v2 import DynamicPortfolioThread, DynamicPortfolioSelectionWidget
 from src.classes.portfolio_optimizer_widget import PortfolioOptimizerThread, PortfolioOptimizerWidget
 
 class MainWindow(QMainWindow):
@@ -216,11 +216,18 @@ class MainWindow(QMainWindow):
         # Help menu
         help_menu = menubar.addMenu('Help')
 
-        about_action = help_menu.addAction('About')
+        about_action = QAction('About', self)
         about_action.triggered.connect(self.show_about)
+        help_menu.addAction(about_action)
 
-        help_action = help_menu.addAction('User Guide')
+        help_action = QAction('User Guide', self)
         help_action.triggered.connect(self.show_help)
+        help_menu.addAction(help_action)
+
+        # ADD THIS: Documentation action
+        doc_action = QAction('Documentation', self)
+        doc_action.triggered.connect(self.open_documentation)
+        help_menu.addAction(doc_action)
 
     def create_status_bar(self):
         """Create status bar"""
@@ -458,6 +465,29 @@ class MainWindow(QMainWindow):
                 border-color: #7c4dff;
             }
         """
+
+    def open_documentation(self):
+        """Open the MSAS documentation HTML file"""
+        import os
+        import webbrowser
+        from pathlib import Path
+
+        # Get the documentation file path
+        doc_path = PROJECT_ROOT / "docs" / "msas_complete_documentation.html"
+
+        # Check if the file exists
+        if doc_path.exists():
+            # Convert to absolute path and open in default browser
+            file_url = doc_path.absolute().as_uri()
+            webbrowser.open(file_url)
+        else:
+            # Show error if documentation file not found
+            QMessageBox.warning(
+                self,
+                "Documentation Not Found",
+                f"Documentation file not found at:\n{doc_path}\n\n"
+                "Please ensure the documentation is in the ./docs/ directory."
+            )
 
 
 def main():

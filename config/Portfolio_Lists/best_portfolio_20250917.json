@@ -1,0 +1,21 @@
+{
+  "tickers": [
+    "PLTR",
+    "NVDA",
+    "EXEL",
+    "VEEV",
+    "RDDT",
+    "META",
+    "MNST",
+    "WPM",
+    "HIMS",
+    "AXON"
+  ],
+  "date_saved": "2025-09-17T13:55:17.061742",
+  "has_shares": false,
+  "portfolio_name": "SectorBal2_S10_P50",
+  "sharpe_ratio": 4.646,
+  "regime": "Steady Growth",
+  "data_source": "yfinance",
+  "selection_method": "dynamic_portfolio_selection"
+}
