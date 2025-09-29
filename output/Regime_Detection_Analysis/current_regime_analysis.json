@@ -1,23 +1,23 @@
 {
-  "timestamp": "2025-09-26T09:50:06.973762",
+  "timestamp": "2025-09-27T11:50:29.109232",
   "regime_detection": {
-    "regime": 1,
+    "regime": 0,
     "regime_name": "Strong Bull",
     "start_date": "2025-06-18",
-    "end_date": "2025-09-25",
-    "days_in_regime": 99,
-    "as_of": "2025-09-25",
+    "end_date": "2025-09-26",
+    "days_in_regime": 100,
+    "as_of": "2025-09-26",
     "characteristics": {
-      "mean_return": 0.4093983895547521,
-      "volatility": 0.08709375765001291,
-      "sharpe": 4.7006628328051185
+      "mean_return": 0.41450518657964025,
+      "volatility": 0.08702301402048496,
+      "sharpe": 4.763167436168863
     },
     "all_probabilities": {
-      "Strong Bull": 0.694214876033058,
-      "Steady Growth": 0.2167590752170729,
-      "Crisis/Bear": 0.08902604874986923
+      "Strong Bull": 0.7049180327868853,
+      "Steady Growth": 0.20917202739157503,
+      "Crisis/Bear": 0.08590993982153974
     },
-    "confidence": 0.694214876033058
+    "confidence": 0.7049180327868853
   },
   "recommended_weights": {
     "momentum": 60.0,

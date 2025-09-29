@@ -1097,6 +1097,168 @@ def run_historical_specific_date(target_date, regime, progress_callback=None):
     }
 
 
+def run_historical_batch_with_regime(start_date=None, end_date=None, manual_regime=None, interval_days=1,
+                                     progress_callback=None):
+    """
+    Run historical scoring for multiple dates using a MANUALLY SELECTED regime
+    Similar to run_historical_batch but uses the same regime for all dates
+
+    Args:
+        start_date: Start date for processing
+        end_date: End date for processing
+        manual_regime: Manually selected regime to use for ALL dates (e.g., "Steady Growth")
+        interval_days: Interval between dates (default 1 for daily)
+        progress_callback: Optional callback for progress updates
+
+    Returns:
+        List of results for each date processed
+    """
+    # Convert dates to pandas Timestamps for consistency
+    if end_date is None:
+        end_date = pd.Timestamp.now()
+    elif isinstance(end_date, str):
+        end_date = pd.Timestamp(end_date)
+    elif isinstance(end_date, datetime):
+        end_date = pd.Timestamp(end_date)
+    elif hasattr(end_date, 'date'):
+        end_date = pd.Timestamp(end_date)
+
+    if start_date is None:
+        start_date = end_date - pd.Timedelta(days=365)
+    elif isinstance(start_date, str):
+        start_date = pd.Timestamp(start_date)
+    elif isinstance(start_date, datetime):
+        start_date = pd.Timestamp(start_date)
+    elif hasattr(start_date, 'date'):
+        start_date = pd.Timestamp(start_date)
+
+    # Ensure dates are timezone-naive
+    if start_date.tz is not None:
+        start_date = start_date.tz_localize(None)
+    if end_date.tz is not None:
+        end_date = end_date.tz_localize(None)
+
+    # Validate manual regime is provided
+    if manual_regime is None:
+        raise ValueError("Manual regime must be provided for this mode")
+
+    # First pass: identify all trading days to process
+    print(f"📅 Identifying trading days with manual regime: {manual_regime}")
+    if progress_callback:
+        progress_callback('status', f"Identifying trading days for {manual_regime} regime...")
+        progress_callback('progress', 0)
+
+    dates_to_process = []
+    skipped_dates = []
+    current_date = start_date
+
+    while current_date <= end_date:
+        if is_trading_day(current_date):
+            dates_to_process.append(current_date)
+        else:
+            skipped_dates.append(current_date)
+            print(f"⭕ Skipping {current_date.strftime('%Y-%m-%d')} (Market Closed)")
+        current_date += pd.Timedelta(days=interval_days)
+
+    total_trading_days = len(dates_to_process)
+    total_days_in_range = len(dates_to_process) + len(skipped_dates)
+
+    print(f"📊 Found {total_trading_days} trading days out of {total_days_in_range} total days")
+    print(f"📅 Processing from {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}")
+    print(f"🎯 Using manual regime: {manual_regime} for all dates")
+
+    if progress_callback:
+        progress_callback('status', f"Processing {total_trading_days} trading days with {manual_regime} regime...")
+        progress_callback('progress', 5)
+
+    results = []
+    successful_dates = 0
+    skipped_existing = 0
+    error_dates = 0
+
+    # Process each trading day with the SAME manual regime
+    for i, date in enumerate(dates_to_process):
+        # Calculate precise progress
+        base_progress = 5
+        processing_progress = int((i / total_trading_days) * 95) if total_trading_days > 0 else 0
+        current_progress = base_progress + processing_progress
+
+        if progress_callback:
+            progress_callback('progress', current_progress)
+            progress_callback('status',
+                              f"Processing {date.strftime('%Y-%m-%d')} ({i + 1}/{total_trading_days}) with {manual_regime}")
+
+        print(f"\n{'=' * 60}")
+        print(f"📅 Processing date {i + 1}/{total_trading_days}: {date.strftime('%Y-%m-%d')}")
+        print(f"🎯 Using manual regime: {manual_regime}")
+        print(f"{'=' * 60}")
+
+        try:
+            # Create a nested progress callback for the inner function
+            def nested_progress_callback(callback_type, value):
+                if callback_type == 'status' and progress_callback:
+                    progress_callback('status', f"{date.strftime('%Y-%m-%d')}: {value}")
+
+            # Use run_historical_specific_date with the MANUAL regime
+            result = run_historical_specific_date(
+                target_date=date,
+                regime=manual_regime,  # Use manual regime for ALL dates
+                progress_callback=nested_progress_callback
+            )
+
+            # Process the result
+            if result.get('success'):
+                successful_dates += 1
+                print(f"  ✅ Successfully processed - {result.get('total_stocks', 0)} stocks ranked")
+                results.append({
+                    'date': date.strftime('%Y-%m-%d'),
+                    'regime': manual_regime,
+                    'status': 'success',
+                    'path': result.get('output_path'),
+                    'total_stocks': result.get('total_stocks', 0),
+                    'message': f"Processed {result.get('total_stocks', 0)} stocks"
+                })
+            else:
+                error_dates += 1
+                error_msg = result.get('error', 'Unknown error')
+                print(f"  ❌ Failed: {error_msg}")
+                results.append({
+                    'date': date.strftime('%Y-%m-%d'),
+                    'regime': manual_regime,
+                    'status': 'error',
+                    'error': error_msg,
+                    'message': f"Processing failed: {error_msg}"
+                })
+
+        except Exception as e:
+            error_dates += 1
+            print(f"  ❌ Error: {e}")
+            results.append({
+                'date': date.strftime('%Y-%m-%d'),
+                'regime': manual_regime,
+                'status': 'error',
+                'error': str(e),
+                'message': f"Exception: {str(e)}"
+            })
+
+    # Final summary
+    if progress_callback:
+        progress_callback('progress', 100)
+        summary_msg = (f"Batch processing complete! "
+                       f"Success: {successful_dates}, "
+                       f"Errors: {error_dates}")
+        progress_callback('status', summary_msg)
+
+    print(f"\n{'=' * 60}")
+    print(f"📊 BATCH PROCESSING SUMMARY (Manual Regime: {manual_regime})")
+    print(f"{'=' * 60}")
+    print(f"✅ Successfully processed: {successful_dates} dates")
+    print(f"❌ Errors: {error_dates} dates")
+    print(f"📅 Weekend/holidays skipped: {len(skipped_dates)} dates")
+    print(f"{'=' * 60}")
+
+    return results
+
 # Add a progress callback mechanism
 class ProgressTracker:
     """Track progress and emit updates for UI"""

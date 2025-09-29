@@ -280,7 +280,7 @@ class MainWindow(QMainWindow):
         """Show about dialog"""
         about_text = """
         <h2>Multifactor Stock Analysis System (MSAS)</h2>
-        <p>Version 1.0</p>
+        <p>Version 3.0</p>
         <br>
         <p><b>An integrated platform for:</b></p>
         <ul>
@@ -290,7 +290,7 @@ class MainWindow(QMainWindow):
             <li>Dynamic Portfolio Selection and Optimization</li>
         </ul>
         <br>
-        <p>© 2024 - Developed for Advanced Investment Analysis</p>
+        <p>© 2025 - Developed for Advanced Investment Analysis</p>
         """
 
         msg = QMessageBox()

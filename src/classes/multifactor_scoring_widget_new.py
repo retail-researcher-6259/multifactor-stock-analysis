@@ -364,22 +364,29 @@ class MultifactorScoringWidget(QWidget):
         layout.addWidget(self.date_range_group)
 
         # Date Selection for Historical Specific Mode (NEW)
-        self.date_specific_group = QGroupBox("Specific Date Selection")
+        self.date_specific_group = QGroupBox("Date Range with Manual Regime")
         date_specific_layout = QGridLayout()
 
-        # Single Date Selection
-        date_specific_layout.addWidget(QLabel("Target Date:"), 0, 0)
-        self.specific_date_edit = QDateEdit()
-        self.specific_date_edit.setCalendarPopup(True)
-        self.specific_date_edit.setDate(QDate.currentDate().addDays(-1))  # Default to yesterday
-        self.specific_date_edit.setDisplayFormat("yyyy-MM-dd")
-        self.specific_date_edit.setMaximumDate(QDate.currentDate())  # Can't select future dates
-        date_specific_layout.addWidget(self.specific_date_edit, 0, 1)
+        # Start Date - DEFAULT TO 7 DAYS BEFORE TODAY
+        date_specific_layout.addWidget(QLabel("Start Date:"), 0, 0)
+        self.specific_start_date_edit = QDateEdit()
+        self.specific_start_date_edit.setCalendarPopup(True)
+        self.specific_start_date_edit.setDate(QDate.currentDate().addDays(-7))  # Changed from -30 to -7
+        self.specific_start_date_edit.setDisplayFormat("yyyy-MM-dd")
+        date_specific_layout.addWidget(self.specific_start_date_edit, 0, 1)
+
+        # End Date - DEFAULT TO TODAY
+        date_specific_layout.addWidget(QLabel("End Date:"), 1, 0)
+        self.specific_end_date_edit = QDateEdit()
+        self.specific_end_date_edit.setCalendarPopup(True)
+        self.specific_end_date_edit.setDate(QDate.currentDate())  # This is already today's date
+        self.specific_end_date_edit.setDisplayFormat("yyyy-MM-dd")
+        date_specific_layout.addWidget(self.specific_end_date_edit, 1, 1)
 
         # Note about regime selection
-        specific_note = QLabel("Note: You can manually select the regime below for this date")
+        specific_note = QLabel("Note: The selected regime below will be used for ALL dates in this range")
         specific_note.setStyleSheet("color: #888; font-style: italic; margin-top: 5px;")
-        date_specific_layout.addWidget(specific_note, 1, 0, 1, 2)
+        date_specific_layout.addWidget(specific_note, 2, 0, 1, 2)
 
         self.date_specific_group.setLayout(date_specific_layout)
         self.date_specific_group.setVisible(False)  # Hidden by default
@@ -719,24 +726,32 @@ class MultifactorScoringWidget(QWidget):
             )
 
         elif mode == "Historical (Specific)":
-            # Run scoring for specific date with manually selected regime
-            target_date = self.specific_date_edit.date().toPyDate()
+            # Run scoring for date range with manually selected regime
+            start_date = self.specific_start_date_edit.date().toPyDate()
+            end_date = self.specific_end_date_edit.date().toPyDate()
             selected_regime = self.regime_combo.currentText()
             regime_key = selected_regime.replace(" ", "_").replace("/", "_")
+            interval_days = 1  # Always daily
+
+            # Calculate estimated trading days
+            total_days = (end_date - start_date).days + 1
+            estimated_trading_days = int(total_days * 5 / 7)  # Roughly 5/7 are weekdays
 
             # Update UI
             self.progress_group.setVisible(True)
             self.progress_bar.setValue(0)
             self.progress_status.setText(
-                f"Processing {target_date.strftime('%Y-%m-%d')} with {selected_regime} regime...")
+                f"Processing ~{estimated_trading_days} trading days "
+                f"({start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}) "
+                f"with {selected_regime} regime..."
+            )
 
             # Disable button during processing
             self.run_scoring_btn.setEnabled(False)
-            self.run_scoring_btn.setText("Processing Specific Date...")
-
-            # Start specific date scoring thread with ticker file
-            self.scoring_thread = HistoricalSpecificScoringThread(
-                target_date, regime_key, ticker_file
+            self.run_scoring_btn.setText(f"Processing with {selected_regime}...")
+            # Start historical specific batch scoring thread with manual regime
+            self.scoring_thread = HistoricalSpecificBatchScoringThread(
+                start_date, end_date, interval_days, regime_key, ticker_file
             )
 
         else:  # Daily (Current)
@@ -1219,6 +1234,94 @@ class HistoricalSpecificScoringThread(QThread):
                 self.error_occurred.emit(f"Failed to import scoring module: {e}")
             except Exception as e:
                 self.error_occurred.emit(f"Historical specific scoring failed: {e}")
+            finally:
+                # Clean up sys.path
+                if str(scoring_script_path.parent) in sys.path:
+                    sys.path.remove(str(scoring_script_path.parent))
+
+        except Exception as e:
+            self.error_occurred.emit(f"Thread execution failed: {e}")
+
+
+class HistoricalSpecificBatchScoringThread(QThread):
+    """Thread for running scoring on a date range with manual regime"""
+    progress_update = pyqtSignal(int)
+    status_update = pyqtSignal(str)
+    result_ready = pyqtSignal(dict)
+    error_occurred = pyqtSignal(str)
+
+    def __init__(self, start_date, end_date, interval_days, regime_key, ticker_file=None):
+        super().__init__()
+        # Convert QDate to pandas Timestamp if needed
+        if hasattr(start_date, 'toPyDate'):
+            self.start_date = pd.Timestamp(start_date.toPyDate())
+        else:
+            self.start_date = pd.Timestamp(start_date)
+
+        if hasattr(end_date, 'toPyDate'):
+            self.end_date = pd.Timestamp(end_date.toPyDate())
+        else:
+            self.end_date = pd.Timestamp(end_date)
+
+        self.interval_days = interval_days
+        self.regime_key = regime_key
+        self.ticker_file = ticker_file
+
+    def run(self):
+        """Execute scoring for date range with manual regime"""
+        try:
+            # Add the scoring script path
+            scoring_script_path = PROJECT_ROOT / 'src' / 'scoring' / 'stock_Screener_MultiFactor_25_new.py'
+
+            if not scoring_script_path.exists():
+                self.error_occurred.emit(f"Scoring script not found at {scoring_script_path}")
+                return
+
+            # Add parent directory to sys.path
+            sys.path.insert(0, str(scoring_script_path.parent))
+
+            try:
+                # Import the module
+                import stock_Screener_MultiFactor_25_new as screener
+
+                # Set the ticker file if provided
+                if self.ticker_file:
+                    screener.set_ticker_file(self.ticker_file)
+
+                # Progress callback
+                def progress_callback(callback_type, value):
+                    if callback_type == 'progress':
+                        self.progress_update.emit(value)
+                    elif callback_type == 'status':
+                        self.status_update.emit(value)
+                    elif callback_type == 'error':
+                        self.error_occurred.emit(value)
+
+                # Run historical batch processing with manual regime
+                results = screener.run_historical_batch_with_regime(
+                    start_date=self.start_date,
+                    end_date=self.end_date,
+                    manual_regime=self.regime_key,
+                    interval_days=self.interval_days,
+                    progress_callback=progress_callback
+                )
+
+                # Emit results
+                self.result_ready.emit({
+                    'success': True,
+                    'mode': 'historical_specific_range',
+                    'results': results,
+                    'start_date': self.start_date.strftime('%Y-%m-%d'),
+                    'end_date': self.end_date.strftime('%Y-%m-%d'),
+                    'regime': self.regime_key,
+                    'interval_days': self.interval_days,
+                    'total_processed': len(results)
+                })
+
+            except ImportError as e:
+                self.error_occurred.emit(f"Failed to import scoring module: {e}")
+            except Exception as e:
+                self.error_occurred.emit(f"Historical specific batch scoring failed: {e}")
             finally:
                 # Clean up sys.path
                 if str(scoring_script_path.parent) in sys.path:
