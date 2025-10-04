@@ -1,21 +1,28 @@
 {
   "tickers": [
-    "PLTR",
-    "NVDA",
-    "EXEL",
-    "VEEV",
-    "RDDT",
-    "META",
-    "MNST",
-    "WPM",
-    "HIMS",
-    "AXON"
+    "AAPL",
+    "MSFT",
+    "AMZN",
+    "GOOGL",
+    "JNJ",
+    "JPM",
+    "XOM",
+    "PG",
+    "HD",
+    "TSLA"
   ],
-  "date_saved": "2025-09-17T13:55:17.061742",
-  "has_shares": false,
-  "portfolio_name": "SectorBal2_S10_P50",
-  "sharpe_ratio": 4.646,
-  "regime": "Steady Growth",
-  "data_source": "yfinance",
-  "selection_method": "dynamic_portfolio_selection"
+  "shares": {
+    "AAPL": 10.0,
+    "MSFT": 10.0,
+    "AMZN": 10.0,
+    "GOOGL": 10.0,
+    "JNJ": 10.0,
+    "JPM": 10.0,
+    "XOM": 10.0,
+    "PG": 10.0,
+    "HD": 10.0,
+    "TSLA": 10.0
+  },
+  "date_saved": "2025-10-04T12:00:00.000000",
+  "has_shares": true
 }

@@ -1350,216 +1350,122 @@ def get_company_info(info):
 
     return company_name, country
 
-# def yahooquery_hist(ticker, years=5):
-#     """
-#     Fetch historical data with proper column formatting
-#     Uses adjusted close prices for better accuracy
-#     """
-#     try:
-#         # DEBUG: Starting data fetch
-#         print(f"    → Fetching {years}-year history for {ticker}...")
-#         yq = Ticker(ticker, session=_global_curl_session)
-#
-#         # Calculate date range
-#         end_date = datetime.now()
-#         start_date = end_date - timedelta(days=365 * years)
-#         start_str = start_date.strftime('%Y-%m-%d')
-#         end_str = end_date.strftime('%Y-%m-%d')
-#
-#         # Get historical data
-#         hist = yq.history(start=start_str, end=end_str, interval='1d')
-#
-#         # DEBUG: Show initial fetch result
-#         if hist is None:
-#             print(f"    → History fetch returned None for {ticker}")
-#         elif hist.empty:
-#             print(f"    → History fetch returned empty DataFrame for {ticker}")
-#         else:
-#             print(f"    → Initial fetch successful: {len(hist)} raw records")
-#
-#         if hist is None or hist.empty:
-#             return pd.DataFrame()
-#
-#         # Handle MultiIndex case
-#         if isinstance(hist.index, pd.MultiIndex):
-#             if ticker in hist.index.get_level_values(0):
-#                 hist = hist.xs(ticker, level=0)
-#             else:
-#                 hist = hist.reset_index(level=0, drop=True)
-#
-#         # Standardize column names
-#         column_mapping = {
-#             'open': 'Open',
-#             'high': 'High',
-#             'low': 'Low',
-#             'close': 'Close',
-#             'adjclose': 'Close',  # Use adjusted close
-#             'volume': 'Volume'
-#         }
-#
-#         clean_data = pd.DataFrame(index=hist.index)
-#
-#         for old_col, new_col in column_mapping.items():
-#             if old_col in hist.columns:
-#                 clean_data[new_col] = hist[old_col]
-#             elif new_col in hist.columns:
-#                 clean_data[new_col] = hist[new_col]
-#
-#         # Prefer adjusted close if available
-#         if 'adjclose' in hist.columns:
-#             clean_data['Close'] = hist['adjclose']
-#         elif 'close' in hist.columns and 'Close' not in clean_data.columns:
-#             clean_data['Close'] = hist['close']
-#
-#         # Ensure all required columns exist
-#         required_columns = ['Open', 'High', 'Low', 'Close', 'Volume']
-#         for col in required_columns:
-#             if col not in clean_data.columns:
-#                 if col == 'Volume':
-#                     clean_data[col] = 0
-#                 elif col in ['Open', 'High', 'Low'] and 'Close' in clean_data.columns:
-#                     clean_data[col] = clean_data['Close']
-#
-#         # Clean up index
-#         if hasattr(clean_data.index, 'tz') and clean_data.index.tz is not None:
-#             clean_data.index = clean_data.index.tz_localize(None)
-#
-#         # Sort and clean
-#         clean_data = clean_data.sort_index()
-#         clean_data = clean_data.dropna(subset=['Close'])
-#
-#         # # Filter by years if needed
-#         # if years and len(clean_data) > 0:
-#         #     cutoff_date = datetime.now() - timedelta(days=365 * years)
-#         #     # Convert index to datetime for comparison
-#         #     clean_data = clean_data[pd.to_datetime(clean_data.index) >= pd.Timestamp(cutoff_date)]
-#
-#         # Filter by years if needed
-#         if years and len(clean_data) > 0:
-#             try:
-#                 # Calculate cutoff date
-#                 cutoff_date = datetime.now() - timedelta(days=365 * years)
-#
-#                 # Ensure both sides are comparable Timestamps
-#                 cutoff_timestamp = pd.Timestamp(cutoff_date).tz_localize(None)
-#
-#                 # Convert index to Timestamp if it isn't already
-#                 if not isinstance(clean_data.index, pd.DatetimeIndex):
-#                     clean_data.index = pd.to_datetime(clean_data.index)
-#
-#                 # Ensure index is timezone-naive for comparison
-#                 if clean_data.index.tz is not None:
-#                     clean_data.index = clean_data.index.tz_localize(None)
-#
-#                 # Now safe to compare
-#                 clean_data = clean_data[clean_data.index >= cutoff_timestamp]
-#
-#             except Exception as e:
-#                 print(f"    ⚠️ Warning: Could not filter by date range: {e}")
-#                 # If filtering fails, return all data rather than failing completely
-#                 pass
-#
-#         # At the end, before returning clean_data:
-#         print(f"    → Final processed data: {len(clean_data)} clean records")
-#
-#         return clean_data
-#
-#     except Exception as e:
-#         print(f"Error fetching history for {ticker}: {e}")
-#         return pd.DataFrame()
-
-
 def yahooquery_hist(ticker, years=5):
     """
-    Maximally robust version that handles any timezone issues
     Fetch historical data with proper column formatting
     Uses adjusted close prices for better accuracy
     """
     try:
         # DEBUG: Starting data fetch
         print(f"    → Fetching {years}-year history for {ticker}...")
-
-        # Use a direct approach with error handling
         yq = Ticker(ticker, session=_global_curl_session)
 
-        # Calculate date range as strings to avoid any timezone issues
+        # Calculate date range
         end_date = datetime.now()
         start_date = end_date - timedelta(days=365 * years)
         start_str = start_date.strftime('%Y-%m-%d')
         end_str = end_date.strftime('%Y-%m-%d')
 
-        # Get historical data with minimal processing initially
-        try:
-            hist = yq.history(start=start_str, end=end_str, interval='1d')
-            # DEBUG: Show initial fetch result
-            if hist is None:
-                print(f"    → History fetch returned None for {ticker}")
-            elif hist.empty:
-                print(f"    → History fetch returned empty DataFrame for {ticker}")
-            else:
-                print(f"    → Initial fetch successful: {len(hist)} raw records")
-        except Exception as e:
-            print(f"Error fetching history for {ticker}: {e}")
-            return pd.DataFrame()
+        # Get historical data
+        hist = yq.history(start=start_str, end=end_str, interval='1d')
 
-        # Create a completely new DataFrame to avoid any hidden metadata issues
+        # DEBUG: Show initial fetch result
+        if hist is None:
+            print(f"    → History fetch returned None for {ticker}")
+        elif hist.empty:
+            print(f"    → History fetch returned empty DataFrame for {ticker}")
+        else:
+            print(f"    → Initial fetch successful: {len(hist)} raw records")
+
         if hist is None or hist.empty:
             return pd.DataFrame()
 
-        # Extract data, avoiding any index operations that might trigger timezone issues
-        try:
-            # Handle MultiIndex case
-            if isinstance(hist.index, pd.MultiIndex):
-                # Try to extract just this ticker's data
-                if ticker in hist.index.get_level_values(0):
-                    hist = hist.xs(ticker, level=0)
-                else:
-                    # Fall back to dropping the first level
-                    hist = hist.reset_index(level=0, drop=True)
+        # Handle MultiIndex case
+        if isinstance(hist.index, pd.MultiIndex):
+            if ticker in hist.index.get_level_values(0):
+                hist = hist.xs(ticker, level=0)
+            else:
+                hist = hist.reset_index(level=0, drop=True)
 
-            # Create fresh DataFrame with timezone-naive index
-            fresh_data = []
-            for idx, row in hist.iterrows():
-                # Convert index to string and then back to datetime to strip timezone
-                date_str = pd.Timestamp(idx).strftime('%Y-%m-%d')
-                fresh_data.append({
-                    'Date': pd.Timestamp(date_str),
-                    'Open': row.get('open', row.get('Open', None)),
-                    'High': row.get('high', row.get('High', None)),
-                    'Low': row.get('low', row.get('Low', None)),
-                    'Close': row.get('adjclose', row.get('close', row.get('Close', None))),  # Prefer adjusted close
-                    'Volume': row.get('volume', row.get('Volume', None))
-                })
+        # Standardize column names
+        column_mapping = {
+            'open': 'Open',
+            'high': 'High',
+            'low': 'Low',
+            'close': 'Close',
+            'adjclose': 'Close',  # Use adjusted close
+            'volume': 'Volume'
+        }
 
-            # Create a completely new DataFrame with a clean index
-            result_df = pd.DataFrame(fresh_data)
-            if result_df.empty:
-                return pd.DataFrame()
+        clean_data = pd.DataFrame(index=hist.index)
 
-            # Set Date as index
-            result_df.set_index('Date', inplace=True)
+        for old_col, new_col in column_mapping.items():
+            if old_col in hist.columns:
+                clean_data[new_col] = hist[old_col]
+            elif new_col in hist.columns:
+                clean_data[new_col] = hist[new_col]
 
-            # Ensure columns are properly capitalized
-            result_df.columns = [col.title() for col in result_df.columns]
+        # Prefer adjusted close if available
+        if 'adjclose' in hist.columns:
+            clean_data['Close'] = hist['adjclose']
+        elif 'close' in hist.columns and 'Close' not in clean_data.columns:
+            clean_data['Close'] = hist['close']
 
-            # Filter by years with timezone-naive cutoff
-            if years:
-                cutoff = pd.Timestamp((datetime.now() - timedelta(days=365 * years)).strftime('%Y-%m-%d'))
-                result_df = result_df[result_df.index >= cutoff]
+        # Ensure all required columns exist
+        required_columns = ['Open', 'High', 'Low', 'Close', 'Volume']
+        for col in required_columns:
+            if col not in clean_data.columns:
+                if col == 'Volume':
+                    clean_data[col] = 0
+                elif col in ['Open', 'High', 'Low'] and 'Close' in clean_data.columns:
+                    clean_data[col] = clean_data['Close']
 
-            final_df = result_df.dropna().sort_index()
+        # Clean up index
+        if hasattr(clean_data.index, 'tz') and clean_data.index.tz is not None:
+            clean_data.index = clean_data.index.tz_localize(None)
 
-            # DEBUG: Final result
-            print(f"    → Final processed data: {len(final_df)} clean records")
+        # Sort and clean
+        clean_data = clean_data.sort_index()
+        clean_data = clean_data.dropna(subset=['Close'])
 
-            return final_df
+        # # Filter by years if needed
+        # if years and len(clean_data) > 0:
+        #     cutoff_date = datetime.now() - timedelta(days=365 * years)
+        #     # Convert index to datetime for comparison
+        #     clean_data = clean_data[pd.to_datetime(clean_data.index) >= pd.Timestamp(cutoff_date)]
 
-        except Exception as e:
-            print(f"Error fetching history for {ticker}: {e}")
-            return pd.DataFrame()
+        # Filter by years if needed
+        if years and len(clean_data) > 0:
+            try:
+                # Calculate cutoff date
+                cutoff_date = datetime.now() - timedelta(days=365 * years)
+
+                # Ensure both sides are comparable Timestamps
+                cutoff_timestamp = pd.Timestamp(cutoff_date).tz_localize(None)
+
+                # Convert index to Timestamp if it isn't already
+                if not isinstance(clean_data.index, pd.DatetimeIndex):
+                    clean_data.index = pd.to_datetime(clean_data.index)
+
+                # Ensure index is timezone-naive for comparison
+                if clean_data.index.tz is not None:
+                    clean_data.index = clean_data.index.tz_localize(None)
+
+                # Now safe to compare
+                clean_data = clean_data[clean_data.index >= cutoff_timestamp]
+
+            except Exception as e:
+                print(f"    ⚠️ Warning: Could not filter by date range: {e}")
+                # If filtering fails, return all data rather than failing completely
+                pass
+
+        # At the end, before returning clean_data:
+        print(f"    → Final processed data: {len(clean_data)} clean records")
+
+        return clean_data
 
     except Exception as e:
-        print(f"  ⚠️ Error fetching history for {ticker}: {e}")
+        print(f"Error fetching history for {ticker}: {e}")
         return pd.DataFrame()
 
 # --- Helper Functions ---

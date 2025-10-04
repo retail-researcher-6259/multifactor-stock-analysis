@@ -17,7 +17,6 @@
 from curl_cffi.requests import Session as CurlSession
 import yahooquery.utils as yq_utils
 import types
-import pandas_market_calendars as mcal
 
 
 class CurlCffiSessionWrapper(CurlSession):
@@ -57,7 +56,6 @@ import json
 import warnings
 from io import StringIO
 import sys
-import os
 
 pd.options.mode.chained_assignment = None  # disable copy-view warning
 
@@ -67,7 +65,8 @@ FRED_SERIES_ID = "GDP"  # U.S. Real GDP, quarterly
 
 # Get project root directory
 PROJECT_ROOT = Path(__file__).parent.parent.parent if '__file__' in globals() else Path.cwd().parent.parent.parent
-TICKER_FILE = PROJECT_ROOT / "config" / "Buyable_stocks_0901.txt"
+# PROJECT_ROOT = Path(__file__).parent.parent  # Go up two levels from src/scoring/
+TICKER_FILE = PROJECT_ROOT / "config" / "Buyable_stocks_test.txt"
 
 INSIDER_LOOKBACK_DAYS = 90
 TOP_N = 20
@@ -79,46 +78,47 @@ CACHE_DIR.mkdir(exist_ok=True)
 
 REGIME_WEIGHTS = {
         "Steady_Growth": {
-        "credit": 6.1,
-        "quality": -10.4,
-        "momentum": 36.8,
-        "financial_health": 44.9,
-        "growth": 29.4,
-        "value": -14.7,
-        "technical": 17.6,
-        "liquidity": -4.9,
-        "carry": -14.7,
-        "stability": -21.2,
-        "size": 40.9,
-        "insider": -9.8,
+        "credit": 48.6,
+        "quality": 18.1,
+        "momentum": 18.1,
+        "financial_health": 14.4,
+        "growth": 10.9,
+        "value": -7.3,
+        "technical": 3.8,
+        "liquidity": 3.6,
+        "carry": -3.6,
+        "stability": -3.0,
+        "size": -2.2,
+        "insider": -1.4,
     },
     "Strong_Bull": {
-        "credit": 6.7,
-        "quality": -13.3,
-        "momentum": 53.3,
-        "financial_health": 64.0,
-        "growth": 24.0,
-        "value": -18.7,
-        "technical": 20.0,
-        "liquidity": -8.0,
-        "carry": -24.0,
-        "stability": -26.7,
-        "size": 42.7,
-        "insider": -20.0,
+        # Placeholder weights - to be optimized later
+        "credit": 40.0,
+        "quality": 20.0,
+        "momentum": 25.0,
+        "financial_health": 15.0,
+        "growth": 15.0,
+        "value": -5.0,
+        "technical": 8.0,
+        "liquidity": 5.0,
+        "carry": -2.0,
+        "stability": -5.0,
+        "size": 0.0,
+        "insider": 2.0,
     },
     "Crisis_Bear": {
-        "momentum": 46.5,
-        "size": 43.3,
-        "financial_health": 14.8,
-        "credit": 8.2,
-        "insider": -18.5,
-        "growth": 56.2,
-        "quality": -5.1,
-        "liquidity": -9.9,
-        "value": -24.8,
-        "technical": 38.8,
-        "carry": -21.0,
-        "stability": -28.5,
+        "momentum": 72.0,      # Slight increase from 70.7
+        "size": 20.0,          # Rounded up from 17.6
+        "financial_health": 13.0,  # Reduced to minimize drag
+        "credit": 0.0,         # Eliminated (negative correlation)
+        "insider": 5.0,        # Rounded up from 4.4
+        "growth": 5.0,         # Reduced from 8.8 (negative correlation)
+        "quality": 0.0,        # Keep at zero
+        "liquidity": 5.0,      # Add for positive correlation
+        "value": 0.0,          # Keep at zero
+        "technical": -5.0,     # Unchanged
+        "carry": -5.0,         # Rounded from -4.4
+        "stability": -10.0,    # Rounded from -10.3
     }
 }
 
@@ -194,1070 +194,6 @@ _insider_no_data_tickers = set()
 _carry_data_cache = {}
 _carry_no_data_tickers = set()
 
-# Load Marketstack API configuration
-def load_marketstack_config():
-    """Load Marketstack API key from config file"""
-    config_file = "./config/marketstack_config.json"
-    if os.path.exists(config_file):
-        with open(config_file, 'r') as f:
-            config = json.load(f)
-            api_key = config.get('api_key', '')
-            if api_key and 'xxxxx' not in api_key and api_key != '':
-                return api_key
-    return None
-
-# Load the API key once at module level
-MARKETSTACK_API_KEY = load_marketstack_config()
-MARKETSTACK_BASE_URL = "https://api.marketstack.com/v2"
-
-
-def set_ticker_file(file_path):
-    """
-    Dynamically set the ticker file path
-
-    Args:
-        file_path: Path object or string to the ticker file
-    """
-    global TICKER_FILE
-    if isinstance(file_path, str):
-        TICKER_FILE = Path(file_path)
-    else:
-        TICKER_FILE = file_path
-
-    if not TICKER_FILE.exists():
-        raise FileNotFoundError(f"Ticker file not found: {TICKER_FILE}")
-
-    print(f"📂 Ticker file updated to: {TICKER_FILE}")
-    return TICKER_FILE
-
-
-def get_ticker_count():
-    """Get the count of tickers in the current file"""
-    try:
-        with open(TICKER_FILE, 'r') as f:
-            tickers = [line.strip() for line in f if line.strip() and not line.startswith('#')]
-            return len(tickers)
-    except:
-        return 0
-
-
-def load_regime_periods():
-    """Load regime periods from CSV file"""
-    regime_file = PROJECT_ROOT / "output" / "Regime_Detection_Results" / "regime_periods.csv"
-
-    if not regime_file.exists():
-        raise FileNotFoundError(f"Regime periods file not found at {regime_file}")
-
-    regime_df = pd.read_csv(regime_file)
-    regime_df['start_date'] = pd.to_datetime(regime_df['start_date'])
-    regime_df['end_date'] = pd.to_datetime(regime_df['end_date'])
-
-    return regime_df
-
-
-def is_trading_day(date, exchange='NYSE'):
-    """
-    Check if a given date is a trading day
-
-    Args:
-        date: pd.Timestamp or datetime object
-        exchange: Stock exchange calendar to use (default: NYSE)
-
-    Returns:
-        bool: True if trading day, False otherwise
-    """
-    # Convert to pandas Timestamp if needed
-    if not isinstance(date, pd.Timestamp):
-        date = pd.Timestamp(date)
-
-    # Ensure timezone-naive
-    if date.tz is not None:
-        date = date.tz_localize(None)
-
-    # Get the market calendar
-    try:
-        market = mcal.get_calendar(exchange)
-
-        # Check if the date is a trading day
-        # Get valid trading days for a range around the date
-        start = date - pd.Timedelta(days=5)
-        end = date + pd.Timedelta(days=5)
-
-        valid_days = market.valid_days(start_date=start, end_date=end)
-
-        # Convert to timezone-naive for comparison
-        valid_days = pd.DatetimeIndex([d.tz_localize(None) if d.tz else d for d in valid_days])
-
-        # Check if our date is in the valid trading days
-        return date.normalize() in valid_days.normalize()
-
-    except Exception as e:
-        print(f"Warning: Could not check trading calendar: {e}")
-        # Fallback to simple weekend check
-        return date.weekday() < 5  # Monday=0, Friday=4
-
-
-def get_last_trading_day(date, max_lookback=10):
-    """
-    Get the most recent trading day on or before the given date
-
-    Args:
-        date: Target date
-        max_lookback: Maximum days to look back
-
-    Returns:
-        pd.Timestamp: Last trading day
-    """
-    if not isinstance(date, pd.Timestamp):
-        date = pd.Timestamp(date)
-
-    # If it's already a trading day, return it
-    if is_trading_day(date):
-        return date
-
-    # Look back up to max_lookback days
-    for i in range(1, max_lookback + 1):
-        check_date = date - pd.Timedelta(days=i)
-        if is_trading_day(check_date):
-            print(
-                f"📅 {date.strftime('%Y-%m-%d')} is not a trading day, using {check_date.strftime('%Y-%m-%d')} instead")
-            return check_date
-
-    # If no trading day found, return original date
-    print(f"⚠️ Could not find trading day within {max_lookback} days of {date.strftime('%Y-%m-%d')}")
-    return date
-
-
-def get_regime_for_date(target_date, regime_df):
-    """
-    Determine which regime a specific date belongs to
-
-    Args:
-        target_date: datetime object or string
-        regime_df: DataFrame with regime periods
-
-    Returns:
-        regime_name (str) or None if date not in any regime
-    """
-    # Convert to pandas Timestamp for consistent comparison
-    if isinstance(target_date, str):
-        target_date = pd.Timestamp(target_date)
-    elif isinstance(target_date, datetime):
-        target_date = pd.Timestamp(target_date)
-    elif hasattr(target_date, 'date'):  # If it's a date object
-        target_date = pd.Timestamp(target_date)
-
-    # Ensure target_date is timezone-naive
-    if target_date.tz is not None:
-        target_date = target_date.tz_localize(None)
-
-    # Find regime that contains this date
-    for _, row in regime_df.iterrows():
-        # Ensure regime dates are also timezone-naive Timestamps
-        start = pd.Timestamp(row['start_date'])
-        end = pd.Timestamp(row['end_date'])
-
-        if start.tz is not None:
-            start = start.tz_localize(None)
-        if end.tz is not None:
-            end = end.tz_localize(None)
-
-        if start <= target_date <= end:
-            return row['regime_name']
-
-    return None
-
-
-def fetch_historical_data_for_date(ticker, target_date, lookback_days=365 * 2):
-    """
-    Fetch historical data up to a specific date with ADEQUATE lookback
-
-    CRITICAL: We need at least 252 trading days BEFORE the target date
-    for proper momentum calculation. So fetch 2 years of data.
-
-    Args:
-        ticker: Stock ticker symbol
-        target_date: Target date for analysis
-        lookback_days: Days to look back (DEFAULT INCREASED to 730 days = 2 years)
-
-    Returns:
-        DataFrame with historical price data
-    """
-    # Ensure we have enough historical data for momentum calculation
-    # 365*2 calendar days ≈ 504 trading days, which is plenty for 252-day momentum
-
-    if not isinstance(target_date, pd.Timestamp):
-        target_date = pd.Timestamp(target_date)
-
-    # Ensure timezone-naive
-    if target_date.tz is not None:
-        target_date = target_date.tz_localize(None)
-
-    # Calculate date range
-    end_date = target_date
-    start_date = target_date - pd.Timedelta(days=lookback_days)
-
-    try:
-        # Use yahooquery to fetch historical data
-        from yahooquery import Ticker
-        t = Ticker(ticker, session=_global_curl_session)
-
-        # Get historical data as strings to avoid timezone issues
-        hist = t.history(
-            start=start_date.strftime('%Y-%m-%d'),
-            end=end_date.strftime('%Y-%m-%d'),
-            interval='1d'
-        )
-
-        # Check if we got valid data
-        if hist is None or (isinstance(hist, pd.DataFrame) and hist.empty):
-            print(f"  ⚠️ No data returned for {ticker}")
-            return pd.DataFrame()
-
-        # Handle MultiIndex (ticker, date) if present
-        if isinstance(hist.index, pd.MultiIndex):
-            # Extract data for this specific ticker
-            if ticker in hist.index.get_level_values(0):
-                hist = hist.xs(ticker, level=0)
-            else:
-                # Try to drop the first level if it exists
-                hist = hist.reset_index(level=0, drop=True)
-
-        # Ensure we have a DataFrame with the expected columns
-        # yahooquery returns lowercase columns, we need to capitalize them
-        column_mapping = {
-            'open': 'Open',
-            'high': 'High',
-            'low': 'Low',
-            'close': 'Close',
-            'adjclose': 'Close',  # Use adjusted close as Close
-            'volume': 'Volume'
-        }
-
-        # Create a clean DataFrame with proper column names
-        clean_data = pd.DataFrame(index=hist.index)
-
-        for old_col, new_col in column_mapping.items():
-            if old_col in hist.columns:
-                clean_data[new_col] = hist[old_col]
-            # Handle case where columns might already be capitalized
-            elif new_col in hist.columns:
-                clean_data[new_col] = hist[new_col]
-
-        # Special handling for Close - prefer adjclose if available
-        if 'adjclose' in hist.columns:
-            clean_data['Close'] = hist['adjclose']
-        elif 'close' in hist.columns and 'Close' not in clean_data.columns:
-            clean_data['Close'] = hist['close']
-
-        # Ensure we have all required columns
-        required_columns = ['Open', 'High', 'Low', 'Close', 'Volume']
-        missing_columns = [col for col in required_columns if col not in clean_data.columns]
-
-        if missing_columns:
-            print(f"  ⚠️ Missing columns for {ticker}: {missing_columns}")
-            # If Close is missing, we can't proceed
-            if 'Close' in missing_columns:
-                print(f"  ❌ Critical: No Close price data for {ticker}")
-                return pd.DataFrame()
-
-            # Fill missing columns with reasonable defaults
-            for col in missing_columns:
-                if col == 'Volume':
-                    clean_data[col] = 0  # Default volume to 0
-                elif col in ['Open', 'High', 'Low']:
-                    # Use Close price as fallback for other price columns
-                    clean_data[col] = clean_data['Close']
-
-        # Ensure index is timezone-naive
-        if hasattr(clean_data.index, 'tz'):
-            if clean_data.index.tz is not None:
-                clean_data.index = clean_data.index.tz_localize(None)
-
-        # Sort by date and remove any NaN rows
-        clean_data = clean_data.sort_index()
-        clean_data = clean_data.dropna(subset=['Close'])  # At minimum, we need Close prices
-
-        # Validate we have sufficient data
-        if len(clean_data) < 50:  # Need at least 50 days for technical indicators
-            print(f"  ⚠️ Insufficient data for {ticker}: only {len(clean_data)} days")
-            return pd.DataFrame()
-
-        print(f"  ✅ Fetched {len(clean_data)} days of historical data for {ticker}")
-        return clean_data
-
-    except Exception as e:
-        print(f"  ❌ Error fetching historical data for {ticker}: {e}")
-        import traceback
-        traceback.print_exc()
-        return pd.DataFrame()
-
-
-def run_historical_scoring(target_date, progress_callback=None):
-    """
-    Run scoring for a specific historical date
-
-    Args:
-        target_date: Date to run scoring for (datetime or string)
-        progress_callback: Optional callback for progress updates
-
-    Returns:
-        dict with results
-    """
-    if isinstance(target_date, str):
-        target_date = pd.to_datetime(target_date)
-
-    # Load regime periods
-    regime_df = load_regime_periods()
-
-    # Get regime for this date
-    regime = get_regime_for_date(target_date, regime_df)
-
-    if regime is None:
-        raise ValueError(f"No regime found for date {target_date.strftime('%Y-%m-%d')}")
-
-    print(f"📅 Running historical scoring for {target_date.strftime('%Y-%m-%d')}")
-    print(f"🎯 Detected regime: {regime}")
-
-    # Clean regime name for file paths
-    regime_clean = regime.replace("/", "_").replace(" ", "_")
-
-    # Get weights for this regime
-    global WEIGHTS
-    WEIGHTS = get_regime_weights(regime_clean)
-
-    # The rest follows similar logic to main() but with historical data
-    # ... (similar processing logic as main function but using historical data)
-
-    # Create output filename with date
-    output_dir = get_output_directory(regime_clean)
-    date_str = target_date.strftime("%m%d")
-    fname = f"top_ranked_stocks_{regime_clean}_{date_str}.csv"
-    output_path = output_dir / fname
-
-    return {
-        'success': True,
-        'output_path': str(output_path),
-        'regime': regime,
-        'date': target_date.strftime('%Y-%m-%d'),
-        'weights': WEIGHTS
-    }
-
-
-def run_historical_batch(start_date=None, end_date=None, interval_days=1, progress_callback=None):
-    """
-    Run historical scoring for multiple dates using the complete run_historical_specific_date function
-    Auto-detects regime for each date and processes with full functionality
-    """
-    # Convert dates to pandas Timestamps for consistency
-    if end_date is None:
-        end_date = pd.Timestamp.now()
-    elif isinstance(end_date, str):
-        end_date = pd.Timestamp(end_date)
-    elif isinstance(end_date, datetime):
-        end_date = pd.Timestamp(end_date)
-    elif hasattr(end_date, 'date'):
-        end_date = pd.Timestamp(end_date)
-
-    if start_date is None:
-        start_date = end_date - pd.Timedelta(days=365)
-    elif isinstance(start_date, str):
-        start_date = pd.Timestamp(start_date)
-    elif isinstance(start_date, datetime):
-        start_date = pd.Timestamp(start_date)
-    elif hasattr(start_date, 'date'):
-        start_date = pd.Timestamp(start_date)
-
-    # Ensure dates are timezone-naive
-    if start_date.tz is not None:
-        start_date = start_date.tz_localize(None)
-    if end_date.tz is not None:
-        end_date = end_date.tz_localize(None)
-
-    # Load regime periods once
-    regime_df = load_regime_periods()
-
-    # First pass: identify all trading days to process
-    print("📅 Identifying trading days...")
-    if progress_callback:
-        progress_callback('status', "Identifying trading days in date range...")
-        progress_callback('progress', 0)
-
-    dates_to_process = []
-    skipped_dates = []
-    current_date = start_date
-
-    while current_date <= end_date:
-        if is_trading_day(current_date):
-            dates_to_process.append(current_date)
-        else:
-            skipped_dates.append(current_date)
-            print(f"⏭️ Skipping {current_date.strftime('%Y-%m-%d')} (Market Closed)")
-        current_date += pd.Timedelta(days=interval_days)
-
-    total_trading_days = len(dates_to_process)
-    total_days_in_range = len(dates_to_process) + len(skipped_dates)
-
-    print(f"📊 Found {total_trading_days} trading days out of {total_days_in_range} total days")
-    print(f"📅 Processing from {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}")
-
-    if progress_callback:
-        progress_callback('status', f"Processing {total_trading_days} trading days...")
-        progress_callback('progress', 5)
-
-    results = []
-    successful_dates = 0
-    skipped_existing = 0
-    error_dates = 0
-    no_regime_dates = 0
-
-    # Process each trading day
-    for i, date in enumerate(dates_to_process):
-        # Calculate precise progress
-        base_progress = 5
-        processing_progress = int((i / total_trading_days) * 95) if total_trading_days > 0 else 0
-        current_progress = base_progress + processing_progress
-
-        if progress_callback:
-            progress_callback('progress', current_progress)
-            status_msg = (f"Processing {date.strftime('%Y-%m-%d')} "
-                          f"(Day {i + 1}/{total_trading_days}) - "
-                          f"{current_progress}% complete")
-            progress_callback('status', status_msg)
-
-        print(f"\n[{i + 1}/{total_trading_days}] Processing {date.strftime('%Y-%m-%d')}...")
-
-        try:
-            # Get regime for this date from regime_periods.csv
-            regime = get_regime_for_date(date, regime_df)
-
-            if regime is None:
-                print(f"  ⚠️ No regime found for {date.strftime('%Y-%m-%d')}, skipping...")
-                no_regime_dates += 1
-                results.append({
-                    'date': date.strftime('%Y-%m-%d'),
-                    'status': 'no_regime',
-                    'message': 'No regime period found'
-                })
-                continue
-
-            # Clean regime name for file paths
-            regime_clean = regime.replace("/", "_").replace(" ", "_")
-
-            # Check if file already exists
-            output_dir = get_output_directory(regime_clean)
-            date_str = date.strftime("%m%d")
-            # Note: Using auto-detected regime, not manual
-            fname = f"top_ranked_stocks_{regime_clean}_{date_str}.csv"
-            output_path = output_dir / fname
-
-            if output_path.exists():
-                print(f"  ✓ File already exists, skipping...")
-                skipped_existing += 1
-                results.append({
-                    'date': date.strftime('%Y-%m-%d'),
-                    'regime': regime,
-                    'status': 'exists',
-                    'path': str(output_path),
-                    'message': 'File already exists'
-                })
-                continue
-
-            # Update status for actual processing
-            if progress_callback:
-                progress_callback('status',
-                                  f"Fetching data for {date.strftime('%Y-%m-%d')} ({regime} regime)...")
-
-            print(f"  🎯 Auto-detected regime: {regime}")
-
-            # Create a nested progress callback for the inner function
-            def nested_progress_callback(callback_type, value):
-                # Don't override the main progress bar, but pass through status updates
-                if callback_type == 'status' and progress_callback:
-                    progress_callback('status', f"{date.strftime('%Y-%m-%d')}: {value}")
-
-            # Use the complete run_historical_specific_date function
-            # Note: We're passing the auto-detected regime, not a manual one
-            result = run_historical_specific_date(
-                target_date=date,
-                regime=regime,  # Auto-detected regime
-                progress_callback=nested_progress_callback
-            )
-
-            # Process the result
-            if result.get('success'):
-                successful_dates += 1
-                print(f"  ✅ Successfully processed - {result.get('total_stocks', 0)} stocks ranked")
-                results.append({
-                    'date': date.strftime('%Y-%m-%d'),
-                    'regime': regime,
-                    'status': 'success',
-                    'path': result.get('output_path'),
-                    'total_stocks': result.get('total_stocks', 0),
-                    'message': f"Processed {result.get('total_stocks', 0)} stocks"
-                })
-            else:
-                error_dates += 1
-                error_msg = result.get('error', 'Unknown error')
-                print(f"  ❌ Failed: {error_msg}")
-                results.append({
-                    'date': date.strftime('%Y-%m-%d'),
-                    'regime': regime,
-                    'status': 'error',
-                    'error': error_msg,
-                    'message': f"Processing failed: {error_msg}"
-                })
-
-        except Exception as e:
-            error_dates += 1
-            print(f"  ❌ Error: {e}")
-            results.append({
-                'date': date.strftime('%Y-%m-%d'),
-                'status': 'error',
-                'error': str(e),
-                'message': f"Exception: {str(e)}"
-            })
-
-    # Final summary
-    if progress_callback:
-        progress_callback('progress', 100)
-        summary_msg = (f"Batch processing complete! "
-                       f"Success: {successful_dates}, "
-                       f"Existing: {skipped_existing}, "
-                       f"No regime: {no_regime_dates}, "
-                       f"Errors: {error_dates}")
-        progress_callback('status', summary_msg)
-
-    print(f"\n{'=' * 60}")
-    print(f"📊 BATCH PROCESSING SUMMARY")
-    print(f"{'=' * 60}")
-    print(f"✅ Successfully processed: {successful_dates} dates")
-    print(f"⏭️ Skipped (existing): {skipped_existing} dates")
-    print(f"⚠️ No regime found: {no_regime_dates} dates")
-    print(f"❌ Errors: {error_dates} dates")
-    print(f"📅 Weekend/holidays skipped: {len(skipped_dates)} dates")
-    print(f"{'=' * 60}")
-
-    return results
-
-
-def run_historical_scoring_for_date(target_date, regime_df):
-    """
-    DEPRECATED: This is a placeholder function.
-    Use run_historical_specific_date() instead for full functionality.
-    """
-    # Get regime for this date
-    regime = get_regime_for_date(target_date, regime_df)
-    if regime is None:
-        return {
-            'date': target_date.strftime('%Y-%m-%d'),
-            'status': 'no_regime',
-            'message': 'No regime period found'
-        }
-
-    # Call the complete function
-    return run_historical_specific_date(target_date, regime)
-
-
-def run_historical_specific_date(target_date, regime, progress_callback=None):
-    """
-    Run scoring for a specific historical date with manually selected regime
-    COMPLETE FIXED VERSION with proper industry adjustment
-
-    Args:
-        target_date: Date to run scoring for (datetime or pandas Timestamp)
-        regime: Manually selected regime name (e.g., "Steady_Growth")
-        progress_callback: Optional callback for progress updates
-
-    Returns:
-        dict with results
-    """
-    # Convert to pandas Timestamp for consistency
-    if isinstance(target_date, str):
-        target_date = pd.Timestamp(target_date)
-    elif isinstance(target_date, datetime):
-        target_date = pd.Timestamp(target_date)
-    elif hasattr(target_date, 'date'):  # If it's a date object
-        target_date = pd.Timestamp(target_date)
-
-    # Ensure timezone-naive
-    if target_date.tz is not None:
-        target_date = target_date.tz_localize(None)
-
-    print(f"📅 Running historical scoring for {target_date.strftime('%Y-%m-%d')}")
-    print(f"🎯 Using manually selected regime: {regime}")
-    print(f"📊 This mode is for comparing data sources (yfinance vs Marketstack)")
-
-    # Clean regime name for file paths
-    regime_clean = regime.replace("/", "_").replace(" ", "_")
-
-    # Get weights for the manually selected regime
-    global WEIGHTS
-    WEIGHTS = get_regime_weights(regime_clean)
-
-    # Set up progress tracking
-    if progress_callback:
-        progress_callback('status', f"Loading tickers for {regime} regime...")
-        progress_callback('progress', 5)
-
-    # Load tickers
-    try:
-        with open(TICKER_FILE, "r") as f:
-            tickers = [ln.strip().replace("$", "") for ln in f if ln.strip()]
-    except FileNotFoundError:
-        error_msg = f"Ticker file '{TICKER_FILE}' not found!"
-        if progress_callback:
-            progress_callback('error', error_msg)
-        raise FileNotFoundError(error_msg)
-
-    print(f"📋 Processing {len(tickers)} tickers for {target_date.strftime('%Y-%m-%d')}")
-
-    if progress_callback:
-        progress_callback('status', f"Fetching historical data for {target_date.strftime('%Y-%m-%d')}...")
-        progress_callback('progress', 10)
-
-    # Pre-scan for liquidity
-    avg_vol = {}
-    for tk in tickers:
-        try:
-            avg_vol[tk] = fast_info(tk).get("averageVolume10days", 0)
-        except Exception:
-            avg_vol[tk] = 0
-    vol_min, vol_max = min(avg_vol.values()), max(avg_vol.values())
-
-    # Main data harvest
-    raw = []
-    pm_cache, em_cache, mcaps = [], [], []
-    value_metrics_by_ticker = {}
-    processed_count = 0
-    total_tickers = len(tickers)
-
-    for i, tk in enumerate(tickers, 1):
-        if progress_callback:
-            progress = 10 + int((i / total_tickers) * 80)  # 10-90% for processing
-            progress_callback('progress', progress)
-            progress_callback('status', f"Processing {tk} ({i}/{total_tickers})...")
-
-        print(f"[{i}/{total_tickers}] Processing {tk} for {target_date.strftime('%Y-%m-%d')}...")
-
-        try:
-            # Get fundamentals (current, not historical)
-            info = safe_get_info(tk)
-
-            # Get historical price data up to target date
-            hist = fetch_historical_data_for_date(tk, target_date, lookback_days=365 * 2)
-
-            if hist.empty or len(hist) < 200:
-                print(f"  ⚠️ Insufficient historical data for {tk}, skipping...")
-                continue
-
-            # Calculate Factor Scores using historical data
-            value, quality, financial_health, roic, value_dict = get_fundamentals(tk)
-            value_metrics_by_ticker[tk] = value_dict
-
-            tech = get_technical_score(hist)
-            insider = get_insider_score_simple(tk)
-            growth = get_growth_score(tk, info)
-
-            # Momentum calculations
-            pm, em = get_momentum_score(tk, hist)
-            pm_cache.append(pm)
-            em_cache.append(em)
-
-            # Stability score
-            stability = get_stability_score(hist)
-
-            # Other factors
-            mcap = info.get("marketCap")
-            mcaps.append(mcap)
-            sector, industry = sector_industry(info)
-
-            company_name, country = get_company_info(info)
-            credit = get_credit_score(info)
-            carry = get_carry_score_simple(tk, info)
-
-            # Liquidity score
-            liq = 0
-            if vol_max != vol_min:
-                liq = round((avg_vol[tk] - vol_min) / (vol_max - vol_min), 2)
-
-            raw.append(dict(
-                Ticker=tk, Value=value, Quality=quality,
-                FinancialHealth=financial_health,
-                Technical=tech, Insider=insider, PriceMom=pm, EarnMom=em,
-                Stability=stability, Growth=growth,
-                MarketCap=mcap, Credit=credit,
-                Liquidity=liq, Carry=carry, Sector=sector, Industry=industry,
-                ROIC=roic,
-                CompanyName=company_name, Country=country
-            ))
-
-            processed_count += 1
-            print(f"  ✅ {tk} successfully processed")
-
-        except Exception as e:
-            print(f"  ❌ Error processing {tk}: {e}")
-            continue
-
-    if not raw:
-        error_msg = f"No usable tickers for {target_date.strftime('%Y-%m-%d')}"
-        print(error_msg)
-        if progress_callback:
-            progress_callback('error', error_msg)
-        return {'success': False, 'error': error_msg}
-
-    # Finalizing scores
-    if progress_callback:
-        progress_callback('progress', 90)
-        progress_callback('status', "Finalizing scores and rankings...")
-
-    print(f"📊 Processed {processed_count} tickers successfully")
-
-    # Convert to DataFrame
-    df_raw = pd.DataFrame(raw)
-
-    # Apply sector-relative growth adjustment
-    if 'Growth' in df_raw.columns:
-        df_raw['GrowthScore_SectorZ'] = df_raw.groupby('Sector')['Growth'].transform(
-            lambda x: zscore(x, nan_policy='omit') if len(x) > 1 else 0
-        )
-        df_raw['GrowthScore_Norm'] = df_raw['GrowthScore_SectorZ'].apply(
-            lambda z: 1 / (1 + np.exp(-np.clip(z, -2, 2))) if pd.notna(z) else 0.5
-        )
-    else:
-        df_raw['GrowthScore_Norm'] = 0
-
-    # Industry adjustment for value scores
-    VALUE_METRIC_WEIGHTS = {
-        'earnings_yield': 0.25,
-        'fcf_yield': 0.25,
-        'ev_to_ebitda': 0.20,
-        'pb': 0.15,
-        'ev_to_sales': 0.15
-    }
-
-    # Create columns for each value metric
-    value_metric_names = list(VALUE_METRIC_WEIGHTS.keys())
-    for metric in value_metric_names:
-        df_raw[f'value_{metric}'] = df_raw['Ticker'].map(
-            lambda t: value_metrics_by_ticker.get(t, {}).get(metric, np.nan)
-        )
-
-    # Calculate industry-relative z-scores for each value metric
-    for metric in value_metric_names:
-        col_name = f'value_{metric}'
-        if df_raw['Industry'].nunique() > 1:
-            df_raw[f'{col_name}_industry_z'] = df_raw.groupby('Industry')[col_name].transform(
-                lambda x: (x - x.mean()) / (x.std() if x.std() > 0 else 1) if len(x) > 1 else 0
-            )
-        else:
-            values = df_raw[col_name]
-            mean_val = values.mean()
-            std_val = values.std()
-            if std_val > 0:
-                df_raw[f'{col_name}_industry_z'] = (values - mean_val) / std_val
-            else:
-                df_raw[f'{col_name}_industry_z'] = 0
-
-        df_raw[f'{col_name}_norm'] = df_raw[f'{col_name}_industry_z'].apply(
-            lambda z: 1 / (1 + np.exp(-np.clip(z, -3, 3))) if pd.notna(z) else np.nan
-        )
-
-    # Calculate the final industry-adjusted value score
-    industry_adjusted_value_scores = []
-    for _, row in df_raw.iterrows():
-        weighted_score = 0
-        total_weight = 0
-        for metric in value_metric_names:
-            norm_col = f'value_{metric}_norm'
-            if norm_col in row and pd.notna(row[norm_col]):
-                weight = VALUE_METRIC_WEIGHTS[metric]
-                weighted_score += row[norm_col] * weight
-                total_weight += weight
-
-        if total_weight > 0:
-            industry_adjusted_value_scores.append(weighted_score / total_weight)
-        else:
-            industry_adjusted_value_scores.append(row['Value'])
-
-    df_raw['ValueIndustryAdj'] = industry_adjusted_value_scores
-
-    # Cross-sectional normalizations for momentum
-    pm_arr = np.asarray(pm_cache)
-    em_arr = np.asarray(em_cache)
-
-    def safe_z(a):
-        """Calculate z-scores with proper handling of NaN values"""
-        a_clean = [val for val in a if val is not None and not np.isnan(val)]
-        if len(a_clean) < 2:
-            return np.zeros_like(a)
-
-        mu = np.mean(a_clean)
-        sig = np.std(a_clean, ddof=1)
-
-        if sig > 0:
-            z_scores = [(val - mu) / sig if val is not None and not np.isnan(val) else 0 for val in a]
-            return np.array(z_scores)
-        else:
-            return np.zeros_like(a)
-
-    pm_z = safe_z(pm_arr)
-    em_z = safe_z(em_arr)
-    squash = lambda x: 1 / (1 + np.exp(-x))
-
-    # Size normalization
-    mcaps_arr = np.asarray([m for m in mcaps if m is not None])
-    if len(mcaps_arr) > 0:
-        mc_min, mc_80th = np.min(mcaps_arr), np.percentile(mcaps_arr, 80)
-    else:
-        mc_min, mc_80th = 1e9, 10e9
-
-    # Calculate final scores
-    results = []
-
-    for k, rec in df_raw.iterrows():
-        pm_val = pm_z[k] if k < len(pm_z) and not np.isnan(pm_z[k]) else 0
-        pm_score = squash(pm_val)
-
-        em_val = em_z[k] if k < len(em_z) and not np.isnan(em_z[k]) else 0
-        em_score = squash(em_val)
-
-        momentum = round(0.6 * pm_score + 0.4 * em_score, 3)
-
-        size = get_size_score({'marketCap': rec['MarketCap']}, mc_min, mc_80th)
-
-        total = (
-                rec['ValueIndustryAdj'] * WEIGHTS['value'] +
-                rec['Quality'] * WEIGHTS['quality'] +
-                rec['FinancialHealth'] * WEIGHTS['financial_health'] +
-                rec['Technical'] * WEIGHTS['technical'] +
-                rec['Insider'] * WEIGHTS['insider'] +
-                momentum * WEIGHTS['momentum'] +
-                rec['Stability'] * WEIGHTS['stability'] +
-                size * WEIGHTS['size'] +
-                rec['Credit'] * WEIGHTS['credit'] +
-                rec['Liquidity'] * WEIGHTS['liquidity'] +
-                rec['Carry'] * WEIGHTS['carry'] +
-                rec.get('GrowthScore_Norm', 0) * WEIGHTS['growth']
-        )
-
-        results.append({
-            "Ticker": rec['Ticker'],
-            "CompanyName": rec['CompanyName'],
-            "Country": rec['Country'],
-            "Score": round(total, 2),
-            "Value": round(rec['ValueIndustryAdj'], 3),
-            "Quality": rec['Quality'],
-            "FinancialHealth": round(rec['FinancialHealth'], 3),
-            "Technical": rec['Technical'],
-            "Insider": rec['Insider'],
-            "Momentum": momentum,
-            "Stability": rec['Stability'],
-            "Size": size,
-            "Credit": rec['Credit'],
-            "Liquidity": rec['Liquidity'],
-            "Carry": rec['Carry'],
-            "Growth": round(rec.get('GrowthScore_Norm', 0), 3),
-            "Sector": rec['Sector'],
-            "Industry": rec['Industry']
-        })
-
-    # Create output
-    if progress_callback:
-        progress_callback('progress', 95)
-        progress_callback('status', "Generating output file...")
-
-    df = pd.DataFrame(results).sort_values("Score", ascending=False)
-
-    # Create output filename with date and manual regime indicator
-    output_dir = get_output_directory(regime_clean)
-    date_str = target_date.strftime("%m%d")
-    fname = f"top_ranked_stocks_{regime_clean}_{date_str}.csv"
-    output_path = output_dir / fname
-
-    # Save the file
-    df.to_csv(output_path, index=False)
-    print(f"📁 Saved {fname} to {output_dir}")
-    print(f"📈 Top 10 stocks for {target_date.strftime('%Y-%m-%d')} with {regime} regime:")
-    print(df.head(10)[['Ticker', 'CompanyName', 'Score']])
-
-    if progress_callback:
-        progress_callback('progress', 100)
-        progress_callback('status', f"Complete! Analyzed {len(df)} stocks for {target_date.strftime('%Y-%m-%d')}")
-
-    return {
-        'success': True,
-        'output_path': str(output_path),
-        'results_df': df,
-        'regime': regime,
-        'date': target_date.strftime('%Y-%m-%d'),
-        'total_stocks': len(df),
-        'weights': WEIGHTS,
-        'mode': 'historical_specific'
-    }
-
-
-def run_historical_batch_with_regime(start_date=None, end_date=None, manual_regime=None, interval_days=1,
-                                     progress_callback=None):
-    """
-    Run historical scoring for multiple dates using a MANUALLY SELECTED regime
-    Similar to run_historical_batch but uses the same regime for all dates
-
-    Args:
-        start_date: Start date for processing
-        end_date: End date for processing
-        manual_regime: Manually selected regime to use for ALL dates (e.g., "Steady Growth")
-        interval_days: Interval between dates (default 1 for daily)
-        progress_callback: Optional callback for progress updates
-
-    Returns:
-        List of results for each date processed
-    """
-    # Convert dates to pandas Timestamps for consistency
-    if end_date is None:
-        end_date = pd.Timestamp.now()
-    elif isinstance(end_date, str):
-        end_date = pd.Timestamp(end_date)
-    elif isinstance(end_date, datetime):
-        end_date = pd.Timestamp(end_date)
-    elif hasattr(end_date, 'date'):
-        end_date = pd.Timestamp(end_date)
-
-    if start_date is None:
-        start_date = end_date - pd.Timedelta(days=365)
-    elif isinstance(start_date, str):
-        start_date = pd.Timestamp(start_date)
-    elif isinstance(start_date, datetime):
-        start_date = pd.Timestamp(start_date)
-    elif hasattr(start_date, 'date'):
-        start_date = pd.Timestamp(start_date)
-
-    # Ensure dates are timezone-naive
-    if start_date.tz is not None:
-        start_date = start_date.tz_localize(None)
-    if end_date.tz is not None:
-        end_date = end_date.tz_localize(None)
-
-    # Validate manual regime is provided
-    if manual_regime is None:
-        raise ValueError("Manual regime must be provided for this mode")
-
-    # First pass: identify all trading days to process
-    print(f"📅 Identifying trading days with manual regime: {manual_regime}")
-    if progress_callback:
-        progress_callback('status', f"Identifying trading days for {manual_regime} regime...")
-        progress_callback('progress', 0)
-
-    dates_to_process = []
-    skipped_dates = []
-    current_date = start_date
-
-    while current_date <= end_date:
-        if is_trading_day(current_date):
-            dates_to_process.append(current_date)
-        else:
-            skipped_dates.append(current_date)
-            print(f"⭕ Skipping {current_date.strftime('%Y-%m-%d')} (Market Closed)")
-        current_date += pd.Timedelta(days=interval_days)
-
-    total_trading_days = len(dates_to_process)
-    total_days_in_range = len(dates_to_process) + len(skipped_dates)
-
-    print(f"📊 Found {total_trading_days} trading days out of {total_days_in_range} total days")
-    print(f"📅 Processing from {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}")
-    print(f"🎯 Using manual regime: {manual_regime} for all dates")
-
-    if progress_callback:
-        progress_callback('status', f"Processing {total_trading_days} trading days with {manual_regime} regime...")
-        progress_callback('progress', 5)
-
-    results = []
-    successful_dates = 0
-    skipped_existing = 0
-    error_dates = 0
-
-    # Process each trading day with the SAME manual regime
-    for i, date in enumerate(dates_to_process):
-        # Calculate precise progress
-        base_progress = 5
-        processing_progress = int((i / total_trading_days) * 95) if total_trading_days > 0 else 0
-        current_progress = base_progress + processing_progress
-
-        if progress_callback:
-            progress_callback('progress', current_progress)
-            progress_callback('status',
-                              f"Processing {date.strftime('%Y-%m-%d')} ({i + 1}/{total_trading_days}) with {manual_regime}")
-
-        print(f"\n{'=' * 60}")
-        print(f"📅 Processing date {i + 1}/{total_trading_days}: {date.strftime('%Y-%m-%d')}")
-        print(f"🎯 Using manual regime: {manual_regime}")
-        print(f"{'=' * 60}")
-
-        try:
-            # Create a nested progress callback for the inner function
-            def nested_progress_callback(callback_type, value):
-                if callback_type == 'status' and progress_callback:
-                    progress_callback('status', f"{date.strftime('%Y-%m-%d')}: {value}")
-
-            # Use run_historical_specific_date with the MANUAL regime
-            result = run_historical_specific_date(
-                target_date=date,
-                regime=manual_regime,  # Use manual regime for ALL dates
-                progress_callback=nested_progress_callback
-            )
-
-            # Process the result
-            if result.get('success'):
-                successful_dates += 1
-                print(f"  ✅ Successfully processed - {result.get('total_stocks', 0)} stocks ranked")
-                results.append({
-                    'date': date.strftime('%Y-%m-%d'),
-                    'regime': manual_regime,
-                    'status': 'success',
-                    'path': result.get('output_path'),
-                    'total_stocks': result.get('total_stocks', 0),
-                    'message': f"Processed {result.get('total_stocks', 0)} stocks"
-                })
-            else:
-                error_dates += 1
-                error_msg = result.get('error', 'Unknown error')
-                print(f"  ❌ Failed: {error_msg}")
-                results.append({
-                    'date': date.strftime('%Y-%m-%d'),
-                    'regime': manual_regime,
-                    'status': 'error',
-                    'error': error_msg,
-                    'message': f"Processing failed: {error_msg}"
-                })
-
-        except Exception as e:
-            error_dates += 1
-            print(f"  ❌ Error: {e}")
-            results.append({
-                'date': date.strftime('%Y-%m-%d'),
-                'regime': manual_regime,
-                'status': 'error',
-                'error': str(e),
-                'message': f"Exception: {str(e)}"
-            })
-
-    # Final summary
-    if progress_callback:
-        progress_callback('progress', 100)
-        summary_msg = (f"Batch processing complete! "
-                       f"Success: {successful_dates}, "
-                       f"Errors: {error_dates}")
-        progress_callback('status', summary_msg)
-
-    print(f"\n{'=' * 60}")
-    print(f"📊 BATCH PROCESSING SUMMARY (Manual Regime: {manual_regime})")
-    print(f"{'=' * 60}")
-    print(f"✅ Successfully processed: {successful_dates} dates")
-    print(f"❌ Errors: {error_dates} dates")
-    print(f"📅 Weekend/holidays skipped: {len(skipped_dates)} dates")
-    print(f"{'=' * 60}")
-
-    return results
 
 # Add a progress callback mechanism
 class ProgressTracker:
@@ -1350,131 +286,9 @@ def get_company_info(info):
 
     return company_name, country
 
-# def yahooquery_hist(ticker, years=5):
-#     """
-#     Fetch historical data with proper column formatting
-#     Uses adjusted close prices for better accuracy
-#     """
-#     try:
-#         # DEBUG: Starting data fetch
-#         print(f"    → Fetching {years}-year history for {ticker}...")
-#         yq = Ticker(ticker, session=_global_curl_session)
-#
-#         # Calculate date range
-#         end_date = datetime.now()
-#         start_date = end_date - timedelta(days=365 * years)
-#         start_str = start_date.strftime('%Y-%m-%d')
-#         end_str = end_date.strftime('%Y-%m-%d')
-#
-#         # Get historical data
-#         hist = yq.history(start=start_str, end=end_str, interval='1d')
-#
-#         # DEBUG: Show initial fetch result
-#         if hist is None:
-#             print(f"    → History fetch returned None for {ticker}")
-#         elif hist.empty:
-#             print(f"    → History fetch returned empty DataFrame for {ticker}")
-#         else:
-#             print(f"    → Initial fetch successful: {len(hist)} raw records")
-#
-#         if hist is None or hist.empty:
-#             return pd.DataFrame()
-#
-#         # Handle MultiIndex case
-#         if isinstance(hist.index, pd.MultiIndex):
-#             if ticker in hist.index.get_level_values(0):
-#                 hist = hist.xs(ticker, level=0)
-#             else:
-#                 hist = hist.reset_index(level=0, drop=True)
-#
-#         # Standardize column names
-#         column_mapping = {
-#             'open': 'Open',
-#             'high': 'High',
-#             'low': 'Low',
-#             'close': 'Close',
-#             'adjclose': 'Close',  # Use adjusted close
-#             'volume': 'Volume'
-#         }
-#
-#         clean_data = pd.DataFrame(index=hist.index)
-#
-#         for old_col, new_col in column_mapping.items():
-#             if old_col in hist.columns:
-#                 clean_data[new_col] = hist[old_col]
-#             elif new_col in hist.columns:
-#                 clean_data[new_col] = hist[new_col]
-#
-#         # Prefer adjusted close if available
-#         if 'adjclose' in hist.columns:
-#             clean_data['Close'] = hist['adjclose']
-#         elif 'close' in hist.columns and 'Close' not in clean_data.columns:
-#             clean_data['Close'] = hist['close']
-#
-#         # Ensure all required columns exist
-#         required_columns = ['Open', 'High', 'Low', 'Close', 'Volume']
-#         for col in required_columns:
-#             if col not in clean_data.columns:
-#                 if col == 'Volume':
-#                     clean_data[col] = 0
-#                 elif col in ['Open', 'High', 'Low'] and 'Close' in clean_data.columns:
-#                     clean_data[col] = clean_data['Close']
-#
-#         # Clean up index
-#         if hasattr(clean_data.index, 'tz') and clean_data.index.tz is not None:
-#             clean_data.index = clean_data.index.tz_localize(None)
-#
-#         # Sort and clean
-#         clean_data = clean_data.sort_index()
-#         clean_data = clean_data.dropna(subset=['Close'])
-#
-#         # # Filter by years if needed
-#         # if years and len(clean_data) > 0:
-#         #     cutoff_date = datetime.now() - timedelta(days=365 * years)
-#         #     # Convert index to datetime for comparison
-#         #     clean_data = clean_data[pd.to_datetime(clean_data.index) >= pd.Timestamp(cutoff_date)]
-#
-#         # Filter by years if needed
-#         if years and len(clean_data) > 0:
-#             try:
-#                 # Calculate cutoff date
-#                 cutoff_date = datetime.now() - timedelta(days=365 * years)
-#
-#                 # Ensure both sides are comparable Timestamps
-#                 cutoff_timestamp = pd.Timestamp(cutoff_date).tz_localize(None)
-#
-#                 # Convert index to Timestamp if it isn't already
-#                 if not isinstance(clean_data.index, pd.DatetimeIndex):
-#                     clean_data.index = pd.to_datetime(clean_data.index)
-#
-#                 # Ensure index is timezone-naive for comparison
-#                 if clean_data.index.tz is not None:
-#                     clean_data.index = clean_data.index.tz_localize(None)
-#
-#                 # Now safe to compare
-#                 clean_data = clean_data[clean_data.index >= cutoff_timestamp]
-#
-#             except Exception as e:
-#                 print(f"    ⚠️ Warning: Could not filter by date range: {e}")
-#                 # If filtering fails, return all data rather than failing completely
-#                 pass
-#
-#         # At the end, before returning clean_data:
-#         print(f"    → Final processed data: {len(clean_data)} clean records")
-#
-#         return clean_data
-#
-#     except Exception as e:
-#         print(f"Error fetching history for {ticker}: {e}")
-#         return pd.DataFrame()
-
 
 def yahooquery_hist(ticker, years=5):
-    """
-    Maximally robust version that handles any timezone issues
-    Fetch historical data with proper column formatting
-    Uses adjusted close prices for better accuracy
-    """
+    """Maximally robust version that handles any timezone issues"""
     try:
         # DEBUG: Starting data fetch
         print(f"    → Fetching {years}-year history for {ticker}...")
@@ -1499,7 +313,7 @@ def yahooquery_hist(ticker, years=5):
             else:
                 print(f"    → Initial fetch successful: {len(hist)} raw records")
         except Exception as e:
-            print(f"Error fetching history for {ticker}: {e}")
+            print(f"Initial history fetch failed for {ticker}: {e}")
             return pd.DataFrame()
 
         # Create a completely new DataFrame to avoid any hidden metadata issues
@@ -1527,7 +341,7 @@ def yahooquery_hist(ticker, years=5):
                     'Open': row.get('open', row.get('Open', None)),
                     'High': row.get('high', row.get('High', None)),
                     'Low': row.get('low', row.get('Low', None)),
-                    'Close': row.get('adjclose', row.get('close', row.get('Close', None))),  # Prefer adjusted close
+                    'Close': row.get('close', row.get('Close', None)),
                     'Volume': row.get('volume', row.get('Volume', None))
                 })
 
@@ -1555,11 +369,11 @@ def yahooquery_hist(ticker, years=5):
             return final_df
 
         except Exception as e:
-            print(f"Error fetching history for {ticker}: {e}")
+            print(f"Data processing failed for {ticker}: {e}")
             return pd.DataFrame()
 
     except Exception as e:
-        print(f"  ⚠️ Error fetching history for {ticker}: {e}")
+        print(f"⚠️ Error fetching history for {ticker}: {e}")
         return pd.DataFrame()
 
 # --- Helper Functions ---
@@ -2273,148 +1087,8 @@ def get_technical_score(df):
     return round(score, 4)
 
 
-def _calculate_score_from_marketstack(df):
-    """
-    Calculate insider score from Marketstack insider data
-    Internal helper function - not called directly
-    """
-    if df.empty:
-        return 0
-
-    try:
-        # Expected columns from Marketstack insider endpoint
-        total_buy = 0
-        total_sell = 0
-        unique_insiders = set()
-        recent_dates = []
-
-        for _, row in df.iterrows():
-            # Get transaction details
-            trans_type = str(row.get('transaction_type', '')).lower()
-            trans_code = str(row.get('transaction_code', '')).upper()
-            value = float(row.get('value', row.get('amount', 0)))
-            shares = float(row.get('shares', row.get('quantity', 0)))
-            insider_name = row.get('insider_name', row.get('filer', 'Unknown'))
-            trans_date = row.get('transaction_date', row.get('date', ''))
-
-            # Track unique insiders
-            unique_insiders.add(insider_name)
-
-            # Track dates for recency
-            if trans_date:
-                recent_dates.append(pd.to_datetime(trans_date))
-
-            # Determine if buy or sell
-            buy_keywords = ['buy', 'purchase', 'acquire', 'exercise', 'grant', 'P']
-            sell_keywords = ['sell', 'sale', 'dispose', 'S']
-
-            is_buy = any(kw in trans_type for kw in buy_keywords) or trans_code == 'P'
-            is_sell = any(kw in trans_type for kw in sell_keywords) or trans_code == 'S'
-
-            # Use value if available, otherwise estimate from shares
-            if value > 0:
-                trans_value = value
-            elif shares > 0 and 'price' in row:
-                trans_value = shares * float(row.get('price', 0))
-            else:
-                trans_value = 0
-
-            if is_buy:
-                total_buy += abs(trans_value)
-            elif is_sell:
-                total_sell += abs(trans_value)
-
-        # Calculate metrics
-        total_value = total_buy + total_sell
-
-        if total_value == 0:
-            return 0
-
-        # Buy ratio
-        buy_ratio = total_buy / total_value
-
-        # Magnitude factor
-        magnitude = min(np.log1p(total_value) / np.log1p(10_000_000), 1.0)
-
-        # Breadth factor (unique insiders)
-        breadth = min(len(unique_insiders) / 5, 1.0)
-
-        # Recency factor
-        if recent_dates:
-            latest_date = max(recent_dates)
-            days_since = (datetime.now() - latest_date).days
-            recency = max(0, 1 - (days_since / INSIDER_LOOKBACK_DAYS))
-        else:
-            recency = 0.5
-
-        # Calculate final score
-        raw_score = (buy_ratio - 0.5) * 2  # Convert to -1 to +1
-        weighted_score = raw_score * (0.5 + 0.2 * magnitude + 0.2 * breadth + 0.1 * recency)
-
-        return round(max(-1, min(1, weighted_score)), 2)
-
-    except Exception:
-        return 0
-
-
-def _calculate_score_from_sec_filings(df):
-    """
-    Calculate insider score from SEC Form 4 filings
-    Internal helper function - not called directly
-    """
-    if df.empty:
-        return 0
-
-    try:
-        # Parse Form 4 data
-        total_buy = 0
-        total_sell = 0
-        unique_insiders = set()
-
-        for _, row in df.iterrows():
-            # Extract from Form 4 filing data
-            filing_text = str(row.get('filing_text', row.get('content', ''))).lower()
-            reporting_owner = row.get('reporting_owner', row.get('insider', 'Unknown'))
-
-            unique_insiders.add(reporting_owner)
-
-            # Simple heuristic: look for acquisition/disposition keywords
-            if 'acquisition' in filing_text or 'purchase' in filing_text:
-                # Estimate value (you may need to parse more carefully)
-                value = float(row.get('transaction_value', 100000))  # Default estimate
-                total_buy += abs(value)
-            elif 'disposition' in filing_text or 'sale' in filing_text:
-                value = float(row.get('transaction_value', 100000))  # Default estimate
-                total_sell += abs(value)
-
-        # Calculate metrics
-        total_value = total_buy + total_sell
-
-        if total_value == 0:
-            return 0
-
-        # Simplified scoring for SEC filings
-        buy_ratio = total_buy / total_value
-        diversity = min(len(unique_insiders) / 3, 1.0)  # Lower threshold for SEC data
-
-        # Calculate score
-        raw_score = (buy_ratio - 0.5) * 2
-        weighted_score = raw_score * (0.6 + 0.4 * diversity)
-
-        return round(max(-1, min(1, weighted_score)), 2)
-
-    except Exception:
-        return 0
-
-
 def get_insider_score_simple(ticker):
-    """
-    Enhanced insider score that tries Marketstack SEC data first, then yahooquery
-
-    This is a complete drop-in replacement for the original function.
-    It maintains backward compatibility while adding Marketstack support.
-    """
-
+    """Continuous insider score based on magnitude and patterns"""
     # Check if we already know this ticker has no insider data
     if ticker in _insider_no_data_tickers:
         return 0
@@ -2423,72 +1097,7 @@ def get_insider_score_simple(ticker):
     if ticker in _insider_data_cache:
         return _insider_data_cache[ticker]
 
-    # ========================================================================
-    # STEP 1: Try Marketstack SEC data first (new capability)
-    # ========================================================================
-    if MARKETSTACK_API_KEY:
-        try:
-            # Prepare date range
-            end_date = datetime.now()
-            start_date = end_date - timedelta(days=INSIDER_LOOKBACK_DAYS)
-
-            # Prepare API parameters
-            params = {
-                'access_key': MARKETSTACK_API_KEY,
-                'symbols': ticker,
-                'date_from': start_date.strftime('%Y-%m-%d'),
-                'date_to': end_date.strftime('%Y-%m-%d'),
-                'limit': 100
-            }
-
-            # Try insider transactions endpoint first
-            response = requests.get(f"{MARKETSTACK_BASE_URL}/insider", params=params, timeout=5)
-
-            if response.status_code == 200:
-                data = response.json()
-                if 'data' in data and data['data']:
-                    # Process Marketstack insider data
-                    df = pd.DataFrame(data['data'])
-
-                    # Calculate score from Marketstack data
-                    score = _calculate_score_from_marketstack(df)
-
-                    if score != 0:  # If we got valid data
-                        _insider_data_cache[ticker] = score
-                        print(f"  ✔ {ticker}: Got insider score from Marketstack SEC: {score}")
-                        return score
-
-            # If insider endpoint didn't work, try SEC filings endpoint
-            response = requests.get(f"{MARKETSTACK_BASE_URL}/sec/filings", params=params, timeout=5)
-
-            if response.status_code == 200:
-                data = response.json()
-                if 'data' in data and data['data']:
-                    df = pd.DataFrame(data['data'])
-
-                    # Filter for Form 4 (insider transactions)
-                    if 'form_type' in df.columns:
-                        form4_df = df[df['form_type'].str.contains('4', na=False)]
-
-                        if not form4_df.empty:
-                            score = _calculate_score_from_sec_filings(form4_df)
-
-                            if score != 0:
-                                _insider_data_cache[ticker] = score
-                                print(f"  ✔ {ticker}: Got insider score from SEC filings: {score}")
-                                return score
-
-        except Exception as e:
-            # Silently continue to yahooquery fallback
-            pass
-
-    # ========================================================================
-    # STEP 2: Fallback to yahooquery (your original method)
-    # ========================================================================
     try:
-        from yahooquery import Ticker
-
-        # Assuming _global_curl_session is defined in your script
         t = Ticker(ticker, session=_global_curl_session)
         df = t.insider_transactions
 
@@ -2516,7 +1125,7 @@ def get_insider_score_simple(ticker):
             _insider_data_cache[ticker] = 0
             return 0
 
-        # Calculate net buying/selling values (your original logic)
+        # Calculate net buying/selling values
         df["value"] = pd.to_numeric(df["value"], errors="coerce").fillna(0)
         txt = df["transactionText"].str.lower()
 
@@ -2571,26 +1180,23 @@ def get_insider_score_simple(ticker):
         return 0
 
 
+# --- 1-a  price-momentum (12-mo total return, skip last 21 trading days) ------
 def _price_mom(df):
     """
-    Calculate 12-month price momentum with fallback options
-    Prefers 252-day lookback but can adjust if less data available
+    Classic US-equity '12-1' momentum:
+       r = (P[t-21] / P[t-252]) – 1
+    Then z-score across the universe later & squash to 0-1 with logistic.
+    Here we only compute the raw return; scaling happens in main().
+
+    Fix:
+    Simple 12-month momentum (no 1-month skip):
+        r = (P[t] / P[t-252]) – 1
     """
-    # Ideal: 252 trading days (1 year)
-    if len(df) >= 252:
-        ret = (df["Close"].iloc[-1] / df["Close"].iloc[-252]) - 1
-        return ret
-
-    # Fallback: Use as much data as available (minimum 180 days)
-    elif len(df) >= 180:
-        # Use all available data, but note this is not ideal
-        print(f"  ⚠️ Using {len(df)} days for momentum (less than 252)")
-        ret = (df["Close"].iloc[-1] / df["Close"].iloc[0]) - 1
-        return ret
-
-    # Not enough data
-    else:
+    if len(df) < 180:
         return None
+    ret = (df["Close"].iloc[-1] / df["Close"].iloc[0]) - 1
+    return ret
+
 
 # --- 1-b  earnings-momentum (EPS surprises & upward revisions) ---------------
 def _earnings_mom(ticker):
@@ -2621,27 +1227,73 @@ def _earnings_mom(ticker):
         return None
 
 
-def get_momentum_score(ticker, hist):
+def get_momentum_score(ticker, df):
     """
-    Fixed momentum score calculation for historical data
-    Ensures consistent 252-day lookback for price momentum
+    Returns raw 12-1 price momentum and raw earnings-momentum (%),
+    or np.nan when not available.  No side-effects.
     """
-    # Price momentum - use fixed 252-day lookback
-    pm = None
-    if len(hist) >= 252:
-        pm = (hist["Close"].iloc[-1] / hist["Close"].iloc[-252]) - 1
-    elif len(hist) >= 180:
-        # Fallback if we don't have full year
-        # But flag this as it will cause differences
-        print(f"    ⚠️ {ticker}: Only {len(hist)} days for momentum")
-        pm = (hist["Close"].iloc[-1] / hist["Close"].iloc[0]) - 1
-
-    # Earnings momentum
+    pm = _price_mom(df)
     em = _earnings_mom(ticker)
-
-    # Convert None → np.nan for z-score calculations
+    # convert None → np.nan so zscore can ignore them
     return (pm if pm is not None else np.nan,
             em if em is not None else np.nan)
+
+# def get_momentum_score(ticker, df):
+#     """
+#     Enhanced momentum score that evaluates magnitude, consistency,
+#     and acceleration across multiple timeframes.
+#     """
+#     if len(df) < 252:  # Need at least 1 year of data
+#         return 0.5, None  # Return a neutral score instead of np.nan
+#
+#     # Price momentum components
+#     try:
+#         # 1. Multiple timeframe momentum magnitude
+#         periods = [21, 63, 126, 252]  # 1, 3, 6, 12 months
+#         weights = [0.1, 0.3, 0.3, 0.3]  # More weight to medium-term
+#
+#         momentum_scores = []
+#         for period in periods:
+#             if len(df) >= period:
+#                 ret = df['Close'].iloc[-1] / df['Close'].iloc[-period] - 1
+#                 # Transform to 0-1 scale (-20% to +40% → 0 to 1)
+#                 norm_ret = (ret + 0.2) / 0.6
+#                 momentum_scores.append(np.clip(norm_ret, 0, 1))
+#
+#         # 2. Momentum consistency
+#         daily_returns = df['Close'].pct_change().dropna()
+#         # Ratio of up days to total days in last 3 months
+#         if len(daily_returns) >= 63:
+#             up_ratio = np.sum(daily_returns.iloc[-63:] > 0) / 63
+#             consistency_score = up_ratio  # Already 0-1
+#         else:
+#             consistency_score = 0.5  # Neutral
+#
+#         # 3. Momentum acceleration
+#         if len(df) >= 252:
+#             ret_3m = df['Close'].iloc[-1] / df['Close'].iloc[-63] - 1
+#             ret_6m = df['Close'].iloc[-63] / df['Close'].iloc[-126] - 1
+#             acceleration = ret_3m - ret_6m
+#             # Transform to 0-1 scale (-15% to +15% → 0 to 1)
+#             accel_score = np.clip((acceleration + 0.15) / 0.3, 0, 1)
+#         else:
+#             accel_score = 0.5  # Neutral
+#
+#         # Weighted price momentum
+#         weighted_magnitude = sum(w * s for w, s in zip(weights, momentum_scores)) if momentum_scores else 0.5
+#         pm_score = 0.6 * weighted_magnitude + 0.2 * consistency_score + 0.2 * accel_score
+#
+#         # Get earnings momentum
+#         em = _earnings_mom(ticker)
+#
+#         # return pm_score, em
+#         # Ensure we return a float for pm_score and a float/np.nan for em
+#         return float(pm_score), float(em) if em is not None else np.nan
+#
+#     except Exception as e:
+#         print(f"⚠️ Momentum calculation error for {ticker}: {e}")
+#         return 0.5, None  # Return neutral score on error
+
 
 def get_30d_std(df):
     """
@@ -2862,31 +1514,10 @@ def get_stability_score(df, market_df=None):
 
     return round(stability_score, 3)  # Return positive score
 
-
-def main(regime="Steady_Growth", mode="daily", target_date=None, progress_callback=None):
-    """
-    Main scoring function with support for daily and historical modes
-
-    Args:
-        regime: Regime name for scoring weights (used in daily mode)
-        mode: "daily" for current data, "historical" for past data
-        target_date: Date for historical analysis (used in historical mode)
-        progress_callback: Function to call with progress updates
-    """
-
-    if mode == "historical":
-        if target_date is None:
-            raise ValueError("target_date required for historical mode")
-        return run_historical_scoring(target_date, progress_callback)
-    else:
-        # Original daily mode logic
-        return run_daily_scoring(regime, progress_callback)
-
 # --- Main Logic ---
-def run_daily_scoring(regime="Steady_Growth", progress_callback=None):
+def main(regime="Steady_Growth", progress_callback=None):
     """
-    Original main scoring function with progress tracking
-    This is the ORIGINAL version from stock_Screener_MultiFactor_24.py
+    Main scoring function with progress tracking
 
     Args:
         regime: Regime name for scoring weights
@@ -2920,12 +1551,24 @@ def run_daily_scoring(regime="Steady_Growth", progress_callback=None):
             _progress_tracker.callback('error', error_msg)
         return
 
-    # Initialize progress tracker with total tickers
-    if _progress_tracker:
-        _progress_tracker.total_tickers = len(tickers)
+    if len(tickers) < 5:
+        warning_msg = f"⚠️ Warning: Only {len(tickers)} tickers found"
+        print(warning_msg)
+        if _progress_tracker:
+            _progress_tracker.callback('status', warning_msg)
 
-    # -------- 1-a  pre-scan: avgVol for liquidity -----------------------------
+    print(f"✅ Loaded {len(tickers)} tickers from file.")
+
+    if _progress_tracker:
+        _progress_tracker.set_total(len(tickers))
+        _progress_tracker.callback('status', f"Analyzing {len(tickers)} tickers...")
+        _progress_tracker.callback('progress', 10)
+
+    # -------- 1-a. pre-scan: avgVol for liquidity -----------------------------
     avg_vol = {}
+    if _progress_tracker:
+        _progress_tracker.callback('status', "Pre-scanning for liquidity data...")
+
     for tk in tickers:
         try:
             avg_vol[tk] = fast_info(tk).get("averageVolume10days", 0)
@@ -2933,21 +1576,21 @@ def run_daily_scoring(regime="Steady_Growth", progress_callback=None):
             avg_vol[tk] = 0
     vol_min, vol_max = min(avg_vol.values()), max(avg_vol.values())
 
-    # -------- 1-b. main data harvest ------------------------------------------
     if _progress_tracker:
-        _progress_tracker.callback('status', "Downloading data and calculating factor scores...")
-        _progress_tracker.callback('progress', 10)
+        _progress_tracker.callback('progress', 15)
 
-    raw = []  # store everything, score later
+    # -------- 1-b. main data harvest ------------------------------------------
+    raw = []
     pm_cache, em_cache, mcaps = [], [], []
     value_metrics_by_ticker = {}
-    skipped_tickers = []
+
     processed_tickers = []
+    skipped_tickers = []
 
     for i, tk in enumerate(tickers, 1):
         print(f"[{i}/{len(tickers)}] scraping {tk} …")
 
-        # Update progress for each ticker
+        # Update progress tracker
         if _progress_tracker:
             _progress_tracker.update_progress(tk, "processing")
 
@@ -2955,23 +1598,21 @@ def run_daily_scoring(regime="Steady_Growth", progress_callback=None):
             info = safe_get_info(tk)
             print(f"  ✓ Info fetched for {tk}: MarketCap={info.get('marketCap', 'N/A')}")
 
-            # Skip if basic data missing
-            if not info or not info.get("marketCap"):
-                print(f"  ⚠️ SKIPPING {tk}: No market cap data")
-                skipped_tickers.append((tk, "No market cap"))
-                continue
+            hist = yahooquery_hist(tk, years=1)
 
-            hist = yahooquery_hist(tk, years=2)
-
-            if hist.empty or len(hist) < 200:
+            if hist.empty or len(hist) < 150:
                 if hist.empty:
                     print(f"  ⚠️ SKIPPING {tk}: Historical data is empty")
                 else:
-                    print(f"  ⚠️ SKIPPING {tk}: Insufficient data points ({len(hist)} < 200)")
-                skipped_tickers.append((tk, f"Insufficient data ({len(hist)} days)"))
+                    print(f"  ⚠️ SKIPPING {tk}: Insufficient data points ({len(hist)} < 150)")
+                skipped_tickers.append((tk, f"Empty" if hist.empty else f"Only {len(hist)} points"))
+
+                # Still update progress for skipped tickers
+                if _progress_tracker:
+                    _progress_tracker.update_progress(tk, "completed")
                 continue
 
-            # Calculate Factor Scores
+            # Get all the scores
             value, quality, financial_health, roic, value_dict = get_fundamentals(tk)
             value_metrics_by_ticker[tk] = value_dict
 
@@ -3017,8 +1658,19 @@ def run_daily_scoring(regime="Steady_Growth", progress_callback=None):
 
         except Exception as e:
             print(f"⚠️ {tk}: {e}")
+            # Update progress even for failed tickers
             if _progress_tracker:
                 _progress_tracker.update_progress(tk, "completed")
+
+    # Debug summary
+    print("\n" + "=" * 60)
+    print(f"PROCESSING SUMMARY:")
+    print(f"Total tickers: {len(tickers)}")
+    print(f"Successfully processed: {len(processed_tickers)} - {processed_tickers}")
+    print(f"Skipped: {len(skipped_tickers)}")
+    for tk, reason in skipped_tickers:
+        print(f"  - {tk}: {reason}")
+    print("=" * 60 + "\n")
 
     if not raw:
         error_msg = "⚠️ No usable tickers"
@@ -3027,27 +1679,25 @@ def run_daily_scoring(regime="Steady_Growth", progress_callback=None):
             _progress_tracker.callback('error', error_msg)
         return
 
-    # -------- Final processing phase ------------------------------
+    # -------- Final processing phase (10% of progress) ----------------------
     if _progress_tracker:
         _progress_tracker.callback('progress', 90)
         _progress_tracker.callback('status', "Finalizing scores and rankings...")
 
     # -------- 2.  cross-sectional normalisations ------------------------------
-    # Convert to DataFrame
-    df_raw = pd.DataFrame(raw)
-
-    # Apply sector-relative growth adjustment
-    df_raw = apply_sector_relative_growth_adjustment(df_raw)
-
     # 2-a momentum z-scores → logistic 0-1
     pm_arr = np.asarray(pm_cache)
     em_arr = np.asarray(em_cache)
 
     def safe_z(a):
-        """Calculate z-scores with proper handling of NaN values"""
+        """
+        Calculate z-scores with proper handling of NaN values and sparse data.
+        Returns z-scores of input array with safety checks.
+        """
+        # Convert array to float, explicitly handling non-numeric values
         a_float = np.array([np.nan if x is None or not isinstance(x, (int, float)) else x for x in a], dtype=np.float64)
         finite = np.isfinite(a_float)
-        if finite.sum() <= 2:
+        if finite.sum() <= 2:  # 0 or 1 valid numbers
             return np.zeros_like(a_float, dtype=float)
         return zscore(a_float, nan_policy='omit')
 
@@ -3055,12 +1705,16 @@ def run_daily_scoring(regime="Steady_Growth", progress_callback=None):
     em_z = safe_z(em_arr)
     squash = lambda z: 1 / (1 + np.exp(-np.clip(z, -2, 2)))
 
+    # Create DataFrame and apply growth adjustment
+    df_raw = pd.DataFrame(raw)
+    df_raw = apply_sector_relative_growth_adjustment(df_raw)
+
     # 2-b size-percentile breakpoints
     mcaps_clean = [m for m in mcaps if m]
-    mc_min = np.nanmin(mcaps_clean) if mcaps_clean else 0
-    mc_80th = np.nanpercentile(mcaps_clean, 80) if mcaps_clean else 1
+    mc_min = np.nanmin(mcaps_clean)
+    mc_80th = np.nanpercentile(mcaps_clean, 80)
 
-    # Create columns for each value metric
+    # Create columns for each value metric in your DataFrame
     value_metric_names = list(VALUE_METRIC_WEIGHTS.keys())
     for metric in value_metric_names:
         df_raw[f'value_{metric}'] = df_raw['Ticker'].map(
@@ -3093,39 +1747,44 @@ def run_daily_scoring(regime="Steady_Growth", progress_callback=None):
         if total_weight > 0:
             industry_adjusted_value_scores.append(weighted_score / total_weight)
         else:
-            industry_adjusted_value_scores.append(row['Value'])
+            industry_adjusted_value_scores.append(row['Value'])  # Fall back to original value
 
     df_raw['ValueIndustryAdj'] = industry_adjusted_value_scores
 
+
     # -------- 3.  final scoring ticker-by-ticker ------------------------------
     results = []
-    for k, rec in df_raw.iterrows():
-        # Momentum scores
+    for k, rec in df_raw.iterrows():  # iterate over DataFrame rows
+        # For price momentum, apply z-score normalization and sigmoid
         pm_val = pm_z[k] if k < len(pm_z) and not np.isnan(pm_z[k]) else 0
-        pm_score = squash(pm_val)
+        pm_score = squash(pm_val)  # Apply sigmoid to normalize to 0-1
 
+        # For earnings momentum, apply z-score normalization and sigmoid
         em_val = em_z[k] if k < len(em_z) and not np.isnan(em_z[k]) else 0
-        em_score = squash(em_val)
+        em_score = squash(em_val)  # Apply sigmoid to normalize to 0-1
 
+        # Combine with same weights as optimizer (60% price, 40% earnings)
         momentum = round(0.6 * pm_score + 0.4 * em_score, 3)
 
-        size = get_size_score({'marketCap': rec['MarketCap']}, mc_min, mc_80th)
+        size = get_size_score({'marketCap': rec['MarketCap']},
+                              mc_min, mc_80th)
 
         total = (
                 rec['ValueIndustryAdj'] * WEIGHTS['value'] +
                 rec['Quality'] * WEIGHTS['quality'] +
-                rec['FinancialHealth'] * WEIGHTS['financial_health'] +
+                rec['FinancialHealth'] * WEIGHTS['financial_health'] +  # NEW
                 rec['Technical'] * WEIGHTS['technical'] +
                 rec['Insider'] * WEIGHTS['insider'] +
                 momentum * WEIGHTS['momentum'] +
-                rec['Stability'] * WEIGHTS['stability'] +
+                rec['Stability'] * WEIGHTS['stability'] +  # Changed from Penalty * volatility_penalty
                 size * WEIGHTS['size'] +
                 rec['Credit'] * WEIGHTS['credit'] +
                 rec['Liquidity'] * WEIGHTS['liquidity'] +
                 rec['Carry'] * WEIGHTS['carry'] +
-                rec.get('GrowthScore_Norm', 0) * WEIGHTS['growth']
+                rec['GrowthScore_Norm'] * WEIGHTS['growth']  # Using enhanced growth
         )
 
+        # UPDATE THE RESULTS DICTIONARY:
         results.append({
             "Ticker": rec['Ticker'],
             "CompanyName": rec['CompanyName'],
@@ -3133,18 +1792,19 @@ def run_daily_scoring(regime="Steady_Growth", progress_callback=None):
             "Score": round(total, 2),
             "Value": round(rec['ValueIndustryAdj'], 3),
             "Quality": rec['Quality'],
-            "FinancialHealth": round(rec['FinancialHealth'], 3),
+            "FinancialHealth": round(rec['FinancialHealth'], 3),  # NEW
             "Technical": rec['Technical'],
             "Insider": rec['Insider'],
             "Momentum": momentum,
-            "Stability": rec['Stability'],
+            "Stability": rec['Stability'],  # Changed from "VolPenalty": rec['Penalty']
             "Size": size,
             "Credit": rec['Credit'],
             "Liquidity": rec['Liquidity'],
             "Carry": rec['Carry'],
-            "Growth": round(rec.get('GrowthScore_Norm', 0), 3),
-            "Sector": rec['Sector'],
-            "Industry": rec['Industry']
+            "Growth": round(rec.get('GrowthScore_Norm', 0), 3),  # Enhanced growth
+            # "ROICAdj": round(rec.ROICAdj, 3),  # REMOVE THIS
+            "Sector": rec.Sector,
+            "Industry": rec.Industry
         })
 
     # -------- 4.  output ------------------------------------------------------
@@ -3156,7 +1816,7 @@ def run_daily_scoring(regime="Steady_Growth", progress_callback=None):
 
     # Get output directory for the regime
     output_dir = get_output_directory(regime)
-    today = datetime.now().strftime("%m%d")
+    today = datetime.now().strftime("%m%d")  # e.g. 0503
     fname = f"top_ranked_stocks_{regime}_{today}.csv"
     output_path = output_dir / fname
 
@@ -3175,33 +1835,24 @@ def run_daily_scoring(regime="Steady_Growth", progress_callback=None):
 
 # Add this function to be called from the UI
 def run_scoring_for_regime(regime_name, progress_callback=None):
-    """
-    Wrapper function to run scoring for a specific regime
-    Used by the UI thread
-
-    Args:
-        regime_name: Name of the regime (e.g., "Steady_Growth")
-        progress_callback: Optional callback for progress updates
-
-    Returns:
-        dict with success status and results
-    """
+    """Entry point for UI to run scoring for a specific regime with progress tracking"""
     try:
-        # Clean regime name
-        regime_clean = regime_name.replace(" ", "_").replace("/", "_")
-
-        # Run daily scoring with the specified regime
-        result = run_daily_scoring(regime_clean, progress_callback)
-
+        output_path, df = main(regime_name, progress_callback)
         return {
             'success': True,
+            'output_path': str(output_path),
+            'results_df': df,
             'regime': regime_name,
-            'results': result
+            'total_stocks': len(df),
+            'weights': get_regime_weights(regime_name)
         }
     except Exception as e:
+        if progress_callback:
+            progress_callback('error', str(e))
         return {
             'success': False,
-            'error': str(e)
+            'error': str(e),
+            'regime': regime_name
         }
 
 if __name__ == "__main__":

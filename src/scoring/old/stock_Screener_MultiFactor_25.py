@@ -211,36 +211,6 @@ MARKETSTACK_API_KEY = load_marketstack_config()
 MARKETSTACK_BASE_URL = "https://api.marketstack.com/v2"
 
 
-def set_ticker_file(file_path):
-    """
-    Dynamically set the ticker file path
-
-    Args:
-        file_path: Path object or string to the ticker file
-    """
-    global TICKER_FILE
-    if isinstance(file_path, str):
-        TICKER_FILE = Path(file_path)
-    else:
-        TICKER_FILE = file_path
-
-    if not TICKER_FILE.exists():
-        raise FileNotFoundError(f"Ticker file not found: {TICKER_FILE}")
-
-    print(f"📂 Ticker file updated to: {TICKER_FILE}")
-    return TICKER_FILE
-
-
-def get_ticker_count():
-    """Get the count of tickers in the current file"""
-    try:
-        with open(TICKER_FILE, 'r') as f:
-            tickers = [line.strip() for line in f if line.strip() and not line.startswith('#')]
-            return len(tickers)
-    except:
-        return 0
-
-
 def load_regime_periods():
     """Load regime periods from CSV file"""
     regime_file = PROJECT_ROOT / "output" / "Regime_Detection_Results" / "regime_periods.csv"
@@ -544,6 +514,182 @@ def run_historical_scoring(target_date, progress_callback=None):
     }
 
 
+# def run_historical_batch(start_date=None, end_date=None, interval_days=1, progress_callback=None):
+#     """
+#     Run historical scoring for multiple dates (skipping non-trading days)
+#
+#     Args:
+#         start_date: Start date (default: 1 year ago)
+#         end_date: End date (default: today)
+#         interval_days: Days between each scoring (default: 7 for weekly)
+#         progress_callback: Optional callback for progress updates
+#
+#     Returns:
+#         List of results
+#     """
+#     # Convert dates to pandas Timestamps for consistency
+#     if end_date is None:
+#         end_date = pd.Timestamp.now()
+#     elif isinstance(end_date, str):
+#         end_date = pd.Timestamp(end_date)
+#     elif isinstance(end_date, datetime):
+#         end_date = pd.Timestamp(end_date)
+#     elif hasattr(end_date, 'date'):  # If it's a date object
+#         end_date = pd.Timestamp(end_date)
+#
+#     if start_date is None:
+#         start_date = end_date - pd.Timedelta(days=365)
+#     elif isinstance(start_date, str):
+#         start_date = pd.Timestamp(start_date)
+#     elif isinstance(start_date, datetime):
+#         start_date = pd.Timestamp(start_date)
+#     elif hasattr(start_date, 'date'):  # If it's a date object
+#         start_date = pd.Timestamp(start_date)
+#
+#     # Ensure dates are timezone-naive
+#     if start_date.tz is not None:
+#         start_date = start_date.tz_localize(None)
+#     if end_date.tz is not None:
+#         end_date = end_date.tz_localize(None)
+#
+#     # Load regime periods once
+#     regime_df = load_regime_periods()
+#
+#     # First pass: identify all trading days to process
+#     print("📅 Identifying trading days...")
+#     if progress_callback:
+#         progress_callback('status', "Identifying trading days in date range...")
+#         progress_callback('progress', 0)
+#
+#     # Generate dates to process
+#     dates_to_process = []
+#     current_date = start_date
+#     skipped_dates = []
+#
+#     while current_date <= end_date:
+#         # Check if it's a trading day
+#         if is_trading_day(current_date):  # or use is_trading_day_simple(current_date)
+#             dates_to_process.append(current_date)
+#         else:
+#             skipped_dates.append(current_date)
+#             print(f"⏭️ Skipping {current_date.strftime('%Y-%m-%d')} (Market Closed)")
+#
+#         current_date += pd.Timedelta(days=interval_days)
+#
+#     total_trading_days = len(dates_to_process)
+#     total_days_in_range = len(dates_to_process) + len(skipped_dates)
+#
+#     print(f"📊 Found {total_trading_days} trading days out of {total_days_in_range} total days")
+#     print(f"📅 Processing from {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}")
+#
+#     if progress_callback:
+#         progress_callback('status', f"Processing {total_trading_days} trading days...")
+#         progress_callback('progress', 5)  # 5% for identification phase
+#
+#     results = []
+#     successful_dates = 0
+#     skipped_existing = 0
+#     error_dates = 0
+#
+#     for i, date in enumerate(dates_to_process):
+#         # Calculate precise progress (5% for identification, 95% for processing)
+#         base_progress = 5
+#         processing_progress = int((i / total_trading_days) * 95) if total_trading_days > 0 else 0
+#         current_progress = base_progress + processing_progress
+#
+#         # if progress_callback:
+#         #     progress = int((i / len(dates_to_process)) * 100)
+#         #     progress_callback('progress', progress)
+#         #     progress_callback('status', f"Processing {date.strftime('%Y-%m-%d')}...")
+#
+#         if progress_callback:
+#             progress_callback('progress', current_progress)
+#             # Enhanced status message
+#             status_msg = (f"Processing {date.strftime('%Y-%m-%d')} "
+#                           f"(Day {i + 1}/{total_trading_days}) - "
+#                           f"{current_progress}% complete")
+#             progress_callback('status', status_msg)
+#
+#         print(f"\n[{i + 1}/{total_trading_days}] Processing {date.strftime('%Y-%m-%d')}...")
+#
+#         try:
+#             # Get regime for this date (now handles Timestamp properly)
+#             regime = get_regime_for_date(date, regime_df)
+#
+#             if regime is None:
+#                 print(f"  ⚠️ No regime found for {date.strftime('%Y-%m-%d')}, skipping...")
+#                 results.append({
+#                     'date': date.strftime('%Y-%m-%d'),
+#                     'status': 'no_regime',
+#                     'message': 'No regime period found'
+#                 })
+#                 continue
+#
+#             # Clean regime name
+#             regime_clean = regime.replace("/", "_").replace(" ", "_")
+#
+#             # Check if file already exists
+#             output_dir = get_output_directory(regime_clean)
+#             date_str = date.strftime("%m%d")
+#             fname = f"top_ranked_stocks_{regime_clean}_{date_str}.csv"
+#             output_path = output_dir / fname
+#
+#             if output_path.exists():
+#                 print(f"✓ File already exists for {date.strftime('%Y-%m-%d')}, skipping...")
+#                 results.append({
+#                     'date': date.strftime('%Y-%m-%d'),
+#                     'regime': regime,
+#                     'status': 'exists',
+#                     'path': str(output_path)
+#                 })
+#                 continue
+#
+#             # Update status for actual processing
+#             if progress_callback:
+#                 progress_callback('status',
+#                                   f"Fetching data for {date.strftime('%Y-%m-%d')} ({regime} regime)...")
+#
+#             # Run scoring for this date
+#             result = run_historical_scoring_for_date(date, regime_df)
+#             results.append(result)
+#
+#             if result.get('status') == 'success':
+#                 successful_dates += 1
+#                 print(f"  ✅ Completed - Regime: {regime}")
+#             else:
+#                 error_dates += 1
+#                 print(f"  ⚠️ No data available")
+#
+#         except Exception as e:
+#             error_dates += 1
+#             print(f"  ❌ Error: {e}")
+#             results.append({
+#                 'date': date.strftime('%Y-%m-%d'),
+#                 'status': 'error',
+#                 'error': str(e)
+#             })
+#
+#     # Final summary
+#     if progress_callback:
+#         progress_callback('progress', 100)
+#         summary_msg = (f"Batch processing complete! "
+#                        f"Processed: {successful_dates}, "
+#                        f"Skipped existing: {skipped_existing}, "
+#                        f"Errors: {error_dates}")
+#         progress_callback('status', summary_msg)
+#
+#     print(f"\n{'=' * 60}")
+#     print(f"📊 BATCH PROCESSING SUMMARY")
+#     print(f"{'=' * 60}")
+#     print(f"✅ Successfully processed: {successful_dates} dates")
+#     print(f"⏭️ Skipped (existing): {skipped_existing} dates")
+#     print(f"❌ Errors: {error_dates} dates")
+#     print(f"📅 Weekend/holidays skipped: {len(skipped_dates)} dates")
+#     print(f"{'=' * 60}")
+#
+#     return results
+
+
 def run_historical_batch(start_date=None, end_date=None, interval_days=1, progress_callback=None):
     """
     Run historical scoring for multiple dates using the complete run_historical_specific_date function
@@ -739,6 +885,90 @@ def run_historical_batch(start_date=None, end_date=None, interval_days=1, progre
     print(f"{'=' * 60}")
 
     return results
+
+
+# def run_historical_scoring_for_date(target_date, regime_df):
+#     """
+#     Complete historical scoring implementation for a specific date
+#     This is a simplified version - you'll need to adapt the full main() logic
+#     """
+#
+#     # Get regime for this date
+#     regime = get_regime_for_date(target_date, regime_df)
+#     if regime is None:
+#         raise ValueError(f"No regime found for date {target_date.strftime('%Y-%m-%d')}")
+#
+#     # Clean regime name for file paths
+#     regime_clean = regime.replace("/", "_").replace(" ", "_")
+#
+#     # Get weights for this regime
+#     global WEIGHTS
+#     WEIGHTS = get_regime_weights(regime_clean)
+#
+#     print(f"📅 Processing historical data for {target_date.strftime('%Y-%m-%d')}")
+#     print(f"🎯 Using {regime} regime weights")
+#
+#     # Load tickers
+#     try:
+#         with open(TICKER_FILE, "r") as f:
+#             tickers = [ln.strip().replace("$", "") for ln in f if ln.strip()]
+#     except FileNotFoundError:
+#         raise FileNotFoundError(f"Ticker file '{TICKER_FILE}' not found!")
+#
+#     # NOTE: This is a simplified version
+#     # You'll need to implement the full scoring logic here
+#     # For now, let's create a placeholder that shows the structure
+#
+#     # Process each ticker with historical data
+#     raw = []
+#     for ticker in tickers[:10]:  # Limit for testing
+#         try:
+#             # Fetch historical data up to target date
+#             hist = fetch_historical_data_for_date(ticker, target_date)
+#
+#             if hist.empty or len(hist) < 200:
+#                 continue
+#
+#             # Calculate scores (simplified - you need to adapt your existing scoring functions)
+#             # This is where you'd calculate all the factor scores
+#             # using data available up to target_date
+#
+#             raw.append({
+#                 'Ticker': ticker,
+#                 'Score': 0.5,  # Placeholder
+#                 # Add other metrics here
+#             })
+#
+#         except Exception as e:
+#             print(f"Error processing {ticker}: {e}")
+#             continue
+#
+#     # Create DataFrame and save
+#     if raw:
+#         df = pd.DataFrame(raw)
+#
+#         # Create output filename with date
+#         output_dir = get_output_directory(regime_clean)
+#         date_str = target_date.strftime("%m%d")
+#         fname = f"top_ranked_stocks_{regime_clean}_{date_str}.csv"
+#         output_path = output_dir / fname
+#
+#         df.to_csv(output_path, index=False)
+#         print(f"📁 Saved {fname}")
+#
+#         return {
+#             'date': target_date.strftime('%Y-%m-%d'),
+#             'regime': regime,
+#             'status': 'success',
+#             'path': str(output_path),
+#             'stocks_processed': len(df)
+#         }
+#     else:
+#         return {
+#             'date': target_date.strftime('%Y-%m-%d'),
+#             'regime': regime,
+#             'status': 'no_data'
+#         }
 
 
 def run_historical_scoring_for_date(target_date, regime_df):
@@ -1072,7 +1302,7 @@ def run_historical_specific_date(target_date, regime, progress_callback=None):
     # Create output filename with date and manual regime indicator
     output_dir = get_output_directory(regime_clean)
     date_str = target_date.strftime("%m%d")
-    fname = f"top_ranked_stocks_{regime_clean}_{date_str}.csv"
+    fname = f"top_ranked_stocks_{regime_clean}_{date_str}_manual.csv"
     output_path = output_dir / fname
 
     # Save the file
@@ -1096,168 +1326,6 @@ def run_historical_specific_date(target_date, regime, progress_callback=None):
         'mode': 'historical_specific'
     }
 
-
-def run_historical_batch_with_regime(start_date=None, end_date=None, manual_regime=None, interval_days=1,
-                                     progress_callback=None):
-    """
-    Run historical scoring for multiple dates using a MANUALLY SELECTED regime
-    Similar to run_historical_batch but uses the same regime for all dates
-
-    Args:
-        start_date: Start date for processing
-        end_date: End date for processing
-        manual_regime: Manually selected regime to use for ALL dates (e.g., "Steady Growth")
-        interval_days: Interval between dates (default 1 for daily)
-        progress_callback: Optional callback for progress updates
-
-    Returns:
-        List of results for each date processed
-    """
-    # Convert dates to pandas Timestamps for consistency
-    if end_date is None:
-        end_date = pd.Timestamp.now()
-    elif isinstance(end_date, str):
-        end_date = pd.Timestamp(end_date)
-    elif isinstance(end_date, datetime):
-        end_date = pd.Timestamp(end_date)
-    elif hasattr(end_date, 'date'):
-        end_date = pd.Timestamp(end_date)
-
-    if start_date is None:
-        start_date = end_date - pd.Timedelta(days=365)
-    elif isinstance(start_date, str):
-        start_date = pd.Timestamp(start_date)
-    elif isinstance(start_date, datetime):
-        start_date = pd.Timestamp(start_date)
-    elif hasattr(start_date, 'date'):
-        start_date = pd.Timestamp(start_date)
-
-    # Ensure dates are timezone-naive
-    if start_date.tz is not None:
-        start_date = start_date.tz_localize(None)
-    if end_date.tz is not None:
-        end_date = end_date.tz_localize(None)
-
-    # Validate manual regime is provided
-    if manual_regime is None:
-        raise ValueError("Manual regime must be provided for this mode")
-
-    # First pass: identify all trading days to process
-    print(f"📅 Identifying trading days with manual regime: {manual_regime}")
-    if progress_callback:
-        progress_callback('status', f"Identifying trading days for {manual_regime} regime...")
-        progress_callback('progress', 0)
-
-    dates_to_process = []
-    skipped_dates = []
-    current_date = start_date
-
-    while current_date <= end_date:
-        if is_trading_day(current_date):
-            dates_to_process.append(current_date)
-        else:
-            skipped_dates.append(current_date)
-            print(f"⭕ Skipping {current_date.strftime('%Y-%m-%d')} (Market Closed)")
-        current_date += pd.Timedelta(days=interval_days)
-
-    total_trading_days = len(dates_to_process)
-    total_days_in_range = len(dates_to_process) + len(skipped_dates)
-
-    print(f"📊 Found {total_trading_days} trading days out of {total_days_in_range} total days")
-    print(f"📅 Processing from {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}")
-    print(f"🎯 Using manual regime: {manual_regime} for all dates")
-
-    if progress_callback:
-        progress_callback('status', f"Processing {total_trading_days} trading days with {manual_regime} regime...")
-        progress_callback('progress', 5)
-
-    results = []
-    successful_dates = 0
-    skipped_existing = 0
-    error_dates = 0
-
-    # Process each trading day with the SAME manual regime
-    for i, date in enumerate(dates_to_process):
-        # Calculate precise progress
-        base_progress = 5
-        processing_progress = int((i / total_trading_days) * 95) if total_trading_days > 0 else 0
-        current_progress = base_progress + processing_progress
-
-        if progress_callback:
-            progress_callback('progress', current_progress)
-            progress_callback('status',
-                              f"Processing {date.strftime('%Y-%m-%d')} ({i + 1}/{total_trading_days}) with {manual_regime}")
-
-        print(f"\n{'=' * 60}")
-        print(f"📅 Processing date {i + 1}/{total_trading_days}: {date.strftime('%Y-%m-%d')}")
-        print(f"🎯 Using manual regime: {manual_regime}")
-        print(f"{'=' * 60}")
-
-        try:
-            # Create a nested progress callback for the inner function
-            def nested_progress_callback(callback_type, value):
-                if callback_type == 'status' and progress_callback:
-                    progress_callback('status', f"{date.strftime('%Y-%m-%d')}: {value}")
-
-            # Use run_historical_specific_date with the MANUAL regime
-            result = run_historical_specific_date(
-                target_date=date,
-                regime=manual_regime,  # Use manual regime for ALL dates
-                progress_callback=nested_progress_callback
-            )
-
-            # Process the result
-            if result.get('success'):
-                successful_dates += 1
-                print(f"  ✅ Successfully processed - {result.get('total_stocks', 0)} stocks ranked")
-                results.append({
-                    'date': date.strftime('%Y-%m-%d'),
-                    'regime': manual_regime,
-                    'status': 'success',
-                    'path': result.get('output_path'),
-                    'total_stocks': result.get('total_stocks', 0),
-                    'message': f"Processed {result.get('total_stocks', 0)} stocks"
-                })
-            else:
-                error_dates += 1
-                error_msg = result.get('error', 'Unknown error')
-                print(f"  ❌ Failed: {error_msg}")
-                results.append({
-                    'date': date.strftime('%Y-%m-%d'),
-                    'regime': manual_regime,
-                    'status': 'error',
-                    'error': error_msg,
-                    'message': f"Processing failed: {error_msg}"
-                })
-
-        except Exception as e:
-            error_dates += 1
-            print(f"  ❌ Error: {e}")
-            results.append({
-                'date': date.strftime('%Y-%m-%d'),
-                'regime': manual_regime,
-                'status': 'error',
-                'error': str(e),
-                'message': f"Exception: {str(e)}"
-            })
-
-    # Final summary
-    if progress_callback:
-        progress_callback('progress', 100)
-        summary_msg = (f"Batch processing complete! "
-                       f"Success: {successful_dates}, "
-                       f"Errors: {error_dates}")
-        progress_callback('status', summary_msg)
-
-    print(f"\n{'=' * 60}")
-    print(f"📊 BATCH PROCESSING SUMMARY (Manual Regime: {manual_regime})")
-    print(f"{'=' * 60}")
-    print(f"✅ Successfully processed: {successful_dates} dates")
-    print(f"❌ Errors: {error_dates} dates")
-    print(f"📅 Weekend/holidays skipped: {len(skipped_dates)} dates")
-    print(f"{'=' * 60}")
-
-    return results
 
 # Add a progress callback mechanism
 class ProgressTracker:
@@ -1350,216 +1418,123 @@ def get_company_info(info):
 
     return company_name, country
 
-# def yahooquery_hist(ticker, years=5):
-#     """
-#     Fetch historical data with proper column formatting
-#     Uses adjusted close prices for better accuracy
-#     """
-#     try:
-#         # DEBUG: Starting data fetch
-#         print(f"    → Fetching {years}-year history for {ticker}...")
-#         yq = Ticker(ticker, session=_global_curl_session)
-#
-#         # Calculate date range
-#         end_date = datetime.now()
-#         start_date = end_date - timedelta(days=365 * years)
-#         start_str = start_date.strftime('%Y-%m-%d')
-#         end_str = end_date.strftime('%Y-%m-%d')
-#
-#         # Get historical data
-#         hist = yq.history(start=start_str, end=end_str, interval='1d')
-#
-#         # DEBUG: Show initial fetch result
-#         if hist is None:
-#             print(f"    → History fetch returned None for {ticker}")
-#         elif hist.empty:
-#             print(f"    → History fetch returned empty DataFrame for {ticker}")
-#         else:
-#             print(f"    → Initial fetch successful: {len(hist)} raw records")
-#
-#         if hist is None or hist.empty:
-#             return pd.DataFrame()
-#
-#         # Handle MultiIndex case
-#         if isinstance(hist.index, pd.MultiIndex):
-#             if ticker in hist.index.get_level_values(0):
-#                 hist = hist.xs(ticker, level=0)
-#             else:
-#                 hist = hist.reset_index(level=0, drop=True)
-#
-#         # Standardize column names
-#         column_mapping = {
-#             'open': 'Open',
-#             'high': 'High',
-#             'low': 'Low',
-#             'close': 'Close',
-#             'adjclose': 'Close',  # Use adjusted close
-#             'volume': 'Volume'
-#         }
-#
-#         clean_data = pd.DataFrame(index=hist.index)
-#
-#         for old_col, new_col in column_mapping.items():
-#             if old_col in hist.columns:
-#                 clean_data[new_col] = hist[old_col]
-#             elif new_col in hist.columns:
-#                 clean_data[new_col] = hist[new_col]
-#
-#         # Prefer adjusted close if available
-#         if 'adjclose' in hist.columns:
-#             clean_data['Close'] = hist['adjclose']
-#         elif 'close' in hist.columns and 'Close' not in clean_data.columns:
-#             clean_data['Close'] = hist['close']
-#
-#         # Ensure all required columns exist
-#         required_columns = ['Open', 'High', 'Low', 'Close', 'Volume']
-#         for col in required_columns:
-#             if col not in clean_data.columns:
-#                 if col == 'Volume':
-#                     clean_data[col] = 0
-#                 elif col in ['Open', 'High', 'Low'] and 'Close' in clean_data.columns:
-#                     clean_data[col] = clean_data['Close']
-#
-#         # Clean up index
-#         if hasattr(clean_data.index, 'tz') and clean_data.index.tz is not None:
-#             clean_data.index = clean_data.index.tz_localize(None)
-#
-#         # Sort and clean
-#         clean_data = clean_data.sort_index()
-#         clean_data = clean_data.dropna(subset=['Close'])
-#
-#         # # Filter by years if needed
-#         # if years and len(clean_data) > 0:
-#         #     cutoff_date = datetime.now() - timedelta(days=365 * years)
-#         #     # Convert index to datetime for comparison
-#         #     clean_data = clean_data[pd.to_datetime(clean_data.index) >= pd.Timestamp(cutoff_date)]
-#
-#         # Filter by years if needed
-#         if years and len(clean_data) > 0:
-#             try:
-#                 # Calculate cutoff date
-#                 cutoff_date = datetime.now() - timedelta(days=365 * years)
-#
-#                 # Ensure both sides are comparable Timestamps
-#                 cutoff_timestamp = pd.Timestamp(cutoff_date).tz_localize(None)
-#
-#                 # Convert index to Timestamp if it isn't already
-#                 if not isinstance(clean_data.index, pd.DatetimeIndex):
-#                     clean_data.index = pd.to_datetime(clean_data.index)
-#
-#                 # Ensure index is timezone-naive for comparison
-#                 if clean_data.index.tz is not None:
-#                     clean_data.index = clean_data.index.tz_localize(None)
-#
-#                 # Now safe to compare
-#                 clean_data = clean_data[clean_data.index >= cutoff_timestamp]
-#
-#             except Exception as e:
-#                 print(f"    ⚠️ Warning: Could not filter by date range: {e}")
-#                 # If filtering fails, return all data rather than failing completely
-#                 pass
-#
-#         # At the end, before returning clean_data:
-#         print(f"    → Final processed data: {len(clean_data)} clean records")
-#
-#         return clean_data
-#
-#     except Exception as e:
-#         print(f"Error fetching history for {ticker}: {e}")
-#         return pd.DataFrame()
-
 
 def yahooquery_hist(ticker, years=5):
     """
-    Maximally robust version that handles any timezone issues
     Fetch historical data with proper column formatting
     Uses adjusted close prices for better accuracy
     """
     try:
         # DEBUG: Starting data fetch
         print(f"    → Fetching {years}-year history for {ticker}...")
-
-        # Use a direct approach with error handling
         yq = Ticker(ticker, session=_global_curl_session)
 
-        # Calculate date range as strings to avoid any timezone issues
+        # Calculate date range
         end_date = datetime.now()
         start_date = end_date - timedelta(days=365 * years)
         start_str = start_date.strftime('%Y-%m-%d')
         end_str = end_date.strftime('%Y-%m-%d')
 
-        # Get historical data with minimal processing initially
-        try:
-            hist = yq.history(start=start_str, end=end_str, interval='1d')
-            # DEBUG: Show initial fetch result
-            if hist is None:
-                print(f"    → History fetch returned None for {ticker}")
-            elif hist.empty:
-                print(f"    → History fetch returned empty DataFrame for {ticker}")
-            else:
-                print(f"    → Initial fetch successful: {len(hist)} raw records")
-        except Exception as e:
-            print(f"Error fetching history for {ticker}: {e}")
-            return pd.DataFrame()
+        # Get historical data
+        hist = yq.history(start=start_str, end=end_str, interval='1d')
 
-        # Create a completely new DataFrame to avoid any hidden metadata issues
+        # DEBUG: Show initial fetch result
+        if hist is None:
+            print(f"    → History fetch returned None for {ticker}")
+        elif hist.empty:
+            print(f"    → History fetch returned empty DataFrame for {ticker}")
+        else:
+            print(f"    → Initial fetch successful: {len(hist)} raw records")
+
         if hist is None or hist.empty:
             return pd.DataFrame()
 
-        # Extract data, avoiding any index operations that might trigger timezone issues
-        try:
-            # Handle MultiIndex case
-            if isinstance(hist.index, pd.MultiIndex):
-                # Try to extract just this ticker's data
-                if ticker in hist.index.get_level_values(0):
-                    hist = hist.xs(ticker, level=0)
-                else:
-                    # Fall back to dropping the first level
-                    hist = hist.reset_index(level=0, drop=True)
+        # Handle MultiIndex case
+        if isinstance(hist.index, pd.MultiIndex):
+            if ticker in hist.index.get_level_values(0):
+                hist = hist.xs(ticker, level=0)
+            else:
+                hist = hist.reset_index(level=0, drop=True)
 
-            # Create fresh DataFrame with timezone-naive index
-            fresh_data = []
-            for idx, row in hist.iterrows():
-                # Convert index to string and then back to datetime to strip timezone
-                date_str = pd.Timestamp(idx).strftime('%Y-%m-%d')
-                fresh_data.append({
-                    'Date': pd.Timestamp(date_str),
-                    'Open': row.get('open', row.get('Open', None)),
-                    'High': row.get('high', row.get('High', None)),
-                    'Low': row.get('low', row.get('Low', None)),
-                    'Close': row.get('adjclose', row.get('close', row.get('Close', None))),  # Prefer adjusted close
-                    'Volume': row.get('volume', row.get('Volume', None))
-                })
+        # Standardize column names
+        column_mapping = {
+            'open': 'Open',
+            'high': 'High',
+            'low': 'Low',
+            'close': 'Close',
+            'adjclose': 'Close',  # Use adjusted close
+            'volume': 'Volume'
+        }
 
-            # Create a completely new DataFrame with a clean index
-            result_df = pd.DataFrame(fresh_data)
-            if result_df.empty:
-                return pd.DataFrame()
+        clean_data = pd.DataFrame(index=hist.index)
 
-            # Set Date as index
-            result_df.set_index('Date', inplace=True)
+        for old_col, new_col in column_mapping.items():
+            if old_col in hist.columns:
+                clean_data[new_col] = hist[old_col]
+            elif new_col in hist.columns:
+                clean_data[new_col] = hist[new_col]
 
-            # Ensure columns are properly capitalized
-            result_df.columns = [col.title() for col in result_df.columns]
+        # Prefer adjusted close if available
+        if 'adjclose' in hist.columns:
+            clean_data['Close'] = hist['adjclose']
+        elif 'close' in hist.columns and 'Close' not in clean_data.columns:
+            clean_data['Close'] = hist['close']
 
-            # Filter by years with timezone-naive cutoff
-            if years:
-                cutoff = pd.Timestamp((datetime.now() - timedelta(days=365 * years)).strftime('%Y-%m-%d'))
-                result_df = result_df[result_df.index >= cutoff]
+        # Ensure all required columns exist
+        required_columns = ['Open', 'High', 'Low', 'Close', 'Volume']
+        for col in required_columns:
+            if col not in clean_data.columns:
+                if col == 'Volume':
+                    clean_data[col] = 0
+                elif col in ['Open', 'High', 'Low'] and 'Close' in clean_data.columns:
+                    clean_data[col] = clean_data['Close']
 
-            final_df = result_df.dropna().sort_index()
+        # Clean up index
+        if hasattr(clean_data.index, 'tz') and clean_data.index.tz is not None:
+            clean_data.index = clean_data.index.tz_localize(None)
 
-            # DEBUG: Final result
-            print(f"    → Final processed data: {len(final_df)} clean records")
+        # Sort and clean
+        clean_data = clean_data.sort_index()
+        clean_data = clean_data.dropna(subset=['Close'])
 
-            return final_df
+        # # Filter by years if needed
+        # if years and len(clean_data) > 0:
+        #     cutoff_date = datetime.now() - timedelta(days=365 * years)
+        #     # Convert index to datetime for comparison
+        #     clean_data = clean_data[pd.to_datetime(clean_data.index) >= pd.Timestamp(cutoff_date)]
 
-        except Exception as e:
-            print(f"Error fetching history for {ticker}: {e}")
-            return pd.DataFrame()
+        # Filter by years if needed
+        if years and len(clean_data) > 0:
+            try:
+                # Calculate cutoff date
+                cutoff_date = datetime.now() - timedelta(days=365 * years)
+
+                # Ensure both sides are comparable Timestamps
+                cutoff_timestamp = pd.Timestamp(cutoff_date).tz_localize(None)
+
+                # Convert index to Timestamp if it isn't already
+                if not isinstance(clean_data.index, pd.DatetimeIndex):
+                    clean_data.index = pd.to_datetime(clean_data.index)
+
+                # Ensure index is timezone-naive for comparison
+                if clean_data.index.tz is not None:
+                    clean_data.index = clean_data.index.tz_localize(None)
+
+                # Now safe to compare
+                clean_data = clean_data[clean_data.index >= cutoff_timestamp]
+
+            except Exception as e:
+                print(f"    ⚠️ Warning: Could not filter by date range: {e}")
+                # If filtering fails, return all data rather than failing completely
+                pass
+
+        # At the end, before returning clean_data:
+        print(f"    → Final processed data: {len(clean_data)} clean records")
+
+        return clean_data
 
     except Exception as e:
-        print(f"  ⚠️ Error fetching history for {ticker}: {e}")
+        print(f"Error fetching history for {ticker}: {e}")
         return pd.DataFrame()
 
 # --- Helper Functions ---
@@ -2571,6 +2546,24 @@ def get_insider_score_simple(ticker):
         return 0
 
 
+# --- 1-a  price-momentum (12-mo total return, skip last 21 trading days) ------
+# def _price_mom(df):
+#     """
+#     Classic US-equity '12-1' momentum:
+#        r = (P[t-21] / P[t-252]) – 1
+#     Then z-score across the universe later & squash to 0-1 with logistic.
+#     Here we only compute the raw return; scaling happens in main().
+#
+#     Fix:
+#     Simple 12-month momentum (no 1-month skip):
+#         r = (P[t] / P[t-252]) – 1
+#     """
+#     if len(df) < 180:
+#         return None
+#     ret = (df["Close"].iloc[-1] / df["Close"].iloc[0]) - 1
+#     return ret
+
+
 def _price_mom(df):
     """
     Calculate 12-month price momentum with fallback options
@@ -2619,6 +2612,18 @@ def _earnings_mom(ticker):
         return 0.5 * rev_chg + 0.5 * surprise_pct / 100  # ≈ weighted %
     except Exception:
         return None
+
+
+# def get_momentum_score(ticker, df):
+#     """
+#     Returns raw 12-1 price momentum and raw earnings-momentum (%),
+#     or np.nan when not available.  No side-effects.
+#     """
+#     pm = _price_mom(df)
+#     em = _earnings_mom(ticker)
+#     # convert None → np.nan so zscore can ignore them
+#     return (pm if pm is not None else np.nan,
+#             em if em is not None else np.nan)
 
 
 def get_momentum_score(ticker, hist):
@@ -3175,33 +3180,24 @@ def run_daily_scoring(regime="Steady_Growth", progress_callback=None):
 
 # Add this function to be called from the UI
 def run_scoring_for_regime(regime_name, progress_callback=None):
-    """
-    Wrapper function to run scoring for a specific regime
-    Used by the UI thread
-
-    Args:
-        regime_name: Name of the regime (e.g., "Steady_Growth")
-        progress_callback: Optional callback for progress updates
-
-    Returns:
-        dict with success status and results
-    """
+    """Entry point for UI to run scoring for a specific regime with progress tracking"""
     try:
-        # Clean regime name
-        regime_clean = regime_name.replace(" ", "_").replace("/", "_")
-
-        # Run daily scoring with the specified regime
-        result = run_daily_scoring(regime_clean, progress_callback)
-
+        output_path, df = main(regime_name, progress_callback)
         return {
             'success': True,
+            'output_path': str(output_path),
+            'results_df': df,
             'regime': regime_name,
-            'results': result
+            'total_stocks': len(df),
+            'weights': get_regime_weights(regime_name)
         }
     except Exception as e:
+        if progress_callback:
+            progress_callback('error', str(e))
         return {
             'success': False,
-            'error': str(e)
+            'error': str(e),
+            'regime': regime_name
         }
 
 if __name__ == "__main__":
