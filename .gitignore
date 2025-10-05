@@ -7,35 +7,103 @@ __pycache__/
 env/
 venv/
 .env
+*.pyc
+*.pyo
+*.pyd
 
-# Data files (too large or sensitive)
-data/historical/*.csv
-data/scores/*.csv
-*.xlsx
-*.db
-
-# Config files with sensitive info
-config/api_keys.json
-config/credentials.json
+# Virtual environments
+ENV/
+env.bak/
+venv.bak/
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
+.project
+.pydevproject
+.settings/
 
 # OS
 .DS_Store
 Thumbs.db
+desktop.ini
 
 # Logs
 logs/
 *.log
 
-# Output files
-output/reports/*.pdf
-output/visualizations/*.png
-
 # Temporary files
 *.tmp
 temp/
+tmp/
+
+# Old/backup files
+0.old/
+*.bak
+*.backup
+*.old
+
+# Configuration with sensitive data (but keep templates)
+config/marketstack_config.json
+!config/marketstack_config_template.json
+
+# Output files - Keep directory structure but ignore generated content
+output/**/*.csv
+output/**/*.json
+output/**/*.png
+output/**/*.jpg
+output/**/*.pkl
+output/**/*.pdf
+output/**/*.xlsx
+# Keep directory structure
+!output/.gitkeep
+!output/*/.gitkeep
+!output/*/*/.gitkeep
+
+# Keep example/sample files if you add them
+!output/example_*.csv
+!output/sample_*.json
+
+# Data directory - though you said you don't use it anymore
+# Remove this section if data/ folder doesn't exist
+data/**/*.csv
+data/**/*.xlsx
+!data/.gitkeep
+!data/*/gitkeep
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+*.egg
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+*.cover
+.hypothesis/
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+*.ipynb
+
+# Package files
+*.tar.gz
+*.zip
+
+# Documentation build files (if any)
+docs/_build/
+docs/build/
+
+# Keep important structure files
+!requirements.txt
+!README.md
+!README_new.md
+!LICENSE
+!.gitignore
