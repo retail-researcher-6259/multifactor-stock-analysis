@@ -24,7 +24,7 @@ tensorflow>=2.12.0,<3.0.0  # For LSTM and Transformer models
 # Financial Data & Market APIs
 # ==============================================================================
 yfinance>=0.2.18  # Yahoo Finance data
-yahooquery>=2.3.0  # Enhanced Yahoo Finance API
+yahooquery>=2.4.1  # Enhanced Yahoo Finance API
 curl-cffi>=0.5.9  # For bypassing rate limits with yahooquery
 pandas-market-calendars>=4.0.0  # Market calendar data
 pandas-datareader>=0.10.0  # Additional financial data sources

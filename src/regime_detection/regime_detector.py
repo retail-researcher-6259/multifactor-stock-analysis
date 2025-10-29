@@ -159,10 +159,10 @@ class MarketRegimeDetector:
                 if api_key and 'xxxxx' not in api_key and api_key != '':
                     return api_key
                 else:
-                    print("⚠️ Please update your Marketstack API key in config/marketstack_config.json")
+                    print(" Please update your Marketstack API key in config/marketstack_config.json")
                     return None
         else:
-            print(f"⚠️ Config file not found: {config_file}")
+            print(f" Config file not found: {config_file}")
             return None
 
     def fetch_marketstack_data(self, symbols, date_from, date_to, api_key):
@@ -170,8 +170,8 @@ class MarketRegimeDetector:
         Fetch EOD data from Marketstack API v2 for multiple symbols
         WITH PAGINATION to get more than 1000 records
         """
-        print(f"📊 Fetching data from Marketstack API v2 for {len(symbols)} symbols...")
-        print(f"📅 Date range: {date_from} to {date_to}")
+        print(f" Fetching data from Marketstack API v2 for {len(symbols)} symbols...")
+        print(f" Date range: {date_from} to {date_to}")
 
         all_symbol_dfs = []
 
@@ -217,7 +217,7 @@ class MarketRegimeDetector:
                     data = response.json()
 
                     if 'error' in data:
-                        print(f" ❌ API Error: {data['error'].get('message', 'Unknown error')}")
+                        print(f"  API Error: {data['error'].get('message', 'Unknown error')}")
                         break
 
                     if 'data' not in data or not data['data']:
@@ -247,10 +247,10 @@ class MarketRegimeDetector:
                     time.sleep(0.2)
 
                 except requests.exceptions.RequestException as e:
-                    print(f" ❌ Request Error: {str(e)}")
+                    print(f"  Request Error: {str(e)}")
                     break
                 except Exception as e:
-                    print(f" ❌ Processing Error: {str(e)}")
+                    print(f"  Processing Error: {str(e)}")
                     break
 
             # Process all fetched data for this symbol
@@ -276,9 +276,9 @@ class MarketRegimeDetector:
                 price_df = price_df.sort_index()
                 all_symbol_dfs.append(price_df)
 
-                print(f" ✓ ({total_fetched} records)")
+                print(f"  ({total_fetched} records)")
             else:
-                print(f" ✗ (no data)")
+                print(f"  (no data)")
 
         # Concatenate all dataframes
         if all_symbol_dfs:
@@ -289,10 +289,10 @@ class MarketRegimeDetector:
         else:
             all_price_data = pd.DataFrame()
 
-        print(f"\n✅ Successfully fetched data for {len(all_symbol_dfs)} symbols")
+        print(f"\n Successfully fetched data for {len(all_symbol_dfs)} symbols")
         if not all_price_data.empty:
-            print(f"📈 Total date range: {all_price_data.index[0]} to {all_price_data.index[-1]}")
-            print(f"📊 Total records: {len(all_price_data)}")
+            print(f" Total date range: {all_price_data.index[0]} to {all_price_data.index[-1]}")
+            print(f" Total records: {len(all_price_data)}")
 
         return all_price_data
 
@@ -301,14 +301,14 @@ class MarketRegimeDetector:
         Fetch market data for regime detection
         Updated with choice between Marketstack and yfinance
         """
-        print("\n📊 FETCHING MARKET DATA")
+        print("\n FETCHING MARKET DATA")
         print("-" * 40)
 
         if use_marketstack:
             # Load API key
             api_key = self.load_marketstack_config()
             if not api_key:
-                print("⚠️ No valid API key, falling back to yfinance")
+                print(" No valid API key, falling back to yfinance")
                 use_marketstack = False
 
         if use_marketstack:
@@ -327,7 +327,7 @@ class MarketRegimeDetector:
             )
 
             if all_data.empty:
-                print("⚠️ No data from Marketstack, falling back to yfinance")
+                print(" No data from Marketstack, falling back to yfinance")
                 use_marketstack = False
             else:
                 # Process data for regime detection
@@ -339,11 +339,11 @@ class MarketRegimeDetector:
                         price_data[symbol] = all_data[close_col]
 
                 if price_data.empty:
-                    print("⚠️ No close price data found, falling back to yfinance")
+                    print(" No close price data found, falling back to yfinance")
                     use_marketstack = False
                 else:
                     self.data = price_data
-                    print(f"✅ Loaded {len(self.data)} days of data from Marketstack")
+                    print(f" Loaded {len(self.data)} days of data from Marketstack")
 
         if not use_marketstack:
             # Use yfinance as fallback or alternative
@@ -386,7 +386,7 @@ class MarketRegimeDetector:
                     data.columns = symbols  # Ensure columns are named correctly for single symbol
 
             self.data = data
-            print(f"✅ Loaded {len(self.data)} days of data from yfinance")
+            print(f" Loaded {len(self.data)} days of data from yfinance")
 
         # Save raw data for historical analysis
         self.save_historical_data()
@@ -396,12 +396,12 @@ class MarketRegimeDetector:
     def save_historical_data(self):
         """Save fetched historical data for later use"""
         if self.data is not None and not self.data.empty:
-            print(f"📁 Saving historical data to: {self.analysis_dir}")
+            print(f" Saving historical data to: {self.analysis_dir}")
 
             # Save to Regime_Detection_Analysis directory
             output_file = self.analysis_dir / "historical_market_data.csv"
             self.data.to_csv(output_file)
-            print(f"💾 Saved historical data to {output_file}")
+            print(f" Saved historical data to {output_file}")
 
             # Also save a summary
             summary = {
@@ -416,16 +416,16 @@ class MarketRegimeDetector:
 
             summary_file = self.analysis_dir / "data_summary.json"
 
-            print(f"💾 Saving summary to: {summary_file}")
+            print(f" Saving summary to: {summary_file}")
 
             with open(summary_file, 'w') as f:
                 json.dump(summary, f, indent=2)
 
             # Verify files were created
             if summary_file.exists():
-                print(f"✅ Successfully saved data summary")
+                print(f" Successfully saved data summary")
             else:
-                print(f"❌ Failed to save data summary!")
+                print(f" Failed to save data summary!")
 
             return summary
 
@@ -434,7 +434,7 @@ class MarketRegimeDetector:
         Fetch historical data and identify regime periods
         COMPLETE FIXED VERSION
         """
-        print("\n🔄 FETCHING HISTORICAL REGIME DATA")
+        print("\n FETCHING HISTORICAL REGIME DATA")
         print("-" * 40)
 
         try:
@@ -442,47 +442,47 @@ class MarketRegimeDetector:
             self.fetch_market_data(use_marketstack=True)
 
             if self.data is None or self.data.empty:
-                print("❌ Failed to fetch historical data")
+                print(" Failed to fetch historical data")
                 return False
 
             # Prepare features for HMM
-            print("\n📊 Preparing features...")
+            print("\n Preparing features...")
             self.prepare_features()
 
             # Fit the model
-            print("\n🔍 Fitting HMM model...")
+            print("\n Fitting HMM model...")
             self.fit_hmm(use_pca=True, n_components=5)
 
             # Characterize regimes
-            print("\n📈 Characterizing regimes...")
+            print("\n Characterizing regimes...")
             self.characterize_regimes()
 
             # Export regime periods
-            print("\n💾 Exporting regime periods...")
+            print("\n Exporting regime periods...")
             self.export_regime_periods()
 
             # Save historical data summary
-            print("\n💾 Saving data summary...")
+            print("\n Saving data summary...")
             summary_data = self.save_historical_data()
 
             # Save detailed historical analysis
-            print("\n💾 Saving historical analysis...")
+            print("\n Saving historical analysis...")
             self.save_historical_analysis()
 
             # Run validation
-            print("\n🎯 Validating detected regimes...")
+            print("\n Validating detected regimes...")
             accuracy = None
             vix_alignment = None
 
             try:
                 accuracy = self.validate_against_known_events()
             except Exception as e:
-                print(f"⚠️ Validation error: {e}")
+                print(f" Validation error: {e}")
 
             try:
                 vix_alignment = self.compare_with_vix_regimes()
             except Exception as e:
-                print(f"⚠️ VIX comparison error: {e}")
+                print(f" VIX comparison error: {e}")
 
             # Update the saved historical analysis to include validation
             if accuracy is not None or vix_alignment is not None:
@@ -502,13 +502,13 @@ class MarketRegimeDetector:
                     with open(historical_file, 'w') as f:
                         json.dump(data, f, indent=2)
 
-                    print(f"✅ Updated historical analysis with validation metrics")
+                    print(f" Updated historical analysis with validation metrics")
 
-            print("\n✅ Historical regime data saved successfully")
+            print("\n Historical regime data saved successfully")
             return True
 
         except Exception as e:
-            print(f"\n❌ Error in fetch_and_save_historical_regimes: {e}")
+            print(f"\n Error in fetch_and_save_historical_regimes: {e}")
             import traceback
             traceback.print_exc()
             return False
@@ -516,10 +516,10 @@ class MarketRegimeDetector:
     def save_historical_analysis(self):
         """Save detailed historical regime analysis"""
         if self.regime_history is None:
-            print("⚠️ No regime history to save")
+            print(" No regime history to save")
             return
 
-        print(f"📁 Saving historical analysis to: {self.analysis_dir}")
+        print(f" Saving historical analysis to: {self.analysis_dir}")
 
         # Create detailed regime history with dates
         regime_details = []
@@ -552,7 +552,7 @@ class MarketRegimeDetector:
                 'days': (prev_date - start_date).days + 1
             })
 
-        print(f"📊 Found {len(regime_details)} regime periods to save")
+        print(f" Found {len(regime_details)} regime periods to save")
 
         # Get statistics
         statistics = self.get_regime_statistics()
@@ -566,18 +566,18 @@ class MarketRegimeDetector:
             'last_updated': datetime.now().isoformat()
         }
 
-        print(f"💾 Saving to: {historical_file}")
-        print(f"📊 Statistics: {statistics}")
+        print(f" Saving to: {historical_file}")
+        print(f" Statistics: {statistics}")
 
         with open(historical_file, 'w') as f:
             json.dump(output_data, f, indent=2)
 
         # Verify the file was created
         if historical_file.exists():
-            print(f"✅ Successfully saved historical analysis to {historical_file}")
-            print(f"📁 File size: {historical_file.stat().st_size} bytes")
+            print(f" Successfully saved historical analysis to {historical_file}")
+            print(f" File size: {historical_file.stat().st_size} bytes")
         else:
-            print(f"❌ Failed to save historical analysis!")
+            print(f" Failed to save historical analysis!")
 
     def get_regime_statistics(self):
         """Calculate regime statistics for the historical period"""
@@ -607,7 +607,7 @@ class MarketRegimeDetector:
         """
         Create features for HMM with PCA option for better convergence
         """
-        print("\n🔧 Engineering features...")
+        print("\n Engineering features...")
 
         features = pd.DataFrame(index=self.data.index)
 
@@ -642,8 +642,8 @@ class MarketRegimeDetector:
         # Clean up
         features = features.dropna()
 
-        print(f"✓ Created {len(features.columns)} raw features")
-        print(f"✓ Sample size: {len(features)} days")
+        print(f" Created {len(features.columns)} raw features")
+        print(f" Sample size: {len(features)} days")
 
         # Standardize features
         features_scaled = pd.DataFrame(
@@ -654,7 +654,7 @@ class MarketRegimeDetector:
 
         if use_pca:
             # Apply PCA for dimensionality reduction
-            print(f"\n📊 Applying PCA to reduce to {n_components} components...")
+            print(f"\n Applying PCA to reduce to {n_components} components...")
             self.pca = PCA(n_components=n_components, random_state=42)
             features_pca = self.pca.fit_transform(features_scaled)
 
@@ -685,7 +685,7 @@ class MarketRegimeDetector:
         """
         Use only the most essential features for regime detection
         """
-        print("\n🔧 Engineering simple features...")
+        print("\n Engineering simple features...")
 
         features = pd.DataFrame(index=self.data.index)
 
@@ -716,7 +716,7 @@ class MarketRegimeDetector:
     #     """
     #     Fit HMM with multiple random initializations to find best model
     #     """
-    #     print(f"\n🤖 Training {self.n_regimes}-regime Gaussian HMM...")
+    #     print(f"\n Training {self.n_regimes}-regime Gaussian HMM...")
     #
     #     # Use reduced features if available
     #     X = self.features_reduced.values if self.features_reduced is not None else self.features.values
@@ -749,9 +749,9 @@ class MarketRegimeDetector:
     #                     best_score = score
     #                     best_model = model
     #
-    #                 print(f"  Attempt {attempt + 1}: Converged ✓ (Score: {score:.2f})")
+    #                 print(f"  Attempt {attempt + 1}: Converged  (Score: {score:.2f})")
     #             else:
-    #                 print(f"  Attempt {attempt + 1}: Not converged ✗")
+    #                 print(f"  Attempt {attempt + 1}: Not converged ")
     #
     #         except Exception as e:
     #             print(f"  Attempt {attempt + 1}: Failed - {str(e)[:50]}")
@@ -759,8 +759,8 @@ class MarketRegimeDetector:
     #     if best_model is None:
     #         raise ValueError("Failed to train any converged model")
     #
-    #     print(f"\n✓ Best model score: {best_score:.2f}")
-    #     print(f"✓ Converged models: {convergence_count}/{n_attempts}")
+    #     print(f"\n Best model score: {best_score:.2f}")
+    #     print(f" Converged models: {convergence_count}/{n_attempts}")
     #
     #     self.model = best_model
     #
@@ -777,7 +777,7 @@ class MarketRegimeDetector:
         Fit HMM with multiple random initializations to find best model
         Improved version with better stability
         """
-        print(f"\n🤖 Training {self.n_regimes}-regime Gaussian HMM...")
+        print(f"\n Training {self.n_regimes}-regime Gaussian HMM...")
         print(f"  Using {n_attempts} random initializations")
 
         # Use reduced features if available, otherwise scaled features
@@ -832,16 +832,16 @@ class MarketRegimeDetector:
                         best_score = score
                         best_model = model
 
-                    print(f"  Attempt {attempt + 1}: Converged ✓ (Score: {score:.2f}, Cov: {cov_type})")
+                    print(f"  Attempt {attempt + 1}: Converged  (Score: {score:.2f}, Cov: {cov_type})")
                 else:
-                    print(f"  Attempt {attempt + 1}: Not converged ✗ (Cov: {cov_type})")
+                    print(f"  Attempt {attempt + 1}: Not converged  (Cov: {cov_type})")
 
             except Exception as e:
                 print(f"  Attempt {attempt + 1}: Failed - {str(e)[:50]}")
 
         if best_model is None:
             # If no model converged, try one more time with very relaxed settings
-            print("\n⚠️ No converged models found, trying with relaxed settings...")
+            print("\n No converged models found, trying with relaxed settings...")
             try:
                 model = GaussianHMM(
                     n_components=self.n_regimes,
@@ -854,16 +854,16 @@ class MarketRegimeDetector:
                 model.fit(X)
                 best_model = model
                 best_score = model.score(X)
-                print(f"  ✓ Fallback model created (Score: {best_score:.2f})")
+                print(f"   Fallback model created (Score: {best_score:.2f})")
             except:
                 raise ValueError("Failed to train any model even with relaxed settings")
 
-        print(f"\n✓ Best model score: {best_score:.2f}")
-        print(f"✓ Converged models: {convergence_count}/{n_attempts}")
+        print(f"\n Best model score: {best_score:.2f}")
+        print(f" Converged models: {convergence_count}/{n_attempts}")
 
         if scores:
-            print(f"✓ Score range: {min(scores):.2f} to {max(scores):.2f}")
-            print(f"✓ Average score: {np.mean(scores):.2f}")
+            print(f" Score range: {min(scores):.2f} to {max(scores):.2f}")
+            print(f" Average score: {np.mean(scores):.2f}")
 
         self.model = best_model
 
@@ -891,7 +891,7 @@ class MarketRegimeDetector:
         """
         Validate that regimes are meaningful and well-separated
         """
-        print("\n🔍 Validating regime separation...")
+        print("\n Validating regime separation...")
 
         # Use appropriate features
         X = self.features_reduced.values if self.features_reduced is not None else self.features.values
@@ -916,9 +916,9 @@ class MarketRegimeDetector:
         print(f"\n  Average regime separation: {avg_distance:.3f}")
 
         if avg_distance < 0.5:
-            print("  ⚠️ Warning: Regimes may not be well-separated")
+            print("   Warning: Regimes may not be well-separated")
         else:
-            print("  ✓ Regimes appear well-separated")
+            print("   Regimes appear well-separated")
 
         return avg_distance
 
@@ -930,7 +930,7 @@ class MarketRegimeDetector:
     #     from sklearn.decomposition import PCA
     #     import warnings
     #
-    #     print("\n🤖 FITTING HIDDEN MARKOV MODEL")
+    #     print("\n FITTING HIDDEN MARKOV MODEL")
     #     print("-" * 40)
     #
     #     if not hasattr(self, 'features_scaled') or self.features_scaled is None:
@@ -946,7 +946,7 @@ class MarketRegimeDetector:
     #         self.features_reduced = X  # Store as numpy array
     #
     #         explained_var = self.pca.explained_variance_ratio_.sum()
-    #         print(f"✓ PCA explains {explained_var:.1%} of variance")
+    #         print(f" PCA explains {explained_var:.1%} of variance")
     #     else:
     #         print(f"Using all {X.shape[1]} features (no PCA)")
     #         self.features_reduced = X
@@ -999,9 +999,9 @@ class MarketRegimeDetector:
     #     # Use best model
     #     self.model = best_model
     #
-    #     print(f"\n✓ Best model: score = {best_score:.2f}")
-    #     print(f"✓ Converged: {self.model.monitor_.converged}")
-    #     print(f"✓ Iterations: {self.model.monitor_.iter}")
+    #     print(f"\n Best model: score = {best_score:.2f}")
+    #     print(f" Converged: {self.model.monitor_.converged}")
+    #     print(f" Iterations: {self.model.monitor_.iter}")
     #
     #     # Predict regimes
     #     self.regime_history = pd.Series(
@@ -1009,7 +1009,7 @@ class MarketRegimeDetector:
     #         index=self.features.index
     #     )
     #
-    #     print(f"✓ Identified {self.n_regimes} market regimes")
+    #     print(f" Identified {self.n_regimes} market regimes")
     #
     #     # Print regime distribution
     #     regime_counts = self.regime_history.value_counts().sort_index()
@@ -1027,7 +1027,7 @@ class MarketRegimeDetector:
         if self.features is None:
             raise ValueError("No features available. Run prepare_features first.")
 
-        print("\n🔍 Fitting Hidden Markov Model...")
+        print("\n Fitting Hidden Markov Model...")
         print(f"  Number of regimes: {self.n_regimes}")
 
         # Prepare features
@@ -1066,7 +1066,7 @@ class MarketRegimeDetector:
                 if score > best_score:
                     best_score = score
                     best_model = model
-                    print(f"    ✓ New best model!")
+                    print(f"     New best model!")
 
             except Exception as e:
                 print(f"  Attempt {attempt + 1} failed: {e}")
@@ -1078,9 +1078,9 @@ class MarketRegimeDetector:
         # Use best model
         self.model = best_model
 
-        print(f"\n✓ Best model: score = {best_score:.2f}")
-        print(f"✓ Converged: {self.model.monitor_.converged}")
-        print(f"✓ Iterations: {self.model.monitor_.iter}")
+        print(f"\n Best model: score = {best_score:.2f}")
+        print(f" Converged: {self.model.monitor_.converged}")
+        print(f" Iterations: {self.model.monitor_.iter}")
 
         # Predict regimes
         self.regime_history = pd.Series(
@@ -1088,7 +1088,7 @@ class MarketRegimeDetector:
             index=self.features.index
         )
 
-        print(f"✓ Identified {self.n_regimes} market regimes")
+        print(f" Identified {self.n_regimes} market regimes")
 
         # Print regime distribution
         regime_counts = self.regime_history.value_counts().sort_index()
@@ -1103,7 +1103,7 @@ class MarketRegimeDetector:
         """
         Analyze and characterize each regime
         """
-        print("\n📈 Characterizing regimes...")
+        print("\n Characterizing regimes...")
 
         # Get returns for analysis
         if 'SPY' in self.data.columns:
@@ -1309,7 +1309,7 @@ class MarketRegimeDetector:
             print("No regime history to plot. Run fit_hmm first.")
             return
 
-        print("\n📊 GENERATING REGIME VISUALIZATIONS")
+        print("\n GENERATING REGIME VISUALIZATIONS")
         print("-" * 40)
 
         # Create figure with subplots
@@ -1392,7 +1392,7 @@ class MarketRegimeDetector:
         # Save figure
         plot_file = self.output_dir / "regime_detection_plot.png"
         plt.savefig(plot_file, dpi=100, bbox_inches='tight')
-        print(f"✓ Saved plot to {plot_file}")
+        print(f" Saved plot to {plot_file}")
 
         # plt.show()
 
@@ -1404,7 +1404,7 @@ class MarketRegimeDetector:
             print("No regime history available. Run fit_hmm first.")
             return
 
-        print("\n📝 REGIME DETECTION REPORT")
+        print("\n REGIME DETECTION REPORT")
         print("=" * 60)
 
         # Overall statistics
@@ -1428,7 +1428,7 @@ class MarketRegimeDetector:
         print(f"Number of regimes: {self.n_regimes}")
 
         print("\n" + "=" * 60)
-        print("📊 MARKET REGIME ANALYSIS REPORT")
+        print(" MARKET REGIME ANALYSIS REPORT")
         print("=" * 60)
 
         # Sort regimes by frequency
@@ -1439,7 +1439,7 @@ class MarketRegimeDetector:
         )
 
         for regime, chars in sorted_by_freq:
-            print(f"\n🏷️  REGIME {regime}: {chars['name']}")
+            print(f"\n  REGIME {regime}: {chars['name']}")
             print("-" * 40)
             print(f"Frequency: {chars['frequency']:.1%} ({chars['total_days']} days)")
             print(f"Annualized Return: {chars['mean_return']:.1%}")
@@ -1460,13 +1460,13 @@ class MarketRegimeDetector:
 
         # Transition matrix
         print("\n" + "=" * 60)
-        print("📊 REGIME TRANSITION MATRIX")
+        print(" REGIME TRANSITION MATRIX")
         print("=" * 60)
         self._print_transition_matrix()
 
         # Feature importance
         print("\n" + "=" * 60)
-        print("📊 REGIME DISTINGUISHING FEATURES")
+        print(" REGIME DISTINGUISHING FEATURES")
         print("=" * 60)
         self._analyze_feature_importance()
 
@@ -1545,7 +1545,7 @@ class MarketRegimeDetector:
 
         df = pd.DataFrame(regime_data)
         df.to_csv(filepath, index=False)
-        print(f"\n✓ Exported regime periods to {filepath}")
+        print(f"\n Exported regime periods to {filepath}")
 
         return df
 
@@ -1563,7 +1563,7 @@ class MarketRegimeDetector:
     #
     #     regime_proba = self.model.predict_proba(X)[-1]
     #
-    #     print("\n🎯 CURRENT MARKET REGIME")
+    #     print("\n CURRENT MARKET REGIME")
     #     print("-" * 40)
     #     print(f"Regime: {self.regime_characteristics[current_regime]['name']}")
     #     print(f"Confidence: {regime_proba[current_regime]:.1%}")
@@ -1604,7 +1604,7 @@ class MarketRegimeDetector:
         # Get probability for the current (last) observation only
         regime_proba = self.model.predict_proba(last_observation)[0]
 
-        print("\n🎯 CURRENT MARKET REGIME (as of last data point)")
+        print("\n CURRENT MARKET REGIME (as of last data point)")
         print("-" * 40)
         print(f"Date: {self.regime_history.index[-1].strftime('%Y-%m-%d')}")
         print(f"Regime: {self.regime_characteristics[current_regime]['name']}")
@@ -1636,16 +1636,16 @@ class MarketRegimeDetector:
         with open(filepath, 'wb') as f:
             pickle.dump(model_data, f)
 
-        print(f"✓ Model saved to {filepath}")
+        print(f" Model saved to {filepath}")
         if model_data['use_pca']:
-            print(f"✓ PCA included (components: {self.pca.n_components})")
+            print(f" PCA included (components: {self.pca.n_components})")
 
     # def validate_against_known_events(self):
     #     """
     #     Compare detected regimes against known market events
     #     Returns accuracy score
     #     """
-    #     print("\n🎯 REGIME DETECTION VALIDATION")
+    #     print("\n REGIME DETECTION VALIDATION")
     #     print("=" * 60)
     #
     #     if self.regime_history is None:
@@ -1764,7 +1764,7 @@ class MarketRegimeDetector:
     #         print(f"  Period: {row['Period']}")
     #         print(f"  Expected: {row['Expected']}")
     #         print(f"  Detected: {row['All Regimes']}")
-    #         print(f"  Match: {'✓' if row['Match'] else '✗'}")
+    #         print(f"  Match: {'' if row['Match'] else ''}")
     #
     #     # Calculate accuracy
     #     accuracy = results_df['Match'].sum() / len(results_df)
@@ -1783,7 +1783,7 @@ class MarketRegimeDetector:
         Compare detected regimes against known market events
         Updated for 3-regime system with more accurate classifications
         """
-        print("\n🎯 REGIME DETECTION VALIDATION")
+        print("\n REGIME DETECTION VALIDATION")
         print("=" * 60)
 
         if self.regime_history is None:
@@ -1915,7 +1915,7 @@ class MarketRegimeDetector:
             print(f"  Period: {row['Period']}")
             print(f"  Expected: {row['Expected']}")
             print(f"  Detected: {row['Dominant']}")
-            print(f"  Match: {'✓' if row['Match'] else '✗'}")
+            print(f"  Match: {'' if row['Match'] else ''}")
 
         # Calculate accuracy
         accuracy = results_df['Match'].sum() / len(results_df)
@@ -1934,7 +1934,7 @@ class MarketRegimeDetector:
         if self.data is None:
             raise ValueError("No data loaded. Call fetch_market_data first.")
 
-        print("🔧 Engineering features...")
+        print(" Engineering features...")
 
         # Calculate returns with proper handling
         returns = self.data.pct_change()
@@ -1984,15 +1984,15 @@ class MarketRegimeDetector:
 
         # Verify no infinite or NaN values remain
         if features.isnull().any().any():
-            print("⚠️ Warning: NaN values detected, filling with 0")
+            print(" Warning: NaN values detected, filling with 0")
             features = features.fillna(0)
 
         if np.isinf(features.values).any():
-            print("⚠️ Warning: Infinite values detected, clipping")
+            print(" Warning: Infinite values detected, clipping")
             features = features.clip(-100, 100)
 
-        print(f"✓ Created {len(features.columns)} features")
-        print(f"✓ Sample size: {len(features)} days")
+        print(f" Created {len(features.columns)} features")
+        print(f" Sample size: {len(features)} days")
 
         # Store features
         self.features = features
@@ -2001,9 +2001,9 @@ class MarketRegimeDetector:
         try:
             self.scaler = StandardScaler()
             self.features_scaled = self.scaler.fit_transform(features)
-            print(f"✓ Features scaled successfully")
+            print(f" Features scaled successfully")
         except Exception as e:
-            print(f"⚠️ Error during scaling: {e}")
+            print(f" Error during scaling: {e}")
             # Try to fix by removing problematic features
             print("Attempting to fix by removing constant features...")
 
@@ -2015,13 +2015,13 @@ class MarketRegimeDetector:
             if len(features_clean.columns) == 0:
                 raise ValueError("All features are constant, cannot proceed")
 
-            print(f"✓ Removed {len(features.columns) - len(features_clean.columns)} constant features")
+            print(f" Removed {len(features.columns) - len(features_clean.columns)} constant features")
 
             # Try scaling again
             self.features = features_clean
             self.scaler = StandardScaler()
             self.features_scaled = self.scaler.fit_transform(features_clean)
-            print(f"✓ Features scaled successfully after cleanup")
+            print(f" Features scaled successfully after cleanup")
 
         self.features_reduced = None  # Will be set if using PCA
 
@@ -2043,7 +2043,7 @@ class MarketRegimeDetector:
         with open(validation_file, 'w') as f:
             json.dump(validation_data, f, indent=2)
 
-        print(f"💾 Saved validation results to {validation_file}")
+        print(f" Saved validation results to {validation_file}")
         return validation_data
 
     # def _check_regime_match(self, detected, expected):
@@ -2103,7 +2103,7 @@ class MarketRegimeDetector:
             print("VIX data not available for comparison")
             return None
 
-        print("\n📊 VIX REGIME COMPARISON")
+        print("\n VIX REGIME COMPARISON")
         print("-" * 40)
 
         # Define VIX regimes
@@ -2197,7 +2197,7 @@ class MarketRegimeDetector:
 #     detector.save_model()
 #
 #     # Additional analysis: Create date ranges for optimizer
-#     print("\n📅 SUGGESTED OPTIMIZER RUNS")
+#     print("\n SUGGESTED OPTIMIZER RUNS")
 #     print("-"*40)
 #     for regime in range(detector.n_regimes):
 #         chars = detector.regime_characteristics[regime]
@@ -2243,7 +2243,7 @@ def main(use_marketstack=False):
     if hasattr(detector, 'features') and detector.features.shape[1] > 5:
         # Apply PCA to reduce features
         from sklearn.decomposition import PCA
-        print("\n📊 Applying PCA for dimensionality reduction...")
+        print("\n Applying PCA for dimensionality reduction...")
         detector.pca = PCA(n_components=5, random_state=42)
         features_pca = detector.pca.fit_transform(detector.features_scaled)
 
@@ -2256,7 +2256,7 @@ def main(use_marketstack=False):
 
         # Print explained variance
         explained_var = detector.pca.explained_variance_ratio_
-        print(f"✓ PCA explains {explained_var.sum():.1%} of variance")
+        print(f" PCA explains {explained_var.sum():.1%} of variance")
     else:
         detector.features_reduced = None
 
@@ -2286,7 +2286,7 @@ def main(use_marketstack=False):
     detector.save_model()
 
     # Additional analysis
-    print("\n📅 SUGGESTED OPTIMIZER RUNS")
+    print("\n SUGGESTED OPTIMIZER RUNS")
     print("-" * 40)
     for regime in range(detector.n_regimes):
         chars = detector.regime_characteristics[regime]
@@ -2371,7 +2371,7 @@ if __name__ == "__main__":
         # Save historical analysis
         detector.save_historical_analysis()
 
-        print("✅ Historical regime analysis completed")
+        print(" Historical regime analysis completed")
         sys.exit(0)
     else:
         # Normal execution

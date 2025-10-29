@@ -83,11 +83,11 @@ class PortfolioOptimizer:
         self.original_tickers = tickers.copy()
 
         # Fetch and prepare data
-        print("📊 Fetching price data...")
+        print(" Fetching price data...")
         prices, dropped_tickers = self._fetch_prices(tickers, lookback_days)
 
         if dropped_tickers:
-            print(f"⚠️  Warning: Skipping {dropped_tickers} due to missing data")
+            print(f"  Warning: Skipping {dropped_tickers} due to missing data")
             tickers = [t for t in tickers if t not in dropped_tickers]
 
         if len(tickers) < 2:
@@ -97,7 +97,7 @@ class PortfolioOptimizer:
         self.returns = prices.pct_change().dropna()
 
         # Estimate covariance matrix
-        print("📈 Estimating covariance matrix (Ledoit-Wolf shrinkage)...")
+        print(" Estimating covariance matrix (Ledoit-Wolf shrinkage)...")
         lw = LedoitWolf()
         cov_array = lw.fit(self.returns).covariance_
         self.cov_matrix = pd.DataFrame(cov_array,
@@ -105,7 +105,7 @@ class PortfolioOptimizer:
                                        columns=self.returns.columns)
 
         # Run optimization based on method
-        print(f"⚙️  Running {method} optimization...")
+        print(f"  Running {method} optimization...")
         if method == "HRP":
             self.weights = self._optimize_hrp()
         elif method == "HERC":
@@ -137,7 +137,7 @@ class PortfolioOptimizer:
             opt_image = self.output_dir / f"{method}_{date_str}.png"
             self._plot_donut_chart(self.weights, f"{method} Portfolio", opt_image)
             images['optimized'] = str(opt_image)
-            print(f"✅ Saved optimization chart: {opt_image.name}")
+            print(f" Saved optimization chart: {opt_image.name}")
 
             # If shares provided, create comparison
             if shares:
@@ -153,7 +153,7 @@ class PortfolioOptimizer:
                 comparison_image = self.output_dir / f"comparison_{method}_{date_str}.png"
                 self._merge_images(current_image, opt_image, comparison_image)
                 images['comparison'] = str(comparison_image)
-                print(f"✅ Saved comparison chart: {comparison_image.name}")
+                print(f" Saved comparison chart: {comparison_image.name}")
 
                 # Print rebalancing suggestions
                 self._print_rebalance_suggestions(current_weights, rebalance_info)
@@ -677,7 +677,7 @@ class PortfolioOptimizer:
 
         # Save
         canvas.save(output_path)
-        print(f"✅ Saved merged image: {output_path.name}")
+        print(f" Saved merged image: {output_path.name}")
 
     def _print_results(self, method: str):
         """
@@ -788,5 +788,5 @@ if __name__ == "__main__":
             lookback_days=180
         )
 
-        print(f"\n✅ {method} optimization completed successfully!")
+        print(f"\n {method} optimization completed successfully!")
         print(f"   Images saved: {results.get('images', {})}")

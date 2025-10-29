@@ -46,7 +46,7 @@ class CurrentRegimeDetector:
         else:
             self.regime_characteristics = None
 
-        print("✓ Loaded historical regime data")
+        print(" Loaded historical regime data")
 
     def get_current_regime(self):
         """Get the current regime from the latest historical data"""
@@ -177,14 +177,14 @@ def main():
         # Get current regime
         current_regime = detector.get_current_regime()
 
-        print(f"\n📊 CURRENT MARKET REGIME")
+        print(f"\n CURRENT MARKET REGIME")
         print("-" * 40)
         print(f"Regime: {current_regime['regime_name']}")
         print(f"Started: {current_regime['start_date']}")
         print(f"Days in regime: {current_regime['days_in_regime']}")
         print(f"Confidence: {current_regime['confidence']:.1%}")
 
-        print(f"\n📈 Regime Probabilities:")
+        print(f"\n Regime Probabilities:")
         for regime, prob in current_regime['all_probabilities'].items():
             indicator = "→" if regime == current_regime['regime_name'] else " "
             print(f"  {indicator} {regime}: {prob:.1%}")
@@ -192,7 +192,7 @@ def main():
         # Get recommended weights
         weights = detector.get_recommended_weights(current_regime['regime_name'])
 
-        print(f"\n💼 Recommended Factor Weights:")
+        print(f"\n Recommended Factor Weights:")
         for factor, weight in sorted(weights.items(), key=lambda x: abs(x[1]), reverse=True):
             if weight != 0:
                 sign = "+" if weight > 0 else ""
@@ -214,12 +214,12 @@ def main():
         with open(output_file, 'w') as f:
             json.dump(output, f, indent=2)
 
-        print(f"\n✅ Results saved to {output_file}")
+        print(f"\n Results saved to {output_file}")
 
         return current_regime, weights
 
     except Exception as e:
-        print(f"\n❌ Error: {e}")
+        print(f"\n Error: {e}")
         import traceback
         traceback.print_exc()
         import sys

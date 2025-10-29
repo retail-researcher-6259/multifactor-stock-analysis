@@ -79,7 +79,7 @@ class MarketstackDataFetcher:
 
                         if 'error' in data:
                             if verbose:
-                                print(f"  ❌ API Error for {symbol}: {data['error'].get('message', 'Unknown error')}")
+                                print(f"   API Error for {symbol}: {data['error'].get('message', 'Unknown error')}")
                             failed_tickers.append(symbol)
                             break
 
@@ -101,7 +101,7 @@ class MarketstackDataFetcher:
 
                     except requests.exceptions.RequestException as e:
                         if verbose:
-                            print(f"  ❌ API Request Error for {symbol}: {e}")
+                            print(f"   API Request Error for {symbol}: {e}")
                         failed_tickers.append(symbol)
                         break
 
@@ -130,7 +130,7 @@ class MarketstackDataFetcher:
 
             except Exception as e:
                 if verbose:
-                    print(f"  ❌ Error fetching {symbol}: {e}")
+                    print(f"   Error fetching {symbol}: {e}")
                 if symbol not in failed_tickers:
                     failed_tickers.append(symbol)
 
@@ -144,15 +144,15 @@ class MarketstackDataFetcher:
             # Check for remaining NaNs
             nan_pct = all_price_data.isna().mean().mean() * 100
             if nan_pct > 0 and verbose:
-                print(f"⚠️ Data contains {nan_pct:.2f}% NaN values after fill")
+                print(f" Data contains {nan_pct:.2f}% NaN values after fill")
 
         if verbose:
             if len(all_price_data) > 0:
-                print(f"✅ Successfully fetched data for {len(all_price_data.columns)} symbols")
+                print(f" Successfully fetched data for {len(all_price_data.columns)} symbols")
                 print(f"Date range: {all_price_data.index[0]} to {all_price_data.index[-1]}")
                 print(f"Total data points: {len(all_price_data)}")
             else:
-                print("❌ No data was fetched")
+                print(" No data was fetched")
 
         return all_price_data, list(set(failed_tickers))
 
@@ -213,7 +213,7 @@ class MarketstackDataFetcher:
         required_start = start_dt - pd.DateOffset(days=lookback_days + 30)
 
         if verbose:
-            print(f"\n🔍 Validating data availability for {len(tickers)} tickers...")
+            print(f"\n Validating data availability for {len(tickers)} tickers...")
             print(f"   Required data from: {required_start.strftime('%Y-%m-%d')} to {start_date}")
 
         availability = {}
@@ -250,14 +250,14 @@ class MarketstackDataFetcher:
 
             except Exception as e:
                 if verbose:
-                    print(f"   ⚠️ Error checking batch: {e}")
+                    print(f"    Error checking batch: {e}")
                 for ticker in batch:
                     availability[ticker] = False
                     insufficient_tickers.append(ticker)
 
         if insufficient_tickers and verbose:
             print(
-                f"   ⚠️ {len(insufficient_tickers)} tickers have insufficient data: {', '.join(insufficient_tickers[:5])}")
+                f"    {len(insufficient_tickers)} tickers have insufficient data: {', '.join(insufficient_tickers[:5])}")
             if len(insufficient_tickers) > 5:
                 print(f"      ... and {len(insufficient_tickers) - 5} more")
 

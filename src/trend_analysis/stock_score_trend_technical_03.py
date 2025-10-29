@@ -32,7 +32,7 @@ class StockScoreTrendAnalyzerTechnical:
         tech_dir = Path(output_base_dir) / "technical_plots"
 
         if tech_dir.exists():
-            print(f"\n🧹 Cleaning old plots from: {tech_dir}")
+            print(f"\n Cleaning old plots from: {tech_dir}")
 
             # Count total files to delete
             total_files = 0
@@ -50,15 +50,15 @@ class StockScoreTrendAnalyzerTechnical:
                     if ticker_dir.is_dir():
                         try:
                             shutil.rmtree(ticker_dir)
-                            print(f"   ✓ Deleted folder: {ticker_dir.name}")
+                            print(f"    Deleted folder: {ticker_dir.name}")
                         except Exception as e:
-                            print(f"   ✗ Error deleting {ticker_dir.name}: {str(e)}")
+                            print(f"    Error deleting {ticker_dir.name}: {str(e)}")
 
                 print(f"   Cleanup complete!\n")
             else:
                 print(f"   Directory is already clean\n")
         else:
-            print(f"\n📁 Technical plots directory doesn't exist yet: {tech_dir}\n")
+            print(f"\n Technical plots directory doesn't exist yet: {tech_dir}\n")
 
     def load_ranking_files(self):
         """Load all ranking CSV files in the date range"""
@@ -545,7 +545,7 @@ class StockScoreTrendAnalyzerTechnical:
             plt.savefig(ticker_dir / f'{ticker}_06_forecasting.png', dpi=100)
             plt.close()
 
-        print(f"✓ Created individual plots for {ticker}")
+        print(f" Created individual plots for {ticker}")
 
     def create_comprehensive_plots(self, ticker, output_dir, use_subfolder=True):
         """Create all technical analysis plots for a ticker
@@ -603,7 +603,7 @@ class StockScoreTrendAnalyzerTechnical:
         # Create individual plots for UI display
         self.create_individual_plots(ticker, output_dir, use_subfolder)
 
-        print(f"✓ Created all plots for {ticker}")
+        print(f" Created all plots for {ticker}")
 
     def _plot_regression_analysis(self, ticker, indices, scores, dates, output_dir):
         """Create regression analysis plot"""

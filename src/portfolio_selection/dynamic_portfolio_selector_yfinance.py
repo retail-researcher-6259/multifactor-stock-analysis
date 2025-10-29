@@ -39,7 +39,7 @@ class DynamicPortfolioSelectorYFinance:
 
         # Detect file type
         self.file_type = self._detect_file_type()
-        print(f"📁 Detected file type: {self.file_type.upper()}")
+        print(f" Detected file type: {self.file_type.upper()}")
 
         # Define real estate sectors/industries to exclude
         self.real_estate_sectors = [
@@ -81,7 +81,7 @@ class DynamicPortfolioSelectorYFinance:
 
         else:
             # Default to stability type for unknown
-            print("⚠️ File type unclear, assuming stability analysis format")
+            print(" File type unclear, assuming stability analysis format")
             return 'stability'
 
     def _prepare_data(self):
@@ -131,7 +131,7 @@ class DynamicPortfolioSelectorYFinance:
 
             excluded_count = initial_count - len(self.stocks_df)
             if excluded_count > 0:
-                print(f"🚫 Excluded {excluded_count} real estate related stocks")
+                print(f" Excluded {excluded_count} real estate related stocks")
 
         # Ensure required columns exist (add defaults if missing)
         if 'CompanyName' not in self.stocks_df.columns:
@@ -151,7 +151,7 @@ class DynamicPortfolioSelectorYFinance:
             if 'Score' in self.stocks_df.columns:
                 self.stocks_df = self.stocks_df.sort_values('Score', ascending=False)
 
-        print(f"✅ Total stocks available: {len(self.stocks_df)}")
+        print(f" Total stocks available: {len(self.stocks_df)}")
 
     # def fetch_batch_data(self, tickers: List[str], lookback_days: int = 252) -> pd.DataFrame:
     #     """
@@ -161,10 +161,10 @@ class DynamicPortfolioSelectorYFinance:
     #     cache_key = f"{','.join(sorted(tickers))}_{lookback_days}"
     #
     #     if cache_key in self.cached_data:
-    #         print(f"  📦 Using cached data for {len(tickers)} tickers")
+    #         print(f"   Using cached data for {len(tickers)} tickers")
     #         return self.cached_data[cache_key]
     #
-    #     print(f"  📊 Fetching data for {len(tickers)} tickers (lookback: {lookback_days} days)")
+    #     print(f"   Fetching data for {len(tickers)} tickers (lookback: {lookback_days} days)")
     #
     #     end_date = datetime.now()
     #     start_date = end_date - timedelta(days=int(lookback_days * 1.5))
@@ -198,7 +198,7 @@ class DynamicPortfolioSelectorYFinance:
     #         return prices
     #
     #     except Exception as e:
-    #         print(f"  ⚠️ Error fetching data: {e}")
+    #         print(f"   Error fetching data: {e}")
     #         return pd.DataFrame()
 
     def fetch_batch_data(self, tickers: List[str], lookback_days: int = 252) -> pd.DataFrame:
@@ -208,10 +208,10 @@ class DynamicPortfolioSelectorYFinance:
         cache_key = f"{','.join(sorted(tickers))}_{lookback_days}"
 
         if cache_key in self.cached_data:
-            print(f"  📦 Using cached data for {len(tickers)} tickers")
+            print(f"   Using cached data for {len(tickers)} tickers")
             return self.cached_data[cache_key]
 
-        print(f"  📊 Fetching data for {len(tickers)} tickers (lookback: {lookback_days} days)")
+        print(f"   Fetching data for {len(tickers)} tickers (lookback: {lookback_days} days)")
 
         end_date = datetime.now()
         start_date = end_date - timedelta(days=int(lookback_days * 1.5))
@@ -249,7 +249,7 @@ class DynamicPortfolioSelectorYFinance:
                 return prices
 
         except Exception as e:
-            print(f"  ⚠️ Batch download failed: {e}")
+            print(f"   Batch download failed: {e}")
 
         # If batch fails, return empty DataFrame
         return pd.DataFrame()
@@ -313,7 +313,7 @@ class DynamicPortfolioSelectorYFinance:
         """
         Create multiple portfolio combinations matching the original script's approach
         """
-        print("\n🔧 Creating portfolio combinations...")
+        print("\n Creating portfolio combinations...")
 
         for pool_size in top_pools:
             for portfolio_size in portfolio_sizes:
@@ -321,7 +321,7 @@ class DynamicPortfolioSelectorYFinance:
                 if pool_size < portfolio_size:
                     continue
 
-                print(f"\n📊 Creating portfolios: Pool={pool_size}, Size={portfolio_size}")
+                print(f"\n Creating portfolios: Pool={pool_size}, Size={portfolio_size}")
 
                 # Get top stocks for this pool
                 top_stocks = self.stocks_df.head(pool_size)
@@ -384,7 +384,7 @@ class DynamicPortfolioSelectorYFinance:
                         if portfolio:
                             self.portfolios[name] = portfolio
 
-        print(f"\n🎯 Total portfolios created: {len(self.portfolios)}")
+        print(f"\n Total portfolios created: {len(self.portfolios)}")
         return self.portfolios
 
     def _create_sector_balanced(self, stocks_df, portfolio_size, max_per_sector):
@@ -437,10 +437,10 @@ class DynamicPortfolioSelectorYFinance:
         results = {}
 
         if not self.portfolios:
-            print("⚠️ No portfolios to backtest. Create portfolios first.")
+            print(" No portfolios to backtest. Create portfolios first.")
             return results
 
-        print(f"\n🚀 Running quick backtests for {len(self.portfolios)} portfolios")
+        print(f"\n Running quick backtests for {len(self.portfolios)} portfolios")
         print(f"  Lookback: {lookback_days} days, Rebalance: {rebalance_frequency}")
 
         # Pre-fetch all unique tickers
@@ -449,35 +449,35 @@ class DynamicPortfolioSelectorYFinance:
             for ticker in portfolio
         ))
 
-        print(f"\n📥 Pre-fetching data for {len(all_tickers)} unique tickers...")
+        print(f"\n Pre-fetching data for {len(all_tickers)} unique tickers...")
         all_data = self.fetch_batch_data(all_tickers, lookback_days)
 
         if all_data.empty:
-            print("⚠️ Failed to fetch market data")
+            print(" Failed to fetch market data")
             return results
 
         # Track available tickers
         available_tickers = list(all_data.columns)
         missing_tickers = set(all_tickers) - set(available_tickers)
         if missing_tickers:
-            print(f"⚠️ {len(missing_tickers)} tickers unavailable (delisted/invalid): {missing_tickers}")
+            print(f" {len(missing_tickers)} tickers unavailable (delisted/invalid): {missing_tickers}")
 
         for portfolio_name, tickers in self.portfolios.items():
-            print(f"\n📈 Backtesting {portfolio_name}...")
+            print(f"\n Backtesting {portfolio_name}...")
 
             # Filter to only available tickers
             valid_tickers = [t for t in tickers if t in available_tickers]
 
             # Skip if too few valid tickers (less than 50% of original)
             if len(valid_tickers) < max(3, len(tickers) * 0.5):
-                print(f"  ⚠️ Skipping - only {len(valid_tickers)}/{len(tickers)} tickers available")
+                print(f"   Skipping - only {len(valid_tickers)}/{len(tickers)} tickers available")
                 continue
 
             # Get data for valid tickers only
             portfolio_data = all_data[valid_tickers]
 
             if portfolio_data.empty or len(portfolio_data) < 20:  # Need minimum data points
-                print(f"  ⚠️ Insufficient data for {portfolio_name}")
+                print(f"   Insufficient data for {portfolio_name}")
                 continue
 
             try:
@@ -486,7 +486,7 @@ class DynamicPortfolioSelectorYFinance:
 
                 # Skip if returns are all zeros or too few data points
                 if returns.empty or len(returns) < 20 or returns.std().sum() == 0:
-                    print(f"  ⚠️ Invalid returns data for {portfolio_name}")
+                    print(f"   Invalid returns data for {portfolio_name}")
                     continue
 
                 # Equal weight portfolio
@@ -494,7 +494,7 @@ class DynamicPortfolioSelectorYFinance:
 
                 # Check for valid returns
                 if portfolio_returns.std() == 0 or len(portfolio_returns) < 20:
-                    print(f"  ⚠️ Invalid portfolio returns for {portfolio_name}")
+                    print(f"   Invalid portfolio returns for {portfolio_name}")
                     continue
 
                 # Calculate metrics with error handling
@@ -529,11 +529,11 @@ class DynamicPortfolioSelectorYFinance:
                     'original_ticker_count': len(tickers)
                 }
 
-                print(f"  ✅ Sharpe: {sharpe_ratio:.3f}, Return: {annual_return:.2%}, MaxDD: {max_drawdown:.2%}")
+                print(f"   Sharpe: {sharpe_ratio:.3f}, Return: {annual_return:.2%}, MaxDD: {max_drawdown:.2%}")
                 print(f"     Using {len(valid_tickers)}/{len(tickers)} tickers")
 
             except Exception as e:
-                print(f"  ❌ Error backtesting {portfolio_name}: {str(e)}")
+                print(f"   Error backtesting {portfolio_name}: {str(e)}")
                 continue
 
         # Find best portfolio
@@ -544,7 +544,7 @@ class DynamicPortfolioSelectorYFinance:
             if valid_results:
                 best_portfolio = max(valid_results.items(),
                                      key=lambda x: x[1]['metrics']['sharpe_ratio'])
-                print(f"\n🏆 Best Portfolio: {best_portfolio[0]}")
+                print(f"\n Best Portfolio: {best_portfolio[0]}")
                 print(f"   Sharpe Ratio: {best_portfolio[1]['metrics']['sharpe_ratio']:.3f}")
                 print(
                     f"   Using {best_portfolio[1]['valid_ticker_count']}/{best_portfolio[1]['original_ticker_count']} tickers")
@@ -595,7 +595,7 @@ class DynamicPortfolioSelectorYFinance:
             results_file = output_path / f'backtest_results_yfinance_{timestamp}.csv'
             results_df.to_csv(results_file, index=False)
 
-            print(f"\n📁 Results exported to {output_path}")
+            print(f"\n Results exported to {output_path}")
             return str(results_file)
 
         return str(portfolios_file)
@@ -632,7 +632,7 @@ class DynamicPortfolioSelectorYFinance:
                     best_tickers = data.get('tickers', [])
 
         if not best_tickers:
-            print("⚠️ No valid portfolio found for JSON export")
+            print(" No valid portfolio found for JSON export")
             return None
 
         # Prepare JSON structure
@@ -659,7 +659,7 @@ class DynamicPortfolioSelectorYFinance:
         with open(json_file, 'w') as f:
             json.dump(portfolio_data, f, indent=2)
 
-        print(f"📄 Best portfolio saved to JSON: {json_file}")
+        print(f" Best portfolio saved to JSON: {json_file}")
         return str(json_file)
 
 

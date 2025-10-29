@@ -34,12 +34,12 @@ class EnhancedSingleTickerTechnicalAnalyzer(StockScoreTrendAnalyzerTechnical):
 
         for dir_to_clean in [tech_plots_dir, ticker_dir]:
             if dir_to_clean.exists():
-                print(f"\n🧹 Cleaning old plots for {ticker}...")
+                print(f"\n Cleaning old plots for {ticker}...")
                 try:
                     shutil.rmtree(dir_to_clean)
-                    print(f"   ✓ Deleted old folder: {dir_to_clean}")
+                    print(f"    Deleted old folder: {dir_to_clean}")
                 except Exception as e:
-                    print(f"   ✗ Error deleting {dir_to_clean}: {str(e)}")
+                    print(f"    Error deleting {dir_to_clean}: {str(e)}")
 
     def analyze_single_ticker_with_ranking(self, ticker, output_base_dir, min_appearances=3):
         """
@@ -65,14 +65,14 @@ class EnhancedSingleTickerTechnicalAnalyzer(StockScoreTrendAnalyzerTechnical):
 
             # Check if ticker exists in the data
             if ticker not in self.score_history:
-                print(f"❌ Error: Ticker '{ticker}' not found in the ranking data!")
+                print(f" Error: Ticker '{ticker}' not found in the ranking data!")
                 print(f"   Available tickers: {len(self.score_history)} total")
                 return False, None
 
             # Check if ticker has enough data
             data_points = len(self.score_history[ticker]['indices'])
             if data_points < min_appearances:
-                print(f"⚠️ Warning: Ticker '{ticker}' has insufficient data!")
+                print(f" Warning: Ticker '{ticker}' has insufficient data!")
                 print(f"   Found: {data_points} data points, Required: {min_appearances}")
                 print(f"   Proceeding with limited analysis...")
 
@@ -83,11 +83,11 @@ class EnhancedSingleTickerTechnicalAnalyzer(StockScoreTrendAnalyzerTechnical):
             # Clean old plots for this ticker
             self.clean_single_ticker_directory(ticker, output_base_dir)
 
-            print(f"📁 Output directory: {tech_plots_dir}")
-            print(f"📊 Data points available: {data_points}")
+            print(f" Output directory: {tech_plots_dir}")
+            print(f" Data points available: {data_points}")
 
             # Perform comprehensive technical analysis
-            print(f"🔍 Running technical analysis...")
+            print(f" Running technical analysis...")
 
             # Run the technical analysis for this single ticker
             self.technical_results[ticker] = {
@@ -102,12 +102,12 @@ class EnhancedSingleTickerTechnicalAnalyzer(StockScoreTrendAnalyzerTechnical):
             self.regression_results[ticker] = self.perform_regression_analysis(ticker)
 
             # Create comprehensive plots
-            print(f"🎨 Creating technical plots...")
+            print(f" Creating technical plots...")
             # Pass use_subfolder=True to ensure plots go to technical_plots/ticker/
             self.create_comprehensive_plots(ticker, output_base_dir, use_subfolder=True)
 
             # Generate technical score and ranking
-            print(f"📈 Calculating technical score...")
+            print(f" Calculating technical score...")
             score_data = self.calculate_technical_score(ticker)
 
             if score_data:
@@ -119,18 +119,18 @@ class EnhancedSingleTickerTechnicalAnalyzer(StockScoreTrendAnalyzerTechnical):
                 ranking_df = pd.DataFrame([ranking_data])
                 ranking_df.to_csv(ranking_file, index=False)
 
-                print(f"📊 Technical ranking saved: {ranking_file}")
+                print(f" Technical ranking saved: {ranking_file}")
 
                 # Display results
                 self.display_single_ticker_results(ticker, score_data, ranking_data)
 
                 return True, ranking_data
             else:
-                print(f"❌ Failed to calculate technical score for {ticker}")
+                print(f" Failed to calculate technical score for {ticker}")
                 return False, None
 
         except Exception as e:
-            print(f"❌ Error analyzing {ticker}: {str(e)}")
+            print(f" Error analyzing {ticker}: {str(e)}")
             import traceback
             traceback.print_exc()
             return False, None
@@ -210,12 +210,12 @@ class EnhancedSingleTickerTechnicalAnalyzer(StockScoreTrendAnalyzerTechnical):
         print(f"{'=' * 60}")
 
         # Basic score info
-        print(f"📊 Technical Score: {score_data['total_score']:.1f}/{score_data['max_possible']:.1f}")
-        print(f"📈 Percentage Score: {score_data['percentage']:.1f}%")
-        print(f"💡 Recommendation: {score_data['recommendation']}")
+        print(f" Technical Score: {score_data['total_score']:.1f}/{score_data['max_possible']:.1f}")
+        print(f" Percentage Score: {score_data['percentage']:.1f}%")
+        print(f" Recommendation: {score_data['recommendation']}")
 
         # Detailed breakdown
-        print(f"\n🔍 DETAILED INDICATOR BREAKDOWN:")
+        print(f"\n DETAILED INDICATOR BREAKDOWN:")
         print(f"{'-' * 40}")
 
         # Group indicators by category
@@ -226,11 +226,11 @@ class EnhancedSingleTickerTechnicalAnalyzer(StockScoreTrendAnalyzerTechnical):
         forecast_indicators = ['arima', 'exp_smooth']
 
         categories = [
-            ("📈 Trend Analysis", trend_indicators),
-            ("📊 Moving Averages", ma_indicators),
-            ("⚡ Momentum Indicators", momentum_indicators),
-            ("📉 Bollinger Bands", bb_indicators),
-            ("🔮 Forecasting", forecast_indicators)
+            (" Trend Analysis", trend_indicators),
+            (" Moving Averages", ma_indicators),
+            (" Momentum Indicators", momentum_indicators),
+            (" Bollinger Bands", bb_indicators),
+            (" Forecasting", forecast_indicators)
         ]
 
         for category_name, indicators in categories:
@@ -243,7 +243,7 @@ class EnhancedSingleTickerTechnicalAnalyzer(StockScoreTrendAnalyzerTechnical):
                     print(f"  • {formatted_key:20s}: {value}")
 
         # Summary statistics
-        print(f"\n📊 RANKING SUMMARY:")
+        print(f"\n RANKING SUMMARY:")
         print(f"{'-' * 40}")
 
         # Count positive indicators
@@ -259,19 +259,19 @@ class EnhancedSingleTickerTechnicalAnalyzer(StockScoreTrendAnalyzerTechnical):
 
         # Signal strength
         if score_data['percentage'] >= 70:
-            signal_emoji = "🟢🟢🟢"
+            signal_emoji = ""
             signal_text = "VERY STRONG"
         elif score_data['percentage'] >= 55:
-            signal_emoji = "🟢🟢"
+            signal_emoji = ""
             signal_text = "STRONG"
         elif score_data['percentage'] >= 45:
-            signal_emoji = "🟡"
+            signal_emoji = ""
             signal_text = "NEUTRAL"
         elif score_data['percentage'] >= 30:
-            signal_emoji = "🔴"
+            signal_emoji = ""
             signal_text = "WEAK"
         else:
-            signal_emoji = "🔴🔴"
+            signal_emoji = ""
             signal_text = "VERY WEAK"
 
         print(f"\n{signal_emoji} Signal Strength: {signal_text}")
@@ -317,8 +317,8 @@ if __name__ == "__main__":
     )
 
     if success:
-        print(f"\n✅ Analysis complete for {TICKER}!")
-        print(f"📁 Results saved to: {OUTPUT_DIRECTORY}/technical_plots/{TICKER}/")
+        print(f"\n Analysis complete for {TICKER}!")
+        print(f" Results saved to: {OUTPUT_DIRECTORY}/technical_plots/{TICKER}/")
     else:
-        print(f"\n❌ Analysis failed for {TICKER}")
+        print(f"\n Analysis failed for {TICKER}")
         print(f"   Please check if the ticker exists in the ranking data")

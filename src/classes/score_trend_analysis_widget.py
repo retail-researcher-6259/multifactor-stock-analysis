@@ -771,7 +771,7 @@ class ScoreTrendAnalysisWidget(QWidget):
 
     def set_recommended_regime(self, regime):
         """Set the recommended regime from regime detection tab"""
-        print(f"📊 Updating recommended regime to: {regime}")
+        print(f" Updating recommended regime to: {regime}")
 
         self.recommended_regime = regime
 
@@ -884,7 +884,7 @@ class ScoreTrendAnalysisWidget(QWidget):
             f"Analysis complete: {total_stocks} stocks analyzed. Results saved to output directory."
         )
 
-        print(f"✅ Stability results saved to: {output_path}")
+        print(f" Stability results saved to: {output_path}")
 
     def handle_technical_results(self, results):
         """Enhanced handler for technical analysis results (no folder button)"""
@@ -904,14 +904,14 @@ class ScoreTrendAnalysisWidget(QWidget):
         results_text += f"Recommendation: {recommendation}\n"
         results_text += f"Regime: {results['regime']}\n"
         results_text += f"Plots Generated: {total_plots}\n"
-        results_text += f"📁 Plots Directory: {plot_directory}\n"
+        results_text += f" Plots Directory: {plot_directory}\n"
 
         if results.get('ranking_file'):
-            results_text += f"📊 Ranking CSV: {Path(results['ranking_file']).name}\n"
+            results_text += f" Ranking CSV: {Path(results['ranking_file']).name}\n"
 
         # Add detailed breakdown if available
         if ranking_data:
-            results_text += f"\n🔍 DETAILED INDICATOR BREAKDOWN:\n"
+            results_text += f"\n DETAILED INDICATOR BREAKDOWN:\n"
             results_text += "-" * 30 + "\n"
 
             indicators = ['Trend Direction', 'SMA Position', 'MACD Signal', 'RSI Level',
@@ -921,11 +921,11 @@ class ScoreTrendAnalysisWidget(QWidget):
                 if indicator in ranking_data:
                     value = ranking_data[indicator]
                     if value == 1:
-                        status = "🟢 BULLISH"
+                        status = " BULLISH"
                     elif value >= 0.5:
-                        status = "🟡 NEUTRAL"
+                        status = " NEUTRAL"
                     else:
-                        status = "🔴 BEARISH"
+                        status = " BEARISH"
                     results_text += f"{indicator}: {value} {status}\n"
 
         self.technical_results_area.setText(results_text)
@@ -943,7 +943,7 @@ class ScoreTrendAnalysisWidget(QWidget):
         #     f"Analysis complete for {ticker} - Score: {technical_score:.1f}. Check plots directory."
         # )
         self.results_summary_label.setText(
-            f"✓ {ticker}: Score {technical_score:.1f}, {recommendation}"
+            f" {ticker}: Score {technical_score:.1f}, {recommendation}"
         )
 
     def handle_stability_error(self, error_message):
@@ -1030,8 +1030,8 @@ class ScoreTrendAnalysisWidget(QWidget):
     #     # Ensure horizontal scrolling is working
     #     self.stability_table.horizontalHeader().setStretchLastSection(False)
     #
-    #     print(f"📊 Stability table updated: {len(df)} rows × {len(df.columns)} columns")
-    #     print(f"🔄 Horizontal scroll enabled, row numbers hidden")
+    #     print(f" Stability table updated: {len(df)} rows × {len(df.columns)} columns")
+    #     print(f" Horizontal scroll enabled, row numbers hidden")
 
     def display_stability_results(self, df):
         """Enhanced display of stability analysis results with proper scrolling"""
@@ -1105,8 +1105,8 @@ class ScoreTrendAnalysisWidget(QWidget):
         self.stability_table.horizontalHeader().setStretchLastSection(False)
         self.stability_table.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
-        print(f"📊 Stability table updated: {len(df)} rows × {len(df.columns)} columns")
-        print(f"📏 Columns auto-sized with constraints")
+        print(f" Stability table updated: {len(df)} rows × {len(df.columns)} columns")
+        print(f" Columns auto-sized with constraints")
 
     def export_stability_results(self):
         """Export stability results - DISABLED (results auto-saved)"""

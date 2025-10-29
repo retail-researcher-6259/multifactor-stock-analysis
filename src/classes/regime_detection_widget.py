@@ -242,15 +242,15 @@ class RegimeDetectorThread(QThread):
                 elif filename.endswith('.pkl'):
                     # Just confirm the model exists
                     results[key] = {'exists': True, 'path': str(file_path)}
-                print(f"✓ Loaded {filename} from {file_path.parent.name}")
+                print(f" Loaded {filename} from {file_path.parent.name}")
             else:
-                print(f"✗ Could not find {filename}")
+                print(f" Could not find {filename}")
 
         # Check for the plot image
         plot_path = results_dir / 'regime_detection_plot.png'
         if plot_path.exists():
             results['plot_path'] = str(plot_path)
-            print(f"✓ Found plot at {plot_path}")
+            print(f" Found plot at {plot_path}")
 
         # Verify we have the essential files
         if 'regime_periods' in results and 'regime_model' in results:
@@ -419,13 +419,13 @@ class RegimeDetectionWidget(QWidget):
                 # Emit signal for other widgets
                 self.regime_detected.emit(detected_regime)
 
-                print(f"✅ Loaded previous regime: {detected_regime}")
+                print(f" Loaded previous regime: {detected_regime}")
 
             else:
-                print("ℹ️ No previous regime analysis found, using default")
+                print("ℹ No previous regime analysis found, using default")
 
         except Exception as e:
-            print(f"⚠️ Error loading previous regime: {e}")
+            print(f" Error loading previous regime: {e}")
             # Use default regime
             self.current_regime = "Steady Growth"
 
@@ -1074,10 +1074,10 @@ class RegimeDetectionWidget(QWidget):
                     }
                 """)
 
-                print(f"✓ Displayed plot from {plot_path}")
+                print(f" Displayed plot from {plot_path}")
             else:
                 self.plot_label.setText("Error: Could not load plot image")
-                print(f"✗ Failed to load plot from {plot_path}")
+                print(f" Failed to load plot from {plot_path}")
 
         except Exception as e:
             print(f"Error displaying plot: {e}")

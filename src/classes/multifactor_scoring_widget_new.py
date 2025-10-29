@@ -497,7 +497,7 @@ class MultifactorScoringWidget(QWidget):
                         # Store the selected file path for use in scoring
                         self.selected_ticker_file = ticker_path
 
-                        print(f"✅ Loaded {count} tickers from {filename}")
+                        print(f" Loaded {count} tickers from {filename}")
                 except Exception as e:
                     self.ticker_count_label.setText(f"Error reading file: {str(e)}")
                     QMessageBox.warning(self, "File Error", f"Could not read ticker file:\n{str(e)}")
@@ -1005,7 +1005,7 @@ class MultifactorScoringWidget(QWidget):
                     # Update the current date label if it exists
                     if hasattr(self, 'current_date_label'):
                         self.current_date_label.setText(
-                            f"📅 Current: {current_date} (Trading Day {current_day} of {total_days})"
+                            f" Current: {current_date} (Trading Day {current_day} of {total_days})"
                         )
 
                     # Update statistics if available
@@ -1032,7 +1032,7 @@ class MultifactorScoringWidget(QWidget):
         # Handle completion message
         elif "complete" in message.lower():
             if hasattr(self, 'current_date_label'):
-                self.current_date_label.setText("✅ All trading days processed!")
+                self.current_date_label.setText(" All trading days processed!")
 
             # Parse summary statistics if available
             try:

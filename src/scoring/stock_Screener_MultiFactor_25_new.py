@@ -227,7 +227,7 @@ def set_ticker_file(file_path):
     if not TICKER_FILE.exists():
         raise FileNotFoundError(f"Ticker file not found: {TICKER_FILE}")
 
-    print(f"📂 Ticker file updated to: {TICKER_FILE}")
+    print(f" Ticker file updated to: {TICKER_FILE}")
     return TICKER_FILE
 
 
@@ -320,11 +320,11 @@ def get_last_trading_day(date, max_lookback=10):
         check_date = date - pd.Timedelta(days=i)
         if is_trading_day(check_date):
             print(
-                f"📅 {date.strftime('%Y-%m-%d')} is not a trading day, using {check_date.strftime('%Y-%m-%d')} instead")
+                f" {date.strftime('%Y-%m-%d')} is not a trading day, using {check_date.strftime('%Y-%m-%d')} instead")
             return check_date
 
     # If no trading day found, return original date
-    print(f"⚠️ Could not find trading day within {max_lookback} days of {date.strftime('%Y-%m-%d')}")
+    print(f" Could not find trading day within {max_lookback} days of {date.strftime('%Y-%m-%d')}")
     return date
 
 
@@ -411,7 +411,7 @@ def fetch_historical_data_for_date(ticker, target_date, lookback_days=365 * 2):
 
         # Check if we got valid data
         if hist is None or (isinstance(hist, pd.DataFrame) and hist.empty):
-            print(f"  ⚠️ No data returned for {ticker}")
+            print(f"   No data returned for {ticker}")
             return pd.DataFrame()
 
         # Handle MultiIndex (ticker, date) if present
@@ -455,10 +455,10 @@ def fetch_historical_data_for_date(ticker, target_date, lookback_days=365 * 2):
         missing_columns = [col for col in required_columns if col not in clean_data.columns]
 
         if missing_columns:
-            print(f"  ⚠️ Missing columns for {ticker}: {missing_columns}")
+            print(f"   Missing columns for {ticker}: {missing_columns}")
             # If Close is missing, we can't proceed
             if 'Close' in missing_columns:
-                print(f"  ❌ Critical: No Close price data for {ticker}")
+                print(f"   Critical: No Close price data for {ticker}")
                 return pd.DataFrame()
 
             # Fill missing columns with reasonable defaults
@@ -480,14 +480,14 @@ def fetch_historical_data_for_date(ticker, target_date, lookback_days=365 * 2):
 
         # Validate we have sufficient data
         if len(clean_data) < 50:  # Need at least 50 days for technical indicators
-            print(f"  ⚠️ Insufficient data for {ticker}: only {len(clean_data)} days")
+            print(f"   Insufficient data for {ticker}: only {len(clean_data)} days")
             return pd.DataFrame()
 
-        print(f"  ✅ Fetched {len(clean_data)} days of historical data for {ticker}")
+        print(f"   Fetched {len(clean_data)} days of historical data for {ticker}")
         return clean_data
 
     except Exception as e:
-        print(f"  ❌ Error fetching historical data for {ticker}: {e}")
+        print(f"   Error fetching historical data for {ticker}: {e}")
         import traceback
         traceback.print_exc()
         return pd.DataFrame()
@@ -516,8 +516,8 @@ def run_historical_scoring(target_date, progress_callback=None):
     if regime is None:
         raise ValueError(f"No regime found for date {target_date.strftime('%Y-%m-%d')}")
 
-    print(f"📅 Running historical scoring for {target_date.strftime('%Y-%m-%d')}")
-    print(f"🎯 Detected regime: {regime}")
+    print(f" Running historical scoring for {target_date.strftime('%Y-%m-%d')}")
+    print(f" Detected regime: {regime}")
 
     # Clean regime name for file paths
     regime_clean = regime.replace("/", "_").replace(" ", "_")
@@ -578,7 +578,7 @@ def run_historical_batch(start_date=None, end_date=None, interval_days=1, progre
     regime_df = load_regime_periods()
 
     # First pass: identify all trading days to process
-    print("📅 Identifying trading days...")
+    print(" Identifying trading days...")
     if progress_callback:
         progress_callback('status', "Identifying trading days in date range...")
         progress_callback('progress', 0)
@@ -592,14 +592,14 @@ def run_historical_batch(start_date=None, end_date=None, interval_days=1, progre
             dates_to_process.append(current_date)
         else:
             skipped_dates.append(current_date)
-            print(f"⏭️ Skipping {current_date.strftime('%Y-%m-%d')} (Market Closed)")
+            print(f" Skipping {current_date.strftime('%Y-%m-%d')} (Market Closed)")
         current_date += pd.Timedelta(days=interval_days)
 
     total_trading_days = len(dates_to_process)
     total_days_in_range = len(dates_to_process) + len(skipped_dates)
 
-    print(f"📊 Found {total_trading_days} trading days out of {total_days_in_range} total days")
-    print(f"📅 Processing from {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}")
+    print(f" Found {total_trading_days} trading days out of {total_days_in_range} total days")
+    print(f" Processing from {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}")
 
     if progress_callback:
         progress_callback('status', f"Processing {total_trading_days} trading days...")
@@ -632,7 +632,7 @@ def run_historical_batch(start_date=None, end_date=None, interval_days=1, progre
             regime = get_regime_for_date(date, regime_df)
 
             if regime is None:
-                print(f"  ⚠️ No regime found for {date.strftime('%Y-%m-%d')}, skipping...")
+                print(f"   No regime found for {date.strftime('%Y-%m-%d')}, skipping...")
                 no_regime_dates += 1
                 results.append({
                     'date': date.strftime('%Y-%m-%d'),
@@ -652,7 +652,7 @@ def run_historical_batch(start_date=None, end_date=None, interval_days=1, progre
             output_path = output_dir / fname
 
             if output_path.exists():
-                print(f"  ✓ File already exists, skipping...")
+                print(f"   File already exists, skipping...")
                 skipped_existing += 1
                 results.append({
                     'date': date.strftime('%Y-%m-%d'),
@@ -668,7 +668,7 @@ def run_historical_batch(start_date=None, end_date=None, interval_days=1, progre
                 progress_callback('status',
                                   f"Fetching data for {date.strftime('%Y-%m-%d')} ({regime} regime)...")
 
-            print(f"  🎯 Auto-detected regime: {regime}")
+            print(f"   Auto-detected regime: {regime}")
 
             # Create a nested progress callback for the inner function
             def nested_progress_callback(callback_type, value):
@@ -687,7 +687,7 @@ def run_historical_batch(start_date=None, end_date=None, interval_days=1, progre
             # Process the result
             if result.get('success'):
                 successful_dates += 1
-                print(f"  ✅ Successfully processed - {result.get('total_stocks', 0)} stocks ranked")
+                print(f"   Successfully processed - {result.get('total_stocks', 0)} stocks ranked")
                 results.append({
                     'date': date.strftime('%Y-%m-%d'),
                     'regime': regime,
@@ -699,7 +699,7 @@ def run_historical_batch(start_date=None, end_date=None, interval_days=1, progre
             else:
                 error_dates += 1
                 error_msg = result.get('error', 'Unknown error')
-                print(f"  ❌ Failed: {error_msg}")
+                print(f"   Failed: {error_msg}")
                 results.append({
                     'date': date.strftime('%Y-%m-%d'),
                     'regime': regime,
@@ -710,7 +710,7 @@ def run_historical_batch(start_date=None, end_date=None, interval_days=1, progre
 
         except Exception as e:
             error_dates += 1
-            print(f"  ❌ Error: {e}")
+            print(f"   Error: {e}")
             results.append({
                 'date': date.strftime('%Y-%m-%d'),
                 'status': 'error',
@@ -729,13 +729,13 @@ def run_historical_batch(start_date=None, end_date=None, interval_days=1, progre
         progress_callback('status', summary_msg)
 
     print(f"\n{'=' * 60}")
-    print(f"📊 BATCH PROCESSING SUMMARY")
+    print(f" BATCH PROCESSING SUMMARY")
     print(f"{'=' * 60}")
-    print(f"✅ Successfully processed: {successful_dates} dates")
-    print(f"⏭️ Skipped (existing): {skipped_existing} dates")
-    print(f"⚠️ No regime found: {no_regime_dates} dates")
-    print(f"❌ Errors: {error_dates} dates")
-    print(f"📅 Weekend/holidays skipped: {len(skipped_dates)} dates")
+    print(f" Successfully processed: {successful_dates} dates")
+    print(f" Skipped (existing): {skipped_existing} dates")
+    print(f" No regime found: {no_regime_dates} dates")
+    print(f" Errors: {error_dates} dates")
+    print(f" Weekend/holidays skipped: {len(skipped_dates)} dates")
     print(f"{'=' * 60}")
 
     return results
@@ -784,9 +784,9 @@ def run_historical_specific_date(target_date, regime, progress_callback=None):
     if target_date.tz is not None:
         target_date = target_date.tz_localize(None)
 
-    print(f"📅 Running historical scoring for {target_date.strftime('%Y-%m-%d')}")
-    print(f"🎯 Using manually selected regime: {regime}")
-    print(f"📊 This mode is for comparing data sources (yfinance vs Marketstack)")
+    print(f" Running historical scoring for {target_date.strftime('%Y-%m-%d')}")
+    print(f" Using manually selected regime: {regime}")
+    print(f" This mode is for comparing data sources (yfinance vs Marketstack)")
 
     # Clean regime name for file paths
     regime_clean = regime.replace("/", "_").replace(" ", "_")
@@ -810,7 +810,7 @@ def run_historical_specific_date(target_date, regime, progress_callback=None):
             progress_callback('error', error_msg)
         raise FileNotFoundError(error_msg)
 
-    print(f"📋 Processing {len(tickers)} tickers for {target_date.strftime('%Y-%m-%d')}")
+    print(f" Processing {len(tickers)} tickers for {target_date.strftime('%Y-%m-%d')}")
 
     if progress_callback:
         progress_callback('status', f"Fetching historical data for {target_date.strftime('%Y-%m-%d')}...")
@@ -848,7 +848,7 @@ def run_historical_specific_date(target_date, regime, progress_callback=None):
             hist = fetch_historical_data_for_date(tk, target_date, lookback_days=365 * 2)
 
             if hist.empty or len(hist) < 200:
-                print(f"  ⚠️ Insufficient historical data for {tk}, skipping...")
+                print(f"   Insufficient historical data for {tk}, skipping...")
                 continue
 
             # Calculate Factor Scores using historical data
@@ -893,10 +893,10 @@ def run_historical_specific_date(target_date, regime, progress_callback=None):
             ))
 
             processed_count += 1
-            print(f"  ✅ {tk} successfully processed")
+            print(f"   {tk} successfully processed")
 
         except Exception as e:
-            print(f"  ❌ Error processing {tk}: {e}")
+            print(f"   Error processing {tk}: {e}")
             continue
 
     if not raw:
@@ -911,7 +911,7 @@ def run_historical_specific_date(target_date, regime, progress_callback=None):
         progress_callback('progress', 90)
         progress_callback('status', "Finalizing scores and rankings...")
 
-    print(f"📊 Processed {processed_count} tickers successfully")
+    print(f" Processed {processed_count} tickers successfully")
 
     # Convert to DataFrame
     df_raw = pd.DataFrame(raw)
@@ -1077,8 +1077,8 @@ def run_historical_specific_date(target_date, regime, progress_callback=None):
 
     # Save the file
     df.to_csv(output_path, index=False)
-    print(f"📁 Saved {fname} to {output_dir}")
-    print(f"📈 Top 10 stocks for {target_date.strftime('%Y-%m-%d')} with {regime} regime:")
+    print(f" Saved {fname} to {output_dir}")
+    print(f" Top 10 stocks for {target_date.strftime('%Y-%m-%d')} with {regime} regime:")
     print(df.head(10)[['Ticker', 'CompanyName', 'Score']])
 
     if progress_callback:
@@ -1143,7 +1143,7 @@ def run_historical_batch_with_regime(start_date=None, end_date=None, manual_regi
         raise ValueError("Manual regime must be provided for this mode")
 
     # First pass: identify all trading days to process
-    print(f"📅 Identifying trading days with manual regime: {manual_regime}")
+    print(f" Identifying trading days with manual regime: {manual_regime}")
     if progress_callback:
         progress_callback('status', f"Identifying trading days for {manual_regime} regime...")
         progress_callback('progress', 0)
@@ -1157,15 +1157,15 @@ def run_historical_batch_with_regime(start_date=None, end_date=None, manual_regi
             dates_to_process.append(current_date)
         else:
             skipped_dates.append(current_date)
-            print(f"⭕ Skipping {current_date.strftime('%Y-%m-%d')} (Market Closed)")
+            print(f" Skipping {current_date.strftime('%Y-%m-%d')} (Market Closed)")
         current_date += pd.Timedelta(days=interval_days)
 
     total_trading_days = len(dates_to_process)
     total_days_in_range = len(dates_to_process) + len(skipped_dates)
 
-    print(f"📊 Found {total_trading_days} trading days out of {total_days_in_range} total days")
-    print(f"📅 Processing from {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}")
-    print(f"🎯 Using manual regime: {manual_regime} for all dates")
+    print(f" Found {total_trading_days} trading days out of {total_days_in_range} total days")
+    print(f" Processing from {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}")
+    print(f" Using manual regime: {manual_regime} for all dates")
 
     if progress_callback:
         progress_callback('status', f"Processing {total_trading_days} trading days with {manual_regime} regime...")
@@ -1189,8 +1189,8 @@ def run_historical_batch_with_regime(start_date=None, end_date=None, manual_regi
                               f"Processing {date.strftime('%Y-%m-%d')} ({i + 1}/{total_trading_days}) with {manual_regime}")
 
         print(f"\n{'=' * 60}")
-        print(f"📅 Processing date {i + 1}/{total_trading_days}: {date.strftime('%Y-%m-%d')}")
-        print(f"🎯 Using manual regime: {manual_regime}")
+        print(f" Processing date {i + 1}/{total_trading_days}: {date.strftime('%Y-%m-%d')}")
+        print(f" Using manual regime: {manual_regime}")
         print(f"{'=' * 60}")
 
         try:
@@ -1209,7 +1209,7 @@ def run_historical_batch_with_regime(start_date=None, end_date=None, manual_regi
             # Process the result
             if result.get('success'):
                 successful_dates += 1
-                print(f"  ✅ Successfully processed - {result.get('total_stocks', 0)} stocks ranked")
+                print(f"   Successfully processed - {result.get('total_stocks', 0)} stocks ranked")
                 results.append({
                     'date': date.strftime('%Y-%m-%d'),
                     'regime': manual_regime,
@@ -1221,7 +1221,7 @@ def run_historical_batch_with_regime(start_date=None, end_date=None, manual_regi
             else:
                 error_dates += 1
                 error_msg = result.get('error', 'Unknown error')
-                print(f"  ❌ Failed: {error_msg}")
+                print(f"   Failed: {error_msg}")
                 results.append({
                     'date': date.strftime('%Y-%m-%d'),
                     'regime': manual_regime,
@@ -1232,7 +1232,7 @@ def run_historical_batch_with_regime(start_date=None, end_date=None, manual_regi
 
         except Exception as e:
             error_dates += 1
-            print(f"  ❌ Error: {e}")
+            print(f"   Error: {e}")
             results.append({
                 'date': date.strftime('%Y-%m-%d'),
                 'regime': manual_regime,
@@ -1250,11 +1250,11 @@ def run_historical_batch_with_regime(start_date=None, end_date=None, manual_regi
         progress_callback('status', summary_msg)
 
     print(f"\n{'=' * 60}")
-    print(f"📊 BATCH PROCESSING SUMMARY (Manual Regime: {manual_regime})")
+    print(f" BATCH PROCESSING SUMMARY (Manual Regime: {manual_regime})")
     print(f"{'=' * 60}")
-    print(f"✅ Successfully processed: {successful_dates} dates")
-    print(f"❌ Errors: {error_dates} dates")
-    print(f"📅 Weekend/holidays skipped: {len(skipped_dates)} dates")
+    print(f" Successfully processed: {successful_dates} dates")
+    print(f" Errors: {error_dates} dates")
+    print(f" Weekend/holidays skipped: {len(skipped_dates)} dates")
     print(f"{'=' * 60}")
 
     return results
@@ -1330,9 +1330,9 @@ def safe_get_info(ticker, retries=3, delay_range=(1, 3)):
         try:
             return fast_info(ticker)
         except Exception as e:
-            print(f"⚠️ Attempt {attempt + 1}/{retries} failed for {ticker}: {e}")
+            print(f" Attempt {attempt + 1}/{retries} failed for {ticker}: {e}")
             time.sleep(random.uniform(*delay_range))
-    print(f"❌ All attempts failed for {ticker}")
+    print(f" All attempts failed for {ticker}")
     return {}
 
 def get_company_info(info):
@@ -1455,7 +1455,7 @@ def get_company_info(info):
 #                 clean_data = clean_data[clean_data.index >= cutoff_timestamp]
 #
 #             except Exception as e:
-#                 print(f"    ⚠️ Warning: Could not filter by date range: {e}")
+#                 print(f"     Warning: Could not filter by date range: {e}")
 #                 # If filtering fails, return all data rather than failing completely
 #                 pass
 #
@@ -1559,7 +1559,7 @@ def yahooquery_hist(ticker, years=5):
             return pd.DataFrame()
 
     except Exception as e:
-        print(f"  ⚠️ Error fetching history for {ticker}: {e}")
+        print(f"   Error fetching history for {ticker}: {e}")
         return pd.DataFrame()
 
 # --- Helper Functions ---
@@ -1720,7 +1720,7 @@ def get_fundamentals(ticker):
                 value_scores_dict)
 
     except Exception as e:
-        print(f"⚠️ Error fetching fundamentals for {ticker}: {e}")
+        print(f" Error fetching fundamentals for {ticker}: {e}")
         return 0, 0, 0, None, {}
 
 
@@ -1978,7 +1978,7 @@ def get_credit_score(info):
         return round(max(0, min(final_score, 1)), 2)
 
     except Exception as e:
-        print(f"⚠️ Credit score error for {info.get('symbol', '?')}: {e}")
+        print(f" Credit score error for {info.get('symbol', '?')}: {e}")
         return 0
 
 
@@ -2455,7 +2455,7 @@ def get_insider_score_simple(ticker):
 
                     if score != 0:  # If we got valid data
                         _insider_data_cache[ticker] = score
-                        print(f"  ✔ {ticker}: Got insider score from Marketstack SEC: {score}")
+                        print(f"   {ticker}: Got insider score from Marketstack SEC: {score}")
                         return score
 
             # If insider endpoint didn't work, try SEC filings endpoint
@@ -2475,7 +2475,7 @@ def get_insider_score_simple(ticker):
 
                             if score != 0:
                                 _insider_data_cache[ticker] = score
-                                print(f"  ✔ {ticker}: Got insider score from SEC filings: {score}")
+                                print(f"   {ticker}: Got insider score from SEC filings: {score}")
                                 return score
 
         except Exception as e:
@@ -2584,7 +2584,7 @@ def _price_mom(df):
     # Fallback: Use as much data as available (minimum 180 days)
     elif len(df) >= 180:
         # Use all available data, but note this is not ideal
-        print(f"  ⚠️ Using {len(df)} days for momentum (less than 252)")
+        print(f"   Using {len(df)} days for momentum (less than 252)")
         ret = (df["Close"].iloc[-1] / df["Close"].iloc[0]) - 1
         return ret
 
@@ -2633,7 +2633,7 @@ def get_momentum_score(ticker, hist):
     elif len(hist) >= 180:
         # Fallback if we don't have full year
         # But flag this as it will cause differences
-        print(f"    ⚠️ {ticker}: Only {len(hist)} days for momentum")
+        print(f"     {ticker}: Only {len(hist)} days for momentum")
         pm = (hist["Close"].iloc[-1] / hist["Close"].iloc[0]) - 1
 
     # Earnings momentum
@@ -2902,8 +2902,8 @@ def run_daily_scoring(regime="Steady_Growth", progress_callback=None):
     global WEIGHTS
     WEIGHTS = get_regime_weights(regime)
 
-    print(f"🎯 Running multifactor scoring for regime: {regime}")
-    print(f"📊 Using weights: {WEIGHTS}")
+    print(f" Running multifactor scoring for regime: {regime}")
+    print(f" Using weights: {WEIGHTS}")
 
     if _progress_tracker:
         _progress_tracker.callback('status', f"Loading tickers for {regime} regime...")
@@ -2914,7 +2914,7 @@ def run_daily_scoring(regime="Steady_Growth", progress_callback=None):
         with open(TICKER_FILE, "r") as f:
             tickers = [ln.strip().replace("$", "") for ln in f if ln.strip()]
     except FileNotFoundError:
-        error_msg = f"⛔ Ticker file '{TICKER_FILE}' not found!"
+        error_msg = f" Ticker file '{TICKER_FILE}' not found!"
         print(error_msg)
         if _progress_tracker:
             _progress_tracker.callback('error', error_msg)
@@ -2953,11 +2953,11 @@ def run_daily_scoring(regime="Steady_Growth", progress_callback=None):
 
         try:
             info = safe_get_info(tk)
-            print(f"  ✓ Info fetched for {tk}: MarketCap={info.get('marketCap', 'N/A')}")
+            print(f"   Info fetched for {tk}: MarketCap={info.get('marketCap', 'N/A')}")
 
             # Skip if basic data missing
             if not info or not info.get("marketCap"):
-                print(f"  ⚠️ SKIPPING {tk}: No market cap data")
+                print(f"   SKIPPING {tk}: No market cap data")
                 skipped_tickers.append((tk, "No market cap"))
                 continue
 
@@ -2965,9 +2965,9 @@ def run_daily_scoring(regime="Steady_Growth", progress_callback=None):
 
             if hist.empty or len(hist) < 200:
                 if hist.empty:
-                    print(f"  ⚠️ SKIPPING {tk}: Historical data is empty")
+                    print(f"   SKIPPING {tk}: Historical data is empty")
                 else:
-                    print(f"  ⚠️ SKIPPING {tk}: Insufficient data points ({len(hist)} < 200)")
+                    print(f"   SKIPPING {tk}: Insufficient data points ({len(hist)} < 200)")
                 skipped_tickers.append((tk, f"Insufficient data ({len(hist)} days)"))
                 continue
 
@@ -3008,7 +3008,7 @@ def run_daily_scoring(regime="Steady_Growth", progress_callback=None):
                 CompanyName=company_name, Country=country
             ))
 
-            print(f"  ✅ {tk} successfully added to results")
+            print(f"   {tk} successfully added to results")
             processed_tickers.append(tk)
 
             # Update progress tracker for completed ticker
@@ -3016,12 +3016,12 @@ def run_daily_scoring(regime="Steady_Growth", progress_callback=None):
                 _progress_tracker.update_progress(tk, "completed")
 
         except Exception as e:
-            print(f"⚠️ {tk}: {e}")
+            print(f" {tk}: {e}")
             if _progress_tracker:
                 _progress_tracker.update_progress(tk, "completed")
 
     if not raw:
-        error_msg = "⚠️ No usable tickers"
+        error_msg = " No usable tickers"
         print(error_msg)
         if _progress_tracker:
             _progress_tracker.callback('error', error_msg)
@@ -3162,10 +3162,10 @@ def run_daily_scoring(regime="Steady_Growth", progress_callback=None):
 
     # Save the file
     df.to_csv(output_path, index=False)
-    print(f"📁 Saved {fname} to {output_dir}")
-    print(f"📈 Top {TOP_N} stocks for {regime} regime:")
+    print(f" Saved {fname} to {output_dir}")
+    print(f" Top {TOP_N} stocks for {regime} regime:")
     print(df.head(TOP_N))
-    print(f"✅ Finished in {round(time.time() - start_time, 1)} seconds")
+    print(f" Finished in {round(time.time() - start_time, 1)} seconds")
 
     if _progress_tracker:
         _progress_tracker.callback('progress', 100)

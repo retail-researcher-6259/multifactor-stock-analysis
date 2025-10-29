@@ -280,7 +280,7 @@ class DynamicPortfolioSelectionWidget(QWidget):
             self.lookback_input.setToolTip("Shorter lookbacks for better yfinance compatibility")
 
             # Show info message
-            self.data_source_info.setText("✓ Fast mode: Using yfinance (no API limits)")
+            self.data_source_info.setText(" Fast mode: Using yfinance (no API limits)")
             self.data_source_info.setStyleSheet("color: #4CAF50;")
 
         else:  # Marketstack
@@ -294,7 +294,7 @@ class DynamicPortfolioSelectionWidget(QWidget):
             self.lookback_input.setToolTip("Full lookback range with Marketstack API")
 
             # Show info message
-            self.data_source_info.setText("✓ Standard mode: Using Marketstack API")
+            self.data_source_info.setText(" Standard mode: Using Marketstack API")
             self.data_source_info.setStyleSheet("color: #2196F3;")
 
     def create_parameters_section(self):
@@ -313,7 +313,7 @@ class DynamicPortfolioSelectionWidget(QWidget):
         source_layout.addWidget(self.data_source_combo)
 
         # Info label for data source
-        self.data_source_info = QLabel("✓ Fast mode: Using yfinance (no API limits)")
+        self.data_source_info = QLabel(" Fast mode: Using yfinance (no API limits)")
         self.data_source_info.setStyleSheet("color: #4CAF50; font-style: italic;")
         source_layout.addWidget(self.data_source_info)
 
@@ -727,12 +727,12 @@ class DynamicPortfolioSelectionWidget(QWidget):
         # Update summary
         if results.get('backtest_results'):
             self.summary_label.setText(
-                f"✓ Analysis complete - {len(results['portfolios'])} portfolios created | "
+                f" Analysis complete - {len(results['portfolios'])} portfolios created | "
                 f"Best Sharpe: {best_sharpe:.3f} | Source: {results.get('data_source', 'Unknown').upper()}"
             )
         else:
             self.summary_label.setText(
-                f"✓ Analysis complete - {len(results['portfolios'])} portfolios created | "
+                f" Analysis complete - {len(results['portfolios'])} portfolios created | "
                 f"Source: {results.get('data_source', 'Unknown').upper()}"
             )
         self.summary_label.setStyleSheet("color: #4CAF50;")

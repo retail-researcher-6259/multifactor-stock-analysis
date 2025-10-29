@@ -74,21 +74,21 @@ class MainWindow(QMainWindow):
 
         # Create tabs
         self.regime_widget = RegimeDetectionWidget()
-        self.tab_widget.addTab(self.regime_widget, "📊 Regime Detection")
+        self.tab_widget.addTab(self.regime_widget, " Regime Detection")
 
         self.scoring_widget = MultifactorScoringWidget()
-        self.tab_widget.addTab(self.scoring_widget, "📈 Multifactor Scoring")
+        self.tab_widget.addTab(self.scoring_widget, " Multifactor Scoring")
 
         self.trend_analysis_widget = ScoreTrendAnalysisWidget()
-        self.tab_widget.addTab(self.trend_analysis_widget, "📉 Score Trend Analysis")
+        self.tab_widget.addTab(self.trend_analysis_widget, " Score Trend Analysis")
 
         # Add new Dynamic Portfolio Selection tab
         self.portfolio_widget = DynamicPortfolioSelectionWidget()
-        self.tab_widget.addTab(self.portfolio_widget, "💼 Portfolio Selection")
+        self.tab_widget.addTab(self.portfolio_widget, " Portfolio Selection")
 
         # Add new Portfolio Optimization tab
         self.optimizer_widget = PortfolioOptimizerWidget()
-        self.tab_widget.addTab(self.optimizer_widget, "💼 Portfolio Optimization")
+        self.tab_widget.addTab(self.optimizer_widget, " Portfolio Optimization")
 
         # Connect signals between widgets
         self.connect_widget_signals()

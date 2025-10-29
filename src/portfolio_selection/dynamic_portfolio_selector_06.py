@@ -64,7 +64,7 @@ class DynamicPortfolioSelector:
         else:
             self.file_type = file_type
 
-        print(f"📁 Detected file type: {self.file_type.upper()}")
+        print(f" Detected file type: {self.file_type.upper()}")
 
         # Define real estate and housing related sectors/industries to exclude
         self.real_estate_sectors = [
@@ -118,7 +118,7 @@ class DynamicPortfolioSelector:
     #         return 'ranked'
     #     else:
     #         # Default to ranked if unclear
-    #         print("⚠️ Could not definitively determine file type, assuming 'ranked'")
+    #         print(" Could not definitively determine file type, assuming 'ranked'")
     #         return 'ranked'
 
     def _detect_file_type(self) -> str:
@@ -142,7 +142,7 @@ class DynamicPortfolioSelector:
             if 'ticker' in columns_lower and 'avg_score' in columns_lower:
                 return 'common'
             else:
-                print("⚠️ Could not definitively determine file type, assuming 'ranked'")
+                print(" Could not definitively determine file type, assuming 'ranked'")
                 return 'ranked'
 
     def _is_real_estate_related(self, sector: str, industry: str) -> bool:
@@ -220,7 +220,7 @@ class DynamicPortfolioSelector:
 
             # Check if we have the merged file with sector/industry info
             if 'Sector' not in self.stocks_df.columns:
-                print("⚠️ Warning: No Sector/Industry information in stability file")
+                print(" Warning: No Sector/Industry information in stability file")
                 print("   Sector-based portfolio strategies will be limited")
                 # Add placeholder columns
                 self.stocks_df['Sector'] = 'Unknown'
@@ -248,7 +248,7 @@ class DynamicPortfolioSelector:
             excluded_count = initial_count - len(self.stocks_df)
 
             if excluded_count > 0:
-                print(f"🏠 Excluded {excluded_count} real estate/housing related stocks")
+                print(f" Excluded {excluded_count} real estate/housing related stocks")
 
         # Sort and create rank based on file type
         if self.file_type == 'common':
@@ -265,7 +265,7 @@ class DynamicPortfolioSelector:
             self.stocks_df = self.stocks_df.sort_values('Score', ascending=False).reset_index(drop=True)
             self.stocks_df['Rank'] = range(1, len(self.stocks_df) + 1)
 
-        print(f"\n📊 Final dataset: {len(self.stocks_df)} stocks")
+        print(f"\n Final dataset: {len(self.stocks_df)} stocks")
         if self.file_type == 'common':
             if 'Linear_R2' in self.stocks_df.columns:
                 print(f"Average Linear R²: {self.stocks_df['Linear_R2'].mean():.3f}")
@@ -383,7 +383,7 @@ class DynamicPortfolioSelector:
             List of selected ticker symbols
         """
         if self.file_type != 'common':
-            print("⚠️ Stability-focused portfolio requires common tickers file, falling back to top rank")
+            print(" Stability-focused portfolio requires common tickers file, falling back to top rank")
             return self.create_portfolio_by_top_rank(portfolio_size, top_pool)
 
         top_stocks = self.get_top_stocks(top_pool).copy()
@@ -392,7 +392,7 @@ class DynamicPortfolioSelector:
         stable_stocks = top_stocks[top_stocks['Linear_R2'] >= min_r2]
 
         if len(stable_stocks) < portfolio_size:
-            print(f"⚠️ Only {len(stable_stocks)} stocks meet R² threshold of {min_r2}")
+            print(f" Only {len(stable_stocks)} stocks meet R² threshold of {min_r2}")
             # Fall back to sorting by R² without threshold
             stable_stocks = top_stocks.sort_values('Linear_R2', ascending=False)
 
@@ -416,7 +416,7 @@ class DynamicPortfolioSelector:
             List of selected ticker symbols
         """
         if self.file_type != 'common':
-            print("⚠️ Positive momentum portfolio requires common tickers file, falling back to top rank")
+            print(" Positive momentum portfolio requires common tickers file, falling back to top rank")
             return self.create_portfolio_by_top_rank(portfolio_size, top_pool)
 
         top_stocks = self.get_top_stocks(top_pool).copy()
@@ -425,7 +425,7 @@ class DynamicPortfolioSelector:
         momentum_stocks = top_stocks[top_stocks['Linear_Slope'] > min_slope]
 
         if len(momentum_stocks) < portfolio_size:
-            print(f"⚠️ Only {len(momentum_stocks)} stocks have slope > {min_slope}")
+            print(f" Only {len(momentum_stocks)} stocks have slope > {min_slope}")
             momentum_stocks = top_stocks.sort_values('Linear_Slope', ascending=False)
 
         selected = momentum_stocks.head(portfolio_size)
@@ -448,7 +448,7 @@ class DynamicPortfolioSelector:
     #         List of selected ticker symbols
     #     """
     #     if self.file_type != 'common':
-    #         print("⚠️ Recommendation-based portfolio requires common tickers file, falling back to top rank")
+    #         print(" Recommendation-based portfolio requires common tickers file, falling back to top rank")
     #         return self.create_portfolio_by_top_rank(portfolio_size, top_pool)
     #
     #     if recommendations is None:
@@ -461,7 +461,7 @@ class DynamicPortfolioSelector:
     #     recommended_stocks = top_stocks[top_stocks['Recommendation'].isin(recommendations)]
     #
     #     if len(recommended_stocks) < portfolio_size:
-    #         print(f"⚠️ Only {len(recommended_stocks)} stocks meet recommendation criteria")
+    #         print(f" Only {len(recommended_stocks)} stocks meet recommendation criteria")
     #         # Add more recommendations if needed
     #         recommended_stocks = top_stocks
     #
@@ -485,7 +485,7 @@ class DynamicPortfolioSelector:
             List of selected ticker symbols
         """
         if self.file_type != 'common':
-            print("⚠️ Recommendation-based portfolio requires common tickers file, falling back to top rank")
+            print(" Recommendation-based portfolio requires common tickers file, falling back to top rank")
             return self.create_portfolio_by_top_rank(portfolio_size, top_pool)
 
         if recommendations is None:
@@ -507,7 +507,7 @@ class DynamicPortfolioSelector:
         recommended_stocks = top_stocks[top_stocks['Recommendation'].isin(recommendations)]
 
         if len(recommended_stocks) < portfolio_size:
-            print(f"⚠️ Only {len(recommended_stocks)} stocks meet recommendation criteria")
+            print(f" Only {len(recommended_stocks)} stocks meet recommendation criteria")
             # If not enough stocks, add the next best stocks by score
             if len(recommended_stocks) < portfolio_size:
                 # Get stocks not in recommended_stocks
@@ -539,7 +539,7 @@ class DynamicPortfolioSelector:
             List of selected ticker symbols
         """
         if self.file_type != 'common':
-            print("⚠️ Hybrid stability portfolio requires common tickers file, falling back to sector balanced")
+            print(" Hybrid stability portfolio requires common tickers file, falling back to sector balanced")
             return self.create_sector_balanced_portfolio(portfolio_size, top_pool, max_per_sector)
 
         top_stocks = self.get_top_stocks(top_pool).copy()
@@ -598,7 +598,7 @@ class DynamicPortfolioSelector:
             List of selected ticker symbols
         """
         if self.file_type != 'ranked':
-            print("⚠️ Factor-balanced portfolio requires ranked stocks file, falling back to top rank")
+            print(" Factor-balanced portfolio requires ranked stocks file, falling back to top rank")
             return self.create_portfolio_by_top_rank(portfolio_size, top_pool)
 
         if factor_weights is None:
@@ -731,7 +731,7 @@ class DynamicPortfolioSelector:
             List of selected ticker symbols
         """
         if self.file_type != 'ranked':
-            print("⚠️ Risk-adjusted portfolio requires ranked stocks file, falling back to stability-focused")
+            print(" Risk-adjusted portfolio requires ranked stocks file, falling back to stability-focused")
             return self.create_stability_focused_portfolio(portfolio_size, top_pool)
 
         top_stocks = self.get_top_stocks(top_pool).copy()
@@ -858,20 +858,20 @@ class DynamicPortfolioSelector:
         # ADD THIS: Data availability check
         start_dt = pd.to_datetime(start_date)
         required_start = start_dt - pd.DateOffset(days=lookback_days + 30)  # Add buffer
-        print(f"\n📅 Lookback configuration:")
+        print(f"\n Lookback configuration:")
         print(f"   - Lookback period: {lookback_days} days (~{lookback_days / 252:.1f} years)")
         print(f"   - Start date: {start_date}")
         print(f"   - Data needed from: {required_start.strftime('%Y-%m-%d')}")
         print(f"   - This requires {(start_dt - required_start).days} days of historical data")
 
-        print(f"🚀 Starting backtests for {total_portfolios} portfolios...")
+        print(f" Starting backtests for {total_portfolios} portfolios...")
 
         for i, (portfolio_name, tickers) in enumerate(self.portfolios.items(), 1):
-            print(f"\n📊 Backtesting {portfolio_name} ({i}/{total_portfolios})")
+            print(f"\n Backtesting {portfolio_name} ({i}/{total_portfolios})")
             print(f"Tickers: {tickers}")
 
             # ADD THIS: Data fetching status
-            print(f"   📥 Fetching {lookback_days} days of historical data...")
+            print(f"    Fetching {lookback_days} days of historical data...")
 
             try:
                 # Run backtest using only Drift-based rebalancing
@@ -884,7 +884,7 @@ class DynamicPortfolioSelector:
                 )
 
                 # ADD THIS: Success message
-                print(f"   ✅ Data fetched successfully")
+                print(f"    Data fetched successfully")
 
                 # Extract drift results
                 drift_result = backtest_result['Drift']
@@ -920,19 +920,19 @@ class DynamicPortfolioSelector:
 
                 results[portfolio_name] = metrics
 
-                print(f"✅ Completed - Sharpe: {metrics['sharpe_ratio']:.3f}, Return: {metrics['annual_return']*100:.2f}%")
+                print(f" Completed - Sharpe: {metrics['sharpe_ratio']:.3f}, Return: {metrics['annual_return']*100:.2f}%")
 
             except Exception as e:
                 error_msg = str(e).lower()
                 if 'no data' in error_msg or 'insufficient data' in error_msg:
-                    print(f"   ❌ Insufficient historical data for {portfolio_name}")
+                    print(f"    Insufficient historical data for {portfolio_name}")
                     print(
                         f"      Need data from {required_start.strftime('%Y-%m-%d')} but some tickers may not have enough history")
                 elif 'download' in error_msg or 'fetch' in error_msg:
-                    print(f"   ❌ Error downloading data for {portfolio_name}")
+                    print(f"    Error downloading data for {portfolio_name}")
                     print(f"      Some tickers may be delisted or have connection issues")
                 else:
-                    print(f"   ❌ Error backtesting {portfolio_name}: {str(e)}")
+                    print(f"    Error backtesting {portfolio_name}: {str(e)}")
 
                 # ADD THIS: Show which tickers might be problematic
                 print(f"      Tickers in portfolio: {', '.join(tickers[:5])}" +
@@ -1065,7 +1065,7 @@ class DynamicPortfolioSelector:
 
         if save_fig:
             plt.savefig(r'./Results/portfolio_performance_comparison_final.png', dpi=300, bbox_inches='tight')
-            print("📊 Performance comparison chart saved as 'portfolio_performance_comparison_final.png'")
+            print(" Performance comparison chart saved as 'portfolio_performance_comparison_final.png'")
 
         # plt.show()
 
@@ -1132,7 +1132,7 @@ class DynamicPortfolioSelector:
         with open(filename, 'w') as f:
             json.dump(export_data, f, indent=2, default=str)
 
-        print(f"✅ Detailed results exported to {filename}")
+        print(f" Detailed results exported to {filename}")
 
     def print_best_portfolio_summary(self, top_n: int = 3) -> None:
         """
@@ -1146,14 +1146,14 @@ class DynamicPortfolioSelector:
             return
 
         print("\n" + "="*60)
-        print("🏆 BEST PORTFOLIO PERFORMANCE SUMMARY (NO REAL ESTATE)")
+        print(" BEST PORTFOLIO PERFORMANCE SUMMARY (NO REAL ESTATE)")
         print("="*60)
 
         # Get top portfolios by different metrics
         metrics = ['sharpe_ratio', 'annual_return', 'calmar_ratio']
 
         for metric in metrics:
-            print(f"\n📊 Top {top_n} by {metric.replace('_', ' ').title()}:")
+            print(f"\n Top {top_n} by {metric.replace('_', ' ').title()}:")
             print("-" * 50)
 
             top_portfolios = self.find_best_portfolios(criteria=metric, top_n=top_n)
@@ -1173,7 +1173,7 @@ class DynamicPortfolioSelector:
         best_portfolio_name = max(self.backtest_results.items(), key=lambda x: x[1]['sharpe_ratio'])[0]
         best_metrics = self.backtest_results[best_portfolio_name]
 
-        print("\n🥇 BEST OVERALL PORTFOLIO (by Sharpe Ratio):")
+        print("\n BEST OVERALL PORTFOLIO (by Sharpe Ratio):")
         print("-" * 50)
         print(f"Portfolio: {best_portfolio_name}")
         print(f"Sharpe Ratio: {best_metrics['sharpe_ratio']:.3f}")
@@ -1215,7 +1215,7 @@ class DynamicPortfolioSelector:
             excluded_count = initial_count - len(self.stocks_df)
 
             if excluded_count > 0:
-                print(f"🚫 Excluded {excluded_count} additional tickers: {', '.join(exclude_tickers)}")
+                print(f" Excluded {excluded_count} additional tickers: {', '.join(exclude_tickers)}")
 
         # Re-prepare data with new exclusions
         self._prepare_data()
@@ -1229,20 +1229,20 @@ class DynamicPortfolioSelector:
         """
         if hasattr(self, 'data_fetcher'):
             # Use Marketstack
-            print("   🔑 Using Marketstack API for validation...")
+            print("    Using Marketstack API for validation...")
             return self.data_fetcher.validate_data_availability(
                 tickers, start_date, lookback_days
             )
         else:
             # Keep original yfinance implementation
-            print("   📊 Using yfinance for validation...")
+            print("    Using yfinance for validation...")
 
         import yfinance as yf
 
         start_dt = pd.to_datetime(start_date)
         required_start = start_dt - pd.DateOffset(days=lookback_days + 30)
 
-        print(f"\n🔍 Validating data availability for {len(tickers)} tickers...")
+        print(f"\n Validating data availability for {len(tickers)} tickers...")
         print(f"   Required data from: {required_start.strftime('%Y-%m-%d')} to {start_date}")
 
         availability = {}
@@ -1261,7 +1261,7 @@ class DynamicPortfolioSelector:
 
         if insufficient_tickers:
             print(
-                f"   ⚠️ {len(insufficient_tickers)} tickers have insufficient data: {', '.join(insufficient_tickers[:5])}")
+                f"    {len(insufficient_tickers)} tickers have insufficient data: {', '.join(insufficient_tickers[:5])}")
             if len(insufficient_tickers) > 5:
                 print(f"      ... and {len(insufficient_tickers) - 5} more")
 
@@ -1272,11 +1272,11 @@ if __name__ == "__main__":
     MARKETSTACK_API_KEY = "476419cceb4330259e5a126753335b72"  # Use your actual key
 
     # Initialize the portfolio selector
-    print("🚀 Initializing Dynamic Portfolio Selection System...")
+    print(" Initializing Dynamic Portfolio Selection System...")
     selector = DynamicPortfolioSelector(r'./ranked_lists/common_top150_tickers_0712.csv', exclude_real_estate=True)
 
     # Create portfolios
-    print("\n🔧 Creating multiple portfolio combinations...")
+    print("\n Creating multiple portfolio combinations...")
     portfolios = selector.create_multiple_portfolios(
         portfolio_sizes=[5, 10, 15],
         top_pools=[60]
@@ -1287,12 +1287,12 @@ if __name__ == "__main__":
     lookback_periods = [252, 504, 756]  # 1, 2, 3 years
 
     # ADD THIS: Pre-flight data check
-    print("\n🔍 Pre-flight data availability check...")
+    print("\n Pre-flight data availability check...")
     # test_ticker = selector.stocks_df.iloc[0]['Ticker']  # Get first ticker as test
     # print(f"   Testing data availability with ticker: {test_ticker}")
 
     # Pre-flight data check with a better ticker
-    print("\n🔍 Pre-flight data availability check...")
+    print("\n Pre-flight data availability check...")
     # Use a ticker likely to have long history
     test_tickers = ['NFLX', 'NVDA', 'TSM', 'CBOE', 'MNST']
     for test_ticker in test_tickers:
@@ -1307,8 +1307,8 @@ if __name__ == "__main__":
                                         progress=False)
                 if len(test_data) > 0:
                     actual_start = test_data.index[0].strftime('%Y-%m-%d')
-                    print(f"   ✅ Test ticker {test_ticker} has data from {actual_start}")
-                    print(f"   📊 Total days available: {len(test_data)}")
+                    print(f"    Test ticker {test_ticker} has data from {actual_start}")
+                    print(f"    Total days available: {len(test_data)}")
                     break
             except Exception as e:
                 continue
@@ -1322,15 +1322,15 @@ if __name__ == "__main__":
                                 progress=False)
         if len(test_data) > 0:
             actual_start = test_data.index[0].strftime('%Y-%m-%d')
-            print(f"   ✅ Test ticker has data from {actual_start}")
-            print(f"   📊 Total days available: {len(test_data)}")
+            print(f"    Test ticker has data from {actual_start}")
+            print(f"    Total days available: {len(test_data)}")
         else:
-            print(f"   ⚠️ Warning: Test ticker has no data for the required period")
+            print(f"    Warning: Test ticker has no data for the required period")
     except Exception as e:
-        print(f"   ⚠️ Warning: Could not verify data availability: {str(e)}")
+        print(f"    Warning: Could not verify data availability: {str(e)}")
     ###
 
-    print("\n📊 Testing different lookback periods for robustness...")
+    print("\n Testing different lookback periods for robustness...")
     best_results_by_lookback = {}
 
     for lookback in lookback_periods:
@@ -1340,7 +1340,7 @@ if __name__ == "__main__":
 
         # ADD THIS: Calculate required data start date
         required_data_start = pd.to_datetime("2020-01-01") - pd.DateOffset(days=lookback + 30)
-        print(f"📅 This lookback requires data from {required_data_start.strftime('%Y-%m-%d')}")
+        print(f" This lookback requires data from {required_data_start.strftime('%Y-%m-%d')}")
 
         # Run backtests with current lookback period
 
@@ -1366,7 +1366,7 @@ if __name__ == "__main__":
             }
 
             # Save results for this specific lookback period
-            print(f"\n💾 Saving results for {lookback}-day lookback...")
+            print(f"\n Saving results for {lookback}-day lookback...")
             selector.create_performance_comparison(save_fig=True)
             plt.savefig(f'./Results/portfolio_performance_comparison_{lookback}days.png', dpi=300, bbox_inches='tight')
             plt.close()  # Close to avoid memory issues
@@ -1378,7 +1378,7 @@ if __name__ == "__main__":
             print(f"Annual Return: {best_portfolio[1]['annual_return'] * 100:.2f}%")
 
     # Compare results across lookback periods
-    print("\n📈 LOOKBACK PERIOD COMPARISON")
+    print("\n LOOKBACK PERIOD COMPARISON")
     print("-" * 80)
     print(f"{'Lookback (days)':<20} {'Best Portfolio':<30} {'Sharpe':<10} {'Return':<10}")
     print("-" * 80)
@@ -1395,15 +1395,15 @@ if __name__ == "__main__":
         selector.print_best_portfolio_summary(top_n=3)
 
         # Create performance comparison charts
-        print("\n📈 Creating performance comparison charts...")
+        print("\n Creating performance comparison charts...")
         selector.create_performance_comparison(save_fig=True)
 
         # Export detailed results
-        print("\n💾 Exporting detailed results...")
+        print("\n Exporting detailed results...")
         today = datetime.now().strftime("%m%d")  # e.g. 0503
         selector.export_detailed_results(f'./Results/portfolio_selection_results_{today}.json')
 
-        print("\n✅ Analysis Complete! Check the generated charts and exported results.")
-        print("💡 Consider running the best performing portfolio through additional analysis")
+        print("\n Analysis Complete! Check the generated charts and exported results.")
+        print(" Consider running the best performing portfolio through additional analysis")
         print("   using the walk-forward testing functionality in the MHRP system.")
-        print("🏠 Real estate and housing-related stocks have been excluded from all portfolios.")
+        print(" Real estate and housing-related stocks have been excluded from all portfolios.")

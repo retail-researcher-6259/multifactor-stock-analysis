@@ -67,7 +67,7 @@ class MHRPPortfolioSystem:
         """
         # Use Marketstack if available
         if hasattr(self, 'data_fetcher'):
-            print("🔑 Using Marketstack API for data fetching...")
+            print(" Using Marketstack API for data fetching...")
             return self.data_fetcher.fetch_prices_with_lookback(
                 tickers,
                 datetime.today().strftime("%Y-%m-%d"),
@@ -76,7 +76,7 @@ class MHRPPortfolioSystem:
             )
         else:
             # Keep your original yfinance code as fallback
-            print("📊 Using yfinance for data fetching...")
+            print(" Using yfinance for data fetching...")
 
 
         end = datetime.today()
@@ -110,7 +110,7 @@ class MHRPPortfolioSystem:
                     break
                 else:
                     tries += 1
-                    print(f"⚠️  Missing data for {missing_cols}... retrying ({tries}/{max_retries})")
+                    print(f"  Missing data for {missing_cols}... retrying ({tries}/{max_retries})")
                     tickers = [t for t in tickers if t not in missing_cols]
 
             except Exception as e:
@@ -180,7 +180,7 @@ class MHRPPortfolioSystem:
 
         # Add data validation
         if returns.empty or len(returns) < 2:
-            print("⚠️ Insufficient data for MHRP optimization")
+            print(" Insufficient data for MHRP optimization")
             # Return equal weights as fallback
             n = len(returns.columns)
             return pd.Series(1.0 / n, index=returns.columns)
@@ -192,11 +192,11 @@ class MHRPPortfolioSystem:
                 valid_cols.append(col)
 
         if len(valid_cols) < len(returns.columns):
-            print(f"⚠️ Removed {len(returns.columns) - len(valid_cols)} assets with insufficient data")
+            print(f" Removed {len(returns.columns) - len(valid_cols)} assets with insufficient data")
             returns = returns[valid_cols]
 
         if len(valid_cols) < 2:
-            print("⚠️ Not enough valid assets for optimization")
+            print(" Not enough valid assets for optimization")
             return pd.Series(1.0 / len(valid_cols), index=valid_cols) if valid_cols else pd.Series()
 
         # Step 1: Calculate covariance matrix
@@ -206,7 +206,7 @@ class MHRPPortfolioSystem:
                 cov_matrix = lw.fit(returns).covariance_
                 cov = pd.DataFrame(cov_matrix, index=returns.columns, columns=returns.columns)
             except Exception as e:
-                print(f"⚠️ Ledoit-Wolf failed: {e}, using standard covariance")
+                print(f" Ledoit-Wolf failed: {e}, using standard covariance")
                 cov = returns.cov()
         else:
             cov = returns.cov()
@@ -216,7 +216,7 @@ class MHRPPortfolioSystem:
 
         # Check for NaN values in correlation matrix
         if cor.isna().any().any():
-            print("⚠️ NaN values in correlation matrix, filling with 0")
+            print(" NaN values in correlation matrix, filling with 0")
             cor = cor.fillna(0)
             # Ensure diagonal is 1
             np.fill_diagonal(cor.values, 1)
@@ -232,7 +232,7 @@ class MHRPPortfolioSystem:
         try:
             condensed_distance = squareform(distance, checks=True)
         except ValueError as e:
-            print(f"⚠️ Distance matrix issue: {e}, attempting to fix")
+            print(f" Distance matrix issue: {e}, attempting to fix")
             # Force symmetry and valid values
             distance = np.nan_to_num(distance, nan=0.5)
             np.fill_diagonal(distance.values, 0)
@@ -324,7 +324,7 @@ class MHRPPortfolioSystem:
             Dictionary containing results for each strategy
         """
 
-        print(f"🔍 Downloading price data for {len(tickers)} tickers...")
+        print(f" Downloading price data for {len(tickers)} tickers...")
         # Get extended data for walk-forward testing
         extended_start = datetime.strptime(start_date, "%Y-%m-%d") - timedelta(days=lookback_days * 2)
 
@@ -334,7 +334,7 @@ class MHRPPortfolioSystem:
         )
 
         if failed:
-            print(f"⚠️  Failed to download data for: {failed}")
+            print(f"  Failed to download data for: {failed}")
             tickers = [t for t in tickers if t not in failed]
 
         # Filter dates
@@ -349,21 +349,21 @@ class MHRPPortfolioSystem:
 
         # Strategy 1: Monthly Rebalancing
         if 'monthly' in rebalance_strategies:
-            print("\n📅 Running Monthly Rebalancing Strategy...")
+            print("\n Running Monthly Rebalancing Strategy...")
             results['Monthly'] = self._run_monthly_rebalancing(
                 all_prices, backtest_prices, lookback_days
             )
 
         # Strategy 2: Drift-based Rebalancing
         if 'drift' in rebalance_strategies:
-            print("\n🎯 Running Drift-based Rebalancing Strategy...")
+            print("\n Running Drift-based Rebalancing Strategy...")
             results['Drift'] = self._run_drift_rebalancing(
                 all_prices, backtest_prices, lookback_days, drift_threshold=0.05
             )
 
         # Strategy 3: Volatility-adjusted Rebalancing
         if 'volatility' in rebalance_strategies:
-            print("\n📊 Running Volatility-adjusted Rebalancing Strategy...")
+            print("\n Running Volatility-adjusted Rebalancing Strategy...")
             results['Volatility'] = self._run_volatility_rebalancing(
                 all_prices, backtest_prices, lookback_days
             )
@@ -716,7 +716,7 @@ class MHRPPortfolioSystem:
             Dictionary with walk-forward analysis results
         """
 
-        print("🔄 Performing Walk-Forward Analysis...")
+        print(" Performing Walk-Forward Analysis...")
 
         # Download all data
         extended_start = datetime.strptime(start_date, "%Y-%m-%d") - timedelta(days=lookback_days * 2)
@@ -726,7 +726,7 @@ class MHRPPortfolioSystem:
         )
 
         if failed:
-            print(f"⚠️  Failed to download data for: {failed}")
+            print(f"  Failed to download data for: {failed}")
             tickers = [t for t in tickers if t not in failed]
 
         # Create walk-forward dates
@@ -821,7 +821,7 @@ class MHRPPortfolioSystem:
             Dictionary with factor attribution results
         """
 
-        print("📊 Calculating Factor Attribution...")
+        print(" Calculating Factor Attribution...")
 
         if factor_returns is None:
             # Download common factor ETFs
@@ -941,7 +941,7 @@ class MHRPPortfolioSystem:
             Dictionary with correlation analysis results
         """
 
-        print("🔍 Analyzing Correlation Over Time...")
+        print(" Analyzing Correlation Over Time...")
 
         returns = prices.pct_change().dropna()
 
@@ -999,7 +999,7 @@ class MHRPPortfolioSystem:
             Dictionary with tail risk metrics
         """
 
-        print("⚠️  Calculating Tail Risk Metrics...")
+        print("  Calculating Tail Risk Metrics...")
 
         # Basic return statistics
         returns_stats = {
@@ -1114,11 +1114,11 @@ class MHRPPortfolioSystem:
         """
 
         print("\n" + "="*60)
-        print("📊 COMPREHENSIVE MHRP PORTFOLIO ANALYSIS REPORT")
+        print(" COMPREHENSIVE MHRP PORTFOLIO ANALYSIS REPORT")
         print("="*60)
 
         # Strategy comparison
-        print("\n🏆 STRATEGY PERFORMANCE COMPARISON")
+        print("\n STRATEGY PERFORMANCE COMPARISON")
         print("-" * 40)
 
         comparison_data = []
@@ -1157,12 +1157,12 @@ class MHRPPortfolioSystem:
         if isinstance(best_returns, pd.DataFrame):
             best_returns = best_returns.iloc[:, 0]
 
-        print(f"\n🥇 DETAILED ANALYSIS - BEST STRATEGY: {best_strategy}")
+        print(f"\n DETAILED ANALYSIS - BEST STRATEGY: {best_strategy}")
         print("-" * 50)
 
         # Factor attribution for best strategy
         factor_analysis = self.calculate_factor_attribution(best_returns)
-        print("\n📈 FACTOR ATTRIBUTION")
+        print("\n FACTOR ATTRIBUTION")
         print(f"Alpha (Annual): {factor_analysis['alpha']*100:.2f}%")
         print(f"R-squared: {factor_analysis['r_squared']:.3f}")
         print("\nFactor Exposures:")
@@ -1175,7 +1175,7 @@ class MHRPPortfolioSystem:
 
         # Tail risk analysis
         tail_risk = self.calculate_tail_risk_metrics(best_returns)
-        print("\n⚠️  TAIL RISK METRICS")
+        print("\n  TAIL RISK METRICS")
         print(f"Skewness: {tail_risk['return_statistics']['skewness']:.3f}")
         print(f"Kurtosis: {tail_risk['return_statistics']['kurtosis']:.3f}")
         print(f"Max Drawdown: {tail_risk['max_drawdown'] * 100:.2f}%")
@@ -1201,7 +1201,7 @@ class MHRPPortfolioSystem:
             print(f"  {metric}: {value * 100:.2f}%")
 
         print("\n" + "="*60)
-        print("✅ REPORT COMPLETE")
+        print(" REPORT COMPLETE")
         print("="*60)
 
     def plot_analysis_charts(self,
@@ -1404,7 +1404,7 @@ class MHRPPortfolioSystem:
         with open(filename, 'w') as f:
             json.dump(export_data, f, indent=2, default=str)
 
-        print(f"✅ Results exported to {filename}")
+        print(f" Results exported to {filename}")
 
 
 # Example usage
@@ -1424,7 +1424,7 @@ if __name__ == "__main__":
     tickers = ["AAPL", "MSFT", "GOOGL", "AMZN", "TSLA", "JPM", "JNJ", "V", "PG", "NVDA"]
 
     # Run backtests with all three rebalancing strategies
-    print("🚀 Starting Comprehensive MHRP Portfolio Analysis...")
+    print(" Starting Comprehensive MHRP Portfolio Analysis...")
 
     results = portfolio_system.run_backtest_strategies(
         tickers=tickers,
@@ -1447,7 +1447,7 @@ if __name__ == "__main__":
     portfolio_system.generate_comprehensive_report(results)
 
     # Print walk-forward analysis summary
-    print(f"\n🔄 WALK-FORWARD ANALYSIS SUMMARY")
+    print(f"\n WALK-FORWARD ANALYSIS SUMMARY")
     print("-" * 40)
     wf_metrics = walk_forward_results['metrics']
     print(f"In-Sample Sharpe: {wf_metrics['in_sample_sharpe']:.3f}")
@@ -1467,4 +1467,4 @@ if __name__ == "__main__":
         filename='mhrp_comprehensive_results.json'
     )
 
-    print("\n✅ Analysis Complete! Check the generated charts and exported results.")
+    print("\n Analysis Complete! Check the generated charts and exported results.")
