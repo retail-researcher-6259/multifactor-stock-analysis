@@ -1,4 +1,3 @@
-# V05: Fix the Growth score for consistency
 # V02: Change volatility penalty to volatility score. Low volatility gets higher score.
 # New V01: Add regime-based period selection
 # V17: Modified from V14, 3yr analysis, reorganized factors (Value, Quality, Growth)
@@ -38,6 +37,103 @@ import json
 import os
 import re
 
+# Set up paths
+project_root = Path(__file__).parent.parent.parent
+TICKER_FILE = project_root / "config" / "test_tickers_stocks.txt"
+output_dir = project_root / "output" / "Weight_Optimization_Results"
+regime_results_dir = project_root / "output" / "Regime_Detection_Results"
+data_dir = project_root / "data"
+options_cache_dir = project_root / "cache" / "options_oi"  # NEW: Cache for options OI data
+
+# Create output directories
+output_dir.mkdir(parents=True, exist_ok=True)
+options_cache_dir.mkdir(parents=True, exist_ok=True)  # NEW
+
+class WeightOptimizerAPI:
+    """
+    API wrapper for your weight optimizer
+    Add this to your MultiFactor_optimizer_03.py
+    """
+
+    def __init__(self, analysis_dir="Analysis", results_dir="Results"):
+        self.analysis_dir = Path(analysis_dir)
+        self.results_dir = Path(results_dir)
+        self.results_dir.mkdir(exist_ok=True)
+
+    def optimize_for_regime(self, regime="Steady Growth", backtest_months=12, n_companies=150):
+        """
+        Run optimization for a specific regime
+        """
+        try:
+            # First, check if regime data exists
+            regime_file = self.analysis_dir / "current_regime_analysis.json"
+            if not regime_file.exists():
+                return {"error": "No regime analysis found. Run regime detection first."}
+
+            # Call your existing optimization logic here
+            # weights = your_optimization_function(regime, backtest_months, n_companies)
+
+            # Example weights (replace with your actual optimization)
+            example_weights = {
+                "Value": 0.12,
+                "Quality": 0.10,
+                "FinancialHealth": 0.08,
+                "Technical": 0.09,
+                "Insider": 0.07,
+                "Momentum": 0.11,
+                "Stability": 0.09,
+                "Size": 0.06,
+                "Liquidity": 0.08,
+                "Carry": 0.06,
+                "Growth": 0.07,
+                "OptionsFlow": 0.00  # NEW: Institutional options momentum (to be optimized)
+            }
+
+            # Save results
+            self.save_optimization_results(regime, example_weights)
+
+            return {
+                "success": True,
+                "regime": regime,
+                "weights": example_weights
+            }
+
+        except Exception as e:
+            return {
+                "success": False,
+                "error": str(e)
+            }
+
+    def save_optimization_results(self, regime, weights):
+        """
+        Save optimization results in format expected by other scripts
+        """
+        # Format regime name for filename
+        regime_filename = regime.lower().replace(' ', '_').replace('/', '_')
+
+        # Save as text file (your existing format)
+        results_file = self.results_dir / f"factor_analysis_results_{regime_filename}.txt"
+
+        with open(results_file, 'w') as f:
+            f.write(f"Factor Analysis Results - {regime}\n")
+            f.write("=" * 50 + "\n")
+            f.write(f"Optimization Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+            f.write("\nOptimized Factor Weights:\n")
+            f.write("-" * 30 + "\n")
+
+            for factor, weight in weights.items():
+                f.write(f"{factor}: {weight:.4f} ({weight * 100:.2f}%)\n")
+
+            f.write("\n" + "=" * 50 + "\n")
+
+        # Also save as JSON for easier API access
+        json_file = self.results_dir / f"weights_{regime_filename}.json"
+        with open(json_file, 'w') as f:
+            json.dump({
+                "regime": regime,
+                "weights": weights,
+                "timestamp": datetime.now().isoformat()
+            }, f, indent=2)
 
 # Add this monkey-patching code BEFORE any yahooquery imports
 class CurlCffiSessionWrapper(CurlSession):
@@ -72,7 +168,7 @@ warnings.filterwarnings("ignore", category=FutureWarning, module="pandas")
 pd.options.mode.chained_assignment = None  # disable copy-view warning
 
 # --- Constants and Parameters ---
-TICKER_FILE = r"./Config/test_tickers_stocks_new.txt"
+TICKER_FILE = r"./Config/test_tickers_stocks.txt"
 INSIDER_LOOKBACK_DAYS = 90
 TOP_N = 20
 CACHE_DIR = Path("cache")
@@ -86,25 +182,30 @@ MARKETSTACK_BASE_URL = "https://api.marketstack.com/v2"
 CORRELATION_YEARS = 3  # Changed from 1 year to 3 years
 # EXPONENTIAL_DECAY_HALFLIFE = 126  # Half-life in trading days (about 6 months)
 
-# Add after the existing constants
-REGIME_PERIODS_FILE = r"./Analysis/regime_periods.csv"
-SELECTED_REGIME = r"Crisis/Bear"  # "Strong Bull", "Steady Growth", or "Crisis/Bear"
-MIN_CRISIS_DAYS = 7  # Minimum days to consider a real crisis
+# When reading regime periods:
+regime_periods_file = regime_results_dir / "regime_periods.csv"
+if regime_periods_file.exists():
+    regime_periods = pd.read_csv(regime_periods_file)
+else:
+    print(f"Warning: {regime_periods_file} not found")
 
-# Scoring Weights - Use V19 updated weights
+SELECTED_REGIME = r"Crisis/Bear"  # "Strong Bull", "Steady Growth", or "Crisis/Bear"
+MIN_CRISIS_DAYS = 14  # Minimum days to consider a real crisis
+
+# Scoring Weights - Use V19 updated weights (Credit removed)
 WEIGHTS = {
-    "growth": 56.2,
-    "momentum": 46.5,
-    "size": 43.3,
-    "technical": 38.8,
-    "stability": -28.5,
-    "value": -24.8,
-    "carry": -21.0,
-    "insider": -18.5,
-    "financial_health": 14.8,
-    "liquidity": -9.9,
-    "credit": 8.2,
-    "quality": -5.1,
+    "momentum": 74.85,      # Slight increase from 70.7
+    "size": 18.7,          # Rounded up from 17.6
+    "financial_health": 12.15,  # Reduced to minimize drag
+    "insider": 4.7,        # Rounded up from 4.4
+    "growth": 4.7,         # Reduced from 8.8 (negative correlation)
+    "quality": 0.0,        # Keep at zero
+    "liquidity": 4.7,      # Add for positive correlation
+    "value": 0.0,          # Keep at zero
+    "technical": -5.0,     # Unchanged
+    "carry": -4.7,         # Rounded from -4.4
+    "stability": -10.1,    # Rounded from -10.3
+    "options_flow": 0.0,   # NEW: Institutional options momentum (to be tested)
 }
 
 # Update FUND_THRESHOLDS to reorganize metrics
@@ -240,13 +341,17 @@ def load_regime_periods(regime_name):
 
 # Add configuration loading function
 def load_marketstack_config():
-    """Load Marketstack API configuration"""
-    config_file = r"./Config/marketstack_config.json"
-    if os.path.exists(config_file):
+    """Load Marketstack API configuration with correct path"""
+    project_root = Path(__file__).parent.parent.parent
+    config_file = project_root / "config" / "marketstack_config.json"
+
+    if config_file.exists():
         with open(config_file, 'r') as f:
             config = json.load(f)
             return config.get('api_key', MARKETSTACK_API_KEY)
-    return MARKETSTACK_API_KEY
+    else:
+        print(f"Warning: Config file not found at {config_file}")
+        return MARKETSTACK_API_KEY
 
 
 def sanitize_filename(filename):
@@ -1039,61 +1144,12 @@ def get_size_score(info, mcap_min, mcap_80th):
 
     return round(final_score, 2)
 
-def get_credit_score(info):
-    """
-    Enhanced credit scoring that evaluates solvency, debt service capacity,
-    and earnings quality across multiple time frames.
-    """
-    try:
-        # Basic financial metrics
-        ebitda = info.get("ebitda", 0)
-        sales = info.get("totalRevenue", 1)
-        debt = info.get("totalDebt", 0)
-        mcap = info.get("marketCap", 0)
-        interest_expense = info.get("interestExpense", 1)
-        cash = info.get("totalCash", 0)
-        current_assets = info.get("totalCurrentAssets", 0)
-        current_liabilities = info.get("totalCurrentLiabilities", 1)
-
-        # Handle missing data
-        if any(x in (None, 0, "None") or pd.isna(x) for x in
-               (ebitda, sales, debt, mcap, interest_expense)):
-            return 0
-
-        # 1. Altman Z-Score components
-        profit_ratio = ebitda / sales  # Operating efficiency
-        solvency_ratio = mcap / debt  # Market-based cushion
-
-        # 2. Debt service metrics
-        interest_coverage = ebitda / interest_expense  # EBITDA/Interest
-
-        # Normalize these metrics to 0-1 scale
-        z_component = np.tanh((3.3 * profit_ratio + 0.6 * solvency_ratio) / 4)
-        coverage_score = np.tanh(interest_coverage / 10)  # >10x is excellent
-
-        # 3. Liquidity metrics - short-term debt payment ability
-        quick_ratio = current_assets / current_liabilities
-        cash_to_debt = cash / debt if debt > 0 else 1.0
-
-        liquidity_score = np.tanh((quick_ratio + cash_to_debt) / 2)
-
-        # 4. Weighted final score - more weight to coverage during economic stress
-        final_score = (
-                0.4 * z_component +
-                0.4 * coverage_score +
-                0.2 * liquidity_score
-        )
-
-        return round(max(0, min(final_score, 1)), 2)
-
-    except Exception as e:
-        print(f"⚠️ Credit score error for {info.get('symbol', '?')}: {e}")
-        return 0
-
 def get_liquidity_score(info):
     """
     Multi-dimensional liquidity score considering trading volume,
-    spread, market depth, and institutional ownership.
+    turnover, and institutional ownership.
+
+    Note: Market cap and price are now handled by the Size factor.
     """
     try:
         # 1. Volume-based liquidity
@@ -1108,31 +1164,16 @@ def get_liquidity_score(info):
         else:
             turnover_score = 0
 
-        # 3. Market cap component - larger is more liquid
-        mcap = info.get('marketCap', 0)
-        mcap_score = min(mcap / 10_000_000_000, 1.0)  # $10B+ gets full score
-
-        # 4. Price component - extremely low priced stocks are illiquid
-        price = info.get('regularMarketPrice', 0)
-        if price < 1:
-            price_score = price  # Linear 0-1
-        elif price < 5:
-            price_score = 0.8 + (price - 1) / 20  # 0.8-1.0 range
-        else:
-            price_score = 1.0
-
-        # 5. Institutional ownership - higher means more liquid
+        # 3. Institutional ownership - higher means more liquid
         inst_own = info.get('institutionsPercentHeld', 0)
         inst_score = min(inst_own / 0.7, 1.0)  # 70%+ gets full score
 
-        # Calculate weighted score
-        weights = [0.30, 0.25, 0.20, 0.15, 0.10]  # Prioritize actual trading metrics
+        # Calculate weighted score (rebalanced after removing mcap and price)
+        weights = [0.45, 0.35, 0.20]  # Prioritize actual trading metrics
         liquidity_score = (
                 weights[0] * avg_vol_score +
                 weights[1] * turnover_score +
-                weights[2] * mcap_score +
-                weights[3] * price_score +
-                weights[4] * inst_score
+                weights[2] * inst_score
         )
 
         return round(liquidity_score, 2)
@@ -1297,17 +1338,204 @@ def get_robust_carry_score(ticker, info):
         # Last resort fallback
         return 0
 
+# ============================================================================
+# NEW: Options Flow Tracking (OI Momentum)
+# ============================================================================
+
+# Cache for options data (stores historical OI)
+_options_oi_cache = {}  # {ticker: {date: {strike: oi_data}}}
+
+def cache_options_oi(ticker, options_chain, date=None):
+    """
+    Cache options open interest data for a specific date
+
+    Args:
+        ticker: Stock symbol
+        options_chain: Options data from yahooquery
+        date: Date string (YYYY-MM-DD), defaults to today
+    """
+    if date is None:
+        date = datetime.now().strftime('%Y-%m-%d')
+
+    cache_file = options_cache_dir / f"{ticker}_{date}.json"
+
+    try:
+        oi_data = {}
+
+        # Extract OI data from options chain
+        if isinstance(options_chain, dict):
+            for exp_date, contracts in options_chain.items():
+                if isinstance(contracts, pd.DataFrame):
+                    for _, contract in contracts.iterrows():
+                        strike = contract.get('strike')
+                        contract_type = contract.get('contractSymbol', '')
+
+                        # Determine if CALL or PUT from contract symbol
+                        is_call = 'C' in contract_type[-9:]  # Last 9 chars: YYMMDD + C/P + 00000
+
+                        key = f"{strike}_{('C' if is_call else 'P')}_{exp_date}"
+
+                        oi_data[key] = {
+                            'strike': strike,
+                            'type': 'CALL' if is_call else 'PUT',
+                            'expiration': str(exp_date),
+                            'openInterest': int(contract.get('openInterest', 0)),
+                            'volume': int(contract.get('volume', 0)),
+                            'lastPrice': float(contract.get('lastPrice', 0)),
+                            'impliedVolatility': float(contract.get('impliedVolatility', 0))
+                        }
+
+        # Save to file
+        with open(cache_file, 'w') as f:
+            json.dump({
+                'ticker': ticker,
+                'date': date,
+                'data': oi_data
+            }, f, indent=2)
+
+        return True
+
+    except Exception as e:
+        print(f"  ⚠️ Failed to cache options OI for {ticker}: {e}")
+        return False
+
+def load_historical_oi(ticker, lookback_days=30):
+    """
+    Load historical OI data from cache
+
+    Returns:
+        dict: {date: {strike_type_exp: oi_value}}
+    """
+    historical_oi = {}
+
+    # Get list of dates to load
+    end_date = datetime.now()
+
+    for days_back in range(lookback_days):
+        date = (end_date - timedelta(days=days_back)).strftime('%Y-%m-%d')
+        cache_file = options_cache_dir / f"{ticker}_{date}.json"
+
+        if cache_file.exists():
+            try:
+                with open(cache_file, 'r') as f:
+                    cached_data = json.load(f)
+                    historical_oi[date] = cached_data.get('data', {})
+            except Exception as e:
+                continue
+
+    return historical_oi
+
+def get_options_flow_score(ticker, info, lookback_days=14, decay_halflife=5):
+    """
+    Calculate institutional options flow score based on OI momentum
+
+    This tracks large open interest changes over time to detect institutional
+    positioning, with exponential time decay (recent activity weighted higher).
+
+    Args:
+        ticker: Stock symbol
+        info: Stock info dict
+        lookback_days: Days to look back (default 14 - optimal for position building)
+        decay_halflife: Days for signal to decay by 50% (default 5)
+
+    Returns:
+        float: Score 0-1 (0.5 = neutral, >0.5 = bullish, <0.5 = bearish)
+    """
+    try:
+        # Get current stock price for strike classification
+        current_price = info.get('regularMarketPrice', info.get('currentPrice', 100))
+
+        # Try to get current options data and cache it
+        try:
+            t = Ticker(ticker, session=_global_curl_session)
+            options_chain = t.option_chain
+
+            # Cache today's data
+            cache_options_oi(ticker, options_chain)
+        except Exception as e:
+            print(f"  ⚠️ Could not fetch options for {ticker}: {e}")
+
+        # Load historical OI data
+        historical_oi = load_historical_oi(ticker, lookback_days)
+
+        if len(historical_oi) < 2:
+            # Not enough historical data yet
+            return 0.5  # Neutral score
+
+        # Sort dates
+        dates = sorted(historical_oi.keys())
+
+        # Track OI changes for each contract
+        call_signals = []
+        put_signals = []
+
+        for i in range(1, len(dates)):
+            prev_date = dates[i-1]
+            curr_date = dates[i]
+
+            prev_oi = historical_oi[prev_date]
+            curr_oi = historical_oi[curr_date]
+
+            # Find common contracts (same strike/type/exp)
+            common_contracts = set(prev_oi.keys()) & set(curr_oi.keys())
+
+            for contract_key in common_contracts:
+                prev_data = prev_oi[contract_key]
+                curr_data = curr_oi[contract_key]
+
+                # Calculate OI change
+                oi_change = curr_data['openInterest'] - prev_data['openInterest']
+
+                # Filter for significant changes (>100 contracts)
+                if abs(oi_change) > 100:
+                    # Calculate notional value
+                    avg_price = (prev_data['lastPrice'] + curr_data['lastPrice']) / 2
+                    notional = abs(oi_change) * 100 * avg_price
+
+                    # Filter for large positions ($500k+ threshold)
+                    if notional > 500_000:
+                        # Calculate time decay weight
+                        days_ago = (datetime.strptime(dates[-1], '%Y-%m-%d') -
+                                   datetime.strptime(curr_date, '%Y-%m-%d')).days
+                        weight = 2 ** (-days_ago / decay_halflife)
+
+                        # Scale by notional (in millions)
+                        magnitude = (notional / 1_000_000) * weight
+
+                        # Classify by type
+                        if curr_data['type'] == 'CALL':
+                            call_signals.append(magnitude if oi_change > 0 else -magnitude)
+                        else:  # PUT
+                            put_signals.append(magnitude if oi_change > 0 else -magnitude)
+
+        # Aggregate signals
+        call_momentum = sum(call_signals) if call_signals else 0
+        put_momentum = sum(put_signals) if put_signals else 0
+
+        # Calculate net sentiment
+        # Call increases = bullish, Put increases = bearish
+        net_sentiment = call_momentum - put_momentum
+        total_activity = abs(call_momentum) + abs(put_momentum)
+
+        if total_activity < 0.1:  # Minimal activity
+            return 0.5  # Neutral
+
+        # Normalize to 0-1 scale using sigmoid
+        # Typical values: ±5 is strong signal
+        normalized = 1 / (1 + np.exp(-net_sentiment / max(total_activity * 0.5, 1)))
+
+        return round(normalized, 3)
+
+    except Exception as e:
+        print(f"  ⚠️ Options flow error for {ticker}: {e}")
+        return 0.5  # Neutral on error
+
+# ============================================================================
+# END: Options Flow Tracking
+# ============================================================================
+
 def get_insider_score_simple(ticker):
-    """
-    Enhanced insider score that tries Marketstack SEC data first, then yahooquery
-
-    This is a complete drop-in replacement - just replace your existing function
-    with this one. No other changes needed in your code!
-
-    Usage remains the same:
-        insider = get_insider_score_simple(tk)
-    """
-
+    """Continuous insider score based on magnitude and patterns"""
     # Check if we already know this ticker has no insider data
     if ticker in _insider_no_data_tickers:
         return 0
@@ -1316,69 +1544,8 @@ def get_insider_score_simple(ticker):
     if ticker in _insider_data_cache:
         return _insider_data_cache[ticker]
 
-    # ========================================================================
-    # STEP 1: Try Marketstack SEC data first (new capability)
-    # ========================================================================
     try:
-        # Prepare date range
-        end_date = datetime.now()
-        start_date = end_date - timedelta(days=INSIDER_LOOKBACK_DAYS)
-
-        # Prepare API parameters
-        params = {
-            'access_key': MARKETSTACK_API_KEY,
-            'symbols': ticker,
-            'date_from': start_date.strftime('%Y-%m-%d'),
-            'date_to': end_date.strftime('%Y-%m-%d'),
-            'limit': 100
-        }
-
-        # Try insider transactions endpoint first
-        response = requests.get(f"{MARKETSTACK_BASE_URL}/insider", params=params, timeout=5)
-
-        if response.status_code == 200:
-            data = response.json()
-            if 'data' in data and data['data']:
-                # Process Marketstack insider data
-                df = pd.DataFrame(data['data'])
-
-                # Calculate score from Marketstack data
-                score = _calculate_score_from_marketstack(df)
-
-                if score != 0:  # If we got valid data
-                    _insider_data_cache[ticker] = score
-                    print(f"  ✓ {ticker}: Got insider score from Marketstack SEC: {score}")
-                    return score
-
-        # If insider endpoint didn't work, try SEC filings endpoint
-        response = requests.get(f"{MARKETSTACK_BASE_URL}/sec/filings", params=params, timeout=5)
-
-        if response.status_code == 200:
-            data = response.json()
-            if 'data' in data and data['data']:
-                df = pd.DataFrame(data['data'])
-
-                # Filter for Form 4 (insider transactions)
-                if 'form_type' in df.columns:
-                    form4_df = df[df['form_type'].str.contains('4', na=False)]
-
-                    if not form4_df.empty:
-                        score = _calculate_score_from_sec_filings(form4_df)
-
-                        if score != 0:
-                            _insider_data_cache[ticker] = score
-                            print(f"  ✓ {ticker}: Got insider score from SEC filings: {score}")
-                            return score
-
-    except Exception as e:
-        # Silently continue to yahooquery fallback
-        pass
-
-    # ========================================================================
-    # STEP 2: Fallback to yahooquery (your original method)
-    # ========================================================================
-    try:
-        t = Ticker(ticker)
+        t = Ticker(ticker, session=_global_curl_session)
         df = t.insider_transactions
 
         # Handle various return types from yahooquery
@@ -1405,7 +1572,7 @@ def get_insider_score_simple(ticker):
             _insider_data_cache[ticker] = 0
             return 0
 
-        # Calculate net buying/selling values (your original logic)
+        # Calculate net buying/selling values
         df["value"] = pd.to_numeric(df["value"], errors="coerce").fillna(0)
         txt = df["transactionText"].str.lower()
 
@@ -1421,15 +1588,16 @@ def get_insider_score_simple(ticker):
         # Calculate ratio of buying to total activity
         buy_ratio = buys / total
 
-        # Calculate magnitude factor
-        magnitude = np.log(total + 1) / np.log(10000000)
+        # Calculate magnitude factor (larger transactions have more significance)
+        # Log scale to avoid domination by very large transactions
+        magnitude = math.log(total + 1) / math.log(10000000)  # 0 to 1 range
         magnitude = min(magnitude, 1.0)
 
-        # Calculate breadth factor
+        # Calculate breadth factor (more insiders = stronger signal)
         unique_insiders = df['filerName'].nunique()
-        breadth = min(unique_insiders / 5, 1.0)
+        breadth = min(unique_insiders / 5, 1.0)  # Cap at 5 insiders
 
-        # Calculate recency factor
+        # Calculate recency factor (more recent transactions = stronger signal)
         days_ago = []
         for date in df['startDate']:
             try:
@@ -1442,7 +1610,7 @@ def get_insider_score_simple(ticker):
         avg_recency = 1 - (min(np.mean(days_ago), INSIDER_LOOKBACK_DAYS) / INSIDER_LOOKBACK_DAYS)
 
         # Combine factors into final score
-        raw_score = (buy_ratio - 0.5) * 2
+        raw_score = (buy_ratio - 0.5) * 2  # -1 to +1 range
         weighted_score = raw_score * (0.5 + 0.2 * magnitude + 0.2 * breadth + 0.1 * avg_recency)
 
         # Scale to -1 to +1 and round
@@ -1457,166 +1625,6 @@ def get_insider_score_simple(ticker):
         _insider_no_data_tickers.add(ticker)
         _insider_data_cache[ticker] = 0
         return 0
-
-
-def _calculate_score_from_marketstack(df):
-    """
-    Calculate insider score from Marketstack insider data
-    Internal helper function - not called directly
-    """
-    if df.empty:
-        return 0
-
-    try:
-        # Expected columns from Marketstack insider endpoint
-        # Adjust these based on actual API response
-
-        total_buy = 0
-        total_sell = 0
-        unique_insiders = set()
-        recent_dates = []
-
-        for _, row in df.iterrows():
-            # Get transaction details
-            trans_type = str(row.get('transaction_type', '')).lower()
-            trans_code = str(row.get('transaction_code', '')).upper()
-            value = float(row.get('value', row.get('amount', 0)))
-            shares = float(row.get('shares', row.get('quantity', 0)))
-            insider_name = row.get('insider_name', row.get('filer', 'Unknown'))
-            trans_date = row.get('transaction_date', row.get('date'))
-
-            # Track unique insiders
-            unique_insiders.add(insider_name)
-
-            # Track dates for recency
-            if trans_date:
-                recent_dates.append(pd.to_datetime(trans_date))
-
-            # Determine if buy or sell
-            buy_keywords = ['buy', 'purchase', 'acquire', 'exercise', 'grant', 'P']
-            sell_keywords = ['sell', 'sale', 'dispose', 'S']
-
-            is_buy = any(kw in trans_type for kw in buy_keywords) or trans_code == 'P'
-            is_sell = any(kw in trans_type for kw in sell_keywords) or trans_code == 'S'
-
-            # Use value if available, otherwise estimate from shares
-            if value > 0:
-                trans_value = value
-            elif shares > 0 and 'price' in row:
-                trans_value = shares * float(row.get('price', 0))
-            else:
-                trans_value = 0
-
-            if is_buy:
-                total_buy += abs(trans_value)
-            elif is_sell:
-                total_sell += abs(trans_value)
-
-        # Calculate metrics
-        total_value = total_buy + total_sell
-
-        if total_value == 0:
-            return 0
-
-        # Buy ratio
-        buy_ratio = total_buy / total_value
-
-        # Magnitude factor
-        magnitude = min(np.log1p(total_value) / np.log1p(10_000_000), 1.0)
-
-        # Breadth factor (unique insiders)
-        breadth = min(len(unique_insiders) / 5, 1.0)
-
-        # Recency factor
-        if recent_dates:
-            latest_date = max(recent_dates)
-            days_since = (datetime.now() - latest_date).days
-            recency = max(0, 1 - (days_since / INSIDER_LOOKBACK_DAYS))
-        else:
-            recency = 0.5
-
-        # Calculate final score
-        raw_score = (buy_ratio - 0.5) * 2  # Convert to -1 to +1
-        weighted_score = raw_score * (0.5 + 0.2 * magnitude + 0.2 * breadth + 0.1 * recency)
-
-        return round(max(-1, min(1, weighted_score)), 2)
-
-    except Exception:
-        return 0
-
-
-def _calculate_score_from_sec_filings(df):
-    """
-    Calculate insider score from SEC Form 4 filings
-    Internal helper function - not called directly
-    """
-    if df.empty:
-        return 0
-
-    try:
-        # Parse Form 4 data
-        total_buy = 0
-        total_sell = 0
-        unique_insiders = set()
-
-        for _, row in df.iterrows():
-            # Extract from Form 4 filing data
-            # These fields depend on Marketstack's SEC data structure
-
-            # Look for transaction information in various possible fields
-            filing_text = str(row.get('filing_text', row.get('content', ''))).lower()
-            reporting_owner = row.get('reporting_owner', row.get('insider', 'Unknown'))
-
-            unique_insiders.add(reporting_owner)
-
-            # Simple heuristic: look for acquisition/disposition keywords
-            if 'acquisition' in filing_text or 'purchase' in filing_text:
-                # Estimate value (you may need to parse more carefully)
-                value = float(row.get('transaction_value', 100000))  # Default estimate
-                total_buy += abs(value)
-            elif 'disposition' in filing_text or 'sale' in filing_text:
-                value = float(row.get('transaction_value', 100000))  # Default estimate
-                total_sell += abs(value)
-
-        # Calculate metrics
-        total_value = total_buy + total_sell
-
-        if total_value == 0:
-            return 0
-
-        # Simplified scoring for SEC filings
-        buy_ratio = total_buy / total_value
-        diversity = min(len(unique_insiders) / 3, 1.0)  # Lower threshold for SEC data
-
-        # Calculate score
-        raw_score = (buy_ratio - 0.5) * 2
-        weighted_score = raw_score * (0.6 + 0.4 * diversity)
-
-        return round(max(-1, min(1, weighted_score)), 2)
-
-    except Exception:
-        return 0
-
-
-# ============================================================================
-# Optional: Test function to verify it's working
-# ============================================================================
-
-def test_insider_score_enhanced():
-    """
-    Test function to verify the enhanced insider score is working
-    """
-    test_tickers = ['AAPL', 'MSFT', 'NVDA', 'TSLA']
-
-    print("Testing Enhanced Insider Score:")
-    print("=" * 50)
-
-    for ticker in test_tickers:
-        score = get_insider_score_simple(ticker)
-        print(f"{ticker}: {score:+.2f}")
-
-    print("=" * 50)
-    print("Note: Positive = net buying, Negative = net selling")
 
 def _price_mom(df):
     """Simple 12-month momentum (no 1-month skip)"""
@@ -2043,7 +2051,7 @@ def weight_optimization_analysis(factor_data, returns, weight_set):
     return result
 
 
-def save_analysis_results(results_text, filename="analysis_results.txt", results_dir="./Results"):
+def save_analysis_results(results_text, filename="analysis_results.txt", results_dir=None):
     """
     Save the analysis results to a text file.
 
@@ -2053,12 +2061,19 @@ def save_analysis_results(results_text, filename="analysis_results.txt", results
         results_dir (str): The output directory
     """
     try:
-        # Create full path
-        filepath = os.path.join(results_dir, filename)
+        """Save analysis results to file"""
+        if results_dir is None:
+            project_root = Path(__file__).parent.parent.parent
+            results_dir = project_root / "output" / "Weight_Optimization_Results"
 
-        with open(filepath, "w", encoding="utf-8") as f:
-            f.write(results_text)
-        print(f"✅ Analysis results saved to {filepath}")
+        results_dir.mkdir(parents=True, exist_ok=True)
+        filepath = results_dir / filename
+
+        with open(filepath, 'w', encoding='utf-8') as f:
+            f.write(content)
+
+        print(f"Results saved to: {filepath}")
+        return filepath
     except Exception as e:
         print(f"❌ Failed to save analysis results: {e}")
 
@@ -2119,45 +2134,14 @@ def main():
         ticker_data = pd.DataFrame()
         has_data = False
 
-        # for base_col in ['Open', 'High', 'Low', 'Close', 'Volume']:
-        #     col_name = f"{ticker}_{base_col}"
-        #     if col_name in all_marketstack_data.columns:
-        #         ticker_data[base_col] = all_marketstack_data[col_name]
-        #         has_data = True
-
         for base_col in ['Open', 'High', 'Low', 'Close', 'Volume']:
             col_name = f"{ticker}_{base_col}"
             if col_name in all_marketstack_data.columns:
-                # FIX: Extract as Series first, then assign
-                column_data = all_marketstack_data[col_name]
-
-                # Make sure we're working with a Series, not a DataFrame
-                if isinstance(column_data, pd.DataFrame):
-                    # If it's somehow a DataFrame with one column, extract it
-                    column_data = column_data.iloc[:, 0]
-
-                # Now safely assign the Series to the DataFrame column
-                ticker_data[base_col] = column_data.values if hasattr(column_data, 'values') else column_data
+                ticker_data[base_col] = all_marketstack_data[col_name]
                 has_data = True
 
-        # if has_data and not ticker_data.empty:
-        #     ticker_data = ticker_data.dropna()
-        #     if len(ticker_data) >= 200:  # Minimum data requirement
-        #         history_cache[ticker] = ticker_data
-        #     else:
-        #         failed_tickers.append(ticker)
-        #         print(f"⚠️ Insufficient data for {ticker}: only {len(ticker_data)} days")
-        # else:
-        #     failed_tickers.append(ticker)
-        #     print(f"⚠️ No data found for {ticker}")
-
         if has_data and not ticker_data.empty:
-            # Set the index to match the original data
-            ticker_data.index = all_marketstack_data.index[:len(ticker_data)]
-
-            # Drop any NaN rows
             ticker_data = ticker_data.dropna()
-
             if len(ticker_data) >= 200:  # Minimum data requirement
                 history_cache[ticker] = ticker_data
             else:
@@ -2238,8 +2222,10 @@ def main():
             # ─ get company name and country
             company_name, country = get_company_info(info)
 
-            credit = get_credit_score(info)
             carry = get_carry_score_simple(tk, info)
+
+            # NEW: Options flow (institutional options momentum)
+            options_flow = get_options_flow_score(tk, info, lookback_days=14, decay_halflife=5)
 
             # liquidity (0-1)
             liq = 0
@@ -2257,9 +2243,9 @@ def main():
                 EarnMom=em,
                 Stability=stability,  # Changed from Penalty
                 MarketCap=mcap,
-                Credit=credit,
                 Liquidity=liq,
                 Carry=carry,
+                OptionsFlow=options_flow,  # NEW: Institutional options momentum
                 Sector=sector,
                 Industry=industry,
                 Growth=growth,  # Now using enhanced growth score
@@ -2378,10 +2364,10 @@ def main():
         'momentum': [],
         'stability': [],  # Changed from volatility_penalty
         'size': [],
-        'credit': [],
         'liquidity': [],
         'carry': [],
-        'growth': []
+        'growth': [],
+        'options_flow': []  # NEW: Institutional options momentum
     }
 
     total_scores = []
@@ -2402,7 +2388,7 @@ def main():
         size = get_size_score({'marketCap': rec['MarketCap']}, mc_min, mc_80th)
 
         # Store all factor scores including new ones
-        factor_scores['value'].append(rec.get('ValueIndustryAdj', rec['Value']))
+        factor_scores['value'].append(rec['Value'])
         factor_scores['quality'].append(rec['Quality'])
         factor_scores['financial_health'].append(rec['FinancialHealth'])  # NEW
         factor_scores['technical'].append(rec['Technical'])
@@ -2411,15 +2397,14 @@ def main():
         # factor_scores['volatility_penalty'].append(rec['Penalty'])
         factor_scores['stability'].append(rec['Stability'])  # Changed from volatility_penalty and Penalty
         factor_scores['size'].append(size)
-        factor_scores['credit'].append(rec['Credit'])
         factor_scores['liquidity'].append(rec['Liquidity'])
         factor_scores['carry'].append(rec['Carry'])
-        # factor_scores['growth'].append(rec['Growth'])  # Using enhanced growth
-        factor_scores['growth'].append(rec.get('GrowthScore_Norm', rec.get('Growth', 0)))  # Using normalized growth
+        factor_scores['growth'].append(rec['Growth'])  # Using enhanced growth
+        factor_scores['options_flow'].append(rec['OptionsFlow'])  # NEW: Institutional options momentum
 
         # Calculate total score with new weights
         total = (
-                rec.get('ValueIndustryAdj', rec['Value']) * WEIGHTS['value'] +  # Using industry adjusted value
+                rec['Value'] * WEIGHTS['value'] +  # Industry adjusted version if using
                 rec['Quality'] * WEIGHTS['quality'] +
                 rec['FinancialHealth'] * WEIGHTS['financial_health'] +  # NEW
                 rec['Technical'] * WEIGHTS['technical'] +
@@ -2427,10 +2412,10 @@ def main():
                 momentum * WEIGHTS['momentum'] +
                 rec['Stability'] * WEIGHTS['stability'] +  # Changed from Penalty * volatility_penalty
                 size * WEIGHTS['size'] +
-                rec['Credit'] * WEIGHTS['credit'] +
                 rec['Liquidity'] * WEIGHTS['liquidity'] +
                 rec['Carry'] * WEIGHTS['carry'] +
-                rec.get('GrowthScore_Norm', rec.get('Growth', 0)) * WEIGHTS['growth']  # Using normalized growth
+                rec['Growth'] * WEIGHTS['growth'] +  # Using enhanced growth
+                rec['OptionsFlow'] * WEIGHTS['options_flow']  # NEW: Institutional options momentum
         )
 
         total_scores.append(total)
@@ -2982,18 +2967,6 @@ def main():
                           f"factor_analysis_results_{sanitize_filename(SELECTED_REGIME).lower()}.txt",
                           results_dir=results_dir)
 
-    # return {
-    #     'correlations': correlations,
-    #     'correlation_matrix': correlation_matrix,
-    #     'weight_effectiveness': effectiveness_df,
-    #     'analysis_df': analysis_df,
-    #     'optimization_results': optimization_results,
-    #     'methodology': {
-    #         'correlation_period_years': CORRELATION_YEARS,
-    #         'exponential_halflife_days': EXPONENTIAL_DECAY_HALFLIFE,
-    #         'data_source': 'Marketstack API'
-    #     }
-    # }
     return {
         'correlations': correlations,
         'correlation_matrix': correlation_matrix,
@@ -3007,7 +2980,31 @@ def main():
     }
 
 
+def optimize_api(regime="Steady Growth"):
+    """API wrapper for optimization"""
+    # Set the SELECTED_REGIME variable
+    global SELECTED_REGIME
+    SELECTED_REGIME = regime
+
+    # Run your main optimization code
+    # main()  # or whatever your main function is called
+
+    return {"status": "success", "regime": regime}
+
 if __name__ == "__main__":
+    import sys
+
+    # Check if script is being called with API flag
+    if "--api" in sys.argv:
+        # Run in API mode (returns JSON-friendly output)
+        detector = RegimeDetectorAPI()
+        result = detector.run_detection()
+        print(json.dumps(result))
+    else:
+        # Run your existing code normally
+        # your_existing_main_function()
+        pass
+
     # Create a config file if it doesn't exist
     if not os.path.exists("./Config/marketstack_config.json"):
         config = {
