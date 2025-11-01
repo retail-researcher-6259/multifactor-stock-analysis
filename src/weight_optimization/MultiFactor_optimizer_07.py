@@ -1591,12 +1591,23 @@ def get_insider_score_simple(ticker):
             _insider_data_cache[ticker] = 0
             return 0
 
-        # Filter to look-back window
-        cutoff = (datetime.now() - timedelta(days=INSIDER_LOOKBACK_DAYS)).strftime("%Y-%m-%d")
-        df = df[df["startDate"] >= cutoff]
-        if df.empty:
-            _insider_data_cache[ticker] = 0
-            return 0
+        # NOTE: For historical analysis (optimizer), we analyze ALL insider transactions
+        # without date filtering. The optimizer correlates with historical regime periods,
+        # so we want all available insider data, not just recent 90 days.
+        #
+        # The date filter (datetime.now() - 90 days) only makes sense for LIVE screening,
+        # not for historical correlation analysis.
+        #
+        # If you need date filtering for live use, consider:
+        # - Passing analysis_date as parameter
+        # - Using separate functions for live vs. historical analysis
+
+        # REMOVED: Date filtering that broke historical analysis
+        # cutoff = (datetime.now() - timedelta(days=INSIDER_LOOKBACK_DAYS)).strftime("%Y-%m-%d")
+        # df = df[df["startDate"] >= cutoff]
+
+        # For optimizer: Use all available insider data
+        # This allows correlation analysis across different time periods
 
         # Calculate net buying/selling values
         df["value"] = pd.to_numeric(df["value"], errors="coerce").fillna(0)
@@ -1623,17 +1634,19 @@ def get_insider_score_simple(ticker):
         unique_insiders = df['filerName'].nunique()
         breadth = min(unique_insiders / 5, 1.0)  # Cap at 5 insiders
 
-        # Calculate recency factor (more recent transactions = stronger signal)
-        days_ago = []
-        for date in df['startDate']:
-            try:
-                dt = pd.Timestamp(date)
-                delta = (datetime.now() - dt).days
-                days_ago.append(delta)
-            except:
-                days_ago.append(INSIDER_LOOKBACK_DAYS)
+        # REMOVED: Recency factor (used datetime.now() which breaks historical analysis)
+        # For optimizer: Don't apply recency weighting since we're analyzing historical data
+        # days_ago = []
+        # for date in df['startDate']:
+        #     try:
+        #         dt = pd.Timestamp(date)
+        #         delta = (datetime.now() - dt).days
+        #         days_ago.append(delta)
+        #     except:
+        #         days_ago.append(INSIDER_LOOKBACK_DAYS)
+        # avg_recency = 1 - (min(np.mean(days_ago), INSIDER_LOOKBACK_DAYS) / INSIDER_LOOKBACK_DAYS)
 
-        avg_recency = 1 - (min(np.mean(days_ago), INSIDER_LOOKBACK_DAYS) / INSIDER_LOOKBACK_DAYS)
+        avg_recency = 1.0  # For optimizer: treat all transactions equally
 
         # Combine factors into final score
         raw_score = (buy_ratio - 0.5) * 2  # -1 to +1 range
