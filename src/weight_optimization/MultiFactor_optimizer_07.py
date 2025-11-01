@@ -37,103 +37,15 @@ import json
 import os
 import re
 
-# Set up paths
-project_root = Path(__file__).parent.parent.parent
-TICKER_FILE = project_root / "config" / "test_tickers_stocks.txt"
-output_dir = project_root / "output" / "Weight_Optimization_Results"
-regime_results_dir = project_root / "output" / "Regime_Detection_Results"
-data_dir = project_root / "data"
-options_cache_dir = project_root / "cache" / "options_oi"  # NEW: Cache for options OI data
+# Note: Path configuration removed - using relative paths like V05
+# This script now follows the same structure as MultiFactor_optimizer_05.py:
+# - Config files in ./Config/
+# - Functions in ./Functions/
+# - Analysis data in ./Analysis/
+# - Results output to ./Results/
 
-# Create output directories
-output_dir.mkdir(parents=True, exist_ok=True)
-options_cache_dir.mkdir(parents=True, exist_ok=True)  # NEW
-
-class WeightOptimizerAPI:
-    """
-    API wrapper for your weight optimizer
-    Add this to your MultiFactor_optimizer_03.py
-    """
-
-    def __init__(self, analysis_dir="Analysis", results_dir="Results"):
-        self.analysis_dir = Path(analysis_dir)
-        self.results_dir = Path(results_dir)
-        self.results_dir.mkdir(exist_ok=True)
-
-    def optimize_for_regime(self, regime="Steady Growth", backtest_months=12, n_companies=150):
-        """
-        Run optimization for a specific regime
-        """
-        try:
-            # First, check if regime data exists
-            regime_file = self.analysis_dir / "current_regime_analysis.json"
-            if not regime_file.exists():
-                return {"error": "No regime analysis found. Run regime detection first."}
-
-            # Call your existing optimization logic here
-            # weights = your_optimization_function(regime, backtest_months, n_companies)
-
-            # Example weights (replace with your actual optimization)
-            example_weights = {
-                "Value": 0.12,
-                "Quality": 0.10,
-                "FinancialHealth": 0.08,
-                "Technical": 0.09,
-                "Insider": 0.07,
-                "Momentum": 0.11,
-                "Stability": 0.09,
-                "Size": 0.06,
-                "Liquidity": 0.08,
-                "Carry": 0.06,
-                "Growth": 0.07,
-                "OptionsFlow": 0.00  # NEW: Institutional options momentum (to be optimized)
-            }
-
-            # Save results
-            self.save_optimization_results(regime, example_weights)
-
-            return {
-                "success": True,
-                "regime": regime,
-                "weights": example_weights
-            }
-
-        except Exception as e:
-            return {
-                "success": False,
-                "error": str(e)
-            }
-
-    def save_optimization_results(self, regime, weights):
-        """
-        Save optimization results in format expected by other scripts
-        """
-        # Format regime name for filename
-        regime_filename = regime.lower().replace(' ', '_').replace('/', '_')
-
-        # Save as text file (your existing format)
-        results_file = self.results_dir / f"factor_analysis_results_{regime_filename}.txt"
-
-        with open(results_file, 'w') as f:
-            f.write(f"Factor Analysis Results - {regime}\n")
-            f.write("=" * 50 + "\n")
-            f.write(f"Optimization Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-            f.write("\nOptimized Factor Weights:\n")
-            f.write("-" * 30 + "\n")
-
-            for factor, weight in weights.items():
-                f.write(f"{factor}: {weight:.4f} ({weight * 100:.2f}%)\n")
-
-            f.write("\n" + "=" * 50 + "\n")
-
-        # Also save as JSON for easier API access
-        json_file = self.results_dir / f"weights_{regime_filename}.json"
-        with open(json_file, 'w') as f:
-            json.dump({
-                "regime": regime,
-                "weights": weights,
-                "timestamp": datetime.now().isoformat()
-            }, f, indent=2)
+# Note: WeightOptimizerAPI class removed - not used in standalone script
+# This was legacy code from an earlier API integration attempt
 
 # Add this monkey-patching code BEFORE any yahooquery imports
 class CurlCffiSessionWrapper(CurlSession):
@@ -168,11 +80,13 @@ warnings.filterwarnings("ignore", category=FutureWarning, module="pandas")
 pd.options.mode.chained_assignment = None  # disable copy-view warning
 
 # --- Constants and Parameters ---
-TICKER_FILE = r"./Config/test_tickers_stocks.txt"
+TICKER_FILE = r"./Config/test_tickers_stocks_new.txt"
 INSIDER_LOOKBACK_DAYS = 90
 TOP_N = 20
 CACHE_DIR = Path("cache")
 CACHE_DIR.mkdir(exist_ok=True)
+options_cache_dir = CACHE_DIR / "options_oi"  # Cache for options OI data
+options_cache_dir.mkdir(exist_ok=True)
 
 # Add Marketstack configuration
 MARKETSTACK_API_KEY = "476419cceb4330259e5a1267533xxxxx"  # Replace with your actual API key
@@ -182,13 +96,8 @@ MARKETSTACK_BASE_URL = "https://api.marketstack.com/v2"
 CORRELATION_YEARS = 3  # Changed from 1 year to 3 years
 # EXPONENTIAL_DECAY_HALFLIFE = 126  # Half-life in trading days (about 6 months)
 
-# When reading regime periods:
-regime_periods_file = regime_results_dir / "regime_periods.csv"
-if regime_periods_file.exists():
-    regime_periods = pd.read_csv(regime_periods_file)
-else:
-    print(f"Warning: {regime_periods_file} not found")
-
+# Add after the existing constants
+REGIME_PERIODS_FILE = r"./Analysis/regime_periods.csv"
 SELECTED_REGIME = r"Crisis/Bear"  # "Strong Bull", "Steady Growth", or "Crisis/Bear"
 MIN_CRISIS_DAYS = 14  # Minimum days to consider a real crisis
 
@@ -341,17 +250,13 @@ def load_regime_periods(regime_name):
 
 # Add configuration loading function
 def load_marketstack_config():
-    """Load Marketstack API configuration with correct path"""
-    project_root = Path(__file__).parent.parent.parent
-    config_file = project_root / "config" / "marketstack_config.json"
-
-    if config_file.exists():
+    """Load Marketstack API configuration"""
+    config_file = r"./Config/marketstack_config.json"
+    if os.path.exists(config_file):
         with open(config_file, 'r') as f:
             config = json.load(f)
             return config.get('api_key', MARKETSTACK_API_KEY)
-    else:
-        print(f"Warning: Config file not found at {config_file}")
-        return MARKETSTACK_API_KEY
+    return MARKETSTACK_API_KEY
 
 
 def sanitize_filename(filename):
@@ -2063,14 +1968,13 @@ def save_analysis_results(results_text, filename="analysis_results.txt", results
     try:
         """Save analysis results to file"""
         if results_dir is None:
-            project_root = Path(__file__).parent.parent.parent
-            results_dir = project_root / "output" / "Weight_Optimization_Results"
+            results_dir = "./Results"
 
-        results_dir.mkdir(parents=True, exist_ok=True)
-        filepath = results_dir / filename
+        os.makedirs(results_dir, exist_ok=True)
+        filepath = os.path.join(results_dir, filename)
 
         with open(filepath, 'w', encoding='utf-8') as f:
-            f.write(content)
+            f.write(results_text)
 
         print(f"Results saved to: {filepath}")
         return filepath
