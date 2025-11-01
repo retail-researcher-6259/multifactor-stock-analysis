@@ -1,3 +1,4 @@
+# V07: Disabled OptionsFlow factor (Yahoo Finance data access issues)
 # V02: Change volatility penalty to volatility score. Low volatility gets higher score.
 # New V01: Add regime-based period selection
 # V17: Modified from V14, 3yr analysis, reorganized factors (Value, Quality, Growth)
@@ -11,6 +12,7 @@ Correlation Analysis Script for Multi-Factor Stock Screener
 - Analyzes relationship between factor scores and returns
 - Extended to 3-year correlation period with exponential weighting
 - Improved error handling for small ticker samples
+- V07: Disabled OptionsFlow factor due to Yahoo Finance data access issues
 """
 
 from curl_cffi.requests import Session as CurlSession
@@ -101,7 +103,7 @@ REGIME_PERIODS_FILE = r"./Analysis/regime_periods.csv"
 SELECTED_REGIME = r"Crisis/Bear"  # "Strong Bull", "Steady Growth", or "Crisis/Bear"
 MIN_CRISIS_DAYS = 14  # Minimum days to consider a real crisis
 
-# Scoring Weights - Use V19 updated weights (Credit removed)
+# Scoring Weights - Use V19 updated weights (Credit removed, OptionsFlow disabled)
 WEIGHTS = {
     "momentum": 74.85,      # Slight increase from 70.7
     "size": 18.7,          # Rounded up from 17.6
@@ -114,7 +116,7 @@ WEIGHTS = {
     "technical": -5.0,     # Unchanged
     "carry": -4.7,         # Rounded from -4.4
     "stability": -10.1,    # Rounded from -10.3
-    "options_flow": 0.0,   # NEW: Institutional options momentum (to be tested)
+    "options_flow": 0.0,   # DISABLED: Yahoo Finance options data not accessible
 }
 
 # Update FUND_THRESHOLDS to reorganize metrics
@@ -2129,7 +2131,10 @@ def main():
             carry = get_carry_score_simple(tk, info)
 
             # NEW: Options flow (institutional options momentum)
-            options_flow = get_options_flow_score(tk, info, lookback_days=14, decay_halflife=5)
+            # DISABLED: Yahoo Finance options data not accessible via yahooquery
+            # Returns 0.5 (neutral) until data access is fixed
+            options_flow = 0.5  # Disabled - data access issues
+            # options_flow = get_options_flow_score(tk, info, lookback_days=14, decay_halflife=5)
 
             # liquidity (0-1)
             liq = 0

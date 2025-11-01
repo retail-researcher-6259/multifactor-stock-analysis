@@ -4,6 +4,10 @@
 
 The `options_flow` factor is returning constant values of **0.5** for all stocks, indicating the factor is not working correctly.
 
+## **STATUS: DISABLED** ❌
+
+As of 2025-11-01, the OptionsFlow factor has been **disabled** in MultiFactor_optimizer_07.py due to Yahoo Finance data access issues. The factor now returns a constant 0.5 (neutral) and has weight set to 0.0.
+
 ## Root Cause Analysis
 
 ### 1. **Default Return Value**
@@ -203,15 +207,26 @@ Consider excluding this factor if:
 
 ## Conclusion
 
-**Current Status**: Working as designed, but requires historical data.
+**Current Status**: ❌ **DISABLED** - Yahoo Finance options data not accessible.
 
-**Action Required**:
-1. Run test script to verify options data is accessible
-2. Build cache over 2-3 days by running daily
-3. Re-enable factor after cache is established
-4. Consider alternative implementations if immediate use is needed
+**Test Results** (2025-11-01):
+- Tested 5 liquid tickers: AAPL, MSFT, SPY, TSLA, NVDA
+- yahooquery returned 14 expiration dates but **0 contracts** for all tickers
+- yfinance installation failed due to dependency conflicts
+- **Decision**: Disable OptionsFlow factor until data access is resolved
+
+**Implementation Changes**:
+1. Line 2134: `options_flow = 0.5  # Disabled - data access issues`
+2. Line 117: `"options_flow": 0.0  # DISABLED: Yahoo Finance options data not accessible`
+3. Factor effectively removed from analysis (weight = 0, constant value = 0.5)
+
+**Future Considerations**:
+- Try alternative data providers (CBOE, OPRA, commercial APIs)
+- Consider simpler options metrics (put/call ratio, implied volatility)
+- Monitor Yahoo Finance API changes for potential fixes
 
 ---
 
 **Date**: 2025-11-01
 **Version**: MultiFactor_optimizer_07.py
+**Status**: OptionsFlow factor DISABLED
