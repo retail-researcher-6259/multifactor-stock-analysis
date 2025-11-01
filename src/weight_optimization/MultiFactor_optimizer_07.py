@@ -1258,7 +1258,7 @@ def cache_options_oi(ticker, options_chain, date=None):
 
     Args:
         ticker: Stock symbol
-        options_chain: Options data from yahooquery
+        options_chain: Options data from yahooquery (DataFrame with MultiIndex)
         date: Date string (YYYY-MM-DD), defaults to today
     """
     if date is None:
@@ -1269,21 +1269,62 @@ def cache_options_oi(ticker, options_chain, date=None):
     try:
         oi_data = {}
 
-        # Extract OI data from options chain
-        if isinstance(options_chain, dict):
+        # yahooquery returns DataFrame with MultiIndex: (symbol, expiration, optionType)
+        if isinstance(options_chain, pd.DataFrame):
+            # Iterate through the DataFrame rows
+            for idx, contract in options_chain.iterrows():
+                # Extract index levels: (symbol, expiration, optionType)
+                if isinstance(idx, tuple) and len(idx) >= 3:
+                    symbol, exp_date, option_type = idx[0], idx[1], idx[2]
+                else:
+                    continue  # Skip malformed index
+
+                strike = contract.get('strike')
+
+                # Use optionType from index ('calls' or 'puts')
+                contract_type = 'CALL' if option_type == 'calls' else 'PUT'
+
+                # Create unique key
+                key = f"{strike}_{contract_type[0]}_{exp_date}"
+
+                # Handle NaN values safely
+                def safe_int(val, default=0):
+                    try:
+                        return int(val) if pd.notna(val) else default
+                    except (ValueError, TypeError):
+                        return default
+
+                def safe_float(val, default=0.0):
+                    try:
+                        return float(val) if pd.notna(val) else default
+                    except (ValueError, TypeError):
+                        return default
+
+                oi_data[key] = {
+                    'strike': safe_float(strike),
+                    'type': contract_type,
+                    'expiration': str(exp_date),
+                    'openInterest': safe_int(contract.get('openInterest', 0)),
+                    'volume': safe_int(contract.get('volume', 0)),
+                    'lastPrice': safe_float(contract.get('lastPrice', 0)),
+                    'impliedVolatility': safe_float(contract.get('impliedVolatility', 0))
+                }
+
+        # Legacy support: Handle dict format (in case API changes back)
+        elif isinstance(options_chain, dict):
             for exp_date, contracts in options_chain.items():
                 if isinstance(contracts, pd.DataFrame):
                     for _, contract in contracts.iterrows():
                         strike = contract.get('strike')
-                        contract_type = contract.get('contractSymbol', '')
+                        contract_symbol = contract.get('contractSymbol', '')
 
                         # Determine if CALL or PUT from contract symbol
-                        is_call = 'C' in contract_type[-9:]  # Last 9 chars: YYMMDD + C/P + 00000
+                        is_call = 'C' in contract_symbol[-9:] if len(contract_symbol) >= 9 else False
 
                         key = f"{strike}_{('C' if is_call else 'P')}_{exp_date}"
 
                         oi_data[key] = {
-                            'strike': strike,
+                            'strike': float(strike),
                             'type': 'CALL' if is_call else 'PUT',
                             'expiration': str(exp_date),
                             'openInterest': int(contract.get('openInterest', 0)),
@@ -2131,10 +2172,8 @@ def main():
             carry = get_carry_score_simple(tk, info)
 
             # NEW: Options flow (institutional options momentum)
-            # DISABLED: Yahoo Finance options data not accessible via yahooquery
-            # Returns 0.5 (neutral) until data access is fixed
-            options_flow = 0.5  # Disabled - data access issues
-            # options_flow = get_options_flow_score(tk, info, lookback_days=14, decay_halflife=5)
+            # FIXED: Now properly parses yahooquery DataFrame with MultiIndex
+            options_flow = get_options_flow_score(tk, info, lookback_days=14, decay_halflife=5)
 
             # liquidity (0-1)
             liq = 0

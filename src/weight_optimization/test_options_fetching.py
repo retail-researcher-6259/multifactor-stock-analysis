@@ -71,42 +71,78 @@ def test_single_ticker_options(ticker):
             print(f"   ❌ Error returned: {options_chain}")
             return False
 
-        if isinstance(options_chain, dict):
-            if 'Error Message' in str(options_chain):
-                print(f"   ❌ Error in response: {options_chain}")
-                return False
+        # yahooquery returns DataFrame with MultiIndex
+        if isinstance(options_chain, pd.DataFrame):
+            print(f"   ✅ Options data received (DataFrame)")
+            print(f"   Shape: {options_chain.shape}")
+            print(f"   Columns: {list(options_chain.columns)}")
 
-            print(f"   ✅ Options data received")
+            # Step 3: Examine structure
+            print(f"\n2. Examining DataFrame structure...")
+
+            # Get unique expiration dates from MultiIndex
+            if isinstance(options_chain.index, pd.MultiIndex):
+                expiration_dates = options_chain.index.get_level_values('expiration').unique()
+                option_types = options_chain.index.get_level_values('optionType').unique()
+
+                print(f"   Index levels: {options_chain.index.names}")
+                print(f"   Expiration dates: {len(expiration_dates)}")
+                print(f"   Option types: {list(option_types)}")
+                print(f"   Total contracts: {len(options_chain)}")
+
+                # Show first contract
+                if len(options_chain) > 0:
+                    print(f"\n   Sample contract data:")
+                    first_contract = options_chain.iloc[0]
+                    first_idx = options_chain.index[0]
+
+                    print(f"   - Index: {first_idx}")
+                    print(f"   - Strike: {first_contract.get('strike', 'N/A')}")
+                    print(f"   - Open Interest: {first_contract.get('openInterest', 'N/A')}")
+                    print(f"   - Volume: {first_contract.get('volume', 'N/A')}")
+                    print(f"   - Last Price: {first_contract.get('lastPrice', 'N/A')}")
+
+                contract_count = len(options_chain)
+            else:
+                print(f"   ⚠️ Unexpected index type: {type(options_chain.index)}")
+                contract_count = 0
+
+        elif isinstance(options_chain, dict):
+            # Legacy format support
+            print(f"   ✅ Options data received (Dict)")
             print(f"   Keys: {list(options_chain.keys())[:5]}... ({len(options_chain)} total)")
 
-        # Step 3: Examine structure
-        print(f"\n2. Examining options chain structure...")
+            # Step 3: Examine structure
+            print(f"\n2. Examining dict structure...")
 
-        contract_count = 0
-        expiration_dates = []
+            contract_count = 0
+            expiration_dates = []
 
-        for exp_date, contracts in options_chain.items():
-            expiration_dates.append(exp_date)
-            if isinstance(contracts, pd.DataFrame):
-                contract_count += len(contracts)
+            for exp_date, contracts in options_chain.items():
+                expiration_dates.append(exp_date)
+                if isinstance(contracts, pd.DataFrame):
+                    contract_count += len(contracts)
 
-                if len(expiration_dates) == 1:  # Show first expiration details
-                    print(f"\n   First expiration: {exp_date}")
-                    print(f"   Contracts: {len(contracts)}")
-                    print(f"   Columns: {list(contracts.columns)}")
+                    if len(expiration_dates) == 1:  # Show first expiration details
+                        print(f"\n   First expiration: {exp_date}")
+                        print(f"   Contracts: {len(contracts)}")
+                        print(f"   Columns: {list(contracts.columns)}")
 
-                    # Show sample data
-                    if len(contracts) > 0:
-                        print(f"\n   Sample contract data:")
-                        sample = contracts.iloc[0]
-                        print(f"   - Strike: {sample.get('strike', 'N/A')}")
-                        print(f"   - Type: {sample.get('contractSymbol', 'N/A')}")
-                        print(f"   - Open Interest: {sample.get('openInterest', 'N/A')}")
-                        print(f"   - Volume: {sample.get('volume', 'N/A')}")
-                        print(f"   - Last Price: {sample.get('lastPrice', 'N/A')}")
+                        # Show sample data
+                        if len(contracts) > 0:
+                            print(f"\n   Sample contract data:")
+                            sample = contracts.iloc[0]
+                            print(f"   - Strike: {sample.get('strike', 'N/A')}")
+                            print(f"   - Type: {sample.get('contractSymbol', 'N/A')}")
+                            print(f"   - Open Interest: {sample.get('openInterest', 'N/A')}")
+                            print(f"   - Volume: {sample.get('volume', 'N/A')}")
+                            print(f"   - Last Price: {sample.get('lastPrice', 'N/A')}")
 
-        print(f"\n   ✅ Total expiration dates: {len(expiration_dates)}")
-        print(f"   ✅ Total contracts: {contract_count}")
+            print(f"\n   ✅ Total expiration dates: {len(expiration_dates)}")
+            print(f"\n   ✅ Total contracts: {contract_count}")
+        else:
+            print(f"   ❌ Unexpected type: {type(options_chain)}")
+            return False
 
         # Step 4: Test caching
         print(f"\n3. Testing options data caching...")
@@ -117,7 +153,46 @@ def test_single_ticker_options(ticker):
         oi_data = {}
         cached_count = 0
 
-        if isinstance(options_chain, dict):
+        # Helper functions for safe type conversion
+        def safe_int(val, default=0):
+            try:
+                return int(val) if pd.notna(val) else default
+            except (ValueError, TypeError):
+                return default
+
+        def safe_float(val, default=0.0):
+            try:
+                return float(val) if pd.notna(val) else default
+            except (ValueError, TypeError):
+                return default
+
+        # Parse DataFrame format (current yahooquery)
+        if isinstance(options_chain, pd.DataFrame):
+            for idx, contract in options_chain.iterrows():
+                # Extract MultiIndex levels: (symbol, expiration, optionType)
+                if isinstance(idx, tuple) and len(idx) >= 3:
+                    symbol, exp_date, option_type = idx[0], idx[1], idx[2]
+                else:
+                    continue
+
+                strike = contract.get('strike')
+                contract_type = 'CALL' if option_type == 'calls' else 'PUT'
+
+                key = f"{strike}_{contract_type[0]}_{exp_date}"
+
+                oi_data[key] = {
+                    'strike': safe_float(strike),
+                    'type': contract_type,
+                    'expiration': str(exp_date),
+                    'openInterest': safe_int(contract.get('openInterest', 0)),
+                    'volume': safe_int(contract.get('volume', 0)),
+                    'lastPrice': safe_float(contract.get('lastPrice', 0)),
+                    'impliedVolatility': safe_float(contract.get('impliedVolatility', 0))
+                }
+                cached_count += 1
+
+        # Parse dict format (legacy support)
+        elif isinstance(options_chain, dict):
             for exp_date, contracts in options_chain.items():
                 if isinstance(contracts, pd.DataFrame):
                     for _, contract in contracts.iterrows():
@@ -130,13 +205,13 @@ def test_single_ticker_options(ticker):
                         key = f"{strike}_{('C' if is_call else 'P')}_{exp_date}"
 
                         oi_data[key] = {
-                            'strike': strike,
+                            'strike': safe_float(strike),
                             'type': 'CALL' if is_call else 'PUT',
                             'expiration': str(exp_date),
-                            'openInterest': int(contract.get('openInterest', 0)),
-                            'volume': int(contract.get('volume', 0)),
-                            'lastPrice': float(contract.get('lastPrice', 0)),
-                            'impliedVolatility': float(contract.get('impliedVolatility', 0))
+                            'openInterest': safe_int(contract.get('openInterest', 0)),
+                            'volume': safe_int(contract.get('volume', 0)),
+                            'lastPrice': safe_float(contract.get('lastPrice', 0)),
+                            'impliedVolatility': safe_float(contract.get('impliedVolatility', 0))
                         }
                         cached_count += 1
 
