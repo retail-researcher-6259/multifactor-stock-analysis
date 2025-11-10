@@ -1,37 +1,37 @@
 {
-  "timestamp": "2025-09-27T11:50:29.109232",
+  "timestamp": "2025-11-10T09:35:53.201293",
   "regime_detection": {
     "regime": 0,
-    "regime_name": "Strong Bull",
-    "start_date": "2025-06-18",
-    "end_date": "2025-09-26",
-    "days_in_regime": 100,
-    "as_of": "2025-09-26",
+    "regime_name": "Steady Growth",
+    "start_date": "2025-10-21",
+    "end_date": "2025-11-07",
+    "days_in_regime": 17,
+    "as_of": "2025-11-07",
     "characteristics": {
-      "mean_return": 0.41450518657964025,
-      "volatility": 0.08702301402048496,
-      "sharpe": 4.763167436168863
+      "mean_return": 0.06391822904095823,
+      "volatility": 0.1805632297163976,
+      "sharpe": 0.35399360734381896
     },
     "all_probabilities": {
-      "Strong Bull": 0.7049180327868853,
-      "Steady Growth": 0.20917202739157503,
-      "Crisis/Bear": 0.08590993982153974
+      "Strong Bull": 0.2823396840633543,
+      "Steady Growth": 0.6555789737275934,
+      "Crisis/Bear": 0.062081342209052384
     },
-    "confidence": 0.7049180327868853
+    "confidence": 0.6555789737275934
   },
   "recommended_weights": {
-    "momentum": 60.0,
-    "growth": 15.0,
-    "technical": 15.0,
-    "quality": 10.0,
-    "credit": 5.0,
-    "financial_health": 5.0,
-    "value": -5.0,
+    "momentum": 45.0,
+    "quality": 20.0,
+    "growth": 10.0,
+    "technical": 10.0,
+    "credit": 10.0,
+    "financial_health": 10.0,
+    "value": 5.0,
     "size": -5.0,
-    "volatility_penalty": -3.0,
-    "carry": -2.0,
-    "liquidity": 5.0,
-    "insider": 0.0
+    "volatility_penalty": -5.0,
+    "carry": 0.0,
+    "liquidity": 3.0,
+    "insider": -3.0
   },
   "source": "historical_analysis",
   "note": "Current regime based on latest historical regime analysis"

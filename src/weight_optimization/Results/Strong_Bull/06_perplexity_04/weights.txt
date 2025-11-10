@@ -1,0 +1,14 @@
+WEIGHTS = {
+    "momentum": 39.25,
+    "technical": 21.7,
+    "value": 15.65,
+    "options_flow": 11.2,
+    "liquidity": 9.85,
+    "quality": -5.5,
+    "stability": -5.25,
+    "financial_health": 6.55,
+    "growth": 4.1,
+    "size": 2.45,
+    "insider": 1.65,
+    "carry": -1.65,
+}

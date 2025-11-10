@@ -79,46 +79,46 @@ CACHE_DIR.mkdir(exist_ok=True)
 
 REGIME_WEIGHTS = {
         "Steady_Growth": {
-        "credit": 6.1,
-        "quality": -10.4,
-        "momentum": 36.8,
-        "financial_health": 44.9,
-        "growth": 29.4,
-        "value": -14.7,
-        "technical": 17.6,
-        "liquidity": -4.9,
-        "carry": -14.7,
-        "stability": -21.2,
-        "size": 40.9,
-        "insider": -9.8,
+        "momentum": 38.8,
+        "technical": 19.5,
+        "value": 17.5,
+        "options_flow": 11.0,
+        "liquidity": 7.6,
+        "quality": -6.8,
+        "insider": 5.1,
+        "size": 4.5,
+        "stability": -4.1,
+        "financial_health": 3.8,
+        "growth": 2.5,
+        "carry": 0.6,
     },
     "Strong_Bull": {
-        "credit": 6.7,
-        "quality": -13.3,
-        "momentum": 53.3,
-        "financial_health": 64.0,
-        "growth": 24.0,
-        "value": -18.7,
-        "technical": 20.0,
-        "liquidity": -8.0,
-        "carry": -24.0,
-        "stability": -26.7,
-        "size": 42.7,
-        "insider": -20.0,
+        "momentum": 35.0,
+        "technical": 22.0,
+        "value": 15.0,
+        "options_flow": 12.0,
+        "liquidity": 12.0,
+        "financial_health": 8.0,
+        "growth": 5.0,
+        "size": 3.0,
+        "insider": 2.0,
+        "carry": -2.0,
+        "stability": -6.0,
+        "quality": -6.0,
     },
     "Crisis_Bear": {
-        "momentum": 46.5,
-        "size": 43.3,
-        "financial_health": 14.8,
-        "credit": 8.2,
-        "insider": -18.5,
-        "growth": 56.2,
-        "quality": -5.1,
-        "liquidity": -9.9,
-        "value": -24.8,
-        "technical": 38.8,
-        "carry": -21.0,
-        "stability": -28.5,
+        "momentum": 46.6,
+        "technical": 25.9,
+        "value": 11.0,
+        "growth": 8.2,
+        "quality": -6.0,
+        "financial_health": 5.9,
+        "liquidity": 4.7,
+        "stability": -4.5,
+        "size": 3.5,
+        "options_flow": 2.9,
+        "insider": 1.8,
+        "carry": 0.0,
     }
 }
 
@@ -873,7 +873,7 @@ def run_historical_specific_date(target_date, regime, progress_callback=None):
             sector, industry = sector_industry(info)
 
             company_name, country = get_company_info(info)
-            credit = get_credit_score(info)
+            options_flow = get_options_flow_score(tk, info)
             carry = get_carry_score_simple(tk, info)
 
             # Liquidity score
@@ -886,7 +886,7 @@ def run_historical_specific_date(target_date, regime, progress_callback=None):
                 FinancialHealth=financial_health,
                 Technical=tech, Insider=insider, PriceMom=pm, EarnMom=em,
                 Stability=stability, Growth=growth,
-                MarketCap=mcap, Credit=credit,
+                MarketCap=mcap, OptionsFlow=options_flow,
                 Liquidity=liq, Carry=carry, Sector=sector, Industry=industry,
                 ROIC=roic,
                 CompanyName=company_name, Country=country
@@ -1035,7 +1035,7 @@ def run_historical_specific_date(target_date, regime, progress_callback=None):
                 momentum * WEIGHTS['momentum'] +
                 rec['Stability'] * WEIGHTS['stability'] +
                 size * WEIGHTS['size'] +
-                rec['Credit'] * WEIGHTS['credit'] +
+                rec['OptionsFlow'] * WEIGHTS['options_flow'] +
                 rec['Liquidity'] * WEIGHTS['liquidity'] +
                 rec['Carry'] * WEIGHTS['carry'] +
                 rec.get('GrowthScore_Norm', 0) * WEIGHTS['growth']
@@ -1054,7 +1054,7 @@ def run_historical_specific_date(target_date, regime, progress_callback=None):
             "Momentum": momentum,
             "Stability": rec['Stability'],
             "Size": size,
-            "Credit": rec['Credit'],
+            "OptionsFlow": rec['OptionsFlow'],
             "Liquidity": rec['Liquidity'],
             "Carry": rec['Carry'],
             "Growth": round(rec.get('GrowthScore_Norm', 0), 3),
@@ -1930,56 +1930,180 @@ def get_size_score(info, mcap_min, mcap_80th):
     return round(final_score, 2)
 
 
-def get_credit_score(info):
+def get_options_flow_score(ticker, info):
     """
-    Enhanced credit scoring that evaluates solvency, debt service capacity,
-    and earnings quality across multiple time frames.
+    Calculate institutional options flow score using instant metrics
+
+    Uses current options data snapshot to detect institutional sentiment through:
+    1. Put/Call Ratios (OI and Volume based)
+    2. Near-the-money concentration
+    3. Large position detection
+
+    This instant approach works with historical analysis since it only needs
+    current options data, not multi-day momentum tracking.
+
+    Args:
+        ticker: Stock symbol
+        info: Stock info dict with current price
+
+    Returns:
+        float: Score 0-1 (0.5 = neutral, >0.5 = bullish, <0.5 = bearish)
     """
     try:
-        # Basic financial metrics
-        ebitda = info.get("ebitda", 0)
-        sales = info.get("totalRevenue", 1)
-        debt = info.get("totalDebt", 0)
-        mcap = info.get("marketCap", 0)
-        interest_expense = info.get("interestExpense", 1)
-        cash = info.get("totalCash", 0)
-        current_assets = info.get("totalCurrentAssets", 0)
-        current_liabilities = info.get("totalCurrentLiabilities", 1)
+        # Get current stock price
+        current_price = info.get('regularMarketPrice', info.get('currentPrice', None))
+        if current_price is None or current_price <= 0:
+            return 0.5  # Can't analyze without price
 
-        # Handle missing data
-        if any(x in (None, 0, "None") or pd.isna(x) for x in
-               (ebitda, sales, debt, mcap, interest_expense)):
-            return 0
+        # Fetch current options data
+        try:
+            t = Ticker(ticker, session=_global_curl_session)
+            options_chain = t.option_chain
 
-        # 1. Altman Z-Score components
-        profit_ratio = ebitda / sales  # Operating efficiency
-        solvency_ratio = mcap / debt  # Market-based cushion
+            if options_chain is None or not isinstance(options_chain, pd.DataFrame):
+                return 0.5  # No options data
 
-        # 2. Debt service metrics
-        interest_coverage = ebitda / interest_expense  # EBITDA/Interest
+            if len(options_chain) < 10:  # Too few contracts to analyze
+                return 0.5
 
-        # Normalize these metrics to 0-1 scale
-        z_component = np.tanh((3.3 * profit_ratio + 0.6 * solvency_ratio) / 4)
-        coverage_score = np.tanh(interest_coverage / 10)  # >10x is excellent
+        except Exception as e:
+            # Silently fail for stocks without options
+            return 0.5
 
-        # 3. Liquidity metrics - short-term debt payment ability
-        quick_ratio = current_assets / current_liabilities
-        cash_to_debt = cash / debt if debt > 0 else 1.0
+        # Parse options data from DataFrame with MultiIndex
+        calls_data = []
+        puts_data = []
 
-        liquidity_score = np.tanh((quick_ratio + cash_to_debt) / 2)
+        for idx, contract in options_chain.iterrows():
+            # Extract index: (symbol, expiration, optionType)
+            if not isinstance(idx, tuple) or len(idx) < 3:
+                continue
 
-        # 4. Weighted final score - more weight to coverage during economic stress
-        final_score = (
-                0.4 * z_component +
-                0.4 * coverage_score +
-                0.2 * liquidity_score
-        )
+            symbol, exp_date, option_type = idx[0], idx[1], idx[2]
 
-        return round(max(0, min(final_score, 1)), 2)
+            # Get contract details
+            strike = contract.get('strike', 0)
+            oi = contract.get('openInterest', 0)
+            volume = contract.get('volume', 0)
+            last_price = contract.get('lastPrice', 0)
+
+            # Handle NaN values
+            if pd.isna(strike) or pd.isna(oi):
+                continue
+            if pd.isna(volume):
+                volume = 0
+            if pd.isna(last_price):
+                last_price = 0
+
+            strike = float(strike)
+            oi = int(oi)
+            volume = int(volume)
+            last_price = float(last_price)
+
+            # Skip if no meaningful data
+            if oi <= 0 and volume <= 0:
+                continue
+
+            # Calculate moneyness (how close to current price)
+            moneyness = strike / current_price
+
+            contract_info = {
+                'strike': strike,
+                'oi': oi,
+                'volume': volume,
+                'price': last_price,
+                'moneyness': moneyness,
+                'notional_oi': oi * 100 * last_price,  # Contract value in $
+                'notional_vol': volume * 100 * last_price
+            }
+
+            # Separate calls and puts
+            if option_type == 'calls':
+                calls_data.append(contract_info)
+            else:  # puts
+                puts_data.append(contract_info)
+
+        # Need sufficient data to analyze
+        if len(calls_data) < 5 or len(puts_data) < 5:
+            return 0.5
+
+        # ===== METRIC 1: Put/Call Ratios =====
+
+        # OI-based P/C ratio
+        total_call_oi = sum(c['oi'] for c in calls_data)
+        total_put_oi = sum(p['oi'] for p in puts_data)
+
+        pc_ratio_oi = total_put_oi / total_call_oi if total_call_oi > 0 else 1.0
+
+        # Volume-based P/C ratio (more responsive to recent activity)
+        total_call_vol = sum(c['volume'] for c in calls_data)
+        total_put_vol = sum(p['volume'] for p in puts_data)
+
+        pc_ratio_vol = total_put_vol / total_call_vol if total_call_vol > 0 else 1.0
+
+        # ===== METRIC 2: Near-the-money concentration =====
+        # Focus on strikes within ±10% of current price (where institutions trade)
+
+        ntm_calls = [c for c in calls_data if 0.90 <= c['moneyness'] <= 1.10]
+        ntm_puts = [p for p in puts_data if 0.90 <= p['moneyness'] <= 1.10]
+
+        ntm_call_oi = sum(c['oi'] for c in ntm_calls)
+        ntm_put_oi = sum(p['oi'] for p in ntm_puts)
+
+        ntm_pc_ratio = ntm_put_oi / ntm_call_oi if ntm_call_oi > 0 else pc_ratio_oi
+
+        # ===== METRIC 3: Large position detection =====
+        # Identify unusually large positions (potential institutional activity)
+
+        # Calculate average and std for OI
+        all_oi = [c['oi'] for c in calls_data] + [p['oi'] for p in puts_data]
+        avg_oi = np.mean(all_oi) if all_oi else 0
+        std_oi = np.std(all_oi) if len(all_oi) > 1 else 0
+
+        # Flag "large" contracts (>2 std above mean)
+        threshold = avg_oi + 2 * std_oi if std_oi > 0 else avg_oi * 2
+
+        large_calls = [c for c in ntm_calls if c['oi'] > threshold]
+        large_puts = [p for p in ntm_puts if p['oi'] > threshold]
+
+        large_call_oi = sum(c['oi'] for c in large_calls)
+        large_put_oi = sum(p['oi'] for p in large_puts)
+
+        # ===== COMBINE METRICS INTO SCORE =====
+
+        signals = []
+
+        # Signal 1: Overall P/C ratio (weight: 30%)
+        # Low P/C (<0.7) = Bullish, High P/C (>1.3) = Bearish
+        pc_signal = 1.0 - min(max(pc_ratio_oi - 0.7, 0) / 0.6, 1.0)
+        signals.append(('pc_oi', pc_signal, 0.30))
+
+        # Signal 2: Volume P/C ratio (weight: 20%) - recent activity
+        pc_vol_signal = 1.0 - min(max(pc_ratio_vol - 0.7, 0) / 0.6, 1.0)
+        signals.append(('pc_vol', pc_vol_signal, 0.20))
+
+        # Signal 3: Near-the-money P/C (weight: 30%) - institutional positioning
+        ntm_signal = 1.0 - min(max(ntm_pc_ratio - 0.7, 0) / 0.6, 1.0)
+        signals.append(('ntm', ntm_signal, 0.30))
+
+        # Signal 4: Large position imbalance (weight: 20%)
+        if large_call_oi + large_put_oi > 0:
+            large_imbalance = large_call_oi / (large_call_oi + large_put_oi)
+            signals.append(('large', large_imbalance, 0.20))
+        else:
+            signals.append(('large', 0.5, 0.20))  # Neutral if no large positions
+
+        # Weighted average of all signals
+        score = sum(signal * weight for _, signal, weight in signals)
+
+        # Ensure score is in valid range
+        score = max(0.0, min(1.0, score))
+
+        return round(score, 3)
 
     except Exception as e:
-        print(f" Credit score error for {info.get('symbol', '?')}: {e}")
-        return 0
+        # Silently return neutral for any errors (many stocks don't have options)
+        return 0.5
 
 
 def get_liquidity_score(info):
@@ -2339,13 +2463,10 @@ def _calculate_score_from_marketstack(df):
         # Breadth factor (unique insiders)
         breadth = min(len(unique_insiders) / 5, 1.0)
 
-        # Recency factor
-        if recent_dates:
-            latest_date = max(recent_dates)
-            days_since = (datetime.now() - latest_date).days
-            recency = max(0, 1 - (days_since / INSIDER_LOOKBACK_DAYS))
-        else:
-            recency = 0.5
+        # NOTE: Recency factor removed for historical analysis compatibility
+        # For historical correlation analysis, we treat all transactions equally
+        # rather than applying datetime.now() based recency weighting
+        recency = 1.0
 
         # Calculate final score
         raw_score = (buy_ratio - 0.5) * 2  # Convert to -1 to +1
@@ -2989,7 +3110,7 @@ def run_daily_scoring(regime="Steady_Growth", progress_callback=None):
             sector, industry = sector_industry(info)
 
             company_name, country = get_company_info(info)
-            credit = get_credit_score(info)
+            options_flow = get_options_flow_score(tk, info)
             carry = get_carry_score_simple(tk, info)
 
             liq = 0
@@ -3001,7 +3122,7 @@ def run_daily_scoring(regime="Steady_Growth", progress_callback=None):
                 FinancialHealth=financial_health,
                 Technical=tech, Insider=insider, PriceMom=pm, EarnMom=em,
                 Stability=stability,
-                MarketCap=mcap, Credit=credit,
+                MarketCap=mcap, OptionsFlow=options_flow,
                 Liquidity=liq, Carry=carry, Sector=sector, Industry=industry,
                 Growth=get_growth_score(tk, info),
                 ROIC=roic,
@@ -3120,7 +3241,7 @@ def run_daily_scoring(regime="Steady_Growth", progress_callback=None):
                 momentum * WEIGHTS['momentum'] +
                 rec['Stability'] * WEIGHTS['stability'] +
                 size * WEIGHTS['size'] +
-                rec['Credit'] * WEIGHTS['credit'] +
+                rec['OptionsFlow'] * WEIGHTS['options_flow'] +
                 rec['Liquidity'] * WEIGHTS['liquidity'] +
                 rec['Carry'] * WEIGHTS['carry'] +
                 rec.get('GrowthScore_Norm', 0) * WEIGHTS['growth']
@@ -3139,7 +3260,7 @@ def run_daily_scoring(regime="Steady_Growth", progress_callback=None):
             "Momentum": momentum,
             "Stability": rec['Stability'],
             "Size": size,
-            "Credit": rec['Credit'],
+            "OptionsFlow": rec['OptionsFlow'],
             "Liquidity": rec['Liquidity'],
             "Carry": rec['Carry'],
             "Growth": round(rec.get('GrowthScore_Norm', 0), 3),
