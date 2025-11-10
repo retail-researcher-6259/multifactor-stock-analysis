@@ -142,7 +142,7 @@ class EnhancedSingleTickerTechnicalAnalyzer(StockScoreTrendAnalyzerTechnical):
             'Trend Direction', 'Trend Quality', 'SMA Position', 'Recent Cross',
             'MACD Signal', 'MACD Histogram', 'RSI Level', 'RSI Trend',
             'ROC', '%B Position', 'BB Width', 'ADX Strength', 'DI Direction',
-            'ARIMA', 'Exp Smooth'
+            'ARIMA', 'Exp Smooth', 'Prophet'
         ]
 
         # Start with basic info
@@ -172,7 +172,8 @@ class EnhancedSingleTickerTechnicalAnalyzer(StockScoreTrendAnalyzerTechnical):
             'adx_strength': 'ADX Strength',
             'di_direction': 'DI Direction',
             'arima': 'ARIMA',
-            'exp_smooth': 'Exp Smooth'
+            'exp_smooth': 'Exp Smooth',
+            'prophet': 'Prophet'
         }
 
         # Extract scores from detail strings
@@ -181,7 +182,9 @@ class EnhancedSingleTickerTechnicalAnalyzer(StockScoreTrendAnalyzerTechnical):
                 column = detail_to_column[detail_key]
 
                 # Extract score from detail string
-                if '(+1)' in str(detail_value):
+                if '(+1.5)' in str(detail_value):
+                    row_data[column] = 1.5
+                elif '(+1)' in str(detail_value):
                     row_data[column] = 1
                 elif '(+0.5)' in str(detail_value):
                     row_data[column] = 0.5
@@ -223,7 +226,7 @@ class EnhancedSingleTickerTechnicalAnalyzer(StockScoreTrendAnalyzerTechnical):
         ma_indicators = ['sma_cross', 'recent_cross']
         momentum_indicators = ['macd', 'macd_hist', 'rsi_level', 'rsi_trend', 'roc']
         bb_indicators = ['bb_position', 'bb_width']
-        forecast_indicators = ['arima', 'exp_smooth']
+        forecast_indicators = ['arima', 'exp_smooth', 'prophet']
 
         categories = [
             (" Trend Analysis", trend_indicators),

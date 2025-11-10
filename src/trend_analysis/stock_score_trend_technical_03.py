@@ -14,6 +14,7 @@ from sklearn.preprocessing import PolynomialFeatures
 from sklearn.metrics import r2_score
 from statsmodels.tsa.arima.model import ARIMA
 from statsmodels.tsa.holtwinters import ExponentialSmoothing
+from prophet import Prophet
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -372,6 +373,51 @@ class StockScoreTrendAnalyzerTechnical:
             print(f"Exponential Smoothing failed for {ticker}: {str(e)}")
             results['exp_smoothing'] = None
 
+        # Prophet (Facebook's forecasting model)
+        try:
+            if len(scores) >= 10:
+                # Prepare data for Prophet (requires 'ds' and 'y' columns)
+                prophet_df = pd.DataFrame({
+                    'ds': pd.date_range(start='2024-01-01', periods=len(scores), freq='D'),
+                    'y': scores
+                })
+
+                # Initialize Prophet with minimal configuration for short time series
+                prophet_model = Prophet(
+                    changepoint_prior_scale=0.05,  # Lower = less flexible (prevent overfitting)
+                    seasonality_prior_scale=0.1,   # Lower = less seasonal variation
+                    yearly_seasonality=False,       # Disable for short series
+                    weekly_seasonality=False,       # Disable for short series
+                    daily_seasonality=False,        # Disable for short series
+                    interval_width=0.80,            # 80% confidence intervals
+                    changepoint_range=0.8           # Only fit changepoints in first 80%
+                )
+
+                # Fit the model (suppress output)
+                import logging
+                logging.getLogger('prophet').setLevel(logging.ERROR)
+                prophet_model.fit(prophet_df)
+
+                # Create future dataframe for forecasting
+                future = prophet_model.make_future_dataframe(periods=forecast_periods, freq='D')
+                forecast = prophet_model.predict(future)
+
+                # Extract forecast values
+                forecast_values = forecast['yhat'].values[-forecast_periods:]
+                lower_bound = forecast['yhat_lower'].values[-forecast_periods:]
+                upper_bound = forecast['yhat_upper'].values[-forecast_periods:]
+
+                results['prophet'] = {
+                    'forecast': forecast_values,
+                    'lower_bound': lower_bound,
+                    'upper_bound': upper_bound,
+                    'fitted_values': forecast['yhat'].values[:len(scores)],
+                    'trend': forecast['trend'].values[:len(scores)]
+                }
+        except Exception as e:
+            print(f"Prophet failed for {ticker}: {str(e)}")
+            results['prophet'] = None
+
         return results
 
     def create_individual_plots(self, ticker, output_dir, use_subfolder=True):
@@ -533,10 +579,26 @@ class StockScoreTrendAnalyzerTechnical:
             plt.plot(indices, scores, 'b-', label='Historical', linewidth=1.5)
 
             last_index = indices[-1]
+
+            # ARIMA forecast
             if forecast.get('arima') and forecast['arima']:
                 forecast_indices = list(range(last_index + 1, last_index + len(forecast['arima']['forecast']) + 1))
                 plt.plot(forecast_indices, forecast['arima']['forecast'], 'r-',
                          label=f"ARIMA{forecast['arima']['params']}", linewidth=2, marker='o')
+
+            # Prophet forecast with confidence interval
+            if forecast.get('prophet') and forecast['prophet']:
+                prophet_forecast = forecast['prophet']['forecast']
+                forecast_indices = list(range(last_index + 1, last_index + len(prophet_forecast) + 1))
+                plt.plot(forecast_indices, prophet_forecast, 'g-',
+                         label='Prophet', linewidth=2, marker='s')
+
+                # Add confidence interval
+                if 'lower_bound' in forecast['prophet'] and 'upper_bound' in forecast['prophet']:
+                    plt.fill_between(forecast_indices,
+                                   forecast['prophet']['lower_bound'],
+                                   forecast['prophet']['upper_bound'],
+                                   alpha=0.2, color='green', label='80% Confidence')
 
             plt.axvline(x=last_index, color='gray', linestyle='--', alpha=0.5)
             add_date_labels()
@@ -821,8 +883,8 @@ class StockScoreTrendAnalyzerTechnical:
             if not hasattr(exp_forecast, '__len__'):
                 exp_forecast = [exp_forecast]
             forecast_indices = list(range(last_index + 1, last_index + 1 + len(exp_forecast)))
-            plt.plot(forecast_indices, exp_forecast, 'g-',
-                     label='Exp Smoothing', linewidth=2, marker='s')
+            plt.plot(forecast_indices, exp_forecast, 'orange-',
+                     label='Exp Smoothing', linewidth=2, marker='s', alpha=0.7)
 
         if forecast.get('holt') and forecast['holt']:
             holt_forecast = forecast['holt']['forecast']
@@ -830,15 +892,31 @@ class StockScoreTrendAnalyzerTechnical:
                 holt_forecast = [holt_forecast]
             forecast_indices = list(range(last_index + 1, last_index + 1 + len(holt_forecast)))
             plt.plot(forecast_indices, holt_forecast, 'm-',
-                     label='Holt Method', linewidth=2, marker='^')
+                     label='Holt Method', linewidth=2, marker='^', alpha=0.7)
+
+        # Prophet forecast with confidence interval
+        if forecast.get('prophet') and forecast['prophet']:
+            prophet_forecast = forecast['prophet']['forecast']
+            if not hasattr(prophet_forecast, '__len__'):
+                prophet_forecast = [prophet_forecast]
+            forecast_indices = list(range(last_index + 1, last_index + 1 + len(prophet_forecast)))
+            plt.plot(forecast_indices, prophet_forecast, 'g-',
+                     label='Prophet', linewidth=2.5, marker='D')
+
+            # Add confidence interval
+            if 'lower_bound' in forecast['prophet'] and 'upper_bound' in forecast['prophet']:
+                plt.fill_between(forecast_indices,
+                               forecast['prophet']['lower_bound'],
+                               forecast['prophet']['upper_bound'],
+                               alpha=0.2, color='green', label='Prophet 80% CI')
 
         # Vertical line to separate historical and forecast
         plt.axvline(x=last_index, color='gray', linestyle='--', alpha=0.5)
 
         plt.xlabel('Trading Days')
         plt.ylabel('Score')
-        plt.title(f'{ticker} - Statistical Forecasting')
-        plt.legend()
+        plt.title(f'{ticker} - Statistical Forecasting (Including Prophet)')
+        plt.legend(loc='best')
         plt.grid(True, alpha=0.3)
 
         plt.tight_layout()
@@ -920,38 +998,55 @@ class StockScoreTrendAnalyzerTechnical:
         # 6. Forecast - WITH DIMENSION FIX
         ax6 = fig.add_subplot(gs[3, :])
         forecast = self.technical_results.get(ticker, {}).get('forecasting', {})
-        if forecast and 'arima' in forecast and forecast['arima']:
+        if forecast:
             last_index = indices[-1]
-
-            # Get the actual forecast array
-            arima_forecast = forecast['arima']['forecast']
-
-            # Create forecast indices matching the actual forecast length
-            if hasattr(arima_forecast, '__len__'):
-                # If it's an array-like object
-                forecast_length = len(arima_forecast)
-            else:
-                # If it's a scalar or single value, convert to list
-                arima_forecast = [arima_forecast] if not isinstance(arima_forecast,
-                                                                    (list, np.ndarray)) else arima_forecast
-                forecast_length = len(arima_forecast)
-
-            # Create indices that match the forecast length
-            forecast_indices = list(range(last_index + 1, last_index + 1 + forecast_length))
 
             # Plot recent historical data
             ax6.plot(indices[-10:], scores[-10:], 'b-', label='Recent', linewidth=1.5)
 
-            # Plot the forecast with matching dimensions
-            ax6.plot(forecast_indices, arima_forecast, 'r-',
-                     label='ARIMA Forecast', linewidth=2, marker='o')
+            # ARIMA Forecast
+            if 'arima' in forecast and forecast['arima']:
+                arima_forecast = forecast['arima']['forecast']
+
+                # Create forecast indices matching the actual forecast length
+                if hasattr(arima_forecast, '__len__'):
+                    forecast_length = len(arima_forecast)
+                else:
+                    arima_forecast = [arima_forecast] if not isinstance(arima_forecast,
+                                                                        (list, np.ndarray)) else arima_forecast
+                    forecast_length = len(arima_forecast)
+
+                forecast_indices = list(range(last_index + 1, last_index + 1 + forecast_length))
+                ax6.plot(forecast_indices, arima_forecast, 'r-',
+                         label='ARIMA', linewidth=2, marker='o', alpha=0.7)
+
+            # Prophet Forecast
+            if 'prophet' in forecast and forecast['prophet']:
+                prophet_forecast = forecast['prophet']['forecast']
+                if hasattr(prophet_forecast, '__len__'):
+                    forecast_length = len(prophet_forecast)
+                else:
+                    prophet_forecast = [prophet_forecast] if not isinstance(prophet_forecast,
+                                                                            (list, np.ndarray)) else prophet_forecast
+                    forecast_length = len(prophet_forecast)
+
+                forecast_indices = list(range(last_index + 1, last_index + 1 + forecast_length))
+                ax6.plot(forecast_indices, prophet_forecast, 'g-',
+                         label='Prophet', linewidth=2, marker='D')
+
+                # Add confidence interval
+                if 'lower_bound' in forecast['prophet'] and 'upper_bound' in forecast['prophet']:
+                    ax6.fill_between(forecast_indices,
+                                   forecast['prophet']['lower_bound'],
+                                   forecast['prophet']['upper_bound'],
+                                   alpha=0.15, color='green')
 
             ax6.axvline(x=last_index, color='gray', linestyle='--', alpha=0.5)
-            ax6.legend(loc='best')
+            ax6.legend(loc='best', fontsize=8)
 
         ax6.set_ylabel('Score')
         ax6.set_xlabel('Trading Days')
-        ax6.set_title('5-Day Forecast')
+        ax6.set_title('5-Day Forecast (ARIMA + Prophet)')
         ax6.grid(True, alpha=0.3)
 
         # Add date labels to all subplots
@@ -1195,6 +1290,37 @@ class StockScoreTrendAnalyzerTechnical:
                 else:
                     score_details['exp_smooth'] = "Exp Smooth Bearish (0)"
                 max_possible += 1
+
+        # 16. Prophet Forecast
+        if forecast and 'prophet' in forecast and forecast['prophet']:
+            current_score = self.score_history[ticker]['scores'][-1]
+            forecast_values = forecast['prophet']['forecast']
+            if len(forecast_values) > 0:
+                forecast_score = forecast_values[0]
+                # Check if prediction is bullish
+                if forecast_score > current_score:
+                    # Check confidence interval width for reliability
+                    if 'lower_bound' in forecast['prophet'] and 'upper_bound' in forecast['prophet']:
+                        lower = forecast['prophet']['lower_bound'][0]
+                        upper = forecast['prophet']['upper_bound'][0]
+                        ci_width = upper - lower
+
+                        # Narrower confidence interval = more confident prediction
+                        if ci_width < (current_score * 0.1):  # CI < 10% of current score
+                            score_details['prophet'] = f"Prophet Strong Bullish (+1.5)"
+                            total_score += 1.5
+                        else:
+                            score_details['prophet'] = f"Prophet Bullish (+1)"
+                            total_score += 1
+                    else:
+                        score_details['prophet'] = "Prophet Bullish (+1)"
+                        total_score += 1
+                elif forecast_score < current_score:
+                    score_details['prophet'] = "Prophet Bearish (0)"
+                else:
+                    score_details['prophet'] = "Prophet Neutral (+0.3)"
+                    total_score += 0.3
+                max_possible += 1.5  # Account for potential 1.5 score
 
         # Calculate percentage score
         percentage = (total_score / max_possible * 100) if max_possible > 0 else 0
