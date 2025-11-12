@@ -883,8 +883,8 @@ class StockScoreTrendAnalyzerTechnical:
             if not hasattr(exp_forecast, '__len__'):
                 exp_forecast = [exp_forecast]
             forecast_indices = list(range(last_index + 1, last_index + 1 + len(exp_forecast)))
-            plt.plot(forecast_indices, exp_forecast, 'orange-',
-                     label='Exp Smoothing', linewidth=2, marker='s', alpha=0.7)
+            plt.plot(forecast_indices, exp_forecast, '-',
+                     color='orange', label='Exp Smoothing', linewidth=2, marker='s', alpha=0.7)
 
         if forecast.get('holt') and forecast['holt']:
             holt_forecast = forecast['holt']['forecast']
