@@ -856,15 +856,25 @@ class StockScoreTrendAnalyzerTechnical:
         plt.close()
 
     def _plot_forecasting(self, ticker, indices, scores, dates, output_dir):
-        """Create forecasting plot"""
+        """Create forecasting plot (shows last 3 months + forecast for better resolution)"""
         forecast = self.technical_results.get(ticker, {}).get('forecasting')
         if not forecast:
             return
 
         plt.figure(figsize=(12, 6))
 
-        # Historical data
-        plt.plot(indices, scores, 'b-', label='Historical', linewidth=1.5)
+        # Only show last 90 days (~3 months) of historical data for better forecast visibility
+        window_size = 90
+        if len(indices) > window_size:
+            start_idx = len(indices) - window_size
+            plot_indices = indices[start_idx:]
+            plot_scores = scores[start_idx:]
+        else:
+            plot_indices = indices
+            plot_scores = scores
+
+        # Historical data (last 3 months only)
+        plt.plot(plot_indices, plot_scores, 'b-', label='Historical (Last 3mo)', linewidth=1.5)
 
         # Forecasts
         last_index = indices[-1]
@@ -915,7 +925,7 @@ class StockScoreTrendAnalyzerTechnical:
 
         plt.xlabel('Trading Days')
         plt.ylabel('Score')
-        plt.title(f'{ticker} - Statistical Forecasting (Including Prophet)')
+        plt.title(f'{ticker} - Statistical Forecasting (Last 3 Months + Forecast)')
         plt.legend(loc='best')
         plt.grid(True, alpha=0.3)
 
