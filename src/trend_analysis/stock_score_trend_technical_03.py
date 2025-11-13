@@ -311,7 +311,7 @@ class StockScoreTrendAnalyzerTechnical:
         results = {}
 
         # Forecast periods
-        forecast_periods = min(5, max(1, len(scores) // 10))
+        forecast_periods = min(30, max(1, len(scores) // 10))
 
         # ARIMA
         try:
@@ -323,7 +323,7 @@ class StockScoreTrendAnalyzerTechnical:
                 for d in range(2):
                     for q in range(3):
                         try:
-                            model = ARIMA(scores, order=(p, d, q))
+                            model = ARIMA(scores, order=(p, d, q), trend='c')  # Add constant/drift term
                             fitted = model.fit()
                             if fitted.aic < best_aic:
                                 best_aic = fitted.aic
@@ -331,8 +331,8 @@ class StockScoreTrendAnalyzerTechnical:
                         except:
                             continue
 
-            # Fit best model
-            arima_model = ARIMA(scores, order=best_params)
+            # Fit best model with trend
+            arima_model = ARIMA(scores, order=best_params, trend='c')
             arima_fitted = arima_model.fit()
             arima_forecast = arima_fitted.forecast(steps=forecast_periods)
 
@@ -348,8 +348,19 @@ class StockScoreTrendAnalyzerTechnical:
 
         # Exponential Smoothing
         try:
-            # Simple exponential smoothing (no trend or seasonality for short series)
-            if len(scores) >= 4:
+            # Try trend-based exponential smoothing for better trend capture
+            if len(scores) >= 10:
+                # Holt's method (with trend) - better for trending data
+                model = ExponentialSmoothing(scores, trend='add', seasonal=None, damped_trend=False)
+                fitted = model.fit()
+                forecast = fitted.forecast(steps=forecast_periods)
+
+                results['exp_smoothing'] = {
+                    'forecast': forecast,
+                    'fitted_values': fitted.fittedvalues
+                }
+            elif len(scores) >= 4:
+                # Simple exponential smoothing for very short series
                 model = ExponentialSmoothing(scores, trend=None, seasonal=None)
                 fitted = model.fit()
                 forecast = fitted.forecast(steps=forecast_periods)
@@ -358,17 +369,8 @@ class StockScoreTrendAnalyzerTechnical:
                     'forecast': forecast,
                     'fitted_values': fitted.fittedvalues
                 }
-
-                # Try Holt's method (with trend) if we have enough data
-                if len(scores) >= 10:
-                    model_holt = ExponentialSmoothing(scores, trend='add', seasonal=None)
-                    fitted_holt = model_holt.fit()
-                    forecast_holt = fitted_holt.forecast(steps=forecast_periods)
-
-                    results['holt'] = {
-                        'forecast': forecast_holt,
-                        'fitted_values': fitted_holt.fittedvalues
-                    }
+            else:
+                results['exp_smoothing'] = None
         except Exception as e:
             print(f"Exponential Smoothing failed for {ticker}: {str(e)}")
             results['exp_smoothing'] = None
@@ -406,13 +408,26 @@ class StockScoreTrendAnalyzerTechnical:
                 forecast_values = forecast['yhat'].values[-forecast_periods:]
                 lower_bound = forecast['yhat_lower'].values[-forecast_periods:]
                 upper_bound = forecast['yhat_upper'].values[-forecast_periods:]
+                fitted_values = forecast['yhat'].values[:len(scores)]
+
+                # Apply offset correction to align forecast with last historical value
+                # This improves short-term accuracy by correcting for model bias
+                last_actual = scores[-1]
+                last_fitted = fitted_values[-1]
+                offset = last_actual - last_fitted
+
+                # Apply offset to all forecasts
+                forecast_values_corrected = forecast_values + offset
+                lower_bound_corrected = lower_bound + offset
+                upper_bound_corrected = upper_bound + offset
 
                 results['prophet'] = {
-                    'forecast': forecast_values,
-                    'lower_bound': lower_bound,
-                    'upper_bound': upper_bound,
-                    'fitted_values': forecast['yhat'].values[:len(scores)],
-                    'trend': forecast['trend'].values[:len(scores)]
+                    'forecast': forecast_values_corrected,
+                    'lower_bound': lower_bound_corrected,
+                    'upper_bound': upper_bound_corrected,
+                    'fitted_values': fitted_values,
+                    'trend': forecast['trend'].values[:len(scores)],
+                    'offset': offset  # Store offset for reference
                 }
         except Exception as e:
             print(f"Prophet failed for {ticker}: {str(e)}")

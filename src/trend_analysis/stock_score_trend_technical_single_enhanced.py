@@ -270,7 +270,10 @@ class EnhancedSingleTickerTechnicalAnalyzer(StockScoreTrendAnalyzerTechnical):
                                 pct_change = ((final_val - current_score) / current_score) * 100
                                 lower = forecast_data['prophet']['lower_bound'][-1]
                                 upper = forecast_data['prophet']['upper_bound'][-1]
+                                offset = forecast_data['prophet'].get('offset', 0)
                                 print(f"  • {formatted_key:20s}: {value}  →  {final_val:.2f} ({pct_change:+.1f}%)  [CI: {lower:.2f}-{upper:.2f}]")
+                                if offset != 0:
+                                    print(f"    └─ Offset correction: {offset:+.2f}")
                             else:
                                 print(f"  • {formatted_key:20s}: {value}")
                         else:
