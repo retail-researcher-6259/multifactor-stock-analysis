@@ -240,10 +240,46 @@ class EnhancedSingleTickerTechnicalAnalyzer(StockScoreTrendAnalyzerTechnical):
             category_items = [(k, v) for k, v in score_data['details'].items() if k in indicators]
             if category_items:
                 print(f"\n{category_name}:")
-                for key, value in category_items:
-                    # Format the key nicely
-                    formatted_key = key.replace('_', ' ').title()
-                    print(f"  • {formatted_key:20s}: {value}")
+
+                # Special handling for forecasting - add actual values and percentages
+                if category_name == " Forecasting":
+                    # Get forecast data from technical_results
+                    forecast_data = self.technical_results.get(ticker, {}).get('forecasting', {})
+                    current_score = self.score_history[ticker]['scores'][-1] if ticker in self.score_history else None
+
+                    if forecast_data and current_score is not None:
+                        print(f"  • Current Score      : {current_score:.2f}")
+                        print(f"  • Forecast Range     : {len(forecast_data.get('arima', {}).get('forecast', []))} days")
+                        print()
+
+                    for key, value in category_items:
+                        formatted_key = key.replace('_', ' ').title()
+
+                        # Add forecast values and percentages if available
+                        if forecast_data and current_score is not None:
+                            if key == 'arima' and forecast_data.get('arima'):
+                                final_val = forecast_data['arima']['forecast'][-1]
+                                pct_change = ((final_val - current_score) / current_score) * 100
+                                print(f"  • {formatted_key:20s}: {value}  →  {final_val:.2f} ({pct_change:+.1f}%)")
+                            elif key == 'exp_smooth' and forecast_data.get('exp_smoothing'):
+                                final_val = forecast_data['exp_smoothing']['forecast'][-1]
+                                pct_change = ((final_val - current_score) / current_score) * 100
+                                print(f"  • {formatted_key:20s}: {value}  →  {final_val:.2f} ({pct_change:+.1f}%)")
+                            elif key == 'prophet' and forecast_data.get('prophet'):
+                                final_val = forecast_data['prophet']['forecast'][-1]
+                                pct_change = ((final_val - current_score) / current_score) * 100
+                                lower = forecast_data['prophet']['lower_bound'][-1]
+                                upper = forecast_data['prophet']['upper_bound'][-1]
+                                print(f"  • {formatted_key:20s}: {value}  →  {final_val:.2f} ({pct_change:+.1f}%)  [CI: {lower:.2f}-{upper:.2f}]")
+                            else:
+                                print(f"  • {formatted_key:20s}: {value}")
+                        else:
+                            print(f"  • {formatted_key:20s}: {value}")
+                else:
+                    # Regular indicators - just print as before
+                    for key, value in category_items:
+                        formatted_key = key.replace('_', ' ').title()
+                        print(f"  • {formatted_key:20s}: {value}")
 
         # Summary statistics
         print(f"\n RANKING SUMMARY:")
