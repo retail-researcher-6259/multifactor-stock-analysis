@@ -873,11 +873,16 @@ class StockScoreTrendAnalyzerTechnical:
             plot_indices = indices
             plot_scores = scores
 
+        # Get last historical score for percentage calculations
+        last_score = scores[-1]
+
         # Historical data (last 3 months only)
-        plt.plot(plot_indices, plot_scores, 'b-', label='Historical (Last 3mo)', linewidth=1.5)
+        plt.plot(plot_indices, plot_scores, 'b-',
+                 label=f'Historical (Last 3mo) - Current: {last_score:.2f}', linewidth=1.5)
 
         # Forecasts
         last_index = indices[-1]
+        forecast_range = None
 
         if forecast.get('arima') and forecast['arima']:
             arima_forecast = forecast['arima']['forecast']
@@ -885,24 +890,51 @@ class StockScoreTrendAnalyzerTechnical:
             if not hasattr(arima_forecast, '__len__'):
                 arima_forecast = [arima_forecast]
             forecast_indices = list(range(last_index + 1, last_index + 1 + len(arima_forecast)))
+            forecast_range = len(arima_forecast)
+
+            # Calculate final value and percentage change
+            final_arima = arima_forecast[-1]
+            pct_change = ((final_arima - last_score) / last_score) * 100
+            pct_str = f"{pct_change:+.1f}%"
+
             plt.plot(forecast_indices, arima_forecast, 'r-',
-                     label=f"ARIMA{forecast['arima']['params']}", linewidth=2, marker='o')
+                     label=f"ARIMA{forecast['arima']['params']} → {final_arima:.2f} ({pct_str})",
+                     linewidth=2, marker='o')
 
         if forecast.get('exp_smoothing') and forecast['exp_smoothing']:
             exp_forecast = forecast['exp_smoothing']['forecast']
             if not hasattr(exp_forecast, '__len__'):
                 exp_forecast = [exp_forecast]
             forecast_indices = list(range(last_index + 1, last_index + 1 + len(exp_forecast)))
+            if forecast_range is None:
+                forecast_range = len(exp_forecast)
+
+            # Calculate final value and percentage change
+            final_exp = exp_forecast[-1]
+            pct_change = ((final_exp - last_score) / last_score) * 100
+            pct_str = f"{pct_change:+.1f}%"
+
             plt.plot(forecast_indices, exp_forecast, '-',
-                     color='orange', label='Exp Smoothing', linewidth=2, marker='s', alpha=0.7)
+                     color='orange',
+                     label=f'Exp Smoothing → {final_exp:.2f} ({pct_str})',
+                     linewidth=2, marker='s', alpha=0.7)
 
         if forecast.get('holt') and forecast['holt']:
             holt_forecast = forecast['holt']['forecast']
             if not hasattr(holt_forecast, '__len__'):
                 holt_forecast = [holt_forecast]
             forecast_indices = list(range(last_index + 1, last_index + 1 + len(holt_forecast)))
+            if forecast_range is None:
+                forecast_range = len(holt_forecast)
+
+            # Calculate final value and percentage change
+            final_holt = holt_forecast[-1]
+            pct_change = ((final_holt - last_score) / last_score) * 100
+            pct_str = f"{pct_change:+.1f}%"
+
             plt.plot(forecast_indices, holt_forecast, 'm-',
-                     label='Holt Method', linewidth=2, marker='^', alpha=0.7)
+                     label=f'Holt Method → {final_holt:.2f} ({pct_str})',
+                     linewidth=2, marker='^', alpha=0.7)
 
         # Prophet forecast with confidence interval
         if forecast.get('prophet') and forecast['prophet']:
@@ -910,8 +942,17 @@ class StockScoreTrendAnalyzerTechnical:
             if not hasattr(prophet_forecast, '__len__'):
                 prophet_forecast = [prophet_forecast]
             forecast_indices = list(range(last_index + 1, last_index + 1 + len(prophet_forecast)))
+            if forecast_range is None:
+                forecast_range = len(prophet_forecast)
+
+            # Calculate final value and percentage change
+            final_prophet = prophet_forecast[-1]
+            pct_change = ((final_prophet - last_score) / last_score) * 100
+            pct_str = f"{pct_change:+.1f}%"
+
             plt.plot(forecast_indices, prophet_forecast, 'g-',
-                     label='Prophet', linewidth=2.5, marker='D')
+                     label=f'Prophet → {final_prophet:.2f} ({pct_str})',
+                     linewidth=2.5, marker='D')
 
             # Add confidence interval
             if 'lower_bound' in forecast['prophet'] and 'upper_bound' in forecast['prophet']:
@@ -923,10 +964,17 @@ class StockScoreTrendAnalyzerTechnical:
         # Vertical line to separate historical and forecast
         plt.axvline(x=last_index, color='gray', linestyle='--', alpha=0.5)
 
+        # Add forecast range info as text box
+        if forecast_range:
+            textstr = f'Forecast Range: {forecast_range} days'
+            props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+            plt.text(0.02, 0.98, textstr, transform=plt.gca().transAxes,
+                    fontsize=10, verticalalignment='top', bbox=props)
+
         plt.xlabel('Trading Days')
         plt.ylabel('Score')
         plt.title(f'{ticker} - Statistical Forecasting (Last 3 Months + Forecast)')
-        plt.legend(loc='best')
+        plt.legend(loc='best', fontsize=9)
         plt.grid(True, alpha=0.3)
 
         plt.tight_layout()
