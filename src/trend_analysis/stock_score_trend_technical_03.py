@@ -572,35 +572,98 @@ class StockScoreTrendAnalyzerTechnical:
                 plt.savefig(ticker_dir / f'{ticker}_05_trend_strength_02_DI.png', dpi=100)
                 plt.close()
 
-        # 06 - Forecasting
+        # 06 - Forecasting (Enhanced with last 3 months + interpretability)
         forecast = self.technical_results.get(ticker, {}).get('forecasting')
         if forecast:
-            setup_plot(f'{ticker} - Forecasting', 'Score')
-            plt.plot(indices, scores, 'b-', label='Historical', linewidth=1.5)
+            setup_plot(f'{ticker} - Statistical Forecasting (Last 3 Months + Forecast)', 'Score')
+
+            # Only show last 90 days (~3 months) of historical data for better forecast visibility
+            window_size = 90
+            if len(indices) > window_size:
+                start_idx = len(indices) - window_size
+                plot_indices = indices[start_idx:]
+                plot_scores = scores[start_idx:]
+            else:
+                plot_indices = indices
+                plot_scores = scores
+
+            # Get last historical score for percentage calculations
+            last_score = scores[-1]
+
+            # Historical data (last 3 months only)
+            plt.plot(plot_indices, plot_scores, 'b-',
+                     label=f'Historical (Last 3mo) - Current: {last_score:.2f}', linewidth=1.5)
 
             last_index = indices[-1]
+            forecast_range = None
 
-            # ARIMA forecast
+            # ARIMA forecast with final value and % change
             if forecast.get('arima') and forecast['arima']:
-                forecast_indices = list(range(last_index + 1, last_index + len(forecast['arima']['forecast']) + 1))
-                plt.plot(forecast_indices, forecast['arima']['forecast'], 'r-',
-                         label=f"ARIMA{forecast['arima']['params']}", linewidth=2, marker='o')
+                arima_forecast = forecast['arima']['forecast']
+                if not hasattr(arima_forecast, '__len__'):
+                    arima_forecast = [arima_forecast]
+                forecast_indices = list(range(last_index + 1, last_index + 1 + len(arima_forecast)))
+                forecast_range = len(arima_forecast)
 
-            # Prophet forecast with confidence interval
+                final_arima = arima_forecast[-1]
+                pct_change = ((final_arima - last_score) / last_score) * 100
+                pct_str = f"{pct_change:+.1f}%"
+
+                plt.plot(forecast_indices, arima_forecast, 'r-',
+                         label=f"ARIMA{forecast['arima']['params']} → {final_arima:.2f} ({pct_str})",
+                         linewidth=2, marker='o')
+
+            # Exponential Smoothing forecast with final value and % change
+            if forecast.get('exp_smoothing') and forecast['exp_smoothing']:
+                exp_forecast = forecast['exp_smoothing']['forecast']
+                if not hasattr(exp_forecast, '__len__'):
+                    exp_forecast = [exp_forecast]
+                forecast_indices = list(range(last_index + 1, last_index + 1 + len(exp_forecast)))
+                if forecast_range is None:
+                    forecast_range = len(exp_forecast)
+
+                final_exp = exp_forecast[-1]
+                pct_change = ((final_exp - last_score) / last_score) * 100
+                pct_str = f"{pct_change:+.1f}%"
+
+                plt.plot(forecast_indices, exp_forecast, '-',
+                         color='orange',
+                         label=f'Exp Smoothing → {final_exp:.2f} ({pct_str})',
+                         linewidth=2, marker='s', alpha=0.7)
+
+            # Prophet forecast with confidence interval, final value and % change
             if forecast.get('prophet') and forecast['prophet']:
                 prophet_forecast = forecast['prophet']['forecast']
-                forecast_indices = list(range(last_index + 1, last_index + len(prophet_forecast) + 1))
+                if not hasattr(prophet_forecast, '__len__'):
+                    prophet_forecast = [prophet_forecast]
+                forecast_indices = list(range(last_index + 1, last_index + 1 + len(prophet_forecast)))
+                if forecast_range is None:
+                    forecast_range = len(prophet_forecast)
+
+                final_prophet = prophet_forecast[-1]
+                pct_change = ((final_prophet - last_score) / last_score) * 100
+                pct_str = f"{pct_change:+.1f}%"
+
                 plt.plot(forecast_indices, prophet_forecast, 'g-',
-                         label='Prophet', linewidth=2, marker='s')
+                         label=f'Prophet → {final_prophet:.2f} ({pct_str})',
+                         linewidth=2.5, marker='D')
 
                 # Add confidence interval
                 if 'lower_bound' in forecast['prophet'] and 'upper_bound' in forecast['prophet']:
                     plt.fill_between(forecast_indices,
                                    forecast['prophet']['lower_bound'],
                                    forecast['prophet']['upper_bound'],
-                                   alpha=0.2, color='green', label='80% Confidence')
+                                   alpha=0.2, color='green', label='Prophet 80% CI')
 
             plt.axvline(x=last_index, color='gray', linestyle='--', alpha=0.5)
+
+            # Add forecast range info as text box
+            if forecast_range:
+                textstr = f'Forecast Range: {forecast_range} days'
+                props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+                plt.text(0.02, 0.98, textstr, transform=plt.gca().transAxes,
+                        fontsize=10, verticalalignment='top', bbox=props)
+
             add_date_labels()
             plt.legend(loc='best', fontsize=9)
             plt.tight_layout()
