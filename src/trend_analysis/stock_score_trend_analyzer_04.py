@@ -88,8 +88,18 @@ class StockScoreTrendAnalyzer:
                             self.score_history[ticker]['factors'][factor] = []
                         self.score_history[ticker]['factors'][factor].append(row[factor])
 
-    def perform_regression_analysis(self, ticker, degree=1):
-        """Perform regression analysis for a specific stock"""
+    def perform_regression_analysis(self, ticker, degree=1, max_window_days=132):
+        """Perform regression analysis for a specific stock
+
+        Parameters:
+        -----------
+        ticker : str
+            Stock ticker symbol
+        degree : int
+            Polynomial degree (1 for linear)
+        max_window_days : int
+            Maximum number of trading days to use (default: 132 = 6 months × 22 trading days)
+        """
         if ticker not in self.score_history:
             return None
 
@@ -97,8 +107,25 @@ class StockScoreTrendAnalyzer:
         if len(data['indices']) < 3:  # Need at least 3 points
             return None
 
-        X = np.array(data['indices']).reshape(-1, 1)
-        y = np.array(data['scores'])
+        # Limit to most recent max_window_days data points (6 months default)
+        if len(data['indices']) > max_window_days:
+            # Slice to get only the last max_window_days points
+            indices = np.array(data['indices'][-max_window_days:])
+            scores = np.array(data['scores'][-max_window_days:])
+            # Store the windowed data for use in stability metrics
+            windowed_data = {
+                'indices': indices.tolist(),
+                'scores': scores.tolist(),
+                'ranks': data['ranks'][-max_window_days:],
+                'dates': data['dates'][-max_window_days:]
+            }
+        else:
+            indices = np.array(data['indices'])
+            scores = np.array(data['scores'])
+            windowed_data = data
+
+        X = indices.reshape(-1, 1)
+        y = scores
 
         results = {'ticker': ticker}
 
@@ -132,8 +159,8 @@ class StockScoreTrendAnalyzer:
                 'poly_features': poly
             }
 
-        # Calculate stability metrics
-        results['stability_metrics'] = self._calculate_stability_metrics(data)
+        # Calculate stability metrics using windowed data
+        results['stability_metrics'] = self._calculate_stability_metrics(windowed_data)
 
         return results
 

@@ -124,14 +124,27 @@ class StockScoreTrendAnalyzerTechnical:
 
         print(f"Built score history for {len(self.score_history)} tickers")
 
-    def perform_regression_analysis(self, ticker):
-        """Perform various regression analyses on ticker score history"""
+    def perform_regression_analysis(self, ticker, max_window_days=132):
+        """Perform various regression analyses on ticker score history
+
+        Parameters:
+        -----------
+        ticker : str
+            Stock ticker symbol
+        max_window_days : int
+            Maximum number of trading days to use (default: 132 = 6 months × 22 trading days)
+        """
         data = self.score_history.get(ticker)
         if not data or len(data['indices']) < 3:
             return None
 
-        indices = np.array(data['indices']).reshape(-1, 1)
-        scores = np.array(data['scores'])
+        # Limit to most recent max_window_days data points (6 months default)
+        if len(data['indices']) > max_window_days:
+            indices = np.array(data['indices'][-max_window_days:]).reshape(-1, 1)
+            scores = np.array(data['scores'][-max_window_days:])
+        else:
+            indices = np.array(data['indices']).reshape(-1, 1)
+            scores = np.array(data['scores'])
 
         results = {}
 
@@ -157,13 +170,25 @@ class StockScoreTrendAnalyzerTechnical:
 
         return results
 
-    def calculate_moving_averages(self, ticker):
-        """Calculate moving averages for score history"""
+    def calculate_moving_averages(self, ticker, max_window_days=132):
+        """Calculate moving averages for score history
+
+        Parameters:
+        -----------
+        ticker : str
+            Stock ticker symbol
+        max_window_days : int
+            Maximum number of trading days to use (default: 132 = 6 months)
+        """
         data = self.score_history.get(ticker)
         if not data or len(data['scores']) < 3:
             return None
 
-        scores = pd.Series(data['scores'])
+        # Limit to most recent max_window_days data points
+        if len(data['scores']) > max_window_days:
+            scores = pd.Series(data['scores'][-max_window_days:])
+        else:
+            scores = pd.Series(data['scores'])
 
         results = {}
 
@@ -198,13 +223,25 @@ class StockScoreTrendAnalyzerTechnical:
 
         return results
 
-    def calculate_momentum_indicators(self, ticker):
-        """Calculate RSI, MACD, and ROC for score history"""
+    def calculate_momentum_indicators(self, ticker, max_window_days=132):
+        """Calculate RSI, MACD, and ROC for score history
+
+        Parameters:
+        -----------
+        ticker : str
+            Stock ticker symbol
+        max_window_days : int
+            Maximum number of trading days to use (default: 132 = 6 months)
+        """
         data = self.score_history.get(ticker)
         if not data or len(data['scores']) < 5:
             return None
 
-        scores = pd.Series(data['scores'])
+        # Limit to most recent max_window_days data points
+        if len(data['scores']) > max_window_days:
+            scores = pd.Series(data['scores'][-max_window_days:])
+        else:
+            scores = pd.Series(data['scores'])
         results = {}
 
         # RSI (Relative Strength Index)
@@ -235,13 +272,25 @@ class StockScoreTrendAnalyzerTechnical:
 
         return results
 
-    def calculate_bollinger_bands(self, ticker):
-        """Calculate Bollinger Bands for score history"""
+    def calculate_bollinger_bands(self, ticker, max_window_days=132):
+        """Calculate Bollinger Bands for score history
+
+        Parameters:
+        -----------
+        ticker : str
+            Stock ticker symbol
+        max_window_days : int
+            Maximum number of trading days to use (default: 132 = 6 months)
+        """
         data = self.score_history.get(ticker)
         if not data or len(data['scores']) < 20:
             return None
 
-        scores = pd.Series(data['scores'])
+        # Limit to most recent max_window_days data points
+        if len(data['scores']) > max_window_days:
+            scores = pd.Series(data['scores'][-max_window_days:])
+        else:
+            scores = pd.Series(data['scores'])
 
         # 20-period SMA as middle band
         middle_band = scores.rolling(window=20).mean()
@@ -264,14 +313,27 @@ class StockScoreTrendAnalyzerTechnical:
             'bandwidth': bandwidth.tolist()
         }
 
-    def calculate_trend_strength(self, ticker):
-        """Calculate ADX and Directional Indicators"""
+    def calculate_trend_strength(self, ticker, max_window_days=132):
+        """Calculate ADX and Directional Indicators
+
+        Parameters:
+        -----------
+        ticker : str
+            Stock ticker symbol
+        max_window_days : int
+            Maximum number of trading days to use (default: 132 = 6 months)
+        """
         data = self.score_history.get(ticker)
         if not data or len(data['scores']) < 14:
             return None
 
-        scores = pd.Series(data['scores'])
-        indices = pd.Series(data['indices'])
+        # Limit to most recent max_window_days data points
+        if len(data['scores']) > max_window_days:
+            scores = pd.Series(data['scores'][-max_window_days:])
+            indices = pd.Series(data['indices'][-max_window_days:])
+        else:
+            scores = pd.Series(data['scores'])
+            indices = pd.Series(data['indices'])
 
         # Calculate directional movements
         high = scores.rolling(2).max()
@@ -301,13 +363,25 @@ class StockScoreTrendAnalyzerTechnical:
             'minus_di': minus_di.tolist()
         }
 
-    def perform_statistical_forecasting(self, ticker):
-        """Perform ARIMA and Exponential Smoothing forecasts"""
+    def perform_statistical_forecasting(self, ticker, max_window_days=132):
+        """Perform ARIMA and Exponential Smoothing forecasts
+
+        Parameters:
+        -----------
+        ticker : str
+            Stock ticker symbol
+        max_window_days : int
+            Maximum number of trading days to use (default: 132 = 6 months)
+        """
         data = self.score_history.get(ticker)
         if not data or len(data['scores']) < 10:
             return None
 
-        scores = np.array(data['scores'])
+        # Limit to most recent max_window_days data points
+        if len(data['scores']) > max_window_days:
+            scores = np.array(data['scores'][-max_window_days:])
+        else:
+            scores = np.array(data['scores'])
         results = {}
 
         # Forecast periods
