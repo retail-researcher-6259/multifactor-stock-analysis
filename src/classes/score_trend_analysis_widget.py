@@ -53,10 +53,17 @@ class StabilityAnalysisThread(QThread):
                 output_directory = PROJECT_ROOT / "output" / "Score_Trend_Analysis_Results" / self.regime_name
                 output_directory.mkdir(parents=True, exist_ok=True)
 
+                # Calculate dynamic start_date: 6 months back from today
+                # For stability analysis, we want a rolling 6-month window
+                from datetime import timedelta
+                today = datetime.now()
+                six_months_ago = today - timedelta(days=180)  # Approximate 6 calendar months
+                start_date_stability = six_months_ago.strftime("%m%d")
+
                 analyzer = analyzer_module.StockScoreTrendAnalyzer(
                     csv_directory=str(csv_directory),
-                    start_date="0301",  # Start from March to use all available data
-                    end_date=datetime.now().strftime("%m%d"),
+                    start_date=start_date_stability,  # Dynamic: always 6 months back from today
+                    end_date=today.strftime("%m%d"),
                     sigmoid_sensitivity=5
                 )
 
@@ -136,9 +143,10 @@ class TechnicalPlotsThread(QThread):
                 tech_plots_dir.mkdir(parents=True, exist_ok=True)
 
                 # Create analyzer instance
+                # For technical plots, use ALL available data (start from beginning of year)
                 analyzer = tech_module.SingleTickerTechnicalAnalyzer(
                     csv_directory=str(csv_directory),
-                    start_date="0301",  # Start from March to use all available data
+                    start_date="0101",  # Load all data from Jan 1st onwards
                     end_date=datetime.now().strftime("%m%d"),
                     sigmoid_sensitivity=5
                 )
@@ -1228,9 +1236,10 @@ class EnhancedTechnicalPlotsThread(QThread):
                 self.status_update.emit("Running enhanced technical analysis...")
 
                 # Create enhanced analyzer instance
+                # For technical plots, use ALL available data (start from beginning of year)
                 analyzer = EnhancedSingleTickerTechnicalAnalyzer(
                     csv_directory=str(csv_directory),
-                    start_date="0301",  # Start from March to use all available data
+                    start_date="0101",  # Load all data from Jan 1st onwards
                     end_date=datetime.now().strftime("%m%d"),
                     sigmoid_sensitivity=5
                 )
@@ -1358,10 +1367,17 @@ class EnhancedStabilityAnalysisThread(QThread):
                 output_directory = PROJECT_ROOT / "output" / "Score_Trend_Analysis_Results" / self.regime_name
                 output_directory.mkdir(parents=True, exist_ok=True)
 
+                # Calculate dynamic start_date: 6 months back from today
+                # For stability analysis, we want a rolling 6-month window
+                from datetime import timedelta
+                today = datetime.now()
+                six_months_ago = today - timedelta(days=180)  # Approximate 6 calendar months
+                start_date_stability = six_months_ago.strftime("%m%d")
+
                 analyzer = analyzer_module.StockScoreTrendAnalyzer(
                     csv_directory=str(csv_directory),
-                    start_date="0301",  # Start from March to use all available data
-                    end_date=datetime.now().strftime("%m%d"),
+                    start_date=start_date_stability,  # Dynamic: always 6 months back from today
+                    end_date=today.strftime("%m%d"),
                     sigmoid_sensitivity=5
                 )
 
