@@ -55,7 +55,7 @@ class StabilityAnalysisThread(QThread):
 
                 analyzer = analyzer_module.StockScoreTrendAnalyzer(
                     csv_directory=str(csv_directory),
-                    start_date="0601",  # Configurable
+                    start_date="0301",  # Start from March to use all available data
                     end_date=datetime.now().strftime("%m%d"),
                     sigmoid_sensitivity=5
                 )
@@ -138,7 +138,7 @@ class TechnicalPlotsThread(QThread):
                 # Create analyzer instance
                 analyzer = tech_module.SingleTickerTechnicalAnalyzer(
                     csv_directory=str(csv_directory),
-                    start_date="0601",
+                    start_date="0301",  # Start from March to use all available data
                     end_date=datetime.now().strftime("%m%d"),
                     sigmoid_sensitivity=5
                 )
@@ -1230,7 +1230,7 @@ class EnhancedTechnicalPlotsThread(QThread):
                 # Create enhanced analyzer instance
                 analyzer = EnhancedSingleTickerTechnicalAnalyzer(
                     csv_directory=str(csv_directory),
-                    start_date="0601",
+                    start_date="0301",  # Start from March to use all available data
                     end_date=datetime.now().strftime("%m%d"),
                     sigmoid_sensitivity=5
                 )
@@ -1360,7 +1360,7 @@ class EnhancedStabilityAnalysisThread(QThread):
 
                 analyzer = analyzer_module.StockScoreTrendAnalyzer(
                     csv_directory=str(csv_directory),
-                    start_date="0601",
+                    start_date="0301",  # Start from March to use all available data
                     end_date=datetime.now().strftime("%m%d"),
                     sigmoid_sensitivity=5
                 )

@@ -326,7 +326,7 @@ if __name__ == "__main__":
     TICKER = "AAPL"  # Change this to analyze different ticker
     CSV_DIRECTORY = "./ranked_lists"
     OUTPUT_DIRECTORY = "./output/Score_Trend_Analysis_Results"
-    START_DATE = "0601"
+    START_DATE = "0301"  # Start from March to use all available data
     END_DATE = "0831"
     MIN_APPEARANCES = 3
 
