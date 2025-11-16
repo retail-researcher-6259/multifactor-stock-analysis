@@ -33,10 +33,17 @@ class StockScoreTrendAnalyzer:
 
         # Filter files within date range if specified
         filtered_files = []
+        # for csv_file in csv_files:
+        #     date_str = csv_file.stem.split('_')[-1]  # e.g., "0612"
+        #     if len(date_str) == 4:
+        #         # Simple string comparison works for MMDD format
+        #         if self.start_date <= date_str <= self.end_date:
+        #             filtered_files.append((date_str, csv_file))
+
         for csv_file in csv_files:
-            date_str = csv_file.stem.split('_')[-1]  # e.g., "0612"
-            if len(date_str) == 4:
-                # Simple string comparison works for MMDD format
+            date_str = csv_file.stem.split('_')[-1]  # e.g., "20250612"
+            if len(date_str) == 8:  # Changed from 4 to 8
+                # Simple string comparison works for YYYYMMDD format
                 if self.start_date <= date_str <= self.end_date:
                     filtered_files.append((date_str, csv_file))
 
@@ -337,7 +344,9 @@ class StockScoreTrendAnalyzer:
         df = self.analyze_all_stocks()
 
         # Sort by stability adjusted score
-        df = df.sort_values('stability_adjusted_score', ascending=False)
+        # df = df.sort_values('stability_adjusted_score', ascending=False)
+
+        df = df.sort_values('slope_adjusted_score', ascending=False)
 
         # Add recommendation AFTER sorting
         df['recommendation'] = df.apply(self._generate_recommendation, axis=1)
@@ -636,7 +645,10 @@ if __name__ == "__main__":
     )
 
     # Run analysis
-    today = datetime.now().strftime("%m%d")  # e.g. 0807
+    # today = datetime.now().strftime("%m%d")  # e.g. 0807
+    # output_file = f"{OUTPUT_DIRECTORY}/stability_analysis_results_{today}.csv"
+
+    today = datetime.now().strftime("%Y%m%d")  # e.g. 20250807
     output_file = f"{OUTPUT_DIRECTORY}/stability_analysis_results_{today}.csv"
 
     # results_df = analyzer.export_results(output_path=output_file)

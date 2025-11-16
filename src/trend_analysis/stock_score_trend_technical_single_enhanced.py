@@ -142,7 +142,7 @@ class EnhancedSingleTickerTechnicalAnalyzer(StockScoreTrendAnalyzerTechnical):
             'Trend Direction', 'Trend Quality', 'SMA Position', 'Recent Cross',
             'MACD Signal', 'MACD Histogram', 'RSI Level', 'RSI Trend',
             'ROC', '%B Position', 'BB Width', 'ADX Strength', 'DI Direction',
-            'ARIMA', 'Exp Smooth'
+            'ARIMA', 'Exp Smooth', 'Prophet'
         ]
 
         # Start with basic info
@@ -172,7 +172,8 @@ class EnhancedSingleTickerTechnicalAnalyzer(StockScoreTrendAnalyzerTechnical):
             'adx_strength': 'ADX Strength',
             'di_direction': 'DI Direction',
             'arima': 'ARIMA',
-            'exp_smooth': 'Exp Smooth'
+            'exp_smooth': 'Exp Smooth',
+            'prophet': 'Prophet'
         }
 
         # Extract scores from detail strings
@@ -181,7 +182,9 @@ class EnhancedSingleTickerTechnicalAnalyzer(StockScoreTrendAnalyzerTechnical):
                 column = detail_to_column[detail_key]
 
                 # Extract score from detail string
-                if '(+1)' in str(detail_value):
+                if '(+1.5)' in str(detail_value):
+                    row_data[column] = 1.5
+                elif '(+1)' in str(detail_value):
                     row_data[column] = 1
                 elif '(+0.5)' in str(detail_value):
                     row_data[column] = 0.5
@@ -223,7 +226,7 @@ class EnhancedSingleTickerTechnicalAnalyzer(StockScoreTrendAnalyzerTechnical):
         ma_indicators = ['sma_cross', 'recent_cross']
         momentum_indicators = ['macd', 'macd_hist', 'rsi_level', 'rsi_trend', 'roc']
         bb_indicators = ['bb_position', 'bb_width']
-        forecast_indicators = ['arima', 'exp_smooth']
+        forecast_indicators = ['arima', 'exp_smooth', 'prophet']
 
         categories = [
             (" Trend Analysis", trend_indicators),
@@ -237,10 +240,49 @@ class EnhancedSingleTickerTechnicalAnalyzer(StockScoreTrendAnalyzerTechnical):
             category_items = [(k, v) for k, v in score_data['details'].items() if k in indicators]
             if category_items:
                 print(f"\n{category_name}:")
-                for key, value in category_items:
-                    # Format the key nicely
-                    formatted_key = key.replace('_', ' ').title()
-                    print(f"  • {formatted_key:20s}: {value}")
+
+                # Special handling for forecasting - add actual values and percentages
+                if category_name == " Forecasting":
+                    # Get forecast data from technical_results
+                    forecast_data = self.technical_results.get(ticker, {}).get('forecasting', {})
+                    current_score = self.score_history[ticker]['scores'][-1] if ticker in self.score_history else None
+
+                    if forecast_data and current_score is not None:
+                        print(f"  • Current Score      : {current_score:.2f}")
+                        print(f"  • Forecast Range     : {len(forecast_data.get('arima', {}).get('forecast', []))} days")
+                        print()
+
+                    for key, value in category_items:
+                        formatted_key = key.replace('_', ' ').title()
+
+                        # Add forecast values and percentages if available
+                        if forecast_data and current_score is not None:
+                            if key == 'arima' and forecast_data.get('arima'):
+                                final_val = forecast_data['arima']['forecast'][-1]
+                                pct_change = ((final_val - current_score) / current_score) * 100
+                                print(f"  • {formatted_key:20s}: {value}  →  {final_val:.2f} ({pct_change:+.1f}%)")
+                            elif key == 'exp_smooth' and forecast_data.get('exp_smoothing'):
+                                final_val = forecast_data['exp_smoothing']['forecast'][-1]
+                                pct_change = ((final_val - current_score) / current_score) * 100
+                                print(f"  • {formatted_key:20s}: {value}  →  {final_val:.2f} ({pct_change:+.1f}%)")
+                            elif key == 'prophet' and forecast_data.get('prophet'):
+                                final_val = forecast_data['prophet']['forecast'][-1]
+                                pct_change = ((final_val - current_score) / current_score) * 100
+                                lower = forecast_data['prophet']['lower_bound'][-1]
+                                upper = forecast_data['prophet']['upper_bound'][-1]
+                                offset = forecast_data['prophet'].get('offset', 0)
+                                print(f"  • {formatted_key:20s}: {value}  →  {final_val:.2f} ({pct_change:+.1f}%)  [CI: {lower:.2f}-{upper:.2f}]")
+                                if offset != 0:
+                                    print(f"     Offset correction: {offset:+.2f}")
+                            else:
+                                print(f"  • {formatted_key:20s}: {value}")
+                        else:
+                            print(f"  • {formatted_key:20s}: {value}")
+                else:
+                    # Regular indicators - just print as before
+                    for key, value in category_items:
+                        formatted_key = key.replace('_', ' ').title()
+                        print(f"  • {formatted_key:20s}: {value}")
 
         # Summary statistics
         print(f"\n RANKING SUMMARY:")
@@ -284,7 +326,15 @@ if __name__ == "__main__":
     TICKER = "AAPL"  # Change this to analyze different ticker
     CSV_DIRECTORY = "./ranked_lists"
     OUTPUT_DIRECTORY = "./output/Score_Trend_Analysis_Results"
-    START_DATE = "0601"
+    # START_DATE = "0101"  # Load all data from Jan 1st onwards (for technical plots)
+
+    # Auto-detect earliest available file
+    csv_files = sorted(Path(CSV_DIRECTORY).glob("top_ranked_stocks_*.csv"))
+    if csv_files:
+        START_DATE = csv_files[0].stem.split('_')[-1]  # Use earliest file date
+    else:
+        START_DATE = f"{datetime.now().year}0101"  # Fallback
+
     END_DATE = "0831"
     MIN_APPEARANCES = 3
 

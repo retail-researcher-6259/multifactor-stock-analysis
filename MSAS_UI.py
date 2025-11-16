@@ -11,7 +11,7 @@ sys.path.append(str(PROJECT_ROOT))
 
 # Import widget classes
 from src.classes.regime_detection_widget import RegimeDetectorThread, RegimeDetectionWidget
-from src.classes.multifactor_scoring_widget_new_02 import MultifactorScoringThread, MultifactorScoringWidget
+from src.classes.multifactor_scoring_widget_new import MultifactorScoringThread, MultifactorScoringWidget
 from src.classes.score_trend_analysis_widget import (
     StabilityAnalysisThread,
     TechnicalPlotsThread,

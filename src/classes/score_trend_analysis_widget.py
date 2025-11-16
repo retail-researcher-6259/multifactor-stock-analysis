@@ -53,10 +53,26 @@ class StabilityAnalysisThread(QThread):
                 output_directory = PROJECT_ROOT / "output" / "Score_Trend_Analysis_Results" / self.regime_name
                 output_directory.mkdir(parents=True, exist_ok=True)
 
+                # Calculate dynamic start_date: 6 months back from today
+                # For stability analysis, we want a rolling 6-month window
+                from datetime import timedelta
+                today = datetime.now()
+                six_months_ago = today - timedelta(days=180)  # Approximate 6 calendar months
+                # start_date_stability = six_months_ago.strftime("%m%d")
+                #
+                # analyzer = analyzer_module.StockScoreTrendAnalyzer(
+                #     csv_directory=str(csv_directory),
+                #     start_date=start_date_stability,  # Dynamic: always 6 months back from today
+                #     end_date=today.strftime("%m%d"),
+                #     sigmoid_sensitivity=5
+                # )
+
+                start_date_stability = six_months_ago.strftime("%Y%m%d")  # Changed to YYYYMMDD
+
                 analyzer = analyzer_module.StockScoreTrendAnalyzer(
                     csv_directory=str(csv_directory),
-                    start_date="0601",  # Configurable
-                    end_date=datetime.now().strftime("%m%d"),
+                    start_date=start_date_stability,  # Dynamic: always 6 months back from today
+                    end_date=today.strftime("%Y%m%d"),  # Changed to YYYYMMDD
                     sigmoid_sensitivity=5
                 )
 
@@ -64,8 +80,12 @@ class StabilityAnalysisThread(QThread):
                 self.status_update.emit("Analyzing stock trends...")
 
                 # Run analysis and export results
-                today = datetime.now().strftime("%m%d")
+                # today = datetime.now().strftime("%m%d")
+                # output_file = output_directory / f"stability_analysis_results_{today}.csv"
+
+                today = datetime.now().strftime("%Y%m%d")  # Changed to YYYYMMDD
                 output_file = output_directory / f"stability_analysis_results_{today}.csv"
+
                 results_df = analyzer.export_results(output_path=str(output_file))
 
                 self.progress_update.emit(90)
@@ -136,10 +156,28 @@ class TechnicalPlotsThread(QThread):
                 tech_plots_dir.mkdir(parents=True, exist_ok=True)
 
                 # Create analyzer instance
+                # For technical plots, use ALL available data (start from beginning of year)
+                # analyzer = tech_module.SingleTickerTechnicalAnalyzer(
+                #     csv_directory=str(csv_directory),
+                #     start_date="0101",  # Load all data from Jan 1st onwards
+                #     # end_date=datetime.now().strftime("%m%d"),
+                #     end_date=datetime.now().strftime("%Y%m%d"),  # Changed to YYYYMMDD
+                #     sigmoid_sensitivity=5
+                # )
+
+                # Auto-detect earliest available file
+                csv_files = sorted(csv_directory.glob("top_ranked_stocks_*.csv"))
+                if csv_files:
+                    # Extract date from first (earliest) file
+                    earliest_date = csv_files[0].stem.split('_')[-1]
+                else:
+                    # Fallback to current year if no files found
+                    earliest_date = f"{datetime.now().year}0101"
+
                 analyzer = tech_module.SingleTickerTechnicalAnalyzer(
                     csv_directory=str(csv_directory),
-                    start_date="0601",
-                    end_date=datetime.now().strftime("%m%d"),
+                    start_date=earliest_date,  # Auto-detected from earliest file
+                    end_date=datetime.now().strftime("%Y%m%d"),
                     sigmoid_sensitivity=5
                 )
 
@@ -1228,10 +1266,28 @@ class EnhancedTechnicalPlotsThread(QThread):
                 self.status_update.emit("Running enhanced technical analysis...")
 
                 # Create enhanced analyzer instance
+                # For technical plots, use ALL available data (start from beginning of year)
+                # analyzer = EnhancedSingleTickerTechnicalAnalyzer(
+                #     csv_directory=str(csv_directory),
+                #     start_date="0101",  # Load all data from Jan 1st onwards
+                #     # end_date=datetime.now().strftime("%m%d"),
+                #     end_date=datetime.now().strftime("%Y%m%d"),  # Changed to YYYYMMDD
+                #     sigmoid_sensitivity=5
+                # )
+
+                # Auto-detect earliest available file
+                csv_files = sorted(csv_directory.glob("top_ranked_stocks_*.csv"))
+                if csv_files:
+                    # Extract date from first (earliest) file
+                    earliest_date = csv_files[0].stem.split('_')[-1]
+                else:
+                    # Fallback to current year if no files found
+                    earliest_date = f"{datetime.now().year}0101"
+
                 analyzer = EnhancedSingleTickerTechnicalAnalyzer(
                     csv_directory=str(csv_directory),
-                    start_date="0601",
-                    end_date=datetime.now().strftime("%m%d"),
+                    start_date=earliest_date,  # Auto-detected from earliest file
+                    end_date=datetime.now().strftime("%Y%m%d"),
                     sigmoid_sensitivity=5
                 )
 
@@ -1358,10 +1414,26 @@ class EnhancedStabilityAnalysisThread(QThread):
                 output_directory = PROJECT_ROOT / "output" / "Score_Trend_Analysis_Results" / self.regime_name
                 output_directory.mkdir(parents=True, exist_ok=True)
 
+                # Calculate dynamic start_date: 6 months back from today
+                # For stability analysis, we want a rolling 6-month window
+                from datetime import timedelta
+                today = datetime.now()
+                six_months_ago = today - timedelta(days=180)  # Approximate 6 calendar months
+                # start_date_stability = six_months_ago.strftime("%m%d")
+                #
+                # analyzer = analyzer_module.StockScoreTrendAnalyzer(
+                #     csv_directory=str(csv_directory),
+                #     start_date=start_date_stability,  # Dynamic: always 6 months back from today
+                #     end_date=today.strftime("%m%d"),
+                #     sigmoid_sensitivity=5
+                # )
+
+                start_date_stability = six_months_ago.strftime("%Y%m%d")  # Changed to YYYYMMDD
+
                 analyzer = analyzer_module.StockScoreTrendAnalyzer(
                     csv_directory=str(csv_directory),
-                    start_date="0601",
-                    end_date=datetime.now().strftime("%m%d"),
+                    start_date=start_date_stability,  # Dynamic: always 6 months back from today
+                    end_date=today.strftime("%Y%m%d"),  # Changed to YYYYMMDD
                     sigmoid_sensitivity=5
                 )
 
@@ -1370,7 +1442,10 @@ class EnhancedStabilityAnalysisThread(QThread):
 
                 # Run analysis and export results
                 # The export_results method now handles sector/industry info internally
-                today = datetime.now().strftime("%m%d")
+                # today = datetime.now().strftime("%m%d")
+                # output_file = output_directory / f"stability_analysis_results_{today}.csv"
+
+                today = datetime.now().strftime("%Y%m%d")  # Changed to YYYYMMDD
                 output_file = output_directory / f"stability_analysis_results_{today}.csv"
 
                 # Pass the ranked file path so the analyzer can add sector info

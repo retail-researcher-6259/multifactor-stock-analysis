@@ -14,6 +14,7 @@ from sklearn.preprocessing import PolynomialFeatures
 from sklearn.metrics import r2_score
 from statsmodels.tsa.arima.model import ARIMA
 from statsmodels.tsa.holtwinters import ExponentialSmoothing
+from prophet import Prophet
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -64,11 +65,44 @@ class StockScoreTrendAnalyzerTechnical:
         """Load all ranking CSV files in the date range"""
         files_data = []
 
-        # Parse date strings
-        start_month = int(self.start_date[:2])
-        start_day = int(self.start_date[2:])
-        end_month = int(self.end_date[:2])
-        end_day = int(self.end_date[2:])
+        # # Parse date strings
+        # start_month = int(self.start_date[:2])
+        # start_day = int(self.start_date[2:])
+        # end_month = int(self.end_date[:2])
+        # end_day = int(self.end_date[2:])
+        #
+        # # Get all CSV files
+        # csv_files = list(self.csv_directory.glob("top_ranked_stocks_*.csv"))
+        #
+        # for file in csv_files:
+        #     # Extract date from filename
+        #     file_name = file.stem
+        #     date_str = file_name.split('_')[-1]
+        #
+        #     if len(date_str) == 4:
+        #         file_month = int(date_str[:2])
+        #         file_day = int(date_str[2:])
+        #
+        #         # Check if file is within date range
+        #         file_date = file_month * 100 + file_day
+        #         start_date_num = start_month * 100 + start_day
+        #         end_date_num = end_month * 100 + end_day
+        #
+        #         if start_date_num <= file_date <= end_date_num:
+        #             files_data.append({
+        #                 'file': file,
+        #                 'date': date_str,
+        #                 'month': file_month,
+        #                 'day': file_day
+        #             })
+
+        # Parse date strings (YYYYMMDD format)
+        start_year = int(self.start_date[:4])
+        start_month = int(self.start_date[4:6])
+        start_day = int(self.start_date[6:])
+        end_year = int(self.end_date[:4])
+        end_month = int(self.end_date[4:6])
+        end_day = int(self.end_date[6:])
 
         # Get all CSV files
         csv_files = list(self.csv_directory.glob("top_ranked_stocks_*.csv"))
@@ -78,19 +112,21 @@ class StockScoreTrendAnalyzerTechnical:
             file_name = file.stem
             date_str = file_name.split('_')[-1]
 
-            if len(date_str) == 4:
-                file_month = int(date_str[:2])
-                file_day = int(date_str[2:])
+            if len(date_str) == 8:  # Changed from 4 to 8
+                file_year = int(date_str[:4])
+                file_month = int(date_str[4:6])
+                file_day = int(date_str[6:])
 
                 # Check if file is within date range
-                file_date = file_month * 100 + file_day
-                start_date_num = start_month * 100 + start_day
-                end_date_num = end_month * 100 + end_day
+                file_date = file_year * 10000 + file_month * 100 + file_day
+                start_date_num = start_year * 10000 + start_month * 100 + start_day
+                end_date_num = end_year * 10000 + end_month * 100 + end_day
 
                 if start_date_num <= file_date <= end_date_num:
                     files_data.append({
                         'file': file,
                         'date': date_str,
+                        'year': file_year,
                         'month': file_month,
                         'day': file_day
                     })
@@ -310,7 +346,7 @@ class StockScoreTrendAnalyzerTechnical:
         results = {}
 
         # Forecast periods
-        forecast_periods = min(5, max(1, len(scores) // 10))
+        forecast_periods = min(30, max(1, len(scores) // 10))
 
         # ARIMA
         try:
@@ -322,7 +358,7 @@ class StockScoreTrendAnalyzerTechnical:
                 for d in range(2):
                     for q in range(3):
                         try:
-                            model = ARIMA(scores, order=(p, d, q))
+                            model = ARIMA(scores, order=(p, d, q), trend='c')  # Add constant/drift term
                             fitted = model.fit()
                             if fitted.aic < best_aic:
                                 best_aic = fitted.aic
@@ -330,8 +366,8 @@ class StockScoreTrendAnalyzerTechnical:
                         except:
                             continue
 
-            # Fit best model
-            arima_model = ARIMA(scores, order=best_params)
+            # Fit best model with trend
+            arima_model = ARIMA(scores, order=best_params, trend='c')
             arima_fitted = arima_model.fit()
             arima_forecast = arima_fitted.forecast(steps=forecast_periods)
 
@@ -347,8 +383,19 @@ class StockScoreTrendAnalyzerTechnical:
 
         # Exponential Smoothing
         try:
-            # Simple exponential smoothing (no trend or seasonality for short series)
-            if len(scores) >= 4:
+            # Try trend-based exponential smoothing for better trend capture
+            if len(scores) >= 10:
+                # Holt's method (with trend) - better for trending data
+                model = ExponentialSmoothing(scores, trend='add', seasonal=None, damped_trend=False)
+                fitted = model.fit()
+                forecast = fitted.forecast(steps=forecast_periods)
+
+                results['exp_smoothing'] = {
+                    'forecast': forecast,
+                    'fitted_values': fitted.fittedvalues
+                }
+            elif len(scores) >= 4:
+                # Simple exponential smoothing for very short series
                 model = ExponentialSmoothing(scores, trend=None, seasonal=None)
                 fitted = model.fit()
                 forecast = fitted.forecast(steps=forecast_periods)
@@ -357,20 +404,69 @@ class StockScoreTrendAnalyzerTechnical:
                     'forecast': forecast,
                     'fitted_values': fitted.fittedvalues
                 }
-
-                # Try Holt's method (with trend) if we have enough data
-                if len(scores) >= 10:
-                    model_holt = ExponentialSmoothing(scores, trend='add', seasonal=None)
-                    fitted_holt = model_holt.fit()
-                    forecast_holt = fitted_holt.forecast(steps=forecast_periods)
-
-                    results['holt'] = {
-                        'forecast': forecast_holt,
-                        'fitted_values': fitted_holt.fittedvalues
-                    }
+            else:
+                results['exp_smoothing'] = None
         except Exception as e:
             print(f"Exponential Smoothing failed for {ticker}: {str(e)}")
             results['exp_smoothing'] = None
+
+        # Prophet (Facebook's forecasting model)
+        try:
+            if len(scores) >= 10:
+                # Prepare data for Prophet (requires 'ds' and 'y' columns)
+                prophet_df = pd.DataFrame({
+                    'ds': pd.date_range(start='2024-01-01', periods=len(scores), freq='D'),
+                    'y': scores
+                })
+
+                # Initialize Prophet with minimal configuration for short time series
+                prophet_model = Prophet(
+                    changepoint_prior_scale=0.05,  # Lower = less flexible (prevent overfitting)
+                    seasonality_prior_scale=0.1,   # Lower = less seasonal variation
+                    yearly_seasonality=False,       # Disable for short series
+                    weekly_seasonality=False,       # Disable for short series
+                    daily_seasonality=False,        # Disable for short series
+                    interval_width=0.80,            # 80% confidence intervals
+                    changepoint_range=0.8           # Only fit changepoints in first 80%
+                )
+
+                # Fit the model (suppress output)
+                import logging
+                logging.getLogger('prophet').setLevel(logging.ERROR)
+                prophet_model.fit(prophet_df)
+
+                # Create future dataframe for forecasting
+                future = prophet_model.make_future_dataframe(periods=forecast_periods, freq='D')
+                forecast = prophet_model.predict(future)
+
+                # Extract forecast values
+                forecast_values = forecast['yhat'].values[-forecast_periods:]
+                lower_bound = forecast['yhat_lower'].values[-forecast_periods:]
+                upper_bound = forecast['yhat_upper'].values[-forecast_periods:]
+                fitted_values = forecast['yhat'].values[:len(scores)]
+
+                # Apply offset correction to align forecast with last historical value
+                # This improves short-term accuracy by correcting for model bias
+                last_actual = scores[-1]
+                last_fitted = fitted_values[-1]
+                offset = last_actual - last_fitted
+
+                # Apply offset to all forecasts
+                forecast_values_corrected = forecast_values + offset
+                lower_bound_corrected = lower_bound + offset
+                upper_bound_corrected = upper_bound + offset
+
+                results['prophet'] = {
+                    'forecast': forecast_values_corrected,
+                    'lower_bound': lower_bound_corrected,
+                    'upper_bound': upper_bound_corrected,
+                    'fitted_values': fitted_values,
+                    'trend': forecast['trend'].values[:len(scores)],
+                    'offset': offset  # Store offset for reference
+                }
+        except Exception as e:
+            print(f"Prophet failed for {ticker}: {str(e)}")
+            results['prophet'] = None
 
         return results
 
@@ -526,19 +622,98 @@ class StockScoreTrendAnalyzerTechnical:
                 plt.savefig(ticker_dir / f'{ticker}_05_trend_strength_02_DI.png', dpi=100)
                 plt.close()
 
-        # 06 - Forecasting
+        # 06 - Forecasting (Enhanced with last 3 months + interpretability)
         forecast = self.technical_results.get(ticker, {}).get('forecasting')
         if forecast:
-            setup_plot(f'{ticker} - Forecasting', 'Score')
-            plt.plot(indices, scores, 'b-', label='Historical', linewidth=1.5)
+            setup_plot(f'{ticker} - Statistical Forecasting (Last 3 Months + Forecast)', 'Score')
+
+            # Only show last 90 days (~3 months) of historical data for better forecast visibility
+            window_size = 90
+            if len(indices) > window_size:
+                start_idx = len(indices) - window_size
+                plot_indices = indices[start_idx:]
+                plot_scores = scores[start_idx:]
+            else:
+                plot_indices = indices
+                plot_scores = scores
+
+            # Get last historical score for percentage calculations
+            last_score = scores[-1]
+
+            # Historical data (last 3 months only)
+            plt.plot(plot_indices, plot_scores, 'b-',
+                     label=f'Historical (Last 3mo) - Current: {last_score:.2f}', linewidth=1.5)
 
             last_index = indices[-1]
+            forecast_range = None
+
+            # ARIMA forecast with final value and % change
             if forecast.get('arima') and forecast['arima']:
-                forecast_indices = list(range(last_index + 1, last_index + len(forecast['arima']['forecast']) + 1))
-                plt.plot(forecast_indices, forecast['arima']['forecast'], 'r-',
-                         label=f"ARIMA{forecast['arima']['params']}", linewidth=2, marker='o')
+                arima_forecast = forecast['arima']['forecast']
+                if not hasattr(arima_forecast, '__len__'):
+                    arima_forecast = [arima_forecast]
+                forecast_indices = list(range(last_index + 1, last_index + 1 + len(arima_forecast)))
+                forecast_range = len(arima_forecast)
+
+                final_arima = arima_forecast[-1]
+                pct_change = ((final_arima - last_score) / last_score) * 100
+                pct_str = f"{pct_change:+.1f}%"
+
+                plt.plot(forecast_indices, arima_forecast, 'r-',
+                         label=f"ARIMA{forecast['arima']['params']} → {final_arima:.2f} ({pct_str})",
+                         linewidth=2, marker='o')
+
+            # Exponential Smoothing forecast with final value and % change
+            if forecast.get('exp_smoothing') and forecast['exp_smoothing']:
+                exp_forecast = forecast['exp_smoothing']['forecast']
+                if not hasattr(exp_forecast, '__len__'):
+                    exp_forecast = [exp_forecast]
+                forecast_indices = list(range(last_index + 1, last_index + 1 + len(exp_forecast)))
+                if forecast_range is None:
+                    forecast_range = len(exp_forecast)
+
+                final_exp = exp_forecast[-1]
+                pct_change = ((final_exp - last_score) / last_score) * 100
+                pct_str = f"{pct_change:+.1f}%"
+
+                plt.plot(forecast_indices, exp_forecast, '-',
+                         color='orange',
+                         label=f'Exp Smoothing → {final_exp:.2f} ({pct_str})',
+                         linewidth=2, marker='s', alpha=0.7)
+
+            # Prophet forecast with confidence interval, final value and % change
+            if forecast.get('prophet') and forecast['prophet']:
+                prophet_forecast = forecast['prophet']['forecast']
+                if not hasattr(prophet_forecast, '__len__'):
+                    prophet_forecast = [prophet_forecast]
+                forecast_indices = list(range(last_index + 1, last_index + 1 + len(prophet_forecast)))
+                if forecast_range is None:
+                    forecast_range = len(prophet_forecast)
+
+                final_prophet = prophet_forecast[-1]
+                pct_change = ((final_prophet - last_score) / last_score) * 100
+                pct_str = f"{pct_change:+.1f}%"
+
+                plt.plot(forecast_indices, prophet_forecast, 'g-',
+                         label=f'Prophet → {final_prophet:.2f} ({pct_str})',
+                         linewidth=2.5, marker='D')
+
+                # Add confidence interval
+                if 'lower_bound' in forecast['prophet'] and 'upper_bound' in forecast['prophet']:
+                    plt.fill_between(forecast_indices,
+                                   forecast['prophet']['lower_bound'],
+                                   forecast['prophet']['upper_bound'],
+                                   alpha=0.2, color='green', label='Prophet 80% CI')
 
             plt.axvline(x=last_index, color='gray', linestyle='--', alpha=0.5)
+
+            # Add forecast range info as text box
+            if forecast_range:
+                textstr = f'Forecast Range: {forecast_range} days'
+                props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+                plt.text(0.02, 0.98, textstr, transform=plt.gca().transAxes,
+                        fontsize=10, verticalalignment='top', bbox=props)
+
             add_date_labels()
             plt.legend(loc='best', fontsize=9)
             plt.tight_layout()
@@ -794,18 +969,33 @@ class StockScoreTrendAnalyzerTechnical:
         plt.close()
 
     def _plot_forecasting(self, ticker, indices, scores, dates, output_dir):
-        """Create forecasting plot"""
+        """Create forecasting plot (shows last 3 months + forecast for better resolution)"""
         forecast = self.technical_results.get(ticker, {}).get('forecasting')
         if not forecast:
             return
 
         plt.figure(figsize=(12, 6))
 
-        # Historical data
-        plt.plot(indices, scores, 'b-', label='Historical', linewidth=1.5)
+        # Only show last 90 days (~3 months) of historical data for better forecast visibility
+        window_size = 90
+        if len(indices) > window_size:
+            start_idx = len(indices) - window_size
+            plot_indices = indices[start_idx:]
+            plot_scores = scores[start_idx:]
+        else:
+            plot_indices = indices
+            plot_scores = scores
+
+        # Get last historical score for percentage calculations
+        last_score = scores[-1]
+
+        # Historical data (last 3 months only)
+        plt.plot(plot_indices, plot_scores, 'b-',
+                 label=f'Historical (Last 3mo) - Current: {last_score:.2f}', linewidth=1.5)
 
         # Forecasts
         last_index = indices[-1]
+        forecast_range = None
 
         if forecast.get('arima') and forecast['arima']:
             arima_forecast = forecast['arima']['forecast']
@@ -813,32 +1003,91 @@ class StockScoreTrendAnalyzerTechnical:
             if not hasattr(arima_forecast, '__len__'):
                 arima_forecast = [arima_forecast]
             forecast_indices = list(range(last_index + 1, last_index + 1 + len(arima_forecast)))
+            forecast_range = len(arima_forecast)
+
+            # Calculate final value and percentage change
+            final_arima = arima_forecast[-1]
+            pct_change = ((final_arima - last_score) / last_score) * 100
+            pct_str = f"{pct_change:+.1f}%"
+
             plt.plot(forecast_indices, arima_forecast, 'r-',
-                     label=f"ARIMA{forecast['arima']['params']}", linewidth=2, marker='o')
+                     label=f"ARIMA{forecast['arima']['params']} → {final_arima:.2f} ({pct_str})",
+                     linewidth=2, marker='o')
 
         if forecast.get('exp_smoothing') and forecast['exp_smoothing']:
             exp_forecast = forecast['exp_smoothing']['forecast']
             if not hasattr(exp_forecast, '__len__'):
                 exp_forecast = [exp_forecast]
             forecast_indices = list(range(last_index + 1, last_index + 1 + len(exp_forecast)))
-            plt.plot(forecast_indices, exp_forecast, 'g-',
-                     label='Exp Smoothing', linewidth=2, marker='s')
+            if forecast_range is None:
+                forecast_range = len(exp_forecast)
+
+            # Calculate final value and percentage change
+            final_exp = exp_forecast[-1]
+            pct_change = ((final_exp - last_score) / last_score) * 100
+            pct_str = f"{pct_change:+.1f}%"
+
+            plt.plot(forecast_indices, exp_forecast, '-',
+                     color='orange',
+                     label=f'Exp Smoothing → {final_exp:.2f} ({pct_str})',
+                     linewidth=2, marker='s', alpha=0.7)
 
         if forecast.get('holt') and forecast['holt']:
             holt_forecast = forecast['holt']['forecast']
             if not hasattr(holt_forecast, '__len__'):
                 holt_forecast = [holt_forecast]
             forecast_indices = list(range(last_index + 1, last_index + 1 + len(holt_forecast)))
+            if forecast_range is None:
+                forecast_range = len(holt_forecast)
+
+            # Calculate final value and percentage change
+            final_holt = holt_forecast[-1]
+            pct_change = ((final_holt - last_score) / last_score) * 100
+            pct_str = f"{pct_change:+.1f}%"
+
             plt.plot(forecast_indices, holt_forecast, 'm-',
-                     label='Holt Method', linewidth=2, marker='^')
+                     label=f'Holt Method → {final_holt:.2f} ({pct_str})',
+                     linewidth=2, marker='^', alpha=0.7)
+
+        # Prophet forecast with confidence interval
+        if forecast.get('prophet') and forecast['prophet']:
+            prophet_forecast = forecast['prophet']['forecast']
+            if not hasattr(prophet_forecast, '__len__'):
+                prophet_forecast = [prophet_forecast]
+            forecast_indices = list(range(last_index + 1, last_index + 1 + len(prophet_forecast)))
+            if forecast_range is None:
+                forecast_range = len(prophet_forecast)
+
+            # Calculate final value and percentage change
+            final_prophet = prophet_forecast[-1]
+            pct_change = ((final_prophet - last_score) / last_score) * 100
+            pct_str = f"{pct_change:+.1f}%"
+
+            plt.plot(forecast_indices, prophet_forecast, 'g-',
+                     label=f'Prophet → {final_prophet:.2f} ({pct_str})',
+                     linewidth=2.5, marker='D')
+
+            # Add confidence interval
+            if 'lower_bound' in forecast['prophet'] and 'upper_bound' in forecast['prophet']:
+                plt.fill_between(forecast_indices,
+                               forecast['prophet']['lower_bound'],
+                               forecast['prophet']['upper_bound'],
+                               alpha=0.2, color='green', label='Prophet 80% CI')
 
         # Vertical line to separate historical and forecast
         plt.axvline(x=last_index, color='gray', linestyle='--', alpha=0.5)
 
+        # Add forecast range info as text box
+        if forecast_range:
+            textstr = f'Forecast Range: {forecast_range} days'
+            props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+            plt.text(0.02, 0.98, textstr, transform=plt.gca().transAxes,
+                    fontsize=10, verticalalignment='top', bbox=props)
+
         plt.xlabel('Trading Days')
         plt.ylabel('Score')
-        plt.title(f'{ticker} - Statistical Forecasting')
-        plt.legend()
+        plt.title(f'{ticker} - Statistical Forecasting (Last 3 Months + Forecast)')
+        plt.legend(loc='best', fontsize=9)
         plt.grid(True, alpha=0.3)
 
         plt.tight_layout()
@@ -920,38 +1169,55 @@ class StockScoreTrendAnalyzerTechnical:
         # 6. Forecast - WITH DIMENSION FIX
         ax6 = fig.add_subplot(gs[3, :])
         forecast = self.technical_results.get(ticker, {}).get('forecasting', {})
-        if forecast and 'arima' in forecast and forecast['arima']:
+        if forecast:
             last_index = indices[-1]
-
-            # Get the actual forecast array
-            arima_forecast = forecast['arima']['forecast']
-
-            # Create forecast indices matching the actual forecast length
-            if hasattr(arima_forecast, '__len__'):
-                # If it's an array-like object
-                forecast_length = len(arima_forecast)
-            else:
-                # If it's a scalar or single value, convert to list
-                arima_forecast = [arima_forecast] if not isinstance(arima_forecast,
-                                                                    (list, np.ndarray)) else arima_forecast
-                forecast_length = len(arima_forecast)
-
-            # Create indices that match the forecast length
-            forecast_indices = list(range(last_index + 1, last_index + 1 + forecast_length))
 
             # Plot recent historical data
             ax6.plot(indices[-10:], scores[-10:], 'b-', label='Recent', linewidth=1.5)
 
-            # Plot the forecast with matching dimensions
-            ax6.plot(forecast_indices, arima_forecast, 'r-',
-                     label='ARIMA Forecast', linewidth=2, marker='o')
+            # ARIMA Forecast
+            if 'arima' in forecast and forecast['arima']:
+                arima_forecast = forecast['arima']['forecast']
+
+                # Create forecast indices matching the actual forecast length
+                if hasattr(arima_forecast, '__len__'):
+                    forecast_length = len(arima_forecast)
+                else:
+                    arima_forecast = [arima_forecast] if not isinstance(arima_forecast,
+                                                                        (list, np.ndarray)) else arima_forecast
+                    forecast_length = len(arima_forecast)
+
+                forecast_indices = list(range(last_index + 1, last_index + 1 + forecast_length))
+                ax6.plot(forecast_indices, arima_forecast, 'r-',
+                         label='ARIMA', linewidth=2, marker='o', alpha=0.7)
+
+            # Prophet Forecast
+            if 'prophet' in forecast and forecast['prophet']:
+                prophet_forecast = forecast['prophet']['forecast']
+                if hasattr(prophet_forecast, '__len__'):
+                    forecast_length = len(prophet_forecast)
+                else:
+                    prophet_forecast = [prophet_forecast] if not isinstance(prophet_forecast,
+                                                                            (list, np.ndarray)) else prophet_forecast
+                    forecast_length = len(prophet_forecast)
+
+                forecast_indices = list(range(last_index + 1, last_index + 1 + forecast_length))
+                ax6.plot(forecast_indices, prophet_forecast, 'g-',
+                         label='Prophet', linewidth=2, marker='D')
+
+                # Add confidence interval
+                if 'lower_bound' in forecast['prophet'] and 'upper_bound' in forecast['prophet']:
+                    ax6.fill_between(forecast_indices,
+                                   forecast['prophet']['lower_bound'],
+                                   forecast['prophet']['upper_bound'],
+                                   alpha=0.15, color='green')
 
             ax6.axvline(x=last_index, color='gray', linestyle='--', alpha=0.5)
-            ax6.legend(loc='best')
+            ax6.legend(loc='best', fontsize=8)
 
         ax6.set_ylabel('Score')
         ax6.set_xlabel('Trading Days')
-        ax6.set_title('5-Day Forecast')
+        ax6.set_title('5-Day Forecast (ARIMA + Prophet)')
         ax6.grid(True, alpha=0.3)
 
         # Add date labels to all subplots
@@ -1195,6 +1461,37 @@ class StockScoreTrendAnalyzerTechnical:
                 else:
                     score_details['exp_smooth'] = "Exp Smooth Bearish (0)"
                 max_possible += 1
+
+        # 16. Prophet Forecast
+        if forecast and 'prophet' in forecast and forecast['prophet']:
+            current_score = self.score_history[ticker]['scores'][-1]
+            forecast_values = forecast['prophet']['forecast']
+            if len(forecast_values) > 0:
+                forecast_score = forecast_values[0]
+                # Check if prediction is bullish
+                if forecast_score > current_score:
+                    # Check confidence interval width for reliability
+                    if 'lower_bound' in forecast['prophet'] and 'upper_bound' in forecast['prophet']:
+                        lower = forecast['prophet']['lower_bound'][0]
+                        upper = forecast['prophet']['upper_bound'][0]
+                        ci_width = upper - lower
+
+                        # Narrower confidence interval = more confident prediction
+                        if ci_width < (current_score * 0.1):  # CI < 10% of current score
+                            score_details['prophet'] = f"Prophet Strong Bullish (+1.5)"
+                            total_score += 1.5
+                        else:
+                            score_details['prophet'] = f"Prophet Bullish (+1)"
+                            total_score += 1
+                    else:
+                        score_details['prophet'] = "Prophet Bullish (+1)"
+                        total_score += 1
+                elif forecast_score < current_score:
+                    score_details['prophet'] = "Prophet Bearish (0)"
+                else:
+                    score_details['prophet'] = "Prophet Neutral (+0.3)"
+                    total_score += 0.3
+                max_possible += 1.5  # Account for potential 1.5 score
 
         # Calculate percentage score
         percentage = (total_score / max_possible * 100) if max_possible > 0 else 0

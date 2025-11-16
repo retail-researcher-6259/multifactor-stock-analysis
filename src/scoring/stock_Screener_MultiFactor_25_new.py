@@ -531,7 +531,8 @@ def run_historical_scoring(target_date, progress_callback=None):
 
     # Create output filename with date
     output_dir = get_output_directory(regime_clean)
-    date_str = target_date.strftime("%m%d")
+    # date_str = target_date.strftime("%m%d")
+    date_str = target_date.strftime("%Y%m%d")  # Changed from "%m%d" to "%Y%m%d"
     fname = f"top_ranked_stocks_{regime_clean}_{date_str}.csv"
     output_path = output_dir / fname
 
@@ -646,7 +647,8 @@ def run_historical_batch(start_date=None, end_date=None, interval_days=1, progre
 
             # Check if file already exists
             output_dir = get_output_directory(regime_clean)
-            date_str = date.strftime("%m%d")
+            # date_str = date.strftime("%m%d")
+            date_str = date.strftime("%Y%m%d")  # Changed from "%m%d" to "%Y%m%d"
             # Note: Using auto-detected regime, not manual
             fname = f"top_ranked_stocks_{regime_clean}_{date_str}.csv"
             output_path = output_dir / fname
@@ -1071,7 +1073,8 @@ def run_historical_specific_date(target_date, regime, progress_callback=None):
 
     # Create output filename with date and manual regime indicator
     output_dir = get_output_directory(regime_clean)
-    date_str = target_date.strftime("%m%d")
+    # date_str = target_date.strftime("%m%d")
+    date_str = target_date.strftime("%Y%m%d")  # Changed from "%m%d" to "%Y%m%d"
     fname = f"top_ranked_stocks_{regime_clean}_{date_str}.csv"
     output_path = output_dir / fname
 
@@ -3277,7 +3280,8 @@ def run_daily_scoring(regime="Steady_Growth", progress_callback=None):
 
     # Get output directory for the regime
     output_dir = get_output_directory(regime)
-    today = datetime.now().strftime("%m%d")
+    # today = datetime.now().strftime("%m%d")
+    today = datetime.now().strftime("%Y%m%d")  # Changed from "%m%d" to "%Y%m%d"
     fname = f"top_ranked_stocks_{regime}_{today}.csv"
     output_path = output_dir / fname
 
