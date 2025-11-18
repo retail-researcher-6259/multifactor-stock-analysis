@@ -15,6 +15,8 @@ from sklearn.metrics import r2_score
 from statsmodels.tsa.arima.model import ARIMA
 from statsmodels.tsa.holtwinters import ExponentialSmoothing
 from prophet import Prophet
+from xgboost import XGBClassifier
+from sklearn.model_selection import TimeSeriesSplit
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -470,6 +472,244 @@ class StockScoreTrendAnalyzerTechnical:
 
         return results
 
+    def perform_xgboost_reversion_analysis(self, ticker):
+        """
+        Perform XGBoost-based reversion prediction analysis.
+        Predicts probability of reversion in the next N days.
+        """
+        data = self.score_history.get(ticker)
+        if not data or len(data['scores']) < 30:
+            return None
+
+        scores = np.array(data['scores'])
+        n_samples = len(scores)
+
+        # Minimum samples needed for meaningful training
+        if n_samples < 50:
+            return None
+
+        results = {}
+
+        try:
+            # Feature engineering for each time point
+            features_list = []
+            labels_list = []
+
+            # Define reversion parameters
+            reversion_threshold = 0.05  # 5% reversion
+            forecast_horizon = 10  # Predict reversion within 10 days
+            lookback = 20  # Features from last 20 days
+
+            # Build training data
+            for i in range(lookback, n_samples - forecast_horizon):
+                window = scores[i-lookback:i+1]
+                current_score = scores[i]
+
+                # Calculate features
+                features = self._calculate_xgboost_features(window, current_score)
+                features_list.append(features)
+
+                # Calculate label: Did reversion occur in next N days?
+                future_scores = scores[i+1:i+1+forecast_horizon]
+                max_future = np.max(future_scores)
+                min_future = np.min(future_scores)
+
+                # Determine if significant reversion occurred
+                if current_score > np.mean(scores[i-lookback:i]):
+                    # Score is above mean - check for downward reversion
+                    pct_drop = (current_score - min_future) / current_score
+                    reversion_occurred = pct_drop >= reversion_threshold
+                else:
+                    # Score is below mean - check for upward reversion
+                    pct_rise = (max_future - current_score) / current_score if current_score > 0 else 0
+                    reversion_occurred = pct_rise >= reversion_threshold
+
+                labels_list.append(1 if reversion_occurred else 0)
+
+            if len(features_list) < 30:
+                return None
+
+            X = np.array(features_list)
+            y = np.array(labels_list)
+
+            # Time series cross-validation
+            tscv = TimeSeriesSplit(n_splits=3)
+            cv_scores = []
+
+            for train_idx, val_idx in tscv.split(X):
+                X_train, X_val = X[train_idx], X[val_idx]
+                y_train, y_val = y[train_idx], y[val_idx]
+
+                model = XGBClassifier(
+                    n_estimators=100,
+                    max_depth=4,
+                    learning_rate=0.1,
+                    subsample=0.8,
+                    colsample_bytree=0.8,
+                    random_state=42,
+                    eval_metric='logloss',
+                    verbosity=0
+                )
+                model.fit(X_train, y_train)
+                cv_scores.append(model.score(X_val, y_val))
+
+            # Train final model on all data
+            final_model = XGBClassifier(
+                n_estimators=100,
+                max_depth=4,
+                learning_rate=0.1,
+                subsample=0.8,
+                colsample_bytree=0.8,
+                random_state=42,
+                eval_metric='logloss',
+                verbosity=0
+            )
+            final_model.fit(X, y)
+
+            # Predict current reversion probability
+            current_window = scores[-lookback-1:]
+            current_features = self._calculate_xgboost_features(current_window, scores[-1])
+            current_features = np.array(current_features).reshape(1, -1)
+
+            reversion_probability = final_model.predict_proba(current_features)[0][1]
+            reversion_prediction = final_model.predict(current_features)[0]
+
+            # Get feature importance
+            feature_names = [
+                'z_score_10d', 'z_score_20d', 'momentum_decay',
+                'rsi_proxy', 'roc_5d', 'roc_10d', 'volatility',
+                'distance_from_high', 'distance_from_low', 'trend_strength',
+                'consecutive_direction', 'mean_reversion_speed'
+            ]
+            feature_importance = dict(zip(feature_names, final_model.feature_importances_))
+
+            # Historical accuracy analysis
+            historical_predictions = []
+            for i in range(max(lookback, n_samples - 30), n_samples - forecast_horizon):
+                window = scores[i-lookback:i+1]
+                features = self._calculate_xgboost_features(window, scores[i])
+                features = np.array(features).reshape(1, -1)
+                pred_prob = final_model.predict_proba(features)[0][1]
+
+                # Actual outcome
+                future_scores = scores[i+1:i+1+forecast_horizon]
+                current_score = scores[i]
+                max_future = np.max(future_scores)
+                min_future = np.min(future_scores)
+
+                if current_score > np.mean(scores[max(0, i-lookback):i]):
+                    pct_drop = (current_score - min_future) / current_score
+                    actual = pct_drop >= reversion_threshold
+                else:
+                    pct_rise = (max_future - current_score) / current_score if current_score > 0 else 0
+                    actual = pct_rise >= reversion_threshold
+
+                historical_predictions.append({
+                    'index': i,
+                    'predicted_prob': pred_prob,
+                    'actual': actual
+                })
+
+            results['xgboost'] = {
+                'reversion_probability': reversion_probability,
+                'reversion_prediction': reversion_prediction,
+                'cv_accuracy': np.mean(cv_scores),
+                'feature_importance': feature_importance,
+                'historical_predictions': historical_predictions,
+                'forecast_horizon': forecast_horizon,
+                'reversion_threshold': reversion_threshold,
+                'training_samples': len(X),
+                'positive_rate': np.mean(y)  # Base rate of reversions
+            }
+
+        except Exception as e:
+            print(f"XGBoost analysis failed for {ticker}: {str(e)}")
+            results['xgboost'] = None
+
+        return results
+
+    def _calculate_xgboost_features(self, window, current_score):
+        """Calculate features for XGBoost reversion prediction"""
+
+        # Z-scores (distance from mean)
+        mean_10d = np.mean(window[-10:])
+        std_10d = np.std(window[-10:]) if np.std(window[-10:]) > 0 else 1
+        z_score_10d = (current_score - mean_10d) / std_10d
+
+        mean_20d = np.mean(window)
+        std_20d = np.std(window) if np.std(window) > 0 else 1
+        z_score_20d = (current_score - mean_20d) / std_20d
+
+        # Momentum decay (is momentum slowing?)
+        if len(window) >= 10:
+            roc_recent = (window[-1] - window[-5]) / window[-5] if window[-5] != 0 else 0
+            roc_prior = (window[-5] - window[-10]) / window[-10] if window[-10] != 0 else 0
+            momentum_decay = abs(roc_recent) - abs(roc_prior)
+        else:
+            momentum_decay = 0
+
+        # RSI-like indicator (simplified)
+        gains = np.maximum(np.diff(window), 0)
+        losses = np.abs(np.minimum(np.diff(window), 0))
+        avg_gain = np.mean(gains) if len(gains) > 0 else 0
+        avg_loss = np.mean(losses) if len(losses) > 0 else 1
+        rsi_proxy = 100 - (100 / (1 + avg_gain / avg_loss)) if avg_loss > 0 else 50
+
+        # Rate of change
+        roc_5d = (window[-1] - window[-5]) / window[-5] * 100 if len(window) >= 5 and window[-5] != 0 else 0
+        roc_10d = (window[-1] - window[-10]) / window[-10] * 100 if len(window) >= 10 and window[-10] != 0 else 0
+
+        # Volatility
+        volatility = np.std(window[-10:]) if len(window) >= 10 else np.std(window)
+
+        # Distance from recent high/low
+        recent_high = np.max(window[-20:])
+        recent_low = np.min(window[-20:])
+        distance_from_high = (recent_high - current_score) / recent_high if recent_high != 0 else 0
+        distance_from_low = (current_score - recent_low) / recent_low if recent_low != 0 else 0
+
+        # Trend strength (linear regression R²)
+        if len(window) >= 5:
+            x = np.arange(len(window)).reshape(-1, 1)
+            y = window
+            reg = LinearRegression().fit(x, y)
+            trend_strength = reg.score(x, y)
+        else:
+            trend_strength = 0
+
+        # Consecutive up/down days
+        diffs = np.diff(window[-10:])
+        if len(diffs) > 0:
+            if diffs[-1] > 0:
+                consecutive = 1
+                for d in reversed(diffs[:-1]):
+                    if d > 0:
+                        consecutive += 1
+                    else:
+                        break
+            else:
+                consecutive = -1
+                for d in reversed(diffs[:-1]):
+                    if d < 0:
+                        consecutive -= 1
+                    else:
+                        break
+        else:
+            consecutive = 0
+
+        # Mean reversion speed (historical)
+        deviations = window - np.mean(window)
+        mean_reversion_speed = -np.corrcoef(deviations[:-1], np.diff(window))[0, 1] if len(window) > 2 else 0
+        if np.isnan(mean_reversion_speed):
+            mean_reversion_speed = 0
+
+        return [
+            z_score_10d, z_score_20d, momentum_decay,
+            rsi_proxy, roc_5d, roc_10d, volatility,
+            distance_from_high, distance_from_low, trend_strength,
+            consecutive, mean_reversion_speed
+        ]
+
     def create_individual_plots(self, ticker, output_dir, use_subfolder=True):
         """Create individual technical analysis plots (no subplots)"""
 
@@ -772,7 +1012,10 @@ class StockScoreTrendAnalyzerTechnical:
         # 6. Forecasting Plot
         self._plot_forecasting(ticker, indices, scores, dates, ticker_dir)
 
-        # 7. Comprehensive Overview
+        # 7. XGBoost Reversion Analysis Plot
+        self._plot_xgboost_reversion(ticker, indices, scores, dates, ticker_dir)
+
+        # 8. Comprehensive Overview
         self._plot_comprehensive_overview(ticker, indices, scores, dates, ticker_dir)
 
         # Create individual plots for UI display
@@ -1092,6 +1335,167 @@ class StockScoreTrendAnalyzerTechnical:
 
         plt.tight_layout()
         plt.savefig(output_dir / f'{ticker}_06_forecasting.png', dpi=100)
+        plt.close()
+
+    def _plot_xgboost_reversion(self, ticker, indices, scores, dates, output_dir):
+        """Create XGBoost reversion analysis plot"""
+        xgboost_results = self.technical_results.get(ticker, {}).get('xgboost_reversion')
+        if not xgboost_results or 'xgboost' not in xgboost_results:
+            return
+
+        xgb_data = xgboost_results['xgboost']
+        if xgb_data is None:
+            return
+
+        fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+
+        # 1. Score history with reversion probability overlay
+        ax1 = axes[0, 0]
+        ax1.plot(indices, scores, 'b-', linewidth=1.5, alpha=0.7, label='Score')
+        ax1.set_xlabel('Trading Days')
+        ax1.set_ylabel('Score', color='blue')
+        ax1.tick_params(axis='y', labelcolor='blue')
+
+        # Add current reversion probability as annotation
+        current_prob = xgb_data['reversion_probability']
+        prob_color = 'red' if current_prob > 0.6 else ('orange' if current_prob > 0.4 else 'green')
+        ax1.axhline(y=scores[-1], color=prob_color, linestyle='--', alpha=0.5)
+
+        textstr = f"Current Reversion Prob: {current_prob:.1%}\nPrediction: {'Reversion Likely' if xgb_data['reversion_prediction'] else 'No Reversion'}"
+        props = dict(boxstyle='round', facecolor=prob_color, alpha=0.3)
+        ax1.text(0.02, 0.98, textstr, transform=ax1.transAxes,
+                fontsize=11, verticalalignment='top', bbox=props, fontweight='bold')
+
+        ax1.set_title(f'{ticker} - Current Reversion Probability', fontsize=12, fontweight='bold')
+        ax1.grid(True, alpha=0.3)
+        ax1.legend(loc='upper right')
+
+        # 2. Feature Importance
+        ax2 = axes[0, 1]
+        feature_imp = xgb_data['feature_importance']
+        sorted_features = sorted(feature_imp.items(), key=lambda x: x[1], reverse=True)
+        feature_names = [f[0].replace('_', '\n') for f in sorted_features]
+        importances = [f[1] for f in sorted_features]
+
+        bars = ax2.barh(range(len(feature_names)), importances, color='steelblue', alpha=0.8)
+        ax2.set_yticks(range(len(feature_names)))
+        ax2.set_yticklabels(feature_names, fontsize=8)
+        ax2.set_xlabel('Importance')
+        ax2.set_title('Feature Importance for Reversion Prediction', fontsize=12, fontweight='bold')
+        ax2.invert_yaxis()
+
+        # Highlight top 3 features
+        for i in range(min(3, len(bars))):
+            bars[i].set_color('darkred')
+            bars[i].set_alpha(1.0)
+
+        # 3. Historical Prediction Accuracy
+        ax3 = axes[1, 0]
+        hist_preds = xgb_data['historical_predictions']
+
+        if hist_preds:
+            pred_indices = [p['index'] for p in hist_preds]
+            pred_probs = [p['predicted_prob'] for p in hist_preds]
+            actuals = [p['actual'] for p in hist_preds]
+
+            # Plot probabilities
+            ax3.plot(pred_indices, pred_probs, 'purple', linewidth=2, label='Predicted Prob', alpha=0.8)
+            ax3.axhline(y=0.5, color='gray', linestyle='--', alpha=0.5, label='Threshold')
+
+            # Mark actual reversions
+            reversion_indices = [pred_indices[i] for i in range(len(actuals)) if actuals[i]]
+            reversion_probs = [pred_probs[i] for i in range(len(actuals)) if actuals[i]]
+            no_reversion_indices = [pred_indices[i] for i in range(len(actuals)) if not actuals[i]]
+            no_reversion_probs = [pred_probs[i] for i in range(len(actuals)) if not actuals[i]]
+
+            if reversion_indices:
+                ax3.scatter(reversion_indices, reversion_probs, color='red', s=80,
+                           marker='^', label='Actual Reversion', zorder=5, edgecolors='black')
+            if no_reversion_indices:
+                ax3.scatter(no_reversion_indices, no_reversion_probs, color='green', s=60,
+                           marker='o', label='No Reversion', zorder=5, alpha=0.6)
+
+        ax3.set_xlabel('Trading Days')
+        ax3.set_ylabel('Reversion Probability')
+        ax3.set_title('Historical Prediction Performance', fontsize=12, fontweight='bold')
+        ax3.set_ylim(-0.05, 1.05)
+        ax3.grid(True, alpha=0.3)
+        ax3.legend(loc='best', fontsize=9)
+
+        # 4. Model Statistics
+        ax4 = axes[1, 1]
+        ax4.axis('off')
+
+        stats_text = f"""
+XGBoost Reversion Model Statistics
+{'='*40}
+
+Model Performance:
+  • CV Accuracy: {xgb_data['cv_accuracy']:.1%}
+  • Training Samples: {xgb_data['training_samples']}
+  • Base Reversion Rate: {xgb_data['positive_rate']:.1%}
+
+Prediction Parameters:
+  • Forecast Horizon: {xgb_data['forecast_horizon']} days
+  • Reversion Threshold: {xgb_data['reversion_threshold']:.0%}
+
+Current Prediction:
+  • Reversion Probability: {xgb_data['reversion_probability']:.1%}
+  • Prediction: {'REVERSION LIKELY' if xgb_data['reversion_prediction'] else 'NO REVERSION'}
+
+Top 3 Predictive Features:
+"""
+        top_features = sorted(xgb_data['feature_importance'].items(), key=lambda x: x[1], reverse=True)[:3]
+        for i, (fname, fimp) in enumerate(top_features, 1):
+            stats_text += f"  {i}. {fname}: {fimp:.3f}\n"
+
+        # Interpretation
+        cv_acc = xgb_data['cv_accuracy']
+        prob = xgb_data['reversion_probability']
+
+        if prob > 0.7:
+            interpretation = "\nInterpretation: HIGH reversion risk.\nConsider reducing position or waiting for pullback."
+        elif prob > 0.5:
+            interpretation = "\nInterpretation: MODERATE reversion risk.\nMonitor closely for trend exhaustion signs."
+        elif prob > 0.3:
+            interpretation = "\nInterpretation: LOW reversion risk.\nTrend likely to continue in short term."
+        else:
+            interpretation = "\nInterpretation: VERY LOW reversion risk.\nStrong trend continuation expected."
+
+        stats_text += interpretation
+
+        # Add threshold guides
+        stats_text += f"\n\n{'='*40}\nModel Confidence Thresholds:\n"
+        stats_text += f"  CV > 65%: HIGH confidence\n"
+        stats_text += f"  CV 55-65%: MODERATE confidence\n"
+        stats_text += f"  CV 50-55%: LOW confidence\n"
+        stats_text += f"  CV < 50%: DO NOT TRUST\n"
+
+        stats_text += f"\nReversion Risk Thresholds:\n"
+        stats_text += f"  Prob > 70%: HIGH risk\n"
+        stats_text += f"  Prob 50-70%: MODERATE risk\n"
+        stats_text += f"  Prob 30-50%: LOW risk\n"
+        stats_text += f"  Prob < 30%: VERY LOW risk\n"
+
+        # Add current model assessment
+        if cv_acc > 0.65:
+            model_assessment = "✓ HIGH confidence"
+        elif cv_acc > 0.55:
+            model_assessment = "✓ MODERATE confidence"
+        elif cv_acc > 0.50:
+            model_assessment = "⚠ LOW confidence"
+        else:
+            model_assessment = "✗ DO NOT TRUST"
+
+        stats_text += f"\nCurrent Model: {model_assessment} ({cv_acc:.1%})"
+
+        ax4.text(0.05, 0.95, stats_text, transform=ax4.transAxes,
+                fontsize=9, verticalalignment='top', fontfamily='monospace',
+                bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
+
+        plt.suptitle(f'{ticker} - XGBoost Reversion Analysis', fontsize=14, fontweight='bold', y=1.02)
+        plt.tight_layout()
+        plt.savefig(output_dir / f'{ticker}_07_xgboost_reversion.png', dpi=100, bbox_inches='tight')
         plt.close()
 
     def _plot_comprehensive_overview(self, ticker, indices, scores, dates, output_dir):
@@ -1492,6 +1896,31 @@ class StockScoreTrendAnalyzerTechnical:
                     score_details['prophet'] = "Prophet Neutral (+0.3)"
                     total_score += 0.3
                 max_possible += 1.5  # Account for potential 1.5 score
+
+        # 17. XGBoost Reversion Risk (inverted scoring - low reversion risk is good)
+        xgboost_results = self.technical_results.get(ticker, {}).get('xgboost_reversion')
+        if xgboost_results and 'xgboost' in xgboost_results and xgboost_results['xgboost']:
+            xgb_data = xgboost_results['xgboost']
+            reversion_prob = xgb_data['reversion_probability']
+            cv_accuracy = xgb_data['cv_accuracy']
+
+            # Only trust the prediction if model has reasonable accuracy
+            if cv_accuracy >= 0.55:  # Model is better than random
+                if reversion_prob < 0.3:
+                    score_details['xgboost_reversion'] = f"XGB Low Risk ({reversion_prob:.0%}) (+1)"
+                    total_score += 1
+                elif reversion_prob < 0.5:
+                    score_details['xgboost_reversion'] = f"XGB Moderate Risk ({reversion_prob:.0%}) (+0.5)"
+                    total_score += 0.5
+                elif reversion_prob < 0.7:
+                    score_details['xgboost_reversion'] = f"XGB Elevated Risk ({reversion_prob:.0%}) (+0.3)"
+                    total_score += 0.3
+                else:
+                    score_details['xgboost_reversion'] = f"XGB High Risk ({reversion_prob:.0%}) (0)"
+            else:
+                score_details['xgboost_reversion'] = f"XGB Low Confidence (CV={cv_accuracy:.0%}) (+0.3)"
+                total_score += 0.3
+            max_possible += 1
 
         # Calculate percentage score
         percentage = (total_score / max_possible * 100) if max_possible > 0 else 0

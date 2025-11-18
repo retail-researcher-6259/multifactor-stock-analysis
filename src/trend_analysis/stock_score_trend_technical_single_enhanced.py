@@ -95,7 +95,8 @@ class EnhancedSingleTickerTechnicalAnalyzer(StockScoreTrendAnalyzerTechnical):
                 'momentum': self.calculate_momentum_indicators(ticker),
                 'bollinger_bands': self.calculate_bollinger_bands(ticker),
                 'trend_strength': self.calculate_trend_strength(ticker),
-                'forecasting': self.perform_statistical_forecasting(ticker)
+                'forecasting': self.perform_statistical_forecasting(ticker),
+                'xgboost_reversion': self.perform_xgboost_reversion_analysis(ticker)
             }
 
             # Perform regression analysis
@@ -142,7 +143,7 @@ class EnhancedSingleTickerTechnicalAnalyzer(StockScoreTrendAnalyzerTechnical):
             'Trend Direction', 'Trend Quality', 'SMA Position', 'Recent Cross',
             'MACD Signal', 'MACD Histogram', 'RSI Level', 'RSI Trend',
             'ROC', '%B Position', 'BB Width', 'ADX Strength', 'DI Direction',
-            'ARIMA', 'Exp Smooth', 'Prophet'
+            'ARIMA', 'Exp Smooth', 'Prophet', 'XGBoost Reversion'
         ]
 
         # Start with basic info
@@ -173,7 +174,8 @@ class EnhancedSingleTickerTechnicalAnalyzer(StockScoreTrendAnalyzerTechnical):
             'di_direction': 'DI Direction',
             'arima': 'ARIMA',
             'exp_smooth': 'Exp Smooth',
-            'prophet': 'Prophet'
+            'prophet': 'Prophet',
+            'xgboost_reversion': 'XGBoost Reversion'
         }
 
         # Extract scores from detail strings
@@ -227,13 +229,15 @@ class EnhancedSingleTickerTechnicalAnalyzer(StockScoreTrendAnalyzerTechnical):
         momentum_indicators = ['macd', 'macd_hist', 'rsi_level', 'rsi_trend', 'roc']
         bb_indicators = ['bb_position', 'bb_width']
         forecast_indicators = ['arima', 'exp_smooth', 'prophet']
+        xgboost_indicators = ['xgboost_reversion']
 
         categories = [
             (" Trend Analysis", trend_indicators),
             (" Moving Averages", ma_indicators),
             (" Momentum Indicators", momentum_indicators),
             (" Bollinger Bands", bb_indicators),
-            (" Forecasting", forecast_indicators)
+            (" Forecasting", forecast_indicators),
+            (" Reversion Analysis (XGBoost)", xgboost_indicators)
         ]
 
         for category_name, indicators in categories:
@@ -278,6 +282,69 @@ class EnhancedSingleTickerTechnicalAnalyzer(StockScoreTrendAnalyzerTechnical):
                                 print(f"  • {formatted_key:20s}: {value}")
                         else:
                             print(f"  • {formatted_key:20s}: {value}")
+                elif category_name == " Reversion Analysis (XGBoost)":
+                    # Special handling for XGBoost reversion analysis
+                    xgb_results = self.technical_results.get(ticker, {}).get('xgboost_reversion')
+                    if xgb_results and 'xgboost' in xgb_results and xgb_results['xgboost']:
+                        xgb_data = xgb_results['xgboost']
+
+                        # Model Performance section
+                        print(f"  Model Performance:")
+                        print(f"    • CV Accuracy       : {xgb_data['cv_accuracy']:.1%}")
+                        print(f"    • Training Samples  : {xgb_data['training_samples']}")
+                        print(f"    • Base Reversion Rate: {xgb_data['positive_rate']:.1%}")
+                        print()
+
+                        # Prediction Parameters section
+                        print(f"  Prediction Parameters:")
+                        print(f"    • Forecast Horizon  : {xgb_data['forecast_horizon']} days")
+                        print(f"    • Reversion Threshold: {xgb_data['reversion_threshold']:.0%}")
+                        print()
+
+                        # Current Prediction section
+                        prob = xgb_data['reversion_probability']
+                        prediction = "REVERSION LIKELY" if xgb_data['reversion_prediction'] else "NO REVERSION"
+                        print(f"  Current Prediction:")
+                        print(f"    • Reversion Probability: {prob:.1%}")
+                        print(f"    • Prediction           : {prediction}")
+                        print()
+
+                        # Confidence Level Interpretation
+                        cv_acc = xgb_data['cv_accuracy']
+                        if cv_acc > 0.65:
+                            confidence_msg = "HIGH confidence - predictions are reliable"
+                        elif cv_acc > 0.55:
+                            confidence_msg = "MODERATE confidence - use with other indicators"
+                        elif cv_acc > 0.50:
+                            confidence_msg = "LOW confidence - barely better than random"
+                        else:
+                            confidence_msg = "DO NOT TRUST - model learned wrong patterns"
+                        print(f"  Model Confidence: {confidence_msg}")
+                        print()
+
+                        # Risk Level Interpretation
+                        if prob > 0.7:
+                            risk_msg = "HIGH reversion risk - consider reducing position"
+                        elif prob > 0.5:
+                            risk_msg = "MODERATE reversion risk - monitor closely"
+                        elif prob > 0.3:
+                            risk_msg = "LOW reversion risk - trend likely to continue"
+                        else:
+                            risk_msg = "VERY LOW reversion risk - strong trend continuation"
+                        print(f"  Risk Assessment: {risk_msg}")
+                        print()
+
+                        for key, value in category_items:
+                            formatted_key = "Technical Score"
+                            print(f"  • {formatted_key:20s}: {value}")
+
+                            # Top feature importance
+                            top_features = sorted(xgb_data['feature_importance'].items(),
+                                                key=lambda x: x[1], reverse=True)[:3]
+                            print(f"     Top Predictors: {', '.join([f[0] for f in top_features])}")
+                    else:
+                        for key, value in category_items:
+                            print(f"  • {'Reversion Risk':20s}: {value}")
                 else:
                     # Regular indicators - just print as before
                     for key, value in category_items:
