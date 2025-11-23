@@ -15,6 +15,14 @@ from PyQt5.QtGui import *
 PROJECT_ROOT = Path(__file__).parent.parent.parent if '__file__' in globals() else Path.cwd()
 sys.path.append(str(PROJECT_ROOT))
 
+# Import macro view engine
+try:
+    from src.portfolio_optimization.macro_view_engine import MacroViewEngine
+    MACRO_VIEW_AVAILABLE = True
+except ImportError:
+    MACRO_VIEW_AVAILABLE = False
+    print("Warning: Macro view engine not available")
+
 
 class PortfolioOptimizerThread(QThread):
     """Thread for running portfolio optimization"""
@@ -24,12 +32,17 @@ class PortfolioOptimizerThread(QThread):
     result_ready = pyqtSignal(dict)
     error_occurred = pyqtSignal(str)
 
-    def __init__(self, tickers, shares, method, lookback_days=180):
+    def __init__(self, tickers, shares, method, lookback_days=180, use_regime_filter=True, use_macro_views=False):
         super().__init__()
         self.tickers = tickers
         self.shares = shares  # None if not provided
         self.method = method
         self.lookback_days = lookback_days
+        self.use_regime_filter = use_regime_filter
+        self.use_macro_views = use_macro_views
+        self.current_regime_info = None
+        self.regime_periods = None
+        self.macro_views = None
 
     def run(self):
         """Run the portfolio optimization"""
@@ -45,6 +58,18 @@ class PortfolioOptimizerThread(QThread):
 
             # STORE ORIGINAL TICKER ORDER AS INSTANCE VARIABLE
             self.original_tickers = self.tickers.copy()
+
+            # Load regime detection data if regime filtering is enabled
+            if self.use_regime_filter:
+                self.progress_update.emit(5)
+                self.status_update.emit("Loading regime detection data...")
+                self.load_regime_data()
+
+            # Generate macro views if enabled
+            if self.use_macro_views and MACRO_VIEW_AVAILABLE:
+                self.progress_update.emit(8)
+                self.status_update.emit("Generating macro views...")
+                self.generate_macro_views()
 
             self.progress_update.emit(10)
             self.status_update.emit("Fetching price data...")
@@ -62,13 +87,23 @@ class PortfolioOptimizerThread(QThread):
 
             returns = prices.pct_change().dropna()
 
+            # Apply regime filtering if enabled
+            if self.use_regime_filter and self.current_regime_info:
+                current_regime_name = self.current_regime_info.get('regime_name', 'Unknown')
+                self.status_update.emit(f"Applying regime filter for '{current_regime_name}'...")
+                returns = self.filter_returns_by_regime(returns, current_regime_name)
+
             self.progress_update.emit(30)
             self.status_update.emit(f"Optimizing portfolio using {self.method}...")
 
-            # Estimate covariance matrix
+            # Estimate covariance matrix (now on regime-filtered data)
             lw = LedoitWolf()
             cov_matrix = lw.fit(returns).covariance_
             cov_df = pd.DataFrame(cov_matrix, index=returns.columns, columns=returns.columns)
+
+            # Apply Black-Litterman adjustment if macro views are enabled
+            if self.use_macro_views and self.macro_views:
+                cov_df = self.apply_black_litterman(cov_df)
 
             # Run optimization based on method
             if self.method == "HRP":
@@ -132,13 +167,210 @@ class PortfolioOptimizerThread(QThread):
                 'rebalance_info': rebalance_info,
                 'optimized_img': str(optimized_img),
                 'combined_img': str(combined_img) if combined_img else None,
-                'tickers': self.tickers
+                'tickers': self.tickers,
+                'regime_info': {
+                    'used_regime_filter': self.use_regime_filter,
+                    'regime_name': self.current_regime_info.get('regime_name', 'N/A') if self.current_regime_info else 'N/A',
+                    'regime_confidence': self.current_regime_info.get('confidence', 0) if self.current_regime_info else 0
+                } if self.use_regime_filter else None,
+                'macro_views_info': {
+                    'used_macro_views': self.use_macro_views,
+                    'num_views': len(self.macro_views) if self.macro_views else 0,
+                    'views': self.macro_views
+                } if self.use_macro_views else None
             }
 
             self.result_ready.emit(results)
 
         except Exception as e:
             self.error_occurred.emit(f"Optimization failed: {str(e)}\n{traceback.format_exc()}")
+
+    def load_regime_data(self):
+        """Load current regime and historical regime periods"""
+        try:
+            # Load current regime analysis
+            regime_file = PROJECT_ROOT / "output" / "Regime_Detection_Analysis" / "current_regime_analysis.json"
+            if regime_file.exists():
+                with open(regime_file, 'r') as f:
+                    data = json.load(f)
+                    self.current_regime_info = data.get('regime_detection', {})
+                    self.status_update.emit(f"Current regime: {self.current_regime_info.get('regime_name', 'Unknown')}")
+            else:
+                self.status_update.emit("Warning: No regime data found, using all historical data")
+                self.use_regime_filter = False
+                return
+
+            # Load historical regime periods
+            periods_file = PROJECT_ROOT / "output" / "Regime_Detection_Results" / "regime_periods.csv"
+            if periods_file.exists():
+                self.regime_periods = pd.read_csv(periods_file)
+                self.regime_periods['start_date'] = pd.to_datetime(self.regime_periods['start_date'])
+                self.regime_periods['end_date'] = pd.to_datetime(self.regime_periods['end_date'])
+                self.status_update.emit(f"Loaded {len(self.regime_periods)} regime periods")
+            else:
+                self.status_update.emit("Warning: No regime periods found, using all historical data")
+                self.use_regime_filter = False
+
+        except Exception as e:
+            self.status_update.emit(f"Warning: Could not load regime data - {str(e)}")
+            self.use_regime_filter = False
+
+    def filter_returns_by_regime(self, returns, current_regime_name):
+        """
+        Filter returns to include only periods matching the current regime
+
+        Args:
+            returns: DataFrame of returns
+            current_regime_name: Name of current regime (e.g., 'Steady Growth')
+
+        Returns:
+            Filtered returns DataFrame
+        """
+        if not self.use_regime_filter or self.regime_periods is None:
+            return returns
+
+        try:
+            # Get all periods matching the current regime
+            matching_periods = self.regime_periods[
+                self.regime_periods['regime_name'] == current_regime_name
+            ]
+
+            if matching_periods.empty:
+                self.status_update.emit(f"Warning: No matching periods for regime '{current_regime_name}', using all data")
+                return returns
+
+            # Create a mask for dates in matching regimes
+            regime_mask = pd.Series(False, index=returns.index)
+
+            for _, period in matching_periods.iterrows():
+                # Include data from this regime period
+                period_mask = (returns.index >= period['start_date']) & (returns.index <= period['end_date'])
+                regime_mask = regime_mask | period_mask
+
+            filtered_returns = returns[regime_mask]
+
+            # Calculate statistics
+            original_days = len(returns)
+            filtered_days = len(filtered_returns)
+            percentage = (filtered_days / original_days * 100) if original_days > 0 else 0
+
+            self.status_update.emit(
+                f"Regime filter: Using {filtered_days} days ({percentage:.1f}%) from '{current_regime_name}' periods"
+            )
+
+            # Ensure we have enough data
+            if filtered_days < 60:  # Minimum 60 days for reliable covariance
+                self.status_update.emit(
+                    f"Warning: Only {filtered_days} days in regime '{current_regime_name}', using all data"
+                )
+                return returns
+
+            return filtered_returns
+
+        except Exception as e:
+            self.status_update.emit(f"Warning: Regime filtering failed - {str(e)}, using all data")
+            return returns
+
+    def generate_macro_views(self):
+        """Generate macro views using the macro view engine"""
+        try:
+            engine = MacroViewEngine()
+            self.macro_views = engine.generate_views(self.tickers, lookback_days=90)
+
+            if self.macro_views:
+                num_views = len(self.macro_views)
+                self.status_update.emit(f"Generated {num_views} macro views")
+
+                # Show summary
+                for ticker, view in self.macro_views.items():
+                    self.status_update.emit(
+                        f"  {ticker}: {view['expected_return']*100:+.1f}% "
+                        f"(Confidence: {view['confidence']:.0%})"
+                    )
+            else:
+                self.status_update.emit("No macro views generated")
+                self.use_macro_views = False
+
+        except Exception as e:
+            self.status_update.emit(f"Warning: Could not generate macro views - {str(e)}")
+            self.use_macro_views = False
+
+    def apply_black_litterman(self, cov_df):
+        """
+        Apply Black-Litterman model to incorporate macro views
+
+        Args:
+            cov_df: Covariance matrix DataFrame
+
+        Returns:
+            Adjusted covariance matrix DataFrame
+        """
+        try:
+            from pypfopt import BlackLittermanModel
+
+            self.status_update.emit("Applying Black-Litterman model...")
+
+            # Prepare views dictionary
+            viewdict = {}
+            for ticker in self.tickers:
+                if ticker in self.macro_views:
+                    viewdict[ticker] = self.macro_views[ticker]['expected_return']
+
+            if not viewdict:
+                self.status_update.emit("No views to apply, skipping Black-Litterman")
+                return cov_df
+
+            self.status_update.emit(f"Applying {len(viewdict)} macro views via Black-Litterman")
+
+            # Get market cap weights as prior (or use equal weights as fallback)
+            try:
+                # Try to get market caps
+                import yfinance as yf
+                market_caps = {}
+                for ticker in self.tickers:
+                    try:
+                        stock = yf.Ticker(ticker)
+                        mc = stock.info.get('marketCap', None)
+                        if mc and mc > 0:
+                            market_caps[ticker] = mc
+                    except:
+                        pass
+
+                if market_caps:
+                    total_mc = sum(market_caps.values())
+                    market_prior = pd.Series({t: mc/total_mc for t, mc in market_caps.items()})
+                else:
+                    # Equal weight fallback
+                    market_prior = pd.Series(1.0/len(self.tickers), index=self.tickers)
+
+            except:
+                # Equal weight fallback
+                market_prior = pd.Series(1.0/len(self.tickers), index=self.tickers)
+
+            # Create Black-Litterman model
+            bl = BlackLittermanModel(
+                cov_matrix=cov_df,
+                absolute_views=viewdict,
+                pi="market",  # Use market equilibrium
+                market_caps=market_prior if 'market_caps' in locals() else None
+            )
+
+            # Get posterior (BL-adjusted) covariance
+            bl_cov = bl.bl_cov()
+
+            # Convert back to DataFrame
+            bl_cov_df = pd.DataFrame(bl_cov, index=cov_df.index, columns=cov_df.columns)
+
+            self.status_update.emit("Black-Litterman adjustment complete")
+
+            return bl_cov_df
+
+        except ImportError:
+            self.status_update.emit("Warning: pypfopt not available, skipping Black-Litterman")
+            return cov_df
+        except Exception as e:
+            self.status_update.emit(f"Warning: Black-Litterman failed - {str(e)}, using original covariance")
+            return cov_df
 
     def fetch_prices(self, tickers, lookback_days, max_retries=3):
         """Fetch historical price data with retry logic"""
@@ -604,6 +836,30 @@ class PortfolioOptimizerWidget(QWidget):
         self.shares_checkbox.stateChanged.connect(self.on_shares_checkbox_changed)
         layout.addWidget(self.shares_checkbox)
 
+        # Regime-aware optimization checkbox
+        self.regime_filter_checkbox = QCheckBox("Use regime-aware optimization (filter by current market regime)")
+        self.regime_filter_checkbox.setChecked(True)  # Enabled by default
+        self.regime_filter_checkbox.setToolTip(
+            "When enabled, uses only historical data from periods matching the current market regime.\n"
+            "This makes the optimizer forward-looking and regime-aware."
+        )
+        layout.addWidget(self.regime_filter_checkbox)
+
+        # Macro views checkbox
+        self.macro_views_checkbox = QCheckBox("Use macro views with Black-Litterman (analyst + sector momentum)")
+        self.macro_views_checkbox.setChecked(False)  # Disabled by default (experimental)
+        self.macro_views_checkbox.setToolTip(
+            "When enabled, generates objective macro views from:\n"
+            "- Analyst consensus (price targets)\n"
+            "- Sector momentum analysis\n"
+            "- Factor-specific views (oil prices for energy stocks)\n"
+            "These views are incorporated via Black-Litterman model."
+        )
+        if not MACRO_VIEW_AVAILABLE:
+            self.macro_views_checkbox.setEnabled(False)
+            self.macro_views_checkbox.setToolTip("Macro view engine not available")
+        layout.addWidget(self.macro_views_checkbox)
+
         # Portfolio input area
         portfolio_label = QLabel("Portfolio Holdings:")
         layout.addWidget(portfolio_label)
@@ -927,7 +1183,9 @@ class PortfolioOptimizerWidget(QWidget):
                 tickers=tickers,
                 shares=shares,
                 method=self.method_combo.currentText(),
-                lookback_days=self.lookback_spin.value()
+                lookback_days=self.lookback_spin.value(),
+                use_regime_filter=self.regime_filter_checkbox.isChecked(),
+                use_macro_views=self.macro_views_checkbox.isChecked()
             )
 
             # Connect signals
@@ -959,6 +1217,33 @@ class PortfolioOptimizerWidget(QWidget):
 
             # Display weights
             weights_text = f"=== {results['method']} Optimization Results ===\n\n"
+
+            # Show regime information if available
+            if results.get('regime_info') and results['regime_info'].get('used_regime_filter'):
+                regime_info = results['regime_info']
+                weights_text += "Regime-Aware Optimization:\n"
+                weights_text += "-" * 30 + "\n"
+                weights_text += f"Market Regime: {regime_info['regime_name']}\n"
+                weights_text += f"Confidence: {regime_info['regime_confidence']*100:.1f}%\n"
+                weights_text += f"Data Filter: Using only '{regime_info['regime_name']}' periods\n"
+                weights_text += "\n"
+
+            # Show macro views information if available
+            if results.get('macro_views_info') and results['macro_views_info'].get('used_macro_views'):
+                macro_info = results['macro_views_info']
+                weights_text += "Black-Litterman Macro Views:\n"
+                weights_text += "-" * 30 + "\n"
+                weights_text += f"Views Generated: {macro_info['num_views']}\n"
+
+                if macro_info.get('views'):
+                    weights_text += "\nMacro View Summary:\n"
+                    for ticker, view in macro_info['views'].items():
+                        weights_text += f"  {ticker}: {view['expected_return']*100:+.1f}% "
+                        weights_text += f"({view['confidence']:.0%} confidence)\n"
+                        weights_text += f"    Source: {view['source']}\n"
+
+                weights_text += "\n"
+
             weights_text += "Optimized Weights:\n"
             weights_text += "-" * 30 + "\n"
 

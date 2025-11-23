@@ -1,23 +1,23 @@
 {
-  "timestamp": "2025-11-14T23:14:05.126837",
+  "timestamp": "2025-11-23T12:35:49.652093",
   "regime_detection": {
-    "regime": 1,
+    "regime": 0,
     "regime_name": "Steady Growth",
     "start_date": "2025-10-21",
-    "end_date": "2025-11-14",
-    "days_in_regime": 24,
-    "as_of": "2025-11-14",
+    "end_date": "2025-11-21",
+    "days_in_regime": 31,
+    "as_of": "2025-11-21",
     "characteristics": {
-      "mean_return": 0.0685396421385283,
-      "volatility": 0.1800815639361999,
-      "sharpe": 0.38060332573972333
+      "mean_return": 0.06731634428373061,
+      "volatility": 0.1802133521994543,
+      "sharpe": 0.37353694086566386
     },
     "all_probabilities": {
-      "Strong Bull": 0.2822405557967868,
-      "Steady Growth": 0.6547980894485455,
-      "Crisis/Bear": 0.06296135475466781
+      "Strong Bull": 0.278602522602969,
+      "Steady Growth": 0.6572162071659783,
+      "Crisis/Bear": 0.06418127023105255
     },
-    "confidence": 0.6547980894485455
+    "confidence": 0.6572162071659783
   },
   "recommended_weights": {
     "momentum": 45.0,

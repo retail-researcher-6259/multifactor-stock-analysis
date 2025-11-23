@@ -1,7 +1,7 @@
 {
-  "accuracy": 0.7272727272727273,
-  "accuracy_percentage": "72.7%",
-  "correct_predictions": 8,
+  "accuracy": 0.6363636363636364,
+  "accuracy_percentage": "63.6%",
+  "correct_predictions": 7,
   "total_events": 11,
   "events": [
     {
@@ -72,9 +72,9 @@
       "Event": "2016 Recovery",
       "Period": "2016-07-01 to 2016-12-31",
       "Expected": "Steady Growth",
-      "Dominant": "Steady Growth",
-      "All Regimes": "Steady Growth, Strong Bull, Crisis/Bear",
-      "Match": true
+      "Dominant": "Strong Bull",
+      "All Regimes": "Strong Bull, Steady Growth, Crisis/Bear",
+      "Match": false
     },
     {
       "Event": "COVID Recovery",
@@ -93,5 +93,5 @@
       "Match": true
     }
   ],
-  "validation_date": "2025-11-14T23:14:02.490075"
+  "validation_date": "2025-11-23T12:35:45.377589"
 }
