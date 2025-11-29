@@ -106,4 +106,10 @@ docs/build/
 !README.md
 !README_new.md
 !LICENSE
-!.gitignore.claude/
+!.gitignore
+
+# Claude Code settings (keep local only)
+.claude/
+
+# Weight optimization code (contains API keys - keep local only)
+src/weight_optimization/

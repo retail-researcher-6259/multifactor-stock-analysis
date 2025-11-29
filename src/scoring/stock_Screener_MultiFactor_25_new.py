@@ -47,6 +47,7 @@ import numpy as np
 import ta
 import math
 import time
+import random
 import requests
 from datetime import datetime, timedelta
 from yahooquery import Ticker
@@ -78,51 +79,167 @@ CACHE_DIR.mkdir(exist_ok=True)
 # Total score: 120
 
 REGIME_WEIGHTS = {
-        "Steady_Growth": {
-        "momentum": 38.8,
-        "technical": 19.5,
-        "value": 17.5,
-        "options_flow": 11.0,
-        "liquidity": 7.6,
-        "quality": -6.8,
-        "insider": 5.1,
-        "size": 4.5,
-        "stability": -4.1,
-        "financial_health": 3.8,
-        "growth": 2.5,
-        "carry": 0.6,
+    "Steady_Growth": {
+        "momentum": 130.7,
+        "stability": -30.8,
+        "options_flow": -18.6,
+        "financial_health": 15.3,
+        "technical": 14.9,
+        "value": -10.6,
+        "carry": -7.0,
+        "growth": 3.5,
+        "quality": 2.6,
+        "size": 2.3,
+        "liquidity": -2.3,
+        "insider": 0.0,
     },
     "Strong_Bull": {
-        "momentum": 35.0,
-        "technical": 22.0,
-        "value": 15.0,
-        "options_flow": 12.0,
-        "liquidity": 12.0,
-        "financial_health": 8.0,
-        "growth": 5.0,
-        "size": 3.0,
-        "insider": 2.0,
-        "carry": -2.0,
-        "stability": -6.0,
-        "quality": -6.0,
+        "momentum": 138.9,
+        "stability": -60.0,
+        "financial_health": 40.1,
+        "carry": -33.4,
+        "technical": 32.3,
+        "value": -23.2,
+        "options_flow": -19.6,
+        "growth": 13.4,
+        "quality": 8.2,
+        "size": 3.3,
+        "insider": 0.0,
+        "liquidity": 0.0,
     },
     "Crisis_Bear": {
-        "momentum": 46.6,
-        "technical": 25.9,
-        "value": 11.0,
-        "growth": 8.2,
-        "quality": -6.0,
-        "financial_health": 5.9,
-        "liquidity": 4.7,
-        "stability": -4.5,
-        "size": 3.5,
-        "options_flow": 2.9,
-        "insider": 1.8,
-        "carry": 0.0,
+        "momentum": 118.0,
+        "stability": -50.4,
+        "financial_health": 34.5,
+        "technical": 28.8,
+        "carry": -21.2,
+        "options_flow": -18.6,
+        "value": -13.3,
+        "growth": 13.3,
+        "size": 8.0,
+        "quality": 3.6,
+        "liquidity": -2.7,
+        "insider": 0.0,
     }
 }
 
-# Update FUND_THRESHOLDS to reorganize metrics
+# Regime-specific thresholds - Tailored to economic conditions of each regime
+#
+# RATIONALE:
+# - Different market regimes reward different stock characteristics
+# - "Strong_Bull": Growth and momentum dominate, value metrics less predictive
+#   → Relaxed thresholds to include quality growth stocks with higher valuations
+# - "Steady_Growth": Balanced fundamentals matter, moderate valuations preferred
+#   → Standard thresholds balancing value, quality, and growth
+# - "Crisis_Bear": Flight to quality, deep value and strong balance sheets critical
+#   → Strict thresholds focusing on cash flow, low debt, and margin of safety
+#
+# This ensures factor scores align with what actually drives returns in each regime,
+# improving correlation stability and optimization effectiveness.
+#
+REGIME_THRESHOLDS = {
+    "Strong_Bull": {
+        # Value thresholds - Most lenient (bull markets tolerate high valuations)
+        "pe": 30,              # Bull markets: growth stocks command premium multiples
+        "pb": 4.0,             # Higher book value multiples acceptable
+        "ev_to_ebitda": 18,    # Enterprise value multiples expand
+        "fcf_yield": 0.02,     # Lower cash yield threshold (2%)
+        "ev_to_sales": 3.5,    # Sales multiples can be higher for growth
+
+        # Quality thresholds - Slightly relaxed (momentum matters more than fundamentals)
+        "roe": 0.10,           # 10% ROE acceptable in bull markets
+        "roic": 0.08,          # 8% ROIC threshold
+        "gross_margin": 0.20,  # 20% gross margin
+        "operating_margin": 0.08,  # 8% operating margin
+        "fcf_margin": 0.06,    # 6% FCF margin
+        "asset_turnover": None,
+
+        # Financial health thresholds - Relaxed (credit is cheap, risk tolerance high)
+        "de_ratio": 80,        # Higher debt tolerance (80% D/E)
+        "current_ratio": 1.2,  # Lower liquidity requirement
+        "interest_coverage": 2.5,  # Lower coverage requirement
+        "cash_debt_ratio": 0.2,    # Lower cash/debt requirement
+
+        # Growth thresholds - Most important in bull markets
+        "rev_growth": 0.08,    # Higher growth expectations (8%+)
+        "growth_est": 0.15,    # Strong forward growth (15%+)
+        "peg_ratio": 2.0,      # Higher PEG tolerance (growth at any price)
+
+        # Other thresholds
+        "price": 2,
+        "div_yield_min": 0.01,     # Lower dividend requirement
+        "payout_ratio_max": 0.80,  # Higher payout tolerance
+    },
+
+    "Steady_Growth": {
+        # Value thresholds - Moderate (balanced market, some premium for quality growth)
+        "pe": 22,              # Moderate P/E threshold
+        "pb": 3.0,             # Moderate P/B
+        "ev_to_ebitda": 14,    # Moderate EV/EBITDA
+        "fcf_yield": 0.025,    # 2.5% FCF yield
+        "ev_to_sales": 2.5,    # Moderate sales multiple
+
+        # Quality thresholds - Balanced
+        "roe": 0.12,           # 12% ROE - standard quality bar
+        "roic": 0.10,          # 10% ROIC
+        "gross_margin": 0.25,  # 25% gross margin
+        "operating_margin": 0.10,  # 10% operating margin
+        "fcf_margin": 0.08,    # 8% FCF margin
+        "asset_turnover": None,
+
+        # Financial health thresholds - Moderate
+        "de_ratio": 60,        # 60% D/E ratio
+        "current_ratio": 1.5,  # Standard liquidity
+        "interest_coverage": 3.0,  # 3x interest coverage
+        "cash_debt_ratio": 0.3,    # 30% cash/debt
+
+        # Growth thresholds - Moderate
+        "rev_growth": 0.06,    # 6% revenue growth
+        "growth_est": 0.12,    # 12% forward growth
+        "peg_ratio": 1.8,      # Moderate PEG
+
+        # Other thresholds
+        "price": 2,
+        "div_yield_min": 0.015,
+        "payout_ratio_max": 0.70,
+    },
+
+    "Crisis_Bear": {
+        # Value thresholds - Strictest (flight to quality, deep value focus)
+        "pe": 15,              # Low P/E required (bargain hunting)
+        "pb": 2.0,             # Conservative P/B
+        "ev_to_ebitda": 10,    # Low enterprise value multiples
+        "fcf_yield": 0.04,     # High cash yield requirement (4%+)
+        "ev_to_sales": 1.5,    # Low sales multiples
+
+        # Quality thresholds - Strictest (quality and safety paramount)
+        "roe": 0.15,           # 15% ROE - only high-quality businesses
+        "roic": 0.12,          # 12% ROIC - efficient capital allocation critical
+        "gross_margin": 0.30,  # 30% gross margin - pricing power essential
+        "operating_margin": 0.12,  # 12% operating margin
+        "fcf_margin": 0.10,    # 10% FCF margin - strong cash generation
+        "asset_turnover": None,
+
+        # Financial health thresholds - Strictest (balance sheet strength critical)
+        "de_ratio": 40,        # Low debt tolerance (40% D/E max)
+        "current_ratio": 2.0,  # High liquidity requirement
+        "interest_coverage": 5.0,  # Strong coverage (5x)
+        "cash_debt_ratio": 0.5,    # High cash/debt ratio (50%)
+
+        # Growth thresholds - Less important, but stability valued
+        "rev_growth": 0.03,    # Lower growth expectations (3%+, stability key)
+        "growth_est": 0.08,    # Modest forward growth (8%+)
+        "peg_ratio": 1.2,      # Low PEG (don't overpay for growth)
+
+        # Other thresholds
+        "price": 2,
+        "div_yield_min": 0.02,     # Higher dividend requirement (income focus)
+        "payout_ratio_max": 0.60,  # Lower payout ratio (prefer retained earnings)
+    }
+}
+
+# Legacy single threshold set - kept for backwards compatibility
+# New code should use get_regime_thresholds() instead
 FUND_THRESHOLDS = {
     # Pure value thresholds
     "pe": 20,
@@ -853,13 +970,13 @@ def run_historical_specific_date(target_date, regime, progress_callback=None):
                 print(f"   Insufficient historical data for {tk}, skipping...")
                 continue
 
-            # Calculate Factor Scores using historical data
-            value, quality, financial_health, roic, value_dict = get_fundamentals(tk)
+            # Calculate Factor Scores using historical data with regime-specific thresholds
+            value, quality, financial_health, roic, value_dict = get_fundamentals(tk, regime_clean)
             value_metrics_by_ticker[tk] = value_dict
 
             tech = get_technical_score(hist)
             insider = get_insider_score_simple(tk)
-            growth = get_growth_score(tk, info)
+            growth = get_growth_score(tk, info, regime_clean)
 
             # Momentum calculations
             pm, em = get_momentum_score(tk, hist)
@@ -918,118 +1035,33 @@ def run_historical_specific_date(target_date, regime, progress_callback=None):
     # Convert to DataFrame
     df_raw = pd.DataFrame(raw)
 
-    # Apply sector-relative growth adjustment
+    # Use raw growth score directly (already uses absolute thresholds)
     if 'Growth' in df_raw.columns:
-        df_raw['GrowthScore_SectorZ'] = df_raw.groupby('Sector')['Growth'].transform(
-            lambda x: zscore(x, nan_policy='omit') if len(x) > 1 else 0
-        )
-        df_raw['GrowthScore_Norm'] = df_raw['GrowthScore_SectorZ'].apply(
-            lambda z: 1 / (1 + np.exp(-np.clip(z, -2, 2))) if pd.notna(z) else 0.5
-        )
+        df_raw['GrowthScore_Norm'] = df_raw['Growth']
     else:
         df_raw['GrowthScore_Norm'] = 0
 
-    # Industry adjustment for value scores
-    VALUE_METRIC_WEIGHTS = {
-        'earnings_yield': 0.25,
-        'fcf_yield': 0.25,
-        'ev_to_ebitda': 0.20,
-        'pb': 0.15,
-        'ev_to_sales': 0.15
-    }
-
-    # Create columns for each value metric
-    value_metric_names = list(VALUE_METRIC_WEIGHTS.keys())
-    for metric in value_metric_names:
-        df_raw[f'value_{metric}'] = df_raw['Ticker'].map(
-            lambda t: value_metrics_by_ticker.get(t, {}).get(metric, np.nan)
-        )
-
-    # Calculate industry-relative z-scores for each value metric
-    for metric in value_metric_names:
-        col_name = f'value_{metric}'
-        if df_raw['Industry'].nunique() > 1:
-            df_raw[f'{col_name}_industry_z'] = df_raw.groupby('Industry')[col_name].transform(
-                lambda x: (x - x.mean()) / (x.std() if x.std() > 0 else 1) if len(x) > 1 else 0
-            )
-        else:
-            values = df_raw[col_name]
-            mean_val = values.mean()
-            std_val = values.std()
-            if std_val > 0:
-                df_raw[f'{col_name}_industry_z'] = (values - mean_val) / std_val
-            else:
-                df_raw[f'{col_name}_industry_z'] = 0
-
-        df_raw[f'{col_name}_norm'] = df_raw[f'{col_name}_industry_z'].apply(
-            lambda z: 1 / (1 + np.exp(-np.clip(z, -3, 3))) if pd.notna(z) else np.nan
-        )
-
-    # Calculate the final industry-adjusted value score
-    industry_adjusted_value_scores = []
-    for _, row in df_raw.iterrows():
-        weighted_score = 0
-        total_weight = 0
-        for metric in value_metric_names:
-            norm_col = f'value_{metric}_norm'
-            if norm_col in row and pd.notna(row[norm_col]):
-                weight = VALUE_METRIC_WEIGHTS[metric]
-                weighted_score += row[norm_col] * weight
-                total_weight += weight
-
-        if total_weight > 0:
-            industry_adjusted_value_scores.append(weighted_score / total_weight)
-        else:
-            industry_adjusted_value_scores.append(row['Value'])
-
-    df_raw['ValueIndustryAdj'] = industry_adjusted_value_scores
-
-    # Cross-sectional normalizations for momentum
-    pm_arr = np.asarray(pm_cache)
-    em_arr = np.asarray(em_cache)
-
-    def safe_z(a):
-        """Calculate z-scores with proper handling of NaN values"""
-        a_clean = [val for val in a if val is not None and not np.isnan(val)]
-        if len(a_clean) < 2:
-            return np.zeros_like(a)
-
-        mu = np.mean(a_clean)
-        sig = np.std(a_clean, ddof=1)
-
-        if sig > 0:
-            z_scores = [(val - mu) / sig if val is not None and not np.isnan(val) else 0 for val in a]
-            return np.array(z_scores)
-        else:
-            return np.zeros_like(a)
-
-    pm_z = safe_z(pm_arr)
-    em_z = safe_z(em_arr)
-    squash = lambda x: 1 / (1 + np.exp(-x))
-
-    # Size normalization
-    mcaps_arr = np.asarray([m for m in mcaps if m is not None])
-    if len(mcaps_arr) > 0:
-        mc_min, mc_80th = np.min(mcaps_arr), np.percentile(mcaps_arr, 80)
-    else:
-        mc_min, mc_80th = 1e9, 10e9
+    # Use raw value score directly (already uses absolute thresholds)
+    # No industry-relative normalization needed
+    df_raw['ValueScore'] = df_raw['Value']
 
     # Calculate final scores
     results = []
 
     for k, rec in df_raw.iterrows():
-        pm_val = pm_z[k] if k < len(pm_z) and not np.isnan(pm_z[k]) else 0
-        pm_score = squash(pm_val)
+        # Use absolute momentum scoring (no z-score normalization)
+        pm_raw = rec['PriceMom']
+        em_raw = rec['EarnMom']
 
-        em_val = em_z[k] if k < len(em_z) and not np.isnan(em_z[k]) else 0
-        em_score = squash(em_val)
+        pm_score = absolute_momentum_score(pm_raw)
+        em_score = absolute_earnings_momentum_score(em_raw)
 
         momentum = round(0.6 * pm_score + 0.4 * em_score, 3)
 
-        size = get_size_score({'marketCap': rec['MarketCap']}, mc_min, mc_80th)
+        size = get_size_score({'marketCap': rec['MarketCap']})
 
         total = (
-                rec['ValueIndustryAdj'] * WEIGHTS['value'] +
+                rec['ValueScore'] * WEIGHTS['value'] +
                 rec['Quality'] * WEIGHTS['quality'] +
                 rec['FinancialHealth'] * WEIGHTS['financial_health'] +
                 rec['Technical'] * WEIGHTS['technical'] +
@@ -1048,7 +1080,7 @@ def run_historical_specific_date(target_date, regime, progress_callback=None):
             "CompanyName": rec['CompanyName'],
             "Country": rec['Country'],
             "Score": round(total, 2),
-            "Value": round(rec['ValueIndustryAdj'], 3),
+            "Value": round(rec['ValueScore'], 3),
             "Quality": rec['Quality'],
             "FinancialHealth": round(rec['FinancialHealth'], 3),
             "Technical": rec['Technical'],
@@ -1298,6 +1330,10 @@ def set_progress_callback(callback):
 def get_regime_weights(regime_name):
     """Get weights for a specific regime"""
     return REGIME_WEIGHTS.get(regime_name, REGIME_WEIGHTS["Steady_Growth"])
+
+def get_regime_thresholds(regime_name):
+    """Get thresholds for a specific regime"""
+    return REGIME_THRESHOLDS.get(regime_name, REGIME_THRESHOLDS["Steady_Growth"])
 
 # Add a function to set output directory based on regime
 def get_output_directory(regime_name):
@@ -1574,14 +1610,21 @@ def sector_industry(info):
     )
 
 
-def get_fundamentals(ticker):
+def get_fundamentals(ticker, regime_name="Steady_Growth"):
     """
     Returns four scores: (value_score, quality_score, financial_health_score, roic)
-    Each factor is scored on a continuous 0-1 scale.
+    Each factor is scored on a continuous 0-1 scale using regime-specific thresholds.
     Also returns value_metrics_dict for industry adjustment.
+
+    Args:
+        ticker: Stock ticker symbol
+        regime_name: Market regime name ("Strong_Bull", "Steady_Growth", "Crisis_Bear")
     """
     try:
         info = fast_info(ticker)
+
+        # Get regime-specific thresholds
+        thresholds = get_regime_thresholds(regime_name)
 
         # Basic metrics extraction (same as before)
         pe = info.get("trailingPE")
@@ -1631,67 +1674,67 @@ def get_fundamentals(ticker):
                 score_list.append(score)
             return score
 
-        # 1. PURE VALUE METRICS (simplified)
+        # 1. PURE VALUE METRICS (simplified) - using regime-specific thresholds
         value_scores_dict = {}
 
         if earnings_yield is not None:
             add_score(value_scores_dict, 'earnings_yield', earnings_yield, 0.05, 0.10, True)
 
         if fcf_yield is not None and fcf_yield > 0:
-            add_score(value_scores_dict, 'fcf_yield', fcf_yield, FUND_THRESHOLDS['fcf_yield'], 0.10, True)
+            add_score(value_scores_dict, 'fcf_yield', fcf_yield, thresholds['fcf_yield'], 0.10, True)
 
         if ev_to_ebitda is not None and ev_to_ebitda > 0:
-            add_score(value_scores_dict, 'ev_to_ebitda', ev_to_ebitda, FUND_THRESHOLDS['ev_to_ebitda'], 6, False)
+            add_score(value_scores_dict, 'ev_to_ebitda', ev_to_ebitda, thresholds['ev_to_ebitda'], 6, False)
 
         if pb is not None and pb > 0:
-            add_score(value_scores_dict, 'pb', pb, FUND_THRESHOLDS['pb'], 1, False)
+            add_score(value_scores_dict, 'pb', pb, thresholds['pb'], 1, False)
 
         if ev_to_sales is not None and ev_to_sales > 0:
-            add_score(value_scores_dict, 'ev_to_sales', ev_to_sales, FUND_THRESHOLDS['ev_to_sales'], 1, False)
+            add_score(value_scores_dict, 'ev_to_sales', ev_to_sales, thresholds['ev_to_sales'], 1, False)
 
-        # 2. QUALITY METRICS (expanded)
+        # 2. QUALITY METRICS (expanded) - using regime-specific thresholds
         quality_scores_dict = {}
 
         if roe is not None:
-            add_score(quality_scores_dict, 'roe', roe, FUND_THRESHOLDS['roe'], 0.25, True)
+            add_score(quality_scores_dict, 'roe', roe, thresholds['roe'], 0.25, True)
 
         if roic is not None:
-            add_score(quality_scores_dict, 'roic', roic, FUND_THRESHOLDS['roic'], 0.20, True)
+            add_score(quality_scores_dict, 'roic', roic, thresholds['roic'], 0.20, True)
 
         if gross_margin is not None:
-            add_score(quality_scores_dict, 'gross_margin', gross_margin, FUND_THRESHOLDS['gross_margin'], 0.6, True)
+            add_score(quality_scores_dict, 'gross_margin', gross_margin, thresholds['gross_margin'], 0.6, True)
 
         if operating_margin is not None:
-            add_score(quality_scores_dict, 'operating_margin', operating_margin, FUND_THRESHOLDS['operating_margin'],
+            add_score(quality_scores_dict, 'operating_margin', operating_margin, thresholds['operating_margin'],
                       0.2, True)
 
         # FCF margin
         fcf_margin = fcf / revenue if fcf and revenue and revenue > 0 else None
         if fcf_margin is not None:
-            add_score(quality_scores_dict, 'fcf_margin', fcf_margin, FUND_THRESHOLDS['fcf_margin'], 0.15, True)
+            add_score(quality_scores_dict, 'fcf_margin', fcf_margin, thresholds['fcf_margin'], 0.15, True)
 
         if asset_turnover is not None and asset_turnover > 0:
-            add_score(quality_scores_dict, 'asset_turnover', asset_turnover, FUND_THRESHOLDS['asset_turnover'], 1.0,
+            add_score(quality_scores_dict, 'asset_turnover', asset_turnover, thresholds['asset_turnover'], 1.0,
                       True)
 
         # Revenue stability (new) - would need historical data
         # For now, use gross margin stability as proxy
         quality_scores_dict['revenue_stability'] = quality_scores_dict.get('gross_margin', 0) * 0.8
 
-        # 3. FINANCIAL HEALTH METRICS (new separate factor)
+        # 3. FINANCIAL HEALTH METRICS (new separate factor) - using regime-specific thresholds
         financial_health_scores = []
 
         if cash_debt_ratio is not None and cash_debt_ratio > 0:
-            add_score(financial_health_scores, None, cash_debt_ratio, FUND_THRESHOLDS['cash_debt_ratio'], 0.6, True)
+            add_score(financial_health_scores, None, cash_debt_ratio, thresholds['cash_debt_ratio'], 0.6, True)
 
         if current_ratio is not None and current_ratio > 0:
-            add_score(financial_health_scores, None, current_ratio, FUND_THRESHOLDS['current_ratio'], 2.5, True)
+            add_score(financial_health_scores, None, current_ratio, thresholds['current_ratio'], 2.5, True)
 
         if de is not None and de >= 0:
-            add_score(financial_health_scores, None, de, FUND_THRESHOLDS['de_ratio'], 50, False)
+            add_score(financial_health_scores, None, de, thresholds['de_ratio'], 50, False)
 
         if interest_coverage is not None and interest_coverage > 0:
-            add_score(financial_health_scores, None, interest_coverage, FUND_THRESHOLDS['interest_coverage'], 10, True)
+            add_score(financial_health_scores, None, interest_coverage, thresholds['interest_coverage'], 10, True)
 
         # Calculate weighted scores
         # Value score
@@ -1727,26 +1770,37 @@ def get_fundamentals(ticker):
         return 0, 0, 0, None, {}
 
 
-def get_growth_score(ticker, info=None):
+def get_growth_score(ticker, info=None, regime_name="Steady_Growth"):
     """
     Forward-looking growth factor with emphasis on growth acceleration and estimates.
+    Uses regime-specific thresholds for growth expectations.
+
+    Args:
+        ticker: Stock ticker symbol
+        info: Optional pre-fetched info dict
+        regime_name: Market regime name ("Strong_Bull", "Steady_Growth", "Crisis_Bear")
     """
     if info is None:
         info = fast_info(ticker)
 
+    # Get regime-specific thresholds
+    thresholds = get_regime_thresholds(regime_name)
+
     growth_metrics = {}
 
-    # 1. Revenue Growth (keep but reduce weight)
+    # 1. Revenue Growth (keep but reduce weight) - using regime threshold
     rev_growth = info.get("revenueGrowth", 0)
     if rev_growth is not None and not pd.isna(rev_growth):
-        norm_rev_growth = min(max((rev_growth - 0.05) / 0.25, 0), 1)
+        rev_threshold = thresholds['rev_growth']
+        norm_rev_growth = min(max((rev_growth - rev_threshold) / 0.25, 0), 1)
         growth_metrics['revenue_growth'] = (norm_rev_growth, 0.8)  # Reduced weight
 
-    # 2. PEG Ratio (moved from value - lower is better for growth)
+    # 2. PEG Ratio (moved from value - lower is better for growth) - using regime threshold
     peg = info.get("pegRatio")
+    peg_threshold = thresholds['peg_ratio']
     if peg is not None and peg > 0:
-        # Invert: PEG < 1 is excellent, > 2 is poor
-        norm_peg = max(0, min(1, (2 - peg) / 1.5))
+        # Invert: PEG < 1 is excellent, > peg_threshold is poor
+        norm_peg = max(0, min(1, (peg_threshold - peg) / (peg_threshold - 1.0)))
         growth_metrics['peg_ratio'] = (norm_peg, 0.9)
 
     # 3. Forward estimates and revisions (enhanced)
@@ -1898,22 +1952,33 @@ def fetch_economic_growth_score():
         return 0
 
 
-def get_size_score(info, mcap_min, mcap_80th):
+def get_size_score(info):
     """
-    Enhanced size score with continuous scaling that considers both market cap and stock price.
-    - Market cap: smaller is better (80% of score)
+    Absolute size score using log-scaled market cap with hardcoded thresholds.
+    - Market cap: smaller is better (80% of score), using log scale
     - Price: mid-range is best - too low or too high is penalized (20% of score)
+
+    Log-scale thresholds (absolute, not relative to ticker list):
+    - $300M (micro-cap floor): score = 1.0 (highest)
+    - $500B (mega-cap ceiling): score = 0.0 (lowest)
 
     Returns a score between 0-1, where higher means smaller/better size characteristics.
     """
     cap = info.get('marketCap')
     price = info.get('regularMarketPrice')
 
-    if cap is None:
+    if cap is None or cap <= 0:
         return 0
 
-    # Market cap component (smaller is better)
-    cap_score = (mcap_80th - min(cap, mcap_80th)) / (mcap_80th - mcap_min) if mcap_80th > mcap_min else 0
+    # Market cap component using log scale (smaller is better)
+    # Log10 scale: $300M (~8.48) to $500B (~11.7)
+    LOG_MCAP_MIN = np.log10(300_000_000)      # $300M - micro-cap floor
+    LOG_MCAP_MAX = np.log10(500_000_000_000)  # $500B - mega-cap ceiling
+
+    log_cap = np.log10(cap)
+
+    # Clamp to range and invert (smaller cap = higher score)
+    cap_score = (LOG_MCAP_MAX - log_cap) / (LOG_MCAP_MAX - LOG_MCAP_MIN)
     cap_score = max(0, min(1, cap_score))
 
     # Price component (mid-range is best - too low or too high is problematic)
@@ -2767,6 +2832,92 @@ def get_momentum_score(ticker, hist):
     return (pm if pm is not None else np.nan,
             em if em is not None else np.nan)
 
+
+def absolute_momentum_score(raw_momentum):
+    """
+    Convert raw price momentum (252-day return) to 0-1 score using fixed percentile thresholds.
+
+    This is an absolute scoring function - independent of other tickers in the list.
+
+    Thresholds based on typical market behavior:
+    - Strong negative: < -20% → score ≈ 0.1-0.3
+    - Weak negative: -20% to 0% → score ≈ 0.3-0.5
+    - Weak positive: 0% to +30% → score ≈ 0.5-0.7
+    - Strong positive: +30% to +100% → score ≈ 0.7-0.9
+    - Exceptional: > +100% → score ≈ 0.9-1.0
+
+    Args:
+        raw_momentum: Float representing the 252-day return (e.g., 0.25 = 25% gain)
+
+    Returns:
+        Float between 0 and 1
+    """
+    if raw_momentum is None or np.isnan(raw_momentum):
+        return 0.5  # Neutral score for missing data
+
+    if raw_momentum < -0.20:  # < -20%
+        # Strong negative momentum: map to 0.1-0.3
+        # Cap at -50% for extreme losses
+        clamped = max(raw_momentum, -0.50)
+        return 0.1 + (clamped + 0.50) / 0.30 * 0.2
+    elif raw_momentum < 0:  # -20% to 0%
+        # Weak negative: linear interpolation from 0.3 to 0.5
+        return 0.3 + (raw_momentum + 0.20) / 0.20 * 0.2
+    elif raw_momentum < 0.30:  # 0% to +30%
+        # Weak positive: linear interpolation from 0.5 to 0.7
+        return 0.5 + raw_momentum / 0.30 * 0.2
+    elif raw_momentum < 1.00:  # +30% to +100%
+        # Strong positive: linear interpolation from 0.7 to 0.9
+        return 0.7 + (raw_momentum - 0.30) / 0.70 * 0.2
+    else:  # > +100%
+        # Exceptional: map to 0.9-1.0, diminishing returns
+        # Cap at +200% for extreme gains
+        clamped = min(raw_momentum, 2.00)
+        return 0.9 + (clamped - 1.00) / 1.00 * 0.1
+
+
+def absolute_earnings_momentum_score(earnings_momentum):
+    """
+    Convert raw earnings momentum to 0-1 score using fixed percentile thresholds.
+
+    This is an absolute scoring function - independent of other tickers in the list.
+
+    Thresholds based on typical earnings growth patterns:
+    - Strong decline: < -15% → score ≈ 0.1-0.3
+    - Weak decline: -15% to 0% → score ≈ 0.3-0.5
+    - Weak growth: 0% to +20% → score ≈ 0.5-0.7
+    - Strong growth: +20% to +50% → score ≈ 0.7-0.9
+    - Exceptional: > +50% → score ≈ 0.9-1.0
+
+    Args:
+        earnings_momentum: Float representing earnings growth rate
+
+    Returns:
+        Float between 0 and 1
+    """
+    if earnings_momentum is None or np.isnan(earnings_momentum):
+        return 0.5  # Neutral score for missing data
+
+    if earnings_momentum < -0.15:  # < -15%
+        # Strong decline: map to 0.1-0.3
+        # Cap at -40% for extreme declines
+        clamped = max(earnings_momentum, -0.40)
+        return 0.1 + (clamped + 0.40) / 0.25 * 0.2
+    elif earnings_momentum < 0:  # -15% to 0%
+        # Weak decline: linear interpolation from 0.3 to 0.5
+        return 0.3 + (earnings_momentum + 0.15) / 0.15 * 0.2
+    elif earnings_momentum < 0.20:  # 0% to +20%
+        # Weak growth: linear interpolation from 0.5 to 0.7
+        return 0.5 + earnings_momentum / 0.20 * 0.2
+    elif earnings_momentum < 0.50:  # +20% to +50%
+        # Strong growth: linear interpolation from 0.7 to 0.9
+        return 0.7 + (earnings_momentum - 0.20) / 0.30 * 0.2
+    else:  # > +50%
+        # Exceptional: map to 0.9-1.0, diminishing returns
+        # Cap at +100% for extreme growth
+        clamped = min(earnings_momentum, 1.00)
+        return 0.9 + (clamped - 0.50) / 0.50 * 0.1
+
 def get_30d_std(df):
     """
     Returns the standard deviation of daily returns over the past 30 trading days.
@@ -3095,8 +3246,8 @@ def run_daily_scoring(regime="Steady_Growth", progress_callback=None):
                 skipped_tickers.append((tk, f"Insufficient data ({len(hist)} days)"))
                 continue
 
-            # Calculate Factor Scores
-            value, quality, financial_health, roic, value_dict = get_fundamentals(tk)
+            # Calculate Factor Scores with regime-specific thresholds
+            value, quality, financial_health, roic, value_dict = get_fundamentals(tk, regime)
             value_metrics_by_ticker[tk] = value_dict
 
             tech = get_technical_score(hist)
@@ -3127,7 +3278,7 @@ def run_daily_scoring(regime="Steady_Growth", progress_callback=None):
                 Stability=stability,
                 MarketCap=mcap, OptionsFlow=options_flow,
                 Liquidity=liq, Carry=carry, Sector=sector, Industry=industry,
-                Growth=get_growth_score(tk, info),
+                Growth=get_growth_score(tk, info, regime),
                 ROIC=roic,
                 CompanyName=company_name, Country=country
             ))
@@ -3160,83 +3311,32 @@ def run_daily_scoring(regime="Steady_Growth", progress_callback=None):
     # Convert to DataFrame
     df_raw = pd.DataFrame(raw)
 
-    # Apply sector-relative growth adjustment
-    df_raw = apply_sector_relative_growth_adjustment(df_raw)
+    # Use raw growth score directly (already uses absolute thresholds)
+    if 'Growth' in df_raw.columns:
+        df_raw['GrowthScore_Norm'] = df_raw['Growth']
+    else:
+        df_raw['GrowthScore_Norm'] = 0
 
-    # 2-a momentum z-scores → logistic 0-1
-    pm_arr = np.asarray(pm_cache)
-    em_arr = np.asarray(em_cache)
-
-    def safe_z(a):
-        """Calculate z-scores with proper handling of NaN values"""
-        a_float = np.array([np.nan if x is None or not isinstance(x, (int, float)) else x for x in a], dtype=np.float64)
-        finite = np.isfinite(a_float)
-        if finite.sum() <= 2:
-            return np.zeros_like(a_float, dtype=float)
-        return zscore(a_float, nan_policy='omit')
-
-    pm_z = safe_z(pm_arr)
-    em_z = safe_z(em_arr)
-    squash = lambda z: 1 / (1 + np.exp(-np.clip(z, -2, 2)))
-
-    # 2-b size-percentile breakpoints
-    mcaps_clean = [m for m in mcaps if m]
-    mc_min = np.nanmin(mcaps_clean) if mcaps_clean else 0
-    mc_80th = np.nanpercentile(mcaps_clean, 80) if mcaps_clean else 1
-
-    # Create columns for each value metric
-    value_metric_names = list(VALUE_METRIC_WEIGHTS.keys())
-    for metric in value_metric_names:
-        df_raw[f'value_{metric}'] = df_raw['Ticker'].map(
-            lambda t: value_metrics_by_ticker.get(t, {}).get(metric, np.nan)
-        )
-
-    # Calculate industry-relative z-scores for each value metric
-    for metric in value_metric_names:
-        col_name = f'value_{metric}'
-        df_raw[f'{col_name}_industry_z'] = df_raw.groupby('Industry')[col_name].transform(
-            lambda x: (x - x.mean()) / (x.std() if x.std() > 0 else 1)
-        )
-        # Convert z-scores to 0-1 range
-        df_raw[f'{col_name}_norm'] = df_raw[f'{col_name}_industry_z'].apply(
-            lambda z: 1 / (1 + np.exp(-np.clip(z, -2, 2))) if pd.notna(z) else np.nan
-        )
-
-    # 3. Calculate the final industry-adjusted value score
-    industry_adjusted_value_scores = []
-    for _, row in df_raw.iterrows():
-        weighted_score = 0
-        total_weight = 0
-        for metric in value_metric_names:
-            norm_col = f'value_{metric}_norm'
-            if pd.notna(row[norm_col]):
-                weight = VALUE_METRIC_WEIGHTS[metric]
-                weighted_score += row[norm_col] * weight
-                total_weight += weight
-
-        if total_weight > 0:
-            industry_adjusted_value_scores.append(weighted_score / total_weight)
-        else:
-            industry_adjusted_value_scores.append(row['Value'])
-
-    df_raw['ValueIndustryAdj'] = industry_adjusted_value_scores
+    # Use raw value score directly (already uses absolute thresholds)
+    # No industry-relative normalization needed
+    df_raw['ValueScore'] = df_raw['Value']
 
     # -------- 3.  final scoring ticker-by-ticker ------------------------------
     results = []
     for k, rec in df_raw.iterrows():
-        # Momentum scores
-        pm_val = pm_z[k] if k < len(pm_z) and not np.isnan(pm_z[k]) else 0
-        pm_score = squash(pm_val)
+        # Use absolute momentum scoring (no z-score normalization)
+        pm_raw = rec['PriceMom']
+        em_raw = rec['EarnMom']
 
-        em_val = em_z[k] if k < len(em_z) and not np.isnan(em_z[k]) else 0
-        em_score = squash(em_val)
+        pm_score = absolute_momentum_score(pm_raw)
+        em_score = absolute_earnings_momentum_score(em_raw)
 
         momentum = round(0.6 * pm_score + 0.4 * em_score, 3)
 
-        size = get_size_score({'marketCap': rec['MarketCap']}, mc_min, mc_80th)
+        size = get_size_score({'marketCap': rec['MarketCap']})
 
         total = (
-                rec['ValueIndustryAdj'] * WEIGHTS['value'] +
+                rec['ValueScore'] * WEIGHTS['value'] +
                 rec['Quality'] * WEIGHTS['quality'] +
                 rec['FinancialHealth'] * WEIGHTS['financial_health'] +
                 rec['Technical'] * WEIGHTS['technical'] +
@@ -3255,7 +3355,7 @@ def run_daily_scoring(regime="Steady_Growth", progress_callback=None):
             "CompanyName": rec['CompanyName'],
             "Country": rec['Country'],
             "Score": round(total, 2),
-            "Value": round(rec['ValueIndustryAdj'], 3),
+            "Value": round(rec['ValueScore'], 3),
             "Quality": rec['Quality'],
             "FinancialHealth": round(rec['FinancialHealth'], 3),
             "Technical": rec['Technical'],
