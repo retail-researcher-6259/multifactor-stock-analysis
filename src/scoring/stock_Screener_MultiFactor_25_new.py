@@ -79,48 +79,48 @@ CACHE_DIR.mkdir(exist_ok=True)
 # Total score: 120
 
 REGIME_WEIGHTS = {
-    "Steady_Growth": {
-        "momentum": 130.7,
-        "stability": -30.8,
-        "options_flow": -18.6,
-        "financial_health": 15.3,
-        "technical": 14.9,
-        "value": -10.6,
-        "carry": -7.0,
-        "growth": 3.5,
-        "quality": 2.6,
-        "size": 2.3,
-        "liquidity": -2.3,
-        "insider": 0.0,
-    },
-    "Strong_Bull": {
-        "momentum": 138.9,
-        "stability": -60.0,
-        "financial_health": 40.1,
-        "carry": -33.4,
-        "technical": 32.3,
-        "value": -23.2,
-        "options_flow": -19.6,
-        "growth": 13.4,
-        "quality": 8.2,
-        "size": 3.3,
-        "insider": 0.0,
-        "liquidity": 0.0,
-    },
-    "Crisis_Bear": {
-        "momentum": 118.0,
-        "stability": -50.4,
-        "financial_health": 34.5,
-        "technical": 28.8,
-        "carry": -21.2,
-        "options_flow": -18.6,
-        "value": -13.3,
-        "growth": 13.3,
-        "size": 8.0,
-        "quality": 3.6,
-        "liquidity": -2.7,
-        "insider": 0.0,
-    }
+        "Steady_Growth": {
+            "momentum": 70.83,
+            "stability": -55.32,
+            "financial_health": 46.76,
+            "technical": 28.24,
+            "value": 15.28,
+            "carry": -6.71,
+            "quality": -30.56,
+            "liquidity": -16.44,
+            "growth": -4.17,
+            "size": 52.08,
+            "insider": 0.0,
+            "options_flow": 0.0,
+        },
+        "Strong_Bull": {
+            "momentum": 104.3,
+            "stability": -75.0,
+            "financial_health": 50.2,
+            "size": 37.0,
+            "technical": 33.0,
+            "carry": -28.0,
+            "quality": -18.8,
+            "value": -14.2,
+            "growth": 11.5,
+            "insider": 0.0,
+            "liquidity": 0.0,
+            "options_flow": 0.0,
+        },
+        "Crisis_Bear": {
+            "momentum": 126.7,
+            "stability": -74.3,
+            "financial_health": 32.6,
+            "size": 27.2,
+            "technical": 23.8,
+            "carry": -21.7,
+            "quality": -18.8,
+            "value": -10.9,
+            "growth": 8.1,
+            "liquidity": 7.3,
+            "insider": 0.0,
+            "options_flow": 0.0,
+        }
 }
 
 # Regime-specific thresholds - Tailored to economic conditions of each regime
@@ -935,14 +935,16 @@ def run_historical_specific_date(target_date, regime, progress_callback=None):
         progress_callback('status', f"Fetching historical data for {target_date.strftime('%Y-%m-%d')}...")
         progress_callback('progress', 10)
 
-    # Pre-scan for liquidity
+    # Pre-scan for liquidity (DEPRECATED - now using absolute scoring)
+    # Note: The min-max normalization below is no longer used.
+    # Liquidity is now calculated using get_liquidity_score() with absolute thresholds.
     avg_vol = {}
     for tk in tickers:
         try:
             avg_vol[tk] = fast_info(tk).get("averageVolume10days", 0)
         except Exception:
             avg_vol[tk] = 0
-    vol_min, vol_max = min(avg_vol.values()), max(avg_vol.values())
+    vol_min, vol_max = min(avg_vol.values()) if avg_vol.values() else 0, max(avg_vol.values()) if avg_vol.values() else 1
 
     # Main data harvest
     raw = []
@@ -995,10 +997,8 @@ def run_historical_specific_date(target_date, regime, progress_callback=None):
             options_flow = get_options_flow_score(tk, info)
             carry = get_carry_score_simple(tk, info)
 
-            # Liquidity score
-            liq = 0
-            if vol_max != vol_min:
-                liq = round((avg_vol[tk] - vol_min) / (vol_max - vol_min), 2)
+            # Use absolute liquidity scoring (not relative min-max)
+            liq = get_liquidity_score(info)
 
             raw.append(dict(
                 Ticker=tk, Value=value, Quality=quality,
@@ -3199,14 +3199,16 @@ def run_daily_scoring(regime="Steady_Growth", progress_callback=None):
     if _progress_tracker:
         _progress_tracker.total_tickers = len(tickers)
 
-    # -------- 1-a  pre-scan: avgVol for liquidity -----------------------------
+    # -------- 1-a  pre-scan: avgVol for liquidity (DEPRECATED - now using absolute scoring) -----------------------------
+    # Note: The min-max normalization below is no longer used.
+    # Liquidity is now calculated using get_liquidity_score() with absolute thresholds.
     avg_vol = {}
     for tk in tickers:
         try:
             avg_vol[tk] = fast_info(tk).get("averageVolume10days", 0)
         except Exception:
             avg_vol[tk] = 0
-    vol_min, vol_max = min(avg_vol.values()), max(avg_vol.values())
+    vol_min, vol_max = min(avg_vol.values()) if avg_vol.values() else 0, max(avg_vol.values()) if avg_vol.values() else 1
 
     # -------- 1-b. main data harvest ------------------------------------------
     if _progress_tracker:
@@ -3267,9 +3269,8 @@ def run_daily_scoring(regime="Steady_Growth", progress_callback=None):
             options_flow = get_options_flow_score(tk, info)
             carry = get_carry_score_simple(tk, info)
 
-            liq = 0
-            if vol_max != vol_min:
-                liq = round((avg_vol[tk] - vol_min) / (vol_max - vol_min), 2)
+            # Use absolute liquidity scoring (not relative min-max)
+            liq = get_liquidity_score(info)
 
             raw.append(dict(
                 Ticker=tk, Value=value, Quality=quality,
