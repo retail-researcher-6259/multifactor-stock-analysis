@@ -146,14 +146,24 @@ class EnhancedSingleTickerTechnicalAnalyzer(StockScoreTrendAnalyzerTechnical):
             'ARIMA', 'Exp Smooth', 'Prophet', 'XGBoost Reversion'
         ]
 
+        # Add sentiment indicator columns (NEW)
+        sentiment_columns = ['Options Flow', 'Insider Transactions']
+
         # Start with basic info
         row_data = {
             'Ticker': ticker,
-            'Score': round(score_data['total_score'], 1)
+            'Technical_Score': round(score_data.get('technical_score', score_data['total_score']), 1),
+            'Sentiment_Score': round(score_data.get('sentiment_score', 0), 1),
+            'Total_Score': round(score_data['total_score'], 1),
+            'Score': round(score_data['total_score'], 1)  # Legacy compatibility
         }
 
         # Initialize all indicators
         for col in indicator_columns:
+            row_data[col] = 0
+
+        # Initialize sentiment indicators (NEW)
+        for col in sentiment_columns:
             row_data[col] = 0
 
         # Map detailed scores to columns
@@ -175,7 +185,9 @@ class EnhancedSingleTickerTechnicalAnalyzer(StockScoreTrendAnalyzerTechnical):
             'arima': 'ARIMA',
             'exp_smooth': 'Exp Smooth',
             'prophet': 'Prophet',
-            'xgboost_reversion': 'XGBoost Reversion'
+            'xgboost_reversion': 'XGBoost Reversion',
+            'options_flow': 'Options Flow',  # NEW: Sentiment indicator
+            'insider': 'Insider Transactions'  # NEW: Sentiment indicator
         }
 
         # Extract scores from detail strings
@@ -183,7 +195,7 @@ class EnhancedSingleTickerTechnicalAnalyzer(StockScoreTrendAnalyzerTechnical):
             if detail_key in detail_to_column:
                 column = detail_to_column[detail_key]
 
-                # Extract score from detail string
+                # Extract score from detail string (including negative values for sentiment)
                 if '(+1.5)' in str(detail_value):
                     row_data[column] = 1.5
                 elif '(+1)' in str(detail_value):
@@ -192,6 +204,10 @@ class EnhancedSingleTickerTechnicalAnalyzer(StockScoreTrendAnalyzerTechnical):
                     row_data[column] = 0.5
                 elif '(+0.3)' in str(detail_value):
                     row_data[column] = 0.3
+                elif '(-0.5)' in str(detail_value):  # NEW: Negative sentiment
+                    row_data[column] = -0.5
+                elif '(-1)' in str(detail_value):  # NEW: Negative sentiment
+                    row_data[column] = -1
                 elif '(0)' in str(detail_value) or '(+0)' in str(detail_value):
                     row_data[column] = 0
                 else:
@@ -230,6 +246,7 @@ class EnhancedSingleTickerTechnicalAnalyzer(StockScoreTrendAnalyzerTechnical):
         bb_indicators = ['bb_position', 'bb_width']
         forecast_indicators = ['arima', 'exp_smooth', 'prophet']
         xgboost_indicators = ['xgboost_reversion']
+        sentiment_indicators = ['options_flow', 'insider']  # NEW: Sentiment indicators
 
         categories = [
             (" Trend Analysis", trend_indicators),
@@ -237,7 +254,8 @@ class EnhancedSingleTickerTechnicalAnalyzer(StockScoreTrendAnalyzerTechnical):
             (" Momentum Indicators", momentum_indicators),
             (" Bollinger Bands", bb_indicators),
             (" Forecasting", forecast_indicators),
-            (" Reversion Analysis (XGBoost)", xgboost_indicators)
+            (" Reversion Analysis (XGBoost)", xgboost_indicators),
+            (" Sentiment Analysis", sentiment_indicators)  # NEW
         ]
 
         for category_name, indicators in categories:
@@ -355,15 +373,43 @@ class EnhancedSingleTickerTechnicalAnalyzer(StockScoreTrendAnalyzerTechnical):
         print(f"\n RANKING SUMMARY:")
         print(f"{'-' * 40}")
 
-        # Count positive indicators
-        positive_count = sum(1 for col in ranking_data.keys()
-                           if col not in ['Ticker', 'Score', 'Recommendation']
-                           and ranking_data[col] > 0)
-        total_indicators = len([col for col in ranking_data.keys()
-                              if col not in ['Ticker', 'Score', 'Recommendation']])
+        # Check if we have sentiment breakdown in score_data
+        if 'technical_score' in score_data and 'sentiment_score' in score_data:
+            # New format with Technical + Sentiment breakdown
+            tech_score = score_data['technical_score']
+            tech_max = score_data['technical_max']
+            sent_score = score_data['sentiment_score']
+            sent_max = score_data['sentiment_max']
 
-        print(f"  Positive Indicators: {positive_count}/{total_indicators}")
-        print(f"  Technical Score: {ranking_data['Score']:.1f}")
+            # Count positive technical indicators (17 indicators)
+            tech_positive = sum(1 for key in score_data['details'].keys()
+                              if key not in sentiment_indicators and
+                              '+' in str(score_data['details'][key]) and
+                              '(+0)' not in str(score_data['details'][key]))
+
+            # Count positive sentiment indicators (2 indicators: options_flow + insider)
+            sent_positive = sum(1 for key in sentiment_indicators
+                              if key in score_data['details'] and
+                              '+' in str(score_data['details'][key]) and
+                              '(+0)' not in str(score_data['details'][key]))
+
+            print(f"  Technical Indicators: {tech_positive}/17 positive")
+            print(f"  Sentiment Indicators: {sent_positive}/{sent_max} positive")
+            print(f"")
+            print(f"  Technical Score: {tech_score:.1f}/{tech_max:.1f}")
+            print(f"  Sentiment Score: {sent_score:.1f}/{sent_max:.1f}")
+            print(f"  Combined Score: {score_data['total_score']:.1f}/{score_data['max_possible']:.1f}")
+        else:
+            # Legacy format (no sentiment breakdown)
+            positive_count = sum(1 for col in ranking_data.keys()
+                               if col not in ['Ticker', 'Score', 'Recommendation']
+                               and ranking_data[col] > 0)
+            total_indicators = len([col for col in ranking_data.keys()
+                                  if col not in ['Ticker', 'Score', 'Recommendation']])
+
+            print(f"  Positive Indicators: {positive_count}/{total_indicators}")
+            print(f"  Technical Score: {ranking_data['Score']:.1f}")
+
         print(f"  Final Recommendation: {ranking_data['Recommendation']}")
 
         # Signal strength

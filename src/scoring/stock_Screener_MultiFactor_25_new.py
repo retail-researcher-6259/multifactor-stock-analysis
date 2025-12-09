@@ -1998,7 +1998,7 @@ def get_size_score(info):
     return round(final_score, 2)
 
 
-def get_options_flow_score(ticker, info):
+def get_options_flow_score(ticker, info, return_details=False):
     """
     Calculate institutional options flow score using instant metrics
 
@@ -2013,9 +2013,11 @@ def get_options_flow_score(ticker, info):
     Args:
         ticker: Stock symbol
         info: Stock info dict with current price
+        return_details: If True, return (score, detailed_data_dict)
 
     Returns:
         float: Score 0-1 (0.5 = neutral, >0.5 = bullish, <0.5 = bearish)
+        OR tuple: (score, details_dict) if return_details=True
     """
     try:
         # Get current stock price
