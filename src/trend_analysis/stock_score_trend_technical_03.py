@@ -8,6 +8,7 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
 from datetime import datetime
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
@@ -336,6 +337,66 @@ class StockScoreTrendAnalyzerTechnical:
             'adx': adx.tolist(),
             'plus_di': plus_di.tolist(),
             'minus_di': minus_di.tolist()
+        }
+
+    def calculate_acceleration_metrics(self, ticker):
+        """
+        Calculate velocity (1st derivative) and acceleration (2nd derivative) of score trend
+        Returns dict with velocity array, acceleration array, and momentum phase
+        """
+        data = self.score_history.get(ticker)
+        if not data or len(data['scores']) < 4:
+            return None
+
+        scores = np.array(data['scores'])
+        indices = np.array(data['indices'])
+
+        # Velocity: first differences (1st derivative)
+        velocity = np.diff(scores)
+
+        # Acceleration: second differences (2nd derivative)
+        acceleration = np.diff(velocity)
+
+        # Pad arrays to match original length for plotting
+        # Velocity: pad 1 NaN at start
+        velocity_padded = np.concatenate([[np.nan], velocity])
+        # Acceleration: pad 2 NaNs at start
+        acceleration_padded = np.concatenate([[np.nan, np.nan], acceleration])
+
+        # Calculate recent metrics (last 3 points)
+        recent_velocity = np.nanmean(velocity[-3:]) if len(velocity) >= 3 else np.nanmean(velocity)
+        recent_acceleration = np.nanmean(acceleration[-3:]) if len(acceleration) >= 3 else np.nanmean(acceleration)
+
+        # Determine momentum phase
+        if recent_velocity > 0.1 and recent_acceleration > 0.05:
+            phase = 'accelerating_up'
+            phase_display = '▲▲ Accelerating Up'
+            phase_color = 'darkgreen'
+        elif recent_velocity > 0.1 and recent_acceleration < -0.05:
+            phase = 'decelerating_up'
+            phase_display = '▲▽ Decelerating Up (Caution)'
+            phase_color = 'orange'
+        elif recent_velocity < -0.1 and recent_acceleration > 0.05:
+            phase = 'decelerating_down'
+            phase_display = '▽▲ Decelerating Down (Watch)'
+            phase_color = 'gold'
+        elif recent_velocity < -0.1 and recent_acceleration < -0.05:
+            phase = 'accelerating_down'
+            phase_display = '▽▽ Accelerating Down'
+            phase_color = 'darkred'
+        else:
+            phase = 'stable'
+            phase_display = '● Stable'
+            phase_color = 'gray'
+
+        return {
+            'velocity': velocity_padded,
+            'acceleration': acceleration_padded,
+            'recent_velocity': round(recent_velocity, 4),
+            'recent_acceleration': round(recent_acceleration, 4),
+            'phase': phase,
+            'phase_display': phase_display,
+            'phase_color': phase_color
         }
 
     def perform_statistical_forecasting(self, ticker):
@@ -710,6 +771,508 @@ class StockScoreTrendAnalyzerTechnical:
             consecutive, mean_reversion_speed
         ]
 
+    def get_options_flow_data(self, ticker, lookback_days=30):
+        """
+        Get options flow data using the scoring script's working yahooquery setup
+
+        Returns dictionary with options flow metrics
+        """
+        try:
+            print(f"   [DEBUG] Fetching options flow for {ticker}...")
+
+            # Import from scoring script to use its properly-patched yahooquery
+            import sys
+            scoring_path = str(Path(__file__).parent.parent / "scoring")
+            if scoring_path not in sys.path:
+                sys.path.insert(0, scoring_path)
+                print(f"   [DEBUG] Added scoring path: {scoring_path}")
+
+            # Import the scoring module to trigger its yahooquery patching
+            print(f"   [DEBUG] Importing scoring module...")
+            import stock_Screener_MultiFactor_25_new
+            from yahooquery import Ticker
+            print(f"   [DEBUG] Yahooquery imported successfully")
+
+            # Get current stock info for price
+            print(f"   [DEBUG] Creating Ticker object for {ticker}...")
+            t = Ticker(ticker)
+
+            print(f"   [DEBUG] Fetching summary_detail...")
+            info = t.summary_detail.get(ticker, {})
+            print(f"   [DEBUG] Info keys: {list(info.keys()) if isinstance(info, dict) else type(info)}")
+
+            # Try multiple price fields in order of preference
+            current_price = (
+                info.get('regularMarketPrice') or
+                info.get('currentPrice') or
+                info.get('regularMarketPreviousClose') or
+                info.get('previousClose') or
+                None
+            )
+
+            # If still None, try the price endpoint as fallback
+            if current_price is None:
+                print(f"   [DEBUG] No price in summary_detail, trying price endpoint...")
+                price_info = t.price.get(ticker, {})
+                current_price = price_info.get('regularMarketPrice') or price_info.get('regularMarketPreviousClose')
+                print(f"   [DEBUG] Price endpoint result: ${current_price}")
+
+            print(f"   [DEBUG] Current price: ${current_price}")
+
+            if current_price is None or current_price <= 0:
+                print(f"   [DEBUG] ✗ Failed: No valid current price found")
+                return None
+
+            # Fetch options chain
+            print(f"   [DEBUG] Fetching options chain...")
+            options_chain = t.option_chain
+            print(f"   [DEBUG] Options chain type: {type(options_chain)}")
+
+            if options_chain is None or not isinstance(options_chain, pd.DataFrame):
+                print(f"   [DEBUG] ✗ Failed: Options chain is not a DataFrame")
+                return None
+
+            print(f"   [DEBUG] Options chain length: {len(options_chain)} contracts")
+
+            if len(options_chain) < 10:
+                print(f"   [DEBUG] ✗ Failed: Too few contracts ({len(options_chain)} < 10)")
+                return None
+
+            # Parse options data
+            calls_data = []
+            puts_data = []
+
+            for idx, contract in options_chain.iterrows():
+                if not isinstance(idx, tuple) or len(idx) < 3:
+                    continue
+
+                symbol, exp_date, option_type = idx[0], idx[1], idx[2]
+
+                # Get contract details
+                strike = contract.get('strike', 0)
+                oi = contract.get('openInterest', 0)
+                volume = contract.get('volume', 0)
+                last_price = contract.get('lastPrice', 0)
+
+                # Handle NaN values
+                if pd.isna(strike) or pd.isna(oi):
+                    continue
+                if pd.isna(volume):
+                    volume = 0
+                if pd.isna(last_price):
+                    last_price = 0
+
+                strike = float(strike)
+                oi = int(oi)
+                volume = int(volume)
+                last_price = float(last_price)
+
+                if oi <= 0 and volume <= 0:
+                    continue
+
+                # Calculate moneyness
+                moneyness = strike / current_price
+
+                contract_info = {
+                    'strike': strike,
+                    'oi': oi,
+                    'volume': volume,
+                    'price': last_price,
+                    'moneyness': moneyness,
+                    'notional_oi': oi * 100 * last_price,
+                    'notional_vol': volume * 100 * last_price
+                }
+
+                if option_type == 'calls':
+                    calls_data.append(contract_info)
+                else:
+                    puts_data.append(contract_info)
+
+            print(f"   [DEBUG] Parsed {len(calls_data)} calls, {len(puts_data)} puts")
+
+            if len(calls_data) < 5 or len(puts_data) < 5:
+                print(f"   [DEBUG] ✗ Failed: Insufficient calls ({len(calls_data)}) or puts ({len(puts_data)})")
+                return None
+
+            # Calculate metrics
+            total_call_oi = sum(c['oi'] for c in calls_data)
+            total_put_oi = sum(p['oi'] for p in puts_data)
+            total_call_vol = sum(c['volume'] for c in calls_data)
+            total_put_vol = sum(p['volume'] for p in puts_data)
+
+            pc_ratio_oi = total_put_oi / total_call_oi if total_call_oi > 0 else 1.0
+            pc_ratio_vol = total_put_vol / total_call_vol if total_call_vol > 0 else 1.0
+
+            print(f"   [DEBUG] P/C Ratio OI: {pc_ratio_oi:.3f}, P/C Ratio Vol: {pc_ratio_vol:.3f}")
+
+            # Near-the-money (±10%)
+            ntm_calls = [c for c in calls_data if 0.90 <= c['moneyness'] <= 1.10]
+            ntm_puts = [p for p in puts_data if 0.90 <= p['moneyness'] <= 1.10]
+
+            ntm_call_oi = sum(c['oi'] for c in ntm_calls)
+            ntm_put_oi = sum(p['oi'] for p in ntm_puts)
+
+            # If OI data is missing/zero, fall back to volume as proxy
+            if ntm_call_oi == 0 and ntm_put_oi == 0:
+                print(f"   [DEBUG] ⚠ WARNING: Near-the-money OI is zero! Falling back to volume...")
+                ntm_call_vol = sum(c['volume'] for c in ntm_calls)
+                ntm_put_vol = sum(p['volume'] for p in ntm_puts)
+                ntm_pc_ratio = ntm_put_vol / ntm_call_vol if ntm_call_vol > 0 else pc_ratio_vol
+                print(f"   [DEBUG] Using volume proxy: NTM Call Vol: {ntm_call_vol}, NTM Put Vol: {ntm_put_vol}")
+            else:
+                ntm_pc_ratio = ntm_put_oi / ntm_call_oi if ntm_call_oi > 0 else pc_ratio_oi
+
+            print(f"   [DEBUG] Near-the-money: {len(ntm_calls)} calls, {len(ntm_puts)} puts")
+            print(f"   [DEBUG] NTM Call OI: {ntm_call_oi}, NTM Put OI: {ntm_put_oi}, NTM P/C: {ntm_pc_ratio:.3f}")
+
+            # Large positions (>2 std above mean)
+            all_oi = [c['oi'] for c in calls_data] + [p['oi'] for p in puts_data]
+            avg_oi = np.mean(all_oi) if all_oi else 0
+            std_oi = np.std(all_oi) if len(all_oi) > 1 else 0
+
+            print(f"   [DEBUG] All OI stats: count={len(all_oi)}, mean={avg_oi:.1f}, std={std_oi:.1f}")
+
+            # If average OI is very low (<10), data quality is poor - use volume instead
+            if avg_oi < 10:
+                print(f"   [DEBUG] ⚠ WARNING: Average OI too low ({avg_oi:.1f}), using volume for large position detection...")
+                all_vol = [c['volume'] for c in calls_data] + [p['volume'] for p in puts_data]
+                avg_vol = np.mean(all_vol) if all_vol else 0
+                std_vol = np.std(all_vol) if len(all_vol) > 1 else 0
+
+                # Use lower threshold when using volume (1 std instead of 2)
+                threshold = avg_vol + 1 * std_vol if std_vol > 0 else avg_vol * 1.5
+
+                large_calls = [c for c in ntm_calls if c['volume'] > threshold]
+                large_puts = [p for p in ntm_puts if p['volume'] > threshold]
+
+                print(f"   [DEBUG] Volume stats: mean={avg_vol:.1f}, std={std_vol:.1f}, threshold={threshold:.1f}")
+                print(f"   [DEBUG] Large positions (by volume, threshold={threshold:.0f}): {len(large_calls)} calls, {len(large_puts)} puts")
+                if large_calls:
+                    print(f"   [DEBUG] Large call strikes: {[c['strike'] for c in large_calls]} with Vol: {[c['volume'] for c in large_calls]}")
+                if large_puts:
+                    print(f"   [DEBUG] Large put strikes: {[p['strike'] for p in large_puts]} with Vol: {[p['volume'] for p in large_puts]}")
+
+                # Use volume for the return data too
+                large_call_oi = sum(c['volume'] for c in large_calls)
+                large_put_oi = sum(p['volume'] for p in large_puts)
+            else:
+                threshold = avg_oi + 2 * std_oi if std_oi > 0 else avg_oi * 2
+
+                large_calls = [c for c in ntm_calls if c['oi'] > threshold]
+                large_puts = [p for p in ntm_puts if p['oi'] > threshold]
+
+                print(f"   [DEBUG] OI threshold={threshold:.1f}")
+                print(f"   [DEBUG] Large positions (by OI, threshold={threshold:.0f}): {len(large_calls)} calls, {len(large_puts)} puts")
+                if large_calls:
+                    print(f"   [DEBUG] Large call strikes: {[c['strike'] for c in large_calls]} with OI: {[c['oi'] for c in large_calls]}")
+                if large_puts:
+                    print(f"   [DEBUG] Large put strikes: {[p['strike'] for p in large_puts]} with OI: {[p['oi'] for p in large_puts]}")
+
+                large_call_oi = sum(c['oi'] for c in large_calls)
+                large_put_oi = sum(p['oi'] for p in large_puts)
+            print(f"   [DEBUG] ✓ Successfully fetched options flow data!")
+
+            return {
+                'current_price': current_price,
+                'total_call_oi': total_call_oi,
+                'total_put_oi': total_put_oi,
+                'total_call_vol': total_call_vol,
+                'total_put_vol': total_put_vol,
+                'pc_ratio_oi': pc_ratio_oi,
+                'pc_ratio_vol': pc_ratio_vol,
+                'ntm_call_oi': ntm_call_oi,
+                'ntm_put_oi': ntm_put_oi,
+                'ntm_pc_ratio': ntm_pc_ratio,
+                'large_calls': large_calls,
+                'large_puts': large_puts,
+                'large_call_oi': large_call_oi,
+                'large_put_oi': large_put_oi
+            }
+
+        except Exception as e:
+            print(f"   [DEBUG] ✗ EXCEPTION in get_options_flow_data for {ticker}:")
+            print(f"   [DEBUG] Error: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            return None
+
+    def get_insider_transaction_data(self, ticker, lookback_days=90):
+        """
+        Get insider transaction data using yahooquery
+        Returns dictionary with insider transaction metrics
+
+        Args:
+            ticker: Stock ticker symbol
+            lookback_days: Number of days to look back (default: 90)
+
+        Returns:
+            Dictionary with insider metrics or None if no data
+        """
+        try:
+            print(f"   [DEBUG] Fetching insider transactions for {ticker} ({lookback_days} days)...")
+
+            # Import from scoring script to use its properly-patched yahooquery
+            import sys
+            from pathlib import Path
+            scoring_path = str(Path(__file__).parent.parent / "scoring")
+            if scoring_path not in sys.path:
+                sys.path.insert(0, scoring_path)
+
+            # Import the scoring module to trigger its yahooquery patching
+            print(f"   [DEBUG] Importing scoring module...")
+            import stock_Screener_MultiFactor_25_new
+            from yahooquery import Ticker
+            from datetime import datetime, timedelta
+            import pandas as pd
+            import numpy as np
+
+            # Create ticker object
+            t = Ticker(ticker, session=stock_Screener_MultiFactor_25_new._global_curl_session)
+
+            # Get insider transactions
+            df = t.insider_transactions
+
+            # Handle various return types from yahooquery
+            if df is None:
+                print(f"   [DEBUG] ✗ Failed: No insider data returned")
+                return None
+
+            if isinstance(df, dict):
+                if ticker not in df:
+                    print(f"   [DEBUG] ✗ Failed: Ticker not in insider data")
+                    return None
+                df = df[ticker]
+
+            if df is None or (hasattr(df, 'empty') and df.empty):
+                print(f"   [DEBUG] ✗ Failed: Empty insider data")
+                return None
+
+            print(f"   [DEBUG] ✓ Got {len(df)} total insider transactions")
+
+            # Filter to lookback window
+            cutoff_date = datetime.now() - timedelta(days=lookback_days)
+            cutoff_str = cutoff_date.strftime("%Y-%m-%d")
+
+            # Check if startDate column exists
+            if 'startDate' not in df.columns:
+                print(f"   [DEBUG] ✗ Failed: No 'startDate' column in insider data")
+                return None
+
+            df = df[df["startDate"] >= cutoff_str]
+
+            if df.empty:
+                print(f"   [DEBUG] ✗ Failed: No recent insider transactions in {lookback_days} days")
+                return None
+
+            print(f"   [DEBUG] ✓ Found {len(df)} transactions in last {lookback_days} days")
+
+            # Calculate transaction values
+            df["value"] = pd.to_numeric(df["value"], errors="coerce").fillna(0)
+
+            # Parse transaction text to identify buys and sells
+            txt = df["transactionText"].str.lower()
+
+            buy_mask = txt.str.contains("buy|purchase", na=False)
+            sell_mask = txt.str.contains("sell|sale", na=False)
+
+            buys_df = df[buy_mask]
+            sells_df = df[sell_mask]
+
+            buys = buys_df["value"].sum()
+            sells = sells_df["value"].sum()
+            total = buys + sells
+
+            print(f"   [DEBUG] Buys: ${buys:,.0f}, Sells: ${sells:,.0f}, Total: ${total:,.0f}")
+
+            if total == 0:
+                print(f"   [DEBUG] ✗ Failed: No buy/sell transaction values")
+                return None
+
+            # Calculate metrics
+            net = buys - sells
+            buy_ratio = buys / total
+
+            # Calculate unique insiders (breadth)
+            unique_insiders = df['filerName'].nunique()
+            unique_buyers = buys_df['filerName'].nunique() if not buys_df.empty else 0
+            unique_sellers = sells_df['filerName'].nunique() if not sells_df.empty else 0
+
+            # Calculate recency (average days ago)
+            days_ago = []
+            for date in df['startDate']:
+                try:
+                    dt = pd.Timestamp(date)
+                    delta = (datetime.now() - dt).days
+                    days_ago.append(delta)
+                except:
+                    days_ago.append(lookback_days)
+
+            avg_days_ago = np.mean(days_ago) if days_ago else lookback_days
+
+            # Get transaction counts
+            num_buys = len(buys_df)
+            num_sells = len(sells_df)
+
+            print(f"   [DEBUG] ✓ Unique insiders: {unique_insiders} ({unique_buyers} buyers, {unique_sellers} sellers)")
+            print(f"   [DEBUG] ✓ Transactions: {num_buys} buys, {num_sells} sells")
+            print(f"   [DEBUG] ✓ Buy ratio: {buy_ratio:.2%}, Avg recency: {avg_days_ago:.1f} days ago")
+
+            # Prepare transaction details for visualization
+            transactions = []
+            for _, row in df.iterrows():
+                try:
+                    trans_type = 'Buy' if 'buy' in row['transactionText'].lower() or 'purchase' in row['transactionText'].lower() else \
+                                 'Sell' if 'sell' in row['transactionText'].lower() or 'sale' in row['transactionText'].lower() else \
+                                 'Other'
+
+                    transactions.append({
+                        'date': row['startDate'],
+                        'insider': row['filerName'],
+                        'type': trans_type,
+                        'value': row['value'],
+                        'shares': row.get('shares', 0)
+                    })
+                except:
+                    continue
+
+            return {
+                'buys': buys,
+                'sells': sells,
+                'net': net,
+                'total': total,
+                'buy_ratio': buy_ratio,
+                'num_buys': num_buys,
+                'num_sells': num_sells,
+                'unique_insiders': unique_insiders,
+                'unique_buyers': unique_buyers,
+                'unique_sellers': unique_sellers,
+                'avg_days_ago': avg_days_ago,
+                'lookback_days': lookback_days,
+                'transactions': transactions
+            }
+
+        except Exception as e:
+            print(f"   [DEBUG] ✗ EXCEPTION in get_insider_transaction_data for {ticker}:")
+            print(f"   [DEBUG] Error: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            return None
+
+    def calculate_sentiment_indicators(self, ticker):
+        """
+        Calculate sentiment indicators (Options Flow)
+        Returns dictionary with sentiment scores
+        """
+        sentiment_data = {}
+
+        # Get options flow data (30-day window)
+        options_data = self.get_options_flow_data(ticker, lookback_days=30)
+
+        if options_data:
+            # Calculate options flow score using the same logic as scoring script
+            pc_ratio_oi = options_data['pc_ratio_oi']
+            pc_ratio_vol = options_data['pc_ratio_vol']
+            ntm_pc_ratio = options_data['ntm_pc_ratio']
+            large_call_oi = options_data['large_call_oi']
+            large_put_oi = options_data['large_put_oi']
+
+            signals = []
+
+            # Signal 1: Overall P/C ratio (30%)
+            pc_signal = 1.0 - min(max(pc_ratio_oi - 0.7, 0) / 0.6, 1.0)
+            signals.append(('pc_oi', pc_signal, 0.30))
+
+            # Signal 2: Volume P/C ratio (20%)
+            pc_vol_signal = 1.0 - min(max(pc_ratio_vol - 0.7, 0) / 0.6, 1.0)
+            signals.append(('pc_vol', pc_vol_signal, 0.20))
+
+            # Signal 3: Near-the-money P/C (30%)
+            ntm_signal = 1.0 - min(max(ntm_pc_ratio - 0.7, 0) / 0.6, 1.0)
+            signals.append(('ntm', ntm_signal, 0.30))
+
+            # Signal 4: Large position imbalance (20%)
+            if large_call_oi + large_put_oi > 0:
+                large_imbalance = large_call_oi / (large_call_oi + large_put_oi)
+                signals.append(('large', large_imbalance, 0.20))
+            else:
+                signals.append(('large', 0.5, 0.20))
+
+            # Calculate weighted score
+            score = sum(signal * weight for _, signal, weight in signals)
+            score = max(0.0, min(1.0, score))
+
+            # Convert signals to dict (name -> value), excluding weights
+            signals_dict = {name: signal for name, signal, weight in signals}
+
+            sentiment_data['options_flow'] = {
+                'score': round(score, 3),
+                'raw_data': options_data,
+                'signals': signals_dict
+            }
+        else:
+            sentiment_data['options_flow'] = {
+                'score': 0.5,  # Neutral
+                'raw_data': None,
+                'signals': {}
+            }
+
+        # ====================
+        # 2. INSIDER TRANSACTIONS (90-day window)
+        # ====================
+        insider_data = self.get_insider_transaction_data(ticker, lookback_days=90)
+
+        if insider_data:
+            # Calculate insider score using the same logic as scoring script
+            import math
+
+            buys = insider_data['buys']
+            sells = insider_data['sells']
+            total = insider_data['total']
+            buy_ratio = insider_data['buy_ratio']
+            unique_insiders = insider_data['unique_insiders']
+            avg_days_ago = insider_data['avg_days_ago']
+            lookback_days = insider_data['lookback_days']
+
+            # Calculate magnitude factor (larger transactions = stronger signal)
+            magnitude = math.log(total + 1) / math.log(10000000)  # 0 to 1 range
+            magnitude = min(magnitude, 1.0)
+
+            # Calculate breadth factor (more insiders = stronger signal)
+            breadth = min(unique_insiders / 5, 1.0)  # Cap at 5 insiders
+
+            # Calculate recency factor (more recent = stronger signal)
+            recency = 1 - (min(avg_days_ago, lookback_days) / lookback_days)
+
+            # Combine factors into final score
+            raw_score = (buy_ratio - 0.5) * 2  # -1 to +1 range
+            weighted_score = raw_score * (0.5 + 0.2 * magnitude + 0.2 * breadth + 0.1 * recency)
+
+            # Scale to 0-1 range (from -1 to +1)
+            # -1 → 0, 0 → 0.5, +1 → 1
+            score = (weighted_score + 1) / 2
+            score = max(0.0, min(1.0, score))
+
+            sentiment_data['insider'] = {
+                'score': round(score, 3),
+                'raw_data': insider_data,
+                'factors': {
+                    'buy_ratio': buy_ratio,
+                    'magnitude': magnitude,
+                    'breadth': breadth,
+                    'recency': recency,
+                    'raw_score': raw_score,
+                    'weighted_score': weighted_score
+                }
+            }
+        else:
+            sentiment_data['insider'] = {
+                'score': 0.5,  # Neutral
+                'raw_data': None,
+                'factors': {}
+            }
+
+        return sentiment_data
+
     def create_individual_plots(self, ticker, output_dir, use_subfolder=True):
         """Create individual technical analysis plots (no subplots)"""
 
@@ -755,6 +1318,78 @@ class StockScoreTrendAnalyzerTechnical:
             plt.legend(loc='best', fontsize=9)
             plt.tight_layout()
             plt.savefig(ticker_dir / f'{ticker}_01_regression.png', dpi=100)
+            plt.close()
+
+        # 01b - Velocity & Acceleration Analysis (NEW)
+        accel_data = self.technical_results.get(ticker, {}).get('acceleration')
+        if accel_data:
+            fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 8), sharex=True)
+            fig.suptitle(f'{ticker} - Score Velocity & Acceleration Analysis',
+                         fontsize=14, fontweight='bold')
+
+            # Top panel: Score with Velocity bars
+            ax1_twin = ax1.twinx()
+
+            # Plot scores as line
+            ax1.plot(indices, scores, 'b-', label='Score', linewidth=2, zorder=3)
+            ax1.set_ylabel('Score', color='blue', fontsize=11)
+            ax1.tick_params(axis='y', labelcolor='blue')
+
+            # Plot velocity as bars
+            velocity = accel_data['velocity']
+            colors_vel = ['green' if v > 0 else 'red' if v < 0 else 'gray'
+                          for v in velocity]
+            ax1_twin.bar(indices, velocity, alpha=0.4, color=colors_vel,
+                         label='Velocity', zorder=1)
+            ax1_twin.axhline(y=0, color='black', linestyle='-', linewidth=0.5)
+            ax1_twin.set_ylabel('Velocity (Score Change)', color='gray', fontsize=11)
+            ax1_twin.tick_params(axis='y', labelcolor='gray')
+
+            ax1.set_title('Score Trend with Velocity (1st Derivative)', fontsize=12)
+            ax1.grid(True, alpha=0.3)
+            ax1.legend(loc='upper left')
+
+            # Bottom panel: Acceleration
+            acceleration = accel_data['acceleration']
+            colors_accel = ['green' if a > 0 else 'red' if a < 0 else 'gray'
+                            for a in acceleration]
+            ax2.bar(indices, acceleration, alpha=0.6, color=colors_accel)
+            ax2.axhline(y=0, color='black', linestyle='-', linewidth=1)
+            ax2.fill_between(indices, 0, acceleration,
+                             where=[a > 0 if not np.isnan(a) else False for a in acceleration],
+                             alpha=0.3, color='green', label='Momentum Increasing')
+            ax2.fill_between(indices, 0, acceleration,
+                             where=[a < 0 if not np.isnan(a) else False for a in acceleration],
+                             alpha=0.3, color='red', label='Momentum Decreasing')
+
+            ax2.set_ylabel('Acceleration (Velocity Change)', fontsize=11)
+            ax2.set_xlabel('Trading Days', fontsize=11)
+            ax2.set_title('Acceleration (2nd Derivative) - Momentum Change Rate', fontsize=12)
+            ax2.grid(True, alpha=0.3)
+            ax2.legend(loc='upper left')
+
+            # Add momentum phase indicator
+            phase_display = accel_data['phase_display']
+            phase_color = accel_data['phase_color']
+            recent_vel = accel_data['recent_velocity']
+            recent_accel = accel_data['recent_acceleration']
+
+            textstr = f'Current Phase: {phase_display}\n'
+            textstr += f'Recent Velocity: {recent_vel:+.3f}\n'
+            textstr += f'Recent Acceleration: {recent_accel:+.3f}'
+
+            props = dict(boxstyle='round', facecolor=phase_color, alpha=0.3)
+            ax2.text(0.98, 0.95, textstr, transform=ax2.transAxes, fontsize=10,
+                     verticalalignment='top', horizontalalignment='right', bbox=props)
+
+            # Add date labels
+            tick_indices = indices[::max(1, len(indices) // 8)]
+            tick_dates = [dates[i] for i in range(0, len(dates), max(1, len(dates) // 8))]
+            ax2.set_xticks(tick_indices)
+            ax2.set_xticklabels(tick_dates, rotation=45, fontsize=8)
+
+            plt.tight_layout()
+            plt.savefig(ticker_dir / f'{ticker}_01b_acceleration.png', dpi=100)
             plt.close()
 
         # 02 - Moving Averages
@@ -958,6 +1593,259 @@ class StockScoreTrendAnalyzerTechnical:
             plt.legend(loc='best', fontsize=9)
             plt.tight_layout()
             plt.savefig(ticker_dir / f'{ticker}_06_forecasting.png', dpi=100)
+            plt.close()
+
+        # Plot 7: Options Flow Sentiment (30 days)
+        print(f"   Creating Plot 7: Options Flow Sentiment...")
+        sentiment_data = self.calculate_sentiment_indicators(ticker)
+
+        if sentiment_data and 'options_flow' in sentiment_data:
+            options_data = sentiment_data['options_flow']
+
+            fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 10))
+            fig.suptitle(f'{ticker} - Options Flow Analysis (30-Day Window)', fontsize=14, fontweight='bold')
+
+            # Top panel: Put/Call Ratio and Large Positions
+            if options_data['raw_data']:
+                raw = options_data['raw_data']
+
+                # Create bar chart for Put/Call ratios
+                categories = ['Total OI\nP/C Ratio', 'Volume\nP/C Ratio', 'Near-Money\nP/C Ratio']
+                values = [raw['pc_ratio_oi'], raw['pc_ratio_vol'], raw['ntm_pc_ratio']]
+                colors = ['red' if v > 1.0 else 'green' for v in values]
+
+                bars = ax1.bar(categories, values, color=colors, alpha=0.6, edgecolor='black')
+                ax1.axhline(y=1.0, color='gray', linestyle='--', linewidth=1, label='Neutral (1.0)')
+                ax1.axhline(y=0.7, color='green', linestyle=':', linewidth=1, alpha=0.5, label='Bullish (<0.7)')
+                ax1.axhline(y=1.3, color='red', linestyle=':', linewidth=1, alpha=0.5, label='Bearish (>1.3)')
+
+                ax1.set_ylabel('Put/Call Ratio', fontsize=11, fontweight='bold')
+                ax1.set_title('Put/Call Ratios - Lower = More Bullish', fontsize=12)
+                ax1.legend(loc='upper right', fontsize=9)
+                ax1.grid(True, alpha=0.3)
+
+                # Add value labels on bars
+                for bar, val in zip(bars, values):
+                    height = bar.get_height()
+                    ax1.text(bar.get_x() + bar.get_width()/2., height,
+                            f'{val:.2f}', ha='center', va='bottom', fontsize=10, fontweight='bold')
+
+                # Bottom panel: Large Positions (OI > 2σ)
+                large_call_oi = raw['large_call_oi']
+                large_put_oi = raw['large_put_oi']
+
+                if large_call_oi > 0 or large_put_oi > 0:
+                    positions = ['Large Calls', 'Large Puts']
+                    oi_values = [large_call_oi, large_put_oi]
+                    colors = ['green', 'red']
+
+                    bars2 = ax2.barh(positions, oi_values, color=colors, alpha=0.6, edgecolor='black')
+                    ax2.set_xlabel('Open Interest (Contracts)', fontsize=11, fontweight='bold')
+                    ax2.set_title('Large Positions (OI > 2σ above mean) - Near-the-Money Only', fontsize=12)
+                    ax2.grid(True, alpha=0.3, axis='x')
+
+                    # Add value labels
+                    for bar, val in zip(bars2, oi_values):
+                        width = bar.get_width()
+                        ax2.text(width, bar.get_y() + bar.get_height()/2.,
+                                f' {int(val):,}', ha='left', va='center', fontsize=10, fontweight='bold')
+
+                    # Add imbalance ratio
+                    total_large = large_call_oi + large_put_oi
+                    if total_large > 0:
+                        call_pct = (large_call_oi / total_large) * 100
+                        put_pct = (large_put_oi / total_large) * 100
+                        imbalance_text = f'Call: {call_pct:.1f}% | Put: {put_pct:.1f}%'
+                        ax2.text(0.98, 0.95, imbalance_text, transform=ax2.transAxes,
+                                fontsize=11, verticalalignment='top', horizontalalignment='right',
+                                bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.7))
+                else:
+                    ax2.text(0.5, 0.5, 'No Large Positions Detected',
+                            ha='center', va='center', fontsize=14, color='gray',
+                            transform=ax2.transAxes)
+                    ax2.set_xlim(0, 1)
+                    ax2.set_ylim(0, 1)
+
+                # Add overall sentiment score
+                score = options_data['score']
+                sentiment_label = 'BULLISH' if score > 0.6 else ('BEARISH' if score < 0.4 else 'NEUTRAL')
+                sentiment_color = 'green' if score > 0.6 else ('red' if score < 0.4 else 'orange')
+
+                fig.text(0.5, 0.02, f'Options Flow Sentiment: {sentiment_label} (Score: {score:.3f})',
+                        ha='center', fontsize=13, fontweight='bold', color=sentiment_color,
+                        bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.8))
+            else:
+                # No data available
+                for ax in [ax1, ax2]:
+                    ax.text(0.5, 0.5, 'Options Data Not Available',
+                           ha='center', va='center', fontsize=14, color='gray',
+                           transform=ax.transAxes)
+                    ax.set_xlim(0, 1)
+                    ax.set_ylim(0, 1)
+
+            plt.tight_layout(rect=[0, 0.04, 1, 0.98])
+            plt.savefig(ticker_dir / f'{ticker}_07_options_flow.png', dpi=100, bbox_inches='tight')
+            plt.close()
+
+        # Plot 8: Insider Transactions (90 days)
+        print(f"   Creating Plot 8: Insider Transactions...")
+        sentiment_data = self.calculate_sentiment_indicators(ticker)
+
+        if sentiment_data and 'insider' in sentiment_data:
+            insider_info = sentiment_data['insider']
+
+            fig = plt.figure(figsize=(14, 10))
+            gs = gridspec.GridSpec(3, 2, height_ratios=[1.2, 1, 1], hspace=0.3, wspace=0.3, figure=fig)
+            fig.suptitle(f'{ticker} - Insider Transaction Analysis (90-Day Window)',
+                         fontsize=14, fontweight='bold', y=0.98)
+
+            if insider_info['raw_data']:
+                raw = insider_info['raw_data']
+                factors = insider_info['factors']
+
+                # === TOP LEFT: Buy vs Sell Comparison ===
+                ax1 = fig.add_subplot(gs[0, 0])
+                categories = ['Insider Buys', 'Insider Sells']
+                values = [raw['buys'], raw['sells']]
+                colors = ['green', 'red']
+
+                bars = ax1.barh(categories, values, color=colors, alpha=0.7, edgecolor='black', linewidth=2)
+                ax1.set_xlabel('Transaction Value ($)', fontsize=11, fontweight='bold')
+                ax1.set_title('Insider Buy vs Sell Activity', fontsize=12, fontweight='bold')
+                ax1.grid(True, alpha=0.3, axis='x')
+
+                # Add value labels
+                for bar, val in zip(bars, values):
+                    width = bar.get_width()
+                    ax1.text(width, bar.get_y() + bar.get_height()/2.,
+                            f' ${val:,.0f}', ha='left', va='center', fontsize=10, fontweight='bold')
+
+                # Add transaction counts
+                ax1.text(0.02, 0.98, f"Transactions: {raw['num_buys']} buys, {raw['num_sells']} sells",
+                        transform=ax1.transAxes, fontsize=9, va='top',
+                        bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.7))
+
+                # === TOP RIGHT: Buy Ratio Gauge ===
+                ax2 = fig.add_subplot(gs[0, 1])
+                buy_ratio = factors['buy_ratio']
+
+                # Create horizontal bar showing buy ratio
+                ax2.barh([0], [buy_ratio], height=0.6, color='green', alpha=0.7, label='Buy %')
+                ax2.barh([0], [1-buy_ratio], height=0.6, left=buy_ratio, color='red', alpha=0.7, label='Sell %')
+
+                # Add reference lines
+                ax2.axvline(x=0.5, color='gray', linestyle='--', linewidth=2, alpha=0.7, label='Neutral (50%)')
+
+                # Format
+                ax2.set_xlim(0, 1)
+                ax2.set_ylim(-0.5, 0.5)
+                ax2.set_xlabel('Buy Ratio', fontsize=11, fontweight='bold')
+                ax2.set_title(f'Buy Ratio: {buy_ratio:.1%}', fontsize=12, fontweight='bold')
+                ax2.set_yticks([])
+                ax2.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=3, fontsize=9)
+                ax2.grid(True, alpha=0.3, axis='x')
+
+                # Add percentage labels
+                if buy_ratio > 0.05:
+                    ax2.text(buy_ratio/2, 0, f'{buy_ratio:.1%}', ha='center', va='center',
+                            fontsize=12, fontweight='bold', color='white')
+                if (1-buy_ratio) > 0.05:
+                    ax2.text(buy_ratio + (1-buy_ratio)/2, 0, f'{1-buy_ratio:.1%}', ha='center', va='center',
+                            fontsize=12, fontweight='bold', color='white')
+
+                # === MIDDLE: Net Position & Insider Details ===
+                ax3 = fig.add_subplot(gs[1, :])
+                ax3.axis('off')
+
+                net = raw['net']
+                net_label = "Net Buying" if net >= 0 else "Net Selling"
+                net_color = 'green' if net >= 0 else 'red'
+
+                info_text = f"""NET POSITION: {net_label.upper()} = ${abs(net):,.0f}
+
+INSIDER DETAILS:
+  • Total Insiders: {raw['unique_insiders']} ({raw['unique_buyers']} buyers, {raw['unique_sellers']} sellers)
+  • Average Recency: {raw['avg_days_ago']:.1f} days ago (of {raw['lookback_days']} day window)
+  • Total Value: ${raw['total']:,.0f}
+
+SCORING FACTORS (see bottom panel for visualization):
+  • Buy Ratio: {buy_ratio:.1%} → Raw Score: {factors['raw_score']:.3f} (from -1 to +1)
+  • Magnitude: {factors['magnitude']:.3f} (transaction size impact)
+  • Breadth: {factors['breadth']:.3f} (number of insiders)
+  • Recency: {factors['recency']:.3f} (how recent transactions are)
+
+FORMULA: raw_score × (0.5 + 0.2×magnitude + 0.2×breadth + 0.1×recency)
+FINAL SCORE: {insider_info['score']:.3f} (scaled to 0-1 range)"""
+
+                ax3.text(0.5, 0.5, info_text, transform=ax3.transAxes,
+                        fontsize=9, fontfamily='monospace', ha='center', va='center',
+                        bbox=dict(boxstyle='round', facecolor=net_color, alpha=0.15, edgecolor=net_color, linewidth=2))
+
+                # === BOTTOM: Scoring Factors ===
+                ax4 = fig.add_subplot(gs[2, :])
+
+                factor_names = ['Buy Ratio\n(Base)', 'Magnitude\nFactor', 'Breadth\nFactor', 'Recency\nFactor']
+                factor_values = [
+                    (buy_ratio - 0.5) * 2,  # Normalized to -1 to +1
+                    factors['magnitude'],
+                    factors['breadth'],
+                    factors['recency']
+                ]
+                factor_colors = ['blue' if factor_values[0] >= 0 else 'red', 'purple', 'orange', 'cyan']
+
+                bars = ax4.bar(factor_names, factor_values, color=factor_colors, alpha=0.7, edgecolor='black', linewidth=2)
+                ax4.set_ylabel('Factor Value', fontsize=11, fontweight='bold')
+                ax4.set_title('Scoring Factors Breakdown', fontsize=12, fontweight='bold')
+                ax4.set_ylim(-1.1, 1.1)
+                ax4.axhline(y=0, color='gray', linestyle='-', linewidth=1, alpha=0.5)
+                ax4.axhline(y=0.5, color='gray', linestyle='--', linewidth=1, alpha=0.3, label='Bullish threshold')
+                ax4.axhline(y=-0.5, color='gray', linestyle='--', linewidth=1, alpha=0.3, label='Bearish threshold')
+                ax4.grid(True, alpha=0.3, axis='y')
+                ax4.legend(loc='upper right', fontsize=9)
+
+                # Add value labels
+                for bar, val in zip(bars, factor_values):
+                    height = bar.get_height()
+                    label_y = height + (0.05 if height >= 0 else -0.05)
+                    va = 'bottom' if height >= 0 else 'top'
+                    ax4.text(bar.get_x() + bar.get_width()/2., label_y,
+                            f'{val:.2f}', ha='center', va=va, fontsize=10, fontweight='bold')
+
+                # === OVERALL SENTIMENT LABEL ===
+                score = insider_info['score']
+                if score > 0.6:
+                    sentiment_label = 'BULLISH (Strong Insider Buying)'
+                    sentiment_color = 'darkgreen'
+                elif score > 0.55:
+                    sentiment_label = 'MODERATELY BULLISH'
+                    sentiment_color = 'green'
+                elif score >= 0.45:
+                    sentiment_label = 'NEUTRAL'
+                    sentiment_color = 'orange'
+                elif score >= 0.4:
+                    sentiment_label = 'MODERATELY BEARISH'
+                    sentiment_color = 'orangered'
+                else:
+                    sentiment_label = 'BEARISH (Strong Insider Selling)'
+                    sentiment_color = 'darkred'
+
+                fig.text(0.5, 0.01, f'Insider Sentiment: {sentiment_label} (Score: {score:.3f})',
+                        ha='center', fontsize=13, fontweight='bold', color='white',
+                        bbox=dict(boxstyle='round', facecolor=sentiment_color, alpha=0.9,
+                                 edgecolor='black', linewidth=3, pad=0.7))
+
+            else:
+                # No data available
+                ax = fig.add_subplot(gs[:, :])
+                ax.text(0.5, 0.5, 'Insider Transaction Data Not Available',
+                       ha='center', va='center', fontsize=16, color='gray',
+                       transform=ax.transAxes)
+                ax.set_xlim(0, 1)
+                ax.set_ylim(0, 1)
+                ax.axis('off')
+
+            plt.tight_layout(rect=[0, 0.03, 1, 0.98])
+            plt.savefig(ticker_dir / f'{ticker}_08_insider_transactions.png', dpi=100, bbox_inches='tight')
             plt.close()
 
         print(f" Created individual plots for {ticker}")
@@ -1922,10 +2810,96 @@ Top 3 Predictive Features:
                 total_score += 0.3
             max_possible += 1
 
+        # 18. Acceleration Analysis (NEW)
+        accel_data = self.technical_results.get(ticker, {}).get('acceleration')
+        if accel_data:
+            velocity = accel_data['recent_velocity']
+            acceleration = accel_data['recent_acceleration']
+            phase = accel_data['phase']
+
+            # Score based on momentum phase
+            if phase == 'accelerating_up':
+                score_details['acceleration'] = f"Accelerating Up (v={velocity:+.3f}, a={acceleration:+.3f}) (+1.5)"
+                total_score += 1.5
+            elif phase == 'decelerating_up':
+                score_details['acceleration'] = f"Decelerating Up (v={velocity:+.3f}, a={acceleration:+.3f}) (+0.5)"
+                total_score += 0.5
+            elif phase == 'decelerating_down':
+                score_details['acceleration'] = f"Decelerating Down (v={velocity:+.3f}, a={acceleration:+.3f}) (+0.3)"
+                total_score += 0.3
+            elif phase == 'accelerating_down':
+                score_details['acceleration'] = f"Accelerating Down (v={velocity:+.3f}, a={acceleration:+.3f}) (0)"
+                total_score += 0
+            else:  # stable
+                score_details['acceleration'] = f"Stable (v={velocity:+.3f}, a={acceleration:+.3f}) (+0.7)"
+                total_score += 0.7
+            max_possible += 1.5
+
+        # Store technical-only scores
+        technical_score = total_score
+        technical_max = max_possible
+
+        # === SENTIMENT INDICATORS (NEW) ===
+        sentiment_score = 0
+        sentiment_max = 0
+
+        # 18. Options Flow Sentiment (30-day window)
+        sentiment_data = self.calculate_sentiment_indicators(ticker)
+        if sentiment_data and 'options_flow' in sentiment_data:
+            options_flow = sentiment_data['options_flow']
+            flow_score = options_flow['score']
+
+            # Convert 0-1 score to points (0-1 scale)
+            if flow_score > 0.7:
+                score_details['options_flow'] = f"Options Flow Bullish ({flow_score:.3f}) (+1)"
+                sentiment_score += 1
+            elif flow_score > 0.55:
+                score_details['options_flow'] = f"Options Flow Mod Bullish ({flow_score:.3f}) (+0.5)"
+                sentiment_score += 0.5
+            elif flow_score >= 0.45:
+                score_details['options_flow'] = f"Options Flow Neutral ({flow_score:.3f}) (0)"
+                sentiment_score += 0
+            elif flow_score >= 0.3:
+                score_details['options_flow'] = f"Options Flow Mod Bearish ({flow_score:.3f}) (-0.5)"
+                sentiment_score -= 0.5
+            else:
+                score_details['options_flow'] = f"Options Flow Bearish ({flow_score:.3f}) (-1)"
+                sentiment_score -= 1
+            sentiment_max += 1
+
+        # 19. Insider Transaction Sentiment (90-day window)
+        if sentiment_data and 'insider' in sentiment_data:
+            insider_info = sentiment_data['insider']
+            insider_score = insider_info['score']
+
+            # Convert 0-1 score to points (0-1 scale, with negative for bearish)
+            if insider_score > 0.6:
+                score_details['insider'] = f"Insider Bullish ({insider_score:.3f}) (+1)"
+                sentiment_score += 1
+            elif insider_score > 0.55:
+                score_details['insider'] = f"Insider Mod Bullish ({insider_score:.3f}) (+0.5)"
+                sentiment_score += 0.5
+            elif insider_score >= 0.45:
+                score_details['insider'] = f"Insider Neutral ({insider_score:.3f}) (0)"
+                sentiment_score += 0
+            elif insider_score >= 0.4:
+                score_details['insider'] = f"Insider Mod Bearish ({insider_score:.3f}) (-0.5)"
+                sentiment_score -= 0.5
+            else:
+                score_details['insider'] = f"Insider Bearish ({insider_score:.3f}) (-1)"
+                sentiment_score -= 1
+            sentiment_max += 1
+
+        # Add sentiment to total
+        total_score += sentiment_score
+        max_possible += sentiment_max
+
         # Calculate percentage score
+        technical_percentage = (technical_score / technical_max * 100) if technical_max > 0 else 0
+        sentiment_percentage = (sentiment_score / sentiment_max * 100) if sentiment_max > 0 else 0
         percentage = (total_score / max_possible * 100) if max_possible > 0 else 0
 
-        # Determine recommendation
+        # Determine recommendation based on combined score
         if percentage >= 70:
             recommendation = "STRONG BUY"
         elif percentage >= 55:
@@ -1942,7 +2916,14 @@ Top 3 Predictive Features:
             'max_possible': max_possible,
             'percentage': percentage,
             'recommendation': recommendation,
-            'details': score_details
+            'details': score_details,
+            # Add breakdown for technical vs sentiment
+            'technical_score': technical_score,
+            'technical_max': technical_max,
+            'technical_percentage': technical_percentage,
+            'sentiment_score': sentiment_score,
+            'sentiment_max': sentiment_max,
+            'sentiment_percentage': sentiment_percentage
         }
 
     def analyze_all_stocks(self, output_base_dir, min_appearances=5, ticker_list_file=None, clean_old_plots=True):

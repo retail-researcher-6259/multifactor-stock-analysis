@@ -977,7 +977,7 @@ def run_historical_specific_date(target_date, regime, progress_callback=None):
             value_metrics_by_ticker[tk] = value_dict
 
             tech = get_technical_score(hist)
-            insider = get_insider_score_simple(tk)
+            insider = get_insider_score_simple(tk, mode="historical")
             growth = get_growth_score(tk, info, regime_clean)
 
             # Momentum calculations
@@ -1998,7 +1998,7 @@ def get_size_score(info):
     return round(final_score, 2)
 
 
-def get_options_flow_score(ticker, info):
+def get_options_flow_score(ticker, info, return_details=False):
     """
     Calculate institutional options flow score using instant metrics
 
@@ -2013,9 +2013,11 @@ def get_options_flow_score(ticker, info):
     Args:
         ticker: Stock symbol
         info: Stock info dict with current price
+        return_details: If True, return (score, detailed_data_dict)
 
     Returns:
         float: Score 0-1 (0.5 = neutral, >0.5 = bullish, <0.5 = bearish)
+        OR tuple: (score, details_dict) if return_details=True
     """
     try:
         # Get current stock price
@@ -2596,12 +2598,16 @@ def _calculate_score_from_sec_filings(df):
         return 0
 
 
-def get_insider_score_simple(ticker):
+def get_insider_score_simple(ticker, mode="daily"):
     """
     Enhanced insider score that tries Marketstack SEC data first, then yahooquery
 
     This is a complete drop-in replacement for the original function.
     It maintains backward compatibility while adding Marketstack support.
+
+    Args:
+        ticker: Stock ticker symbol
+        mode: "daily" for current data (skips Marketstack), "historical" for backtesting (uses Marketstack)
     """
 
     # Check if we already know this ticker has no insider data
@@ -2613,9 +2619,11 @@ def get_insider_score_simple(ticker):
         return _insider_data_cache[ticker]
 
     # ========================================================================
-    # STEP 1: Try Marketstack SEC data first (new capability)
+    # STEP 1: Try Marketstack SEC data first (ONLY in historical mode)
     # ========================================================================
-    if MARKETSTACK_API_KEY:
+    # DISABLED: Marketstack /insider and /sec/filings endpoints are not available
+    # Skipping Marketstack API calls entirely to avoid unnecessary API usage
+    if MARKETSTACK_API_KEY and mode == "historical_disabled":  # Changed to never execute
         try:
             # Prepare date range
             end_date = datetime.now()
@@ -2644,10 +2652,10 @@ def get_insider_score_simple(ticker):
 
                     if score != 0:  # If we got valid data
                         _insider_data_cache[ticker] = score
-                        print(f"   {ticker}: Got insider score from Marketstack SEC: {score}")
-                        return score
+                        print(f"   {ticker}: Got insider score from Marketstack insider: {score}")
+                        return score  # Early return - don't call second endpoint
 
-            # If insider endpoint didn't work, try SEC filings endpoint
+            # If insider endpoint didn't return valid data, try SEC filings endpoint as fallback
             response = requests.get(f"{MARKETSTACK_BASE_URL}/sec/filings", params=params, timeout=5)
 
             if response.status_code == 200:
@@ -3253,7 +3261,7 @@ def run_daily_scoring(regime="Steady_Growth", progress_callback=None):
             value_metrics_by_ticker[tk] = value_dict
 
             tech = get_technical_score(hist)
-            insider = get_insider_score_simple(tk)
+            insider = get_insider_score_simple(tk, mode="daily")
 
             pm, em = get_momentum_score(tk, hist)
             pm_cache.append(pm)
