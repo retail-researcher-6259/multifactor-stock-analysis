@@ -2810,6 +2810,7 @@ Top 3 Predictive Features:
                 total_score += 0.3
             max_possible += 1
 
+<<<<<<< HEAD
         # 18. Acceleration Analysis (NEW)
         accel_data = self.technical_results.get(ticker, {}).get('acceleration')
         if accel_data:
@@ -2835,6 +2836,8 @@ Top 3 Predictive Features:
                 total_score += 0.7
             max_possible += 1.5
 
+=======
+>>>>>>> 19af94f24028bca828033df5510260094d76cda2
         # Store technical-only scores
         technical_score = total_score
         technical_max = max_possible

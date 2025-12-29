@@ -187,7 +187,10 @@ class EnhancedSingleTickerTechnicalAnalyzer(StockScoreTrendAnalyzerTechnical):
             'exp_smooth': 'Exp Smooth',
             'prophet': 'Prophet',
             'xgboost_reversion': 'XGBoost Reversion',
+<<<<<<< HEAD
             'acceleration': 'Acceleration',  # NEW: Momentum acceleration
+=======
+>>>>>>> 19af94f24028bca828033df5510260094d76cda2
             'options_flow': 'Options Flow',  # NEW: Sentiment indicator
             'insider': 'Insider Transactions'  # NEW: Sentiment indicator
         }
