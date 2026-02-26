@@ -7,7 +7,7 @@ echo.
 
 REM Activate the virtual environment
 echo Activating virtual environment...
-call "D:\Python311\venv\Scripts\activate.bat"
+call "C:\Miscellaneous_Programs\Python311\riskfolio_env\Scripts\activate.bat"
 
 REM Check if activation was successful
 if errorlevel 1 (
