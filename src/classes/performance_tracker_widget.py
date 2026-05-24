@@ -921,7 +921,7 @@ class PerformanceTrackerWidget(QWidget):
 
         # Button row
         btn_row = QHBoxLayout()
-        add_btn  = QPushButton("Add Row");       add_btn.clicked.connect(self._add_row);         btn_row.addWidget(add_btn)
+        add_btn  = QPushButton("Add Row");       add_btn.clicked.connect(lambda: self._add_row()); btn_row.addWidget(add_btn)
         del_btn  = QPushButton("Delete Row(s)"); del_btn.clicked.connect(self._delete_rows);     btn_row.addWidget(del_btn)
         btn_row.addStretch()
         load_btn = QPushButton("Load Transactions")
