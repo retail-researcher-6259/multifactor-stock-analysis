@@ -1,0 +1,6 @@
+{
+  "api_key": "put_your_api_key_here",
+  "s3_access_key_id": "put_your_access_key_here",
+  "s3_secret_access_key": "put_your_secret_key_here",
+  "description": "api_key: REST key. s3_*: separate Flat Files (S3) credentials from the Massive dashboard, required only by options_backfill_scorer.py"
+}

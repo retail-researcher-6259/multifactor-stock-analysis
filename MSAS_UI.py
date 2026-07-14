@@ -19,6 +19,7 @@ from src.classes.score_trend_analysis_widget import (
     EnhancedTechnicalPlotsThread,
     EnhancedStabilityAnalysisThread
 )
+from src.classes.options_analysis_widget import ScriptRunnerThread, OptionsAnalysisWidget
 from src.classes.dynamic_portfolio_selection_widget_v2 import DynamicPortfolioThread, DynamicPortfolioSelectionWidget
 from src.classes.portfolio_optimizer_widget import PortfolioOptimizerThread, PortfolioOptimizerWidget
 from src.classes.performance_tracker_widget import PerformanceTrackerThread, PerformanceTrackerWidget
@@ -82,6 +83,10 @@ class MainWindow(QMainWindow):
 
         self.trend_analysis_widget = ScoreTrendAnalysisWidget()
         self.tab_widget.addTab(self.trend_analysis_widget, " Score Trend Analysis")
+
+        # Add Options Analysis tab (leading indicators from options flow)
+        self.options_widget = OptionsAnalysisWidget()
+        self.tab_widget.addTab(self.options_widget, " Options Analysis")
 
         # Add new Dynamic Portfolio Selection tab
         self.portfolio_widget = DynamicPortfolioSelectionWidget()
@@ -148,6 +153,7 @@ class MainWindow(QMainWindow):
         self.regime_widget.regime_detected.connect(self.scoring_widget.set_detected_regime)
         self.regime_widget.regime_detected.connect(self.trend_analysis_widget.set_recommended_regime)
         self.regime_widget.regime_detected.connect(self.portfolio_widget.set_recommended_regime)
+        self.regime_widget.regime_detected.connect(self.options_widget.set_recommended_regime)
 
         # You can add more signal connections here as needed
         # For example, passing scoring results to portfolio selection, etc.
@@ -214,17 +220,21 @@ class MainWindow(QMainWindow):
         trend_tab_action.setShortcut('Ctrl+3')
         trend_tab_action.triggered.connect(lambda: self.tab_widget.setCurrentIndex(2))
 
+        options_tab_action = view_menu.addAction('Options Analysis Tab')
+        options_tab_action.setShortcut('Ctrl+4')
+        options_tab_action.triggered.connect(lambda: self.tab_widget.setCurrentIndex(3))
+
         portfolio_tab_action = view_menu.addAction('Portfolio Selection Tab')
-        portfolio_tab_action.setShortcut('Ctrl+4')
-        portfolio_tab_action.triggered.connect(lambda: self.tab_widget.setCurrentIndex(3))
+        portfolio_tab_action.setShortcut('Ctrl+5')
+        portfolio_tab_action.triggered.connect(lambda: self.tab_widget.setCurrentIndex(4))
 
         optimizer_tab_action = view_menu.addAction('Portfolio Optimization Tab')
-        optimizer_tab_action.setShortcut('Ctrl+5')
-        optimizer_tab_action.triggered.connect(lambda: self.tab_widget.setCurrentIndex(4))
+        optimizer_tab_action.setShortcut('Ctrl+6')
+        optimizer_tab_action.triggered.connect(lambda: self.tab_widget.setCurrentIndex(5))
 
         performance_tab_action = view_menu.addAction('Performance Tracker Tab')
-        performance_tab_action.setShortcut('Ctrl+6')
-        performance_tab_action.triggered.connect(lambda: self.tab_widget.setCurrentIndex(5))
+        performance_tab_action.setShortcut('Ctrl+7')
+        performance_tab_action.triggered.connect(lambda: self.tab_widget.setCurrentIndex(6))
 
         # Help menu
         help_menu = menubar.addMenu('Help')
@@ -277,19 +287,25 @@ class MainWindow(QMainWindow):
             else:
                 QMessageBox.warning(self, "Export", "No trend analysis results to export.")
 
-        elif current_tab == 3:  # Portfolio Selection
+        elif current_tab == 3:  # Options Analysis
+            if hasattr(self.options_widget, 'current_recommendations') and self.options_widget.current_recommendations:
+                QMessageBox.information(self, "Export", "Options analysis results exported successfully!")
+            else:
+                QMessageBox.warning(self, "Export", "No options analysis results to export.")
+
+        elif current_tab == 4:  # Portfolio Selection
             if hasattr(self.portfolio_widget, 'current_results') and self.portfolio_widget.current_results:
                 QMessageBox.information(self, "Export", "Portfolio selection results exported successfully!")
             else:
                 QMessageBox.warning(self, "Export", "No portfolio selection results to export.")
 
-        elif current_tab == 4:  # Portfolio Optimization
+        elif current_tab == 5:  # Portfolio Optimization
             if hasattr(self.optimizer_widget, 'current_results') and self.optimizer_widget.current_results:
                 QMessageBox.information(self, "Export", "Portfolio optimization results exported successfully!")
             else:
                 QMessageBox.warning(self, "Export", "No optimization results to export.")
 
-        elif current_tab == 5:  # Performance Tracker
+        elif current_tab == 6:  # Performance Tracker
             if hasattr(self.performance_widget, 'current_results') and self.performance_widget.current_results:
                 QMessageBox.information(self, "Export", "Performance tracker results exported successfully!")
             else:
@@ -334,13 +350,18 @@ class MainWindow(QMainWindow):
         <p><b>3. Score Trend Analysis:</b><br>
         Analyze stability and generate technical indicators for top-ranked stocks.</p>
 
-        <p><b>4. Portfolio Selection:</b><br>
+        <p><b>4. Options Analysis:</b><br>
+        Fetch daily/historical options flow data and generate leading-indicator
+        recommendations from stability rank, open-interest trends, and abnormal
+        volume events.</p>
+
+        <p><b>5. Portfolio Selection:</b><br>
         Create optimized portfolios based on stability analysis and backtest performance.</p>
 
-        <p><b>5. Portfolio Optimization:</b><br>
+        <p><b>6. Portfolio Optimization:</b><br>
         Optimize portfolio weights using hierarchical risk parity methods (HRP, HERC, MHRP, NCO).</p>
 
-        <p><b>6. Performance Tracker:</b><br>
+        <p><b>7. Performance Tracker:</b><br>
         Track real portfolio performance from manual transactions. Compare against benchmarks
         (S&amp;P 500, Dow Jones, NASDAQ, Russell 2000) with allocation and performance charts.</p>
 
@@ -348,12 +369,13 @@ class MainWindow(QMainWindow):
         1. Start with Regime Detection (Tab 1)<br>
         2. Run Multifactor Scoring for the detected regime (Tab 2)<br>
         3. Analyze score trends and stability (Tab 3)<br>
-        4. Generate optimized portfolios (Tab 4)<br>
-        5. Fine-tune allocation with Portfolio Optimization (Tab 5)<br>
-        6. Track real performance with Performance Tracker (Tab 6)</p>
+        4. Check options flow signals for entry/exit timing (Tab 4)<br>
+        5. Generate optimized portfolios (Tab 5)<br>
+        6. Fine-tune allocation with Portfolio Optimization (Tab 6)<br>
+        7. Track real performance with Performance Tracker (Tab 7)</p>
 
         <p><b>Keyboard Shortcuts:</b><br>
-        Ctrl+1-6: Switch between tabs<br>
+        Ctrl+1-7: Switch between tabs<br>
         F5: Run regime detection<br>
         Ctrl+R: Run scoring process<br>
         Ctrl+T: Run stability analysis<br>
